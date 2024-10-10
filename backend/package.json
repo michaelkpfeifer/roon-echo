@@ -1,0 +1,8 @@
+{
+  "name": "roon-remote",
+  "version": "0.0.0",
+  "description": "A roon remote running in the browser",
+  "main": "index.js",
+  "author": "Michael Pfeifer",
+  "license": "MIT"
+}
