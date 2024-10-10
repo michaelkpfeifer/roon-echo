@@ -6,6 +6,7 @@
   "author": "Michael Pfeifer",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "node-roon-api": "github:roonlabs/node-roon-api"
   }
 }
