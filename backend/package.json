@@ -4,5 +4,8 @@
   "description": "A roon remote running in the browser",
   "main": "index.js",
   "author": "Michael Pfeifer",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
 }
