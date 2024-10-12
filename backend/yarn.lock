@@ -1215,6 +1215,14 @@ negotiator@0.6.3:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
 
+"node-roon-api-status@github:roonlabs/node-roon-api-status":
+  version "1.0.0"
+  resolved "https://codeload.github.com/roonlabs/node-roon-api-status/tar.gz/504c918d6da267e03fbb4337befa71ca3d3c7526"
+
+"node-roon-api-transport@github:roonlabs/node-roon-api-transport":
+  version "2.0.1"
+  resolved "https://codeload.github.com/roonlabs/node-roon-api-transport/tar.gz/2ee60008a4cdb90c34ff3de58bb4b949067f1d20"
+
 "node-roon-api@github:roonlabs/node-roon-api":
   version "1.2.3"
   resolved "https://codeload.github.com/roonlabs/node-roon-api/tar.gz/7cfaddc63b0d8a8bffe0f71df02d7c73adc728a5"
