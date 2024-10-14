@@ -1,1 +1,17 @@
-require("./roon_init");
+const express = require("express");
+
+const { roon } = require("./roon_init");
+const { getRoonState } = require("./roon_state.js");
+
+const app = express();
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 3009;
+
+app.get("/", (req, res) => {
+  res.send("Connected.");
+});
+
+app.listen(EXPRESS_PORT, () => {
+  console.log(`Express running on http://localhost:${EXPRESS_PORT}.`);
+});
+
+roon.start_discovery();

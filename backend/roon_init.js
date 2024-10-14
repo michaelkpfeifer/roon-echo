@@ -2,7 +2,9 @@ const RoonApi = require("node-roon-api");
 const RoonApiStatus = require("node-roon-api-status");
 const RoonApiTransport = require("node-roon-api-transport");
 
-var roon = new RoonApi({
+const { zone_subscription_message_handler } = require("./roon_state.js");
+
+let roon = new RoonApi({
   extension_id: "com.roon-remote.test",
   display_name: "Roon Web Remote Extension",
   display_version: "0.0.0",
@@ -12,30 +14,13 @@ var roon = new RoonApi({
 
   core_paired: function (core) {
     let transport = core.services.RoonApiTransport;
-    transport.subscribe_zones(function (cmd, data) {
-      console.log(
-        core.core_id,
-        core.display_name,
-        core.display_version,
-        "-",
-        cmd,
-        JSON.stringify(data, null, "  "),
-      );
-    });
+    transport.subscribe_zones(zone_subscription_message_handler);
   },
 
-  core_unpaired: function (core) {
-    console.log(
-      core.core_id,
-      core.display_name,
-      core.display_version,
-      "-",
-      "LOST",
-    );
-  },
+  core_unpaired: function (_core) {},
 });
 
-var svc_status = new RoonApiStatus(roon);
+let svc_status = new RoonApiStatus(roon);
 
 roon.init_services({
   required_services: [RoonApiTransport],
@@ -44,4 +29,4 @@ roon.init_services({
 
 svc_status.set_status("All is good", false);
 
-roon.start_discovery();
+module.exports = { roon };
