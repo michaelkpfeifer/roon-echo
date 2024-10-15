@@ -1,5 +1,5 @@
 // const airbnbBase = require('eslint-config-airbnb-base');
-const prettierConfig = require('eslint-config-prettier');
+// const prettierConfig = require('eslint-config-prettier');
 
 module.exports = [
   {
@@ -14,7 +14,7 @@ module.exports = [
     },
     rules: {
       // ...airbnbBase.rules,
-      ...prettierConfig.rules,
+      // ...prettierConfig.rules,
       semi: ['error', 'always'], // Enforce semicolons at the end of lines
       'padding-line-between-statements': [
         'error',
