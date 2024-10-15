@@ -12,6 +12,7 @@ module.exports = [
         node: 'readonly',
       },
     },
+
     rules: {
       // ...airbnbBase.rules,
       // ...prettierConfig.rules,

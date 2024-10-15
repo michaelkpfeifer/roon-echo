@@ -1,13 +1,13 @@
-const express = require("express");
+const express = require('express');
 
-const { roon } = require("./roon_init");
-const { getRoonState } = require("./roon_state.js");
+const { roon } = require('./roon_init');
+const { getRoonState } = require('./roon_state.js');
 
 const app = express();
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 3009;
 
-app.get("/", (req, res) => {
-  res.send("Connected.");
+app.get('/', (req, res) => {
+  res.send('Connected.');
 });
 
 app.listen(EXPRESS_PORT, () => {
