@@ -1,6 +1,6 @@
-let roon_state = {};
+let roonState = {};
 
-const getRoonState = () => roon_state;
+const getRoonState = () => roonState;
 
 // data = {
 //     "zones_seek_changed": [
@@ -12,14 +12,14 @@ const getRoonState = () => roon_state;
 //     ]
 // }
 
-const update_queue_time_remaining = (state, msg) => {};
+const updateQueueTimeRemaining = (state, msg) => {};
 
-const handle_zones_seek_changed = (state, msg) => {
+const handleZonesSeekChanged = (state, msg) => {
   console.log('state =', state);
   console.log('msg =', msg);
 };
 
-const zone_subscription_message_handler = (cmd, data) => {
+const zoneSubscriptionMessageHandler = (cmd, data) => {
   console.log('cmd =', JSON.stringify(cmd, null, 4));
   console.log('data =', JSON.stringify(data, null, 4));
 
@@ -27,14 +27,14 @@ const zone_subscription_message_handler = (cmd, data) => {
     case 'Subscribed':
       console.log('*** data =', data);
 
-      roon_state = data;
+      roonState = data;
       break;
     case 'Changed':
       for (const attr in data) {
         switch (attr) {
           case 'zones_seek_changed':
             console.log('Handling zones seek changed:', data[attr]);
-            roon_state = handle_zones_seek_changed(roon_state, data[attr]);
+            roonState = handleZonesSeekChanged(roonState, data[attr]);
             break;
           default:
             // TODO: We should raise an error if we receive a state
@@ -47,4 +47,4 @@ const zone_subscription_message_handler = (cmd, data) => {
   }
 };
 
-module.exports = { getRoonState, zone_subscription_message_handler };
+module.exports = { getRoonState, zoneSubscriptionMessageHandler };

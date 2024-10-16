@@ -2,9 +2,10 @@ const RoonApi = require('node-roon-api');
 const RoonApiStatus = require('node-roon-api-status');
 const RoonApiTransport = require('node-roon-api-transport');
 
-const { zone_subscription_message_handler } = require('./roon_state.js');
+const { zoneSubscriptionMessageHandler } = require('./roon_state.js');
 
 let roon = new RoonApi({
+  /* eslint-disable camelcase */
   extension_id: 'com.roon-remote.test',
   display_name: 'Roon Web Remote Extension',
   display_version: '0.0.0',
@@ -14,19 +15,22 @@ let roon = new RoonApi({
 
   core_paired: function (core) {
     let transport = core.services.RoonApiTransport;
-    transport.subscribe_zones(zone_subscription_message_handler);
+    transport.subscribe_zones(zoneSubscriptionMessageHandler);
   },
 
   core_unpaired: function (_core) {},
+  /* eslint-enable camelcase */
 });
 
-let svc_status = new RoonApiStatus(roon);
+let serviceStatus = new RoonApiStatus(roon);
 
 roon.init_services({
+  /* eslint-disable camelcase */
   required_services: [RoonApiTransport],
-  provided_services: [svc_status],
+  provided_services: [serviceStatus],
+  /* eslint-enable camelcase */
 });
 
-svc_status.set_status('All is good', false);
+serviceStatus.set_status('All is good', false);
 
 module.exports = { roon };
