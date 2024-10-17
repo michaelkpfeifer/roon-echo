@@ -1,38 +1,63 @@
+const { camelCaseKeys } = require('./utils');
+
 let roonState = {};
 
 const getRoonState = () => roonState;
 
-// data = {
-//     "zones_seek_changed": [
-//         {
-//             "zone_id": "16015c7d1c89a5661d3c760db9383dd99135",
-//             "queue_time_remaining": 2434,
-//             "seek_position": 90
-//         }
-//     ]
-// }
-
-const updateQueueTimeRemaining = (state, msg) => {};
-
-const handleZonesSeekChanged = (state, msg) => {
-  console.log('state =', state);
-  console.log('msg =', msg);
+const updateQueueTimeRemaining = (state, zoneId, queueTimeRemaining) => {
+  return {
+    ...state,
+    zones: state.zones.map((zone) =>
+      zone.zoneId === zoneId
+        ? { ...zone, queueTimeRemaining: queueTimeRemaining }
+        : zone,
+    ),
+  };
 };
 
-const zoneSubscriptionMessageHandler = (cmd, data) => {
-  console.log('cmd =', JSON.stringify(cmd, null, 4));
-  console.log('data =', JSON.stringify(data, null, 4));
+const updateSeekPosition = (state, zoneId, seekPosition) => {
+  return {
+    ...state,
+    zones: state.zones.map((zone) =>
+      zone.zoneId === zoneId && zone.nowPlaying
+        ? {
+            ...zone,
+            nowPlaying: {
+              ...zone.nowPlaying,
+              seekPosition: seekPosition,
+            },
+          }
+        : zone,
+    ),
+  };
 
+  return state;
+};
+
+const handleZonesSeekChanged = (state, msg) => {
+  return msg.reduce((acc, zoneMsg) => {
+    const zoneId = zoneMsg['zoneId'];
+    const queueTimeRemaining = zoneMsg['queueTimeRemaining'];
+    const seekPosition = zoneMsg['seekPosition'];
+
+    return updateQueueTimeRemaining(
+      updateSeekPosition(acc, zoneId, seekPosition),
+      zoneId,
+      queueTimeRemaining,
+    );
+  }, state);
+};
+
+const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
+  const data = camelCaseKeys(snakeCaseData);
   switch (cmd) {
     case 'Subscribed':
-      console.log('*** data =', data);
-
       roonState = data;
       break;
     case 'Changed':
       for (const attr in data) {
         switch (attr) {
-          case 'zones_seek_changed':
+          case 'zonesSeekChanged':
             console.log('Handling zones seek changed:', data[attr]);
             roonState = handleZonesSeekChanged(roonState, data[attr]);
             break;
