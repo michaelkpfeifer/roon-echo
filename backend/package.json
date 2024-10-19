@@ -1,5 +1,5 @@
 {
-  "name": "roon-remote",
+  "name": "roon-remote-backend",
   "version": "0.0.0",
   "description": "A roon remote running in the browser",
   "main": "index.js",

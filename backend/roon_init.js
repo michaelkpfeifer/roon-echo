@@ -6,7 +6,7 @@ const { zoneSubscriptionMessageHandler } = require('./roon_state.js');
 
 let roon = new RoonApi({
   /* eslint-disable camelcase */
-  extension_id: 'com.roon-remote.test',
+  extension_id: 'com.roon-remote-backend.test',
   display_name: 'Roon Web Remote Extension',
   display_version: '0.0.0',
   publisher: 'Michael Pfeifer',
