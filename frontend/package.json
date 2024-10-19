@@ -1,0 +1,19 @@
+{
+  "name": "roon-remote-frontend",
+  "version": "0.0.0",
+  "description": "A roon remote running in the browser",
+  "main": "index.js",
+  "author": "Michael Pfeifer",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node build.js && npx serve dist"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.14.0"
+  }
+}
