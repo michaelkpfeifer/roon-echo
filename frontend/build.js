@@ -1,6 +1,11 @@
-const esbuild = require('esbuild');
-const fs = require('fs');
-const path = require('path');
+import { build } from 'esbuild';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Simulate __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const distDir = path.join(__dirname, 'dist');
 if (!fs.existsSync(distDir)) {
@@ -10,7 +15,7 @@ if (!fs.existsSync(distDir)) {
 fs.copyFileSync('template/index.html', 'dist/index.html');
 fs.copyFileSync('template/favicon.ico', 'dist/favicon.ico');
 
-esbuild.build({
+build({
   entryPoints: ['src/index.js'],
   bundle: true,
   outfile: 'dist/bundle.js',

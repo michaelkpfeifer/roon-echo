@@ -1,22 +1,38 @@
-// const airbnbBase = require('eslint-config-airbnb-base');
-// const prettierConfig = require('eslint-config-prettier');
+import pluginJs from '@eslint/js';
+import airbnbBase from 'eslint-config-airbnb-base';
+import prettierConfig from 'eslint-config-prettier';
+import pluginReact from 'eslint-plugin-react';
+import pluginReactHooks from 'eslint-plugin-react-hooks';
 
-module.exports = [
+export default [
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+  pluginJs.configs.recommended,
   {
     files: ['**/*.js', '**/*.jsx'],
-    ignores: ['dist/**', 'node_modules/**'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'module',
       globals: {
         browser: 'readonly',
         node: 'readonly',
+        process: 'readonly',
+        document: 'readonly',
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
-
+    plugins: {
+      react: pluginReact,
+      'react-hooks': pluginReactHooks,
+    },
     rules: {
-      // ...airbnbBase.rules,
-      // ...prettierConfig.rules,
+      ...airbnbBase.rules,
+      ...prettierConfig.rules,
       semi: ['error', 'always'], // Enforce semicolons at the end of lines
       'padding-line-between-statements': [
         'error',
@@ -45,6 +61,9 @@ module.exports = [
         'single',
         { avoidEscape: true, allowTemplateLiterals: true },
       ],
+      'react/jsx-uses-vars': 'error',
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
     },
   },
 ];
