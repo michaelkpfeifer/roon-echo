@@ -8,12 +8,13 @@ if (!fs.existsSync(distDir)) {
 }
 
 fs.copyFileSync('templates/index.html', 'dist/index.html');
+fs.copyFileSync('templates/favicon.ico', 'dist/favicon.ico');
 
 esbuild.build({
   entryPoints: ['src/index.js'],
   bundle: true,
   outfile: 'dist/bundle.js',
-  loader: { '.js': 'jsx' }, 
+  loader: { '.js': 'jsx' },
   minify: true,
   sourcemap: true,
 }).catch(() => process.exit(1));
