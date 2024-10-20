@@ -7,8 +7,8 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true });
 }
 
-fs.copyFileSync('templates/index.html', 'dist/index.html');
-fs.copyFileSync('templates/favicon.ico', 'dist/favicon.ico');
+fs.copyFileSync('template/index.html', 'dist/index.html');
+fs.copyFileSync('template/favicon.ico', 'dist/favicon.ico');
 
 esbuild.build({
   entryPoints: ['src/index.js'],
