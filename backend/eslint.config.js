@@ -1,7 +1,8 @@
-// const airbnbBase = require('eslint-config-airbnb-base');
-// const prettierConfig = require('eslint-config-prettier');
+import pluginJs from '@eslint/js';
+import airbnbBase from 'eslint-config-airbnb-base';
+import prettierConfig from 'eslint-config-prettier';
 
-module.exports = [
+export default [
   {
     files: ['**/*.js'],
     languageOptions: {
@@ -14,8 +15,8 @@ module.exports = [
     },
 
     rules: {
-      // ...airbnbBase.rules,
-      // ...prettierConfig.rules,
+      ...airbnbBase.rules,
+      ...prettierConfig.rules,
       semi: ['error', 'always'], // Enforce semicolons at the end of lines
       'padding-line-between-statements': [
         'error',

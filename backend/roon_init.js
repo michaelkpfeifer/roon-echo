@@ -1,8 +1,7 @@
-const RoonApi = require('node-roon-api');
-const RoonApiStatus = require('node-roon-api-status');
-const RoonApiTransport = require('node-roon-api-transport');
-
-const { zoneSubscriptionMessageHandler } = require('./roon_state.js');
+import RoonApi from 'node-roon-api';
+import RoonApiStatus from 'node-roon-api-status';
+import RoonApiTransport from 'node-roon-api-transport';
+import { zoneSubscriptionMessageHandler } from './roon_state.js';
 
 let roon = new RoonApi({
   /* eslint-disable camelcase */
@@ -33,4 +32,4 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
-module.exports = { roon };
+export { roon };

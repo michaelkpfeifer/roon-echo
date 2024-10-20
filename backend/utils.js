@@ -1,4 +1,4 @@
-const fp = require('lodash/fp');
+import fp from 'lodash/fp.js';
 
 function camelCaseKeys(obj) {
   if (Array.isArray(obj)) {
@@ -26,4 +26,4 @@ function snakeCaseKeys(obj) {
   }
 }
 
-module.exports = { camelCaseKeys, snakeCaseKeys };
+export { camelCaseKeys, snakeCaseKeys };

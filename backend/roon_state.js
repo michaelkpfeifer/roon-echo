@@ -1,4 +1,4 @@
-const { camelCaseKeys } = require('./utils');
+import { camelCaseKeys } from './utils.js';
 
 let roonState = {};
 
@@ -72,4 +72,4 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
   }
 };
 
-module.exports = { getRoonState, zoneSubscriptionMessageHandler };
+export { getRoonState, zoneSubscriptionMessageHandler };
