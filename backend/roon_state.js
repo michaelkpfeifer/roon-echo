@@ -1,4 +1,5 @@
 import { camelCaseKeys } from './utils.js';
+import { io } from './server.js';
 
 let roonState = {};
 
@@ -59,7 +60,11 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
         switch (attr) {
           case 'zonesSeekChanged':
             console.log('Handling zones seek changed:', data[attr]);
+
+            io.emit('musicUpdate', 'This is the message'); // Notify all connected users
+
             roonState = handleZonesSeekChanged(roonState, data[attr]);
+
             break;
           default:
             // TODO: We should raise an error if we receive a state
