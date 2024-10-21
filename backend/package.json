@@ -7,11 +7,13 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "lodash": "^4.17.21",
     "node-roon-api": "github:roonlabs/node-roon-api",
     "node-roon-api-status": "github:roonlabs/node-roon-api-status",
-    "node-roon-api-transport": "github:roonlabs/node-roon-api-transport"
+    "node-roon-api-transport": "github:roonlabs/node-roon-api-transport",
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
     "eslint": "^8.2.0",
