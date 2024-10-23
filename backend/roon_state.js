@@ -77,4 +77,21 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
   }
 };
 
-export { getRoonState, zoneSubscriptionMessageHandler };
+const frontendState = () => {
+  if (roonState === {}) {
+    return {
+      zones: {},
+    };
+  } else {
+    return {
+      zones: Object.fromEntries(
+        roonState.zones.map((zone) => [
+          zone.zoneId,
+          { displayName: zone.displayName, state: zone.state },
+        ]),
+      ),
+    };
+  }
+};
+
+export { getRoonState, frontendState, zoneSubscriptionMessageHandler };

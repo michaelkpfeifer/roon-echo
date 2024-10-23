@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import { frontendState } from './roon_state.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -21,9 +22,9 @@ app.use(express.json());
 // });
 
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  console.log('connection received');
 
-  socket.emit('welcome', 'Welcome to the WebSocket server!');
+  socket.emit('frontendState', frontendState());
 
   socket.on('sendMessage', (message) => {
     console.log('Received message:', message);
