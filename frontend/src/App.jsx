@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+// import axios from 'axios';
 import { io } from 'socket.io-client';
+import fp from 'lodash/fp.js';
 
 const App = () => {
+  const [roonState, setRoonState] = useState({
+    zones: {},
+  });
+
   // useEffect(() => {
   //   axios
   //     .get('http://localhost:4000/api')
@@ -15,16 +20,23 @@ const App = () => {
   useEffect(() => {
     const socket = io('http://192.168.2.102:4000');
 
-    socket.on('welcome', (msg) => {
-      console.log('This is the server response: ', msg);
+    socket.on('frontendState', (frontendState) => {
+      setRoonState(frontendState);
     });
 
-    socket.on('broadcastMessage', (msg) => {
-      console.log('broadcastMessage:', msg);
-    });
+    socket.on('broadcastMessage', (msg) => {});
   }, []);
 
-  return <h1>Roon Zones</h1>;
+  return (
+    <>
+      <h1>Roon Zones</h1>
+      <ul>
+        {Object.values(roonState.zones).map((zone) => (
+          <li>{zone.displayName}</li>
+        ))}
+      </ul>
+    </>
+  );
 };
 
 export default App;
