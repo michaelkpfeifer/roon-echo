@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { frontendState } from './roon_state.js';
+import { subscriptionState } from './roon_state.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -22,9 +22,7 @@ app.use(express.json());
 // });
 
 io.on('connection', (socket) => {
-  console.log('connection received');
-
-  socket.emit('frontendState', frontendState());
+  socket.emit('subscriptionState', subscriptionState());
 
   socket.on('sendMessage', (message) => {
     console.log('Received message:', message);

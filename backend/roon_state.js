@@ -54,6 +54,9 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
   switch (cmd) {
     case 'Subscribed':
       roonState = data;
+
+      console.log('roonState:', JSON.stringify(roonState, null, 4));
+
       break;
     case 'Changed':
       for (const attr in data) {
@@ -77,7 +80,7 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
   }
 };
 
-const frontendState = () => {
+const subscriptionState = () => {
   if (roonState === {}) {
     return {
       zones: {},
@@ -85,13 +88,34 @@ const frontendState = () => {
   } else {
     return {
       zones: Object.fromEntries(
-        roonState.zones.map((zone) => [
-          zone.zoneId,
-          { displayName: zone.displayName, state: zone.state },
-        ]),
+        roonState.zones.map((zone) => {
+          return [
+            zone.zoneId,
+            {
+              displayName: zone.displayName,
+              queueTimeRemaining: zone.queueTimeRemaining,
+              state: zone.state,
+              zoneId: zone.zoneId,
+            },
+          ];
+        }),
+      ),
+      nowPlaying: Object.fromEntries(
+        roonState.zones
+          .filter((zone) => zone.nowPlaying)
+          .map((zone) => {
+            return [
+              zone.zoneId,
+              {
+                nowPlaying: zone.nowPlaying,
+                seekPosition: zone.seekPosition,
+                zoneId: zone.zoneId,
+              },
+            ];
+          }),
       ),
     };
   }
 };
 
-export { getRoonState, frontendState, zoneSubscriptionMessageHandler };
+export { getRoonState, subscriptionState, zoneSubscriptionMessageHandler };
