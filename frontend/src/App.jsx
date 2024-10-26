@@ -24,13 +24,38 @@ const App = () => {
     socket.on('subscriptionState', (subscriptionState) => {
       setRoonState(subscriptionState);
     });
+
+    socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
+      // console.log(
+      //   'App.jsx: processing zonesSeekChanged message: Object.values(zonesSeekChangedMessage) =',
+      //   Object.values(zonesSeekChangedMessage),
+      // );
+
+      setRoonState((currentState) => {
+        return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
+          const { zoneId, queueTimeRemaining, seekPosition } = val;
+          const newState = fp.set(
+            ['zones', zoneId, 'queueTimeRemaining'],
+            queueTimeRemaining,
+            acc,
+          );
+          const newNewState = fp.set(
+            ['nowPlaying', zoneId, 'nowPlaying', 'seekPosition'],
+            seekPosition,
+            newState,
+          );
+
+          return newNewState;
+        }, currentState);
+      });
+    });
   }, []);
 
-  console.log('roonState:', roonState);
+  // console.log('App.jsx: App(): roonState:', roonState);
 
   return (
     <>
-      <h1>Roon Zones</h1>
+      <h1>Zones</h1>
       <ul>
         {Object.values(roonState.zones).map((zone) => (
           <li key={zone.zoneId}>
