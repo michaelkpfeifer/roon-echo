@@ -23,6 +23,7 @@ app.use(express.json());
 
 io.on('connection', (socket) => {
   socket.emit('subscriptionState', subscriptionState());
+  console.log('server.js: connected: socket.id', socket.id);
 
   socket.on('sendMessage', (message) => {
     console.log('Received message:', message);
@@ -30,7 +31,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    console.log('server.js: disconnected: socket.id', socket.id);
   });
 });
 

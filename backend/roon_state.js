@@ -55,25 +55,35 @@ const zoneSubscriptionMessageHandler = (cmd, snakeCaseData) => {
     case 'Subscribed':
       roonState = data;
 
-      console.log('roonState:', JSON.stringify(roonState, null, 4));
+      // console.log(
+      //   'roon_state.js: zoneSubscriptionMessageHandler(): roonState:',
+      //   JSON.stringify(roonState, null, 4),
+      // );
 
       break;
     case 'Changed':
       for (const attr in data) {
         switch (attr) {
           case 'zonesSeekChanged':
-            console.log('Handling zones seek changed:', data[attr]);
-
-            io.emit('musicUpdate', 'This is the message'); // Notify all connected users
+            // console.log(
+            //   'roon_state.js: processing zonesSeekChanged message: data[attr]:',
+            //   data[attr],
+            // );
 
             roonState = handleZonesSeekChanged(roonState, data[attr]);
-
+            io.emit(
+              'zonesSeekChanged',
+              buildZonesSeekChangedMessage(data[attr]),
+            );
             break;
           default:
-            // TODO: We should raise an error if we receive a state
-            // update that we are unable to handle.
+            // console.log('roon_state.js: unknown message: attr:', attr);
+            // console.log(
+            //   'roon_state.js: unknown message: data[attr]',
+            //   data[attr],
+            // );
 
-            console.log('Unknown attr:', attr);
+            break;
         }
       }
       break;
@@ -116,6 +126,21 @@ const subscriptionState = () => {
       ),
     };
   }
+};
+
+const buildZonesSeekChangedMessage = (coreMsg) => {
+  return Object.fromEntries(
+    coreMsg.map((zoneData) => {
+      return [
+        zoneData.zoneId,
+        {
+          seekPosition: zoneData.seekPosition,
+          queueTimeRemaining: zoneData.queueTimeRemaining,
+          zoneId: zoneData.zoneId,
+        },
+      ];
+    }),
+  );
 };
 
 export { getRoonState, subscriptionState, zoneSubscriptionMessageHandler };
