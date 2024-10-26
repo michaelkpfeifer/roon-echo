@@ -34,18 +34,14 @@ const App = () => {
       setRoonState((currentState) => {
         return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { zoneId, queueTimeRemaining, seekPosition } = val;
-          const newState = fp.set(
-            ['zones', zoneId, 'queueTimeRemaining'],
-            queueTimeRemaining,
-            acc,
-          );
-          const newNewState = fp.set(
-            ['nowPlaying', zoneId, 'nowPlaying', 'seekPosition'],
-            seekPosition,
-            newState,
-          );
 
-          return newNewState;
+          return fp.flow(
+            fp.set(['zones', zoneId, 'queueTimeRemaining'], queueTimeRemaining),
+            fp.set(
+              ['nowPlaying', zoneId, 'nowPlaying', 'seekPosition'],
+              seekPosition,
+            ),
+          )(currentState);
         }, currentState);
       });
     });
