@@ -33,7 +33,7 @@ const App = () => {
 
       setRoonState((currentState) => {
         return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
-          const { zoneId, queueTimeRemaining, seekPosition } = val;
+          const { queueTimeRemaining, seekPosition, zoneId } = val;
 
           return fp.flow(
             fp.set(['zones', zoneId, 'queueTimeRemaining'], queueTimeRemaining),
@@ -45,9 +45,30 @@ const App = () => {
         }, currentState);
       });
     });
+
+    socket.on('zonesChanged', (zonesChangedMessage) => {
+      console.log(
+        'App.jsx: processing zonesChanged message: Object.values(zonesChangedMessage) =',
+        Object.values(zonesChangedMessage),
+      );
+
+      setRoonState((currentState) => {
+        return Object.values(zonesChangedMessage).reduce((acc, val) => {
+          const { displayName, nowPlaying, queueTimeRemaining, state, zoneId } =
+            val;
+
+          return fp.flow(
+            fp.set(['zones', zoneId, 'displayName'], displayName),
+            fp.set(['zones', zoneId, 'queueTimeRemaining'], queueTimeRemaining),
+            fp.set(['zones', zoneId, 'state'], state),
+            fp.set(['nowPlaying', zoneId, 'nowPlaying'], nowPlaying),
+          )(currentState);
+        }, currentState);
+      });
+    });
   }, []);
 
-  // console.log('App.jsx: App(): roonState:', roonState);
+  console.log('App.jsx: App(): roonState:', roonState);
 
   return (
     <>
