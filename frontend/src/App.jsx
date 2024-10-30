@@ -6,7 +6,6 @@ import fp from 'lodash/fp.js';
 const App = () => {
   const [roonState, setRoonState] = useState({
     zones: {},
-    nowPlaying: {},
   });
 
   // useEffect(() => {
@@ -21,54 +20,47 @@ const App = () => {
   useEffect(() => {
     const socket = io('http://192.168.2.102:4000');
 
-    socket.on('subscriptionState', (subscriptionState) => {
-      setRoonState(subscriptionState);
+    socket.on('subscribedState', (subscribedState) => {
+      setRoonState(subscribedState);
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
       // console.log(
-      //   'App.jsx: processing zonesSeekChanged message: Object.values(zonesSeekChangedMessage) =',
-      //   Object.values(zonesSeekChangedMessage),
+      //   'App.jsx: processing zonesSeekChanged message: zonesSeekChangedMessage =',
+      //   zonesSeekChangedMessage,
       // );
 
       setRoonState((currentState) => {
         return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
 
-          return fp.flow(
-            fp.set(['zones', zoneId, 'queueTimeRemaining'], queueTimeRemaining),
-            fp.set(
-              ['nowPlaying', zoneId, 'nowPlaying', 'seekPosition'],
-              seekPosition,
-            ),
-          )(currentState);
+          return fp.merge(acc, {
+            zones: {
+              [zoneId]: {
+                queueTimeRemaining,
+                nowPlaying: {
+                  seekPosition,
+                },
+              },
+            },
+          });
         }, currentState);
       });
     });
 
     socket.on('zonesChanged', (zonesChangedMessage) => {
-      console.log(
-        'App.jsx: processing zonesChanged message: Object.values(zonesChangedMessage) =',
-        Object.values(zonesChangedMessage),
-      );
+      // console.log(
+      //   'App.jsx: processing zonesChanged message: zonesChangedMessage =',
+      //   zonesChangedMessage,
+      // );
 
       setRoonState((currentState) => {
-        return Object.values(zonesChangedMessage).reduce((acc, val) => {
-          const { displayName, nowPlaying, queueTimeRemaining, state, zoneId } =
-            val;
-
-          return fp.flow(
-            fp.set(['zones', zoneId, 'displayName'], displayName),
-            fp.set(['zones', zoneId, 'queueTimeRemaining'], queueTimeRemaining),
-            fp.set(['zones', zoneId, 'state'], state),
-            fp.set(['nowPlaying', zoneId, 'nowPlaying'], nowPlaying),
-          )(currentState);
-        }, currentState);
+        return fp.merge(currentState, zonesChangedMessage);
       });
     });
   }, []);
 
-  console.log('App.jsx: App(): roonState:', roonState);
+  // console.log('App.jsx: App(): roonState:', roonState);
 
   return (
     <>
@@ -80,15 +72,17 @@ const App = () => {
           </li>
         ))}
       </ul>
-
-      <h1>Now Playing</h1>
+      <h1>Playing</h1>
       <ul>
-        {Object.values(roonState.nowPlaying).map((zone) => (
-          <li key={zone.zoneId}>
-            {zone.nowPlaying.oneLine.line1} - {zone.nowPlaying.seekPosition}
-          </li>
-        ))}
-      </ul>
+        {Object.values(roonState.zones)
+          .filter((zone) => zone.nowPlaying)
+          .map((zone) => (
+            <li key={zone.zoneId}>
+              {zone.displayName} - {zone.nowPlaying.oneLine.line1} -
+              {zone.nowPlaying.seekPosition}
+            </li>
+          ))}
+      </ul>{' '}
     </>
   );
 };
