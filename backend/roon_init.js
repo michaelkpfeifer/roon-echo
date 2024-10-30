@@ -1,7 +1,7 @@
 import RoonApi from 'node-roon-api';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
-import { zoneSubscriptionMessageHandler } from './roon_state.js';
+import { subscribedMessageHandler } from './roon_state.js';
 
 let roon = new RoonApi({
   /* eslint-disable camelcase */
@@ -14,7 +14,7 @@ let roon = new RoonApi({
 
   core_paired: function (core) {
     let transport = core.services.RoonApiTransport;
-    transport.subscribe_zones(zoneSubscriptionMessageHandler);
+    transport.subscribe_zones(subscribedMessageHandler);
   },
 
   core_unpaired: function (_core) {},
