@@ -3,6 +3,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import { getSubscribedState } from './roon_state.js';
+import { transport } from './roon_init.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -24,6 +25,12 @@ app.use(express.json());
 io.on('connection', (socket) => {
   socket.emit('subscribedState', getSubscribedState());
   console.log('server.js: connected: socket.id', socket.id);
+
+  socket.on('pause', ({ zoneId }) => {
+    console.log('server.js: processing pause message: message:', zoneId);
+
+    transport.control(zoneId, 'pause');
+  });
 
   // socket.on('sendMessage', (message) => {
   //   console.log('Received message:', message);

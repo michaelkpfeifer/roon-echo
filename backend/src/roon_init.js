@@ -3,6 +3,8 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { subscribedMessageHandler } from './roon_state.js';
 
+let transport;
+
 let roon = new RoonApi({
   /* eslint-disable camelcase */
   extension_id: 'com.roon-remote-backend.test',
@@ -13,7 +15,7 @@ let roon = new RoonApi({
   website: 'https://github.com/michaelkpfeifer',
 
   core_paired: function (core) {
-    let transport = core.services.RoonApiTransport;
+    transport = core.services.RoonApiTransport;
     transport.subscribe_zones(subscribedMessageHandler);
   },
 
@@ -32,4 +34,4 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
-export { roon };
+export { roon, transport };
