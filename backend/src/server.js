@@ -28,11 +28,6 @@ io.on('connection', (socket) => {
     transport.control(zoneId, 'pause');
   });
 
-  // socket.on('sendMessage', (message) => {
-  //   console.log('Received message:', message);
-  //   io.emit('broadcastMessage', message);
-  // });
-
   socket.on('disconnect', () => {
     console.log('server.js: disconnected: socket.id', socket.id);
   });
