@@ -18,10 +18,6 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// app.get('/api/', (req, res) => {
-//   res.json({ message: 'Connected.' });
-// });
-
 io.on('connection', (socket) => {
   socket.emit('subscribedState', getSubscribedState());
   console.log('server.js: connected: socket.id', socket.id);
