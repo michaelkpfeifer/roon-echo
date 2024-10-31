@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // import axios from 'axios';
 import { io } from 'socket.io-client';
 import fp from 'lodash/fp.js';
@@ -7,6 +7,8 @@ const App = () => {
   const [roonState, setRoonState] = useState({
     zones: {},
   });
+
+  const socketRef = useRef(null);
 
   // useEffect(() => {
   //   axios
@@ -17,16 +19,24 @@ const App = () => {
   //     .catch((error) => console.error(error));
   // }, []);
 
+  // let socket;
+
   useEffect(() => {
-    const socket = io('http://192.168.2.102:4000');
+    socketRef.current = io('http://192.168.2.102:4000');
+    const socket = socketRef.current;
 
     socket.on('subscribedState', (subscribedState) => {
+      console.log(
+        'App.jsx: processing subscribedState message: subscribedState:',
+        subscribedState,
+      );
+
       setRoonState(subscribedState);
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
       // console.log(
-      //   'App.jsx: processing zonesSeekChanged message: zonesSeekChangedMessage =',
+      //   'App.jsx: processing zonesSeekChanged message: zonesSeekChangedMessage:',
       //   zonesSeekChangedMessage,
       // );
 
@@ -62,7 +72,7 @@ const App = () => {
 
   // console.log('App.jsx: App(): roonState:', roonState);
 
-  return (
+  const zoneDisplay = (
     <>
       <h1>Zones</h1>
       <ul>
@@ -72,17 +82,40 @@ const App = () => {
           </li>
         ))}
       </ul>
+    </>
+  );
+
+  const nowPlayingDisplay = (
+    <>
       <h1>Playing</h1>
       <ul>
         {Object.values(roonState.zones)
           .filter((zone) => zone.nowPlaying)
           .map((zone) => (
             <li key={zone.zoneId}>
-              {zone.displayName} - {zone.nowPlaying.oneLine.line1} -
-              {zone.nowPlaying.seekPosition}
+              <span>
+                {zone.displayName}, {zone.nowPlaying.oneLine.line1},{' '}
+                {zone.nowPlaying.seekPosition}
+              </span>
+              <span>
+                <button
+                  onClick={() => {
+                    socketRef.current.emit('pause', { zoneId: zone.zoneId });
+                  }}
+                >
+                  Click Me
+                </button>
+              </span>
             </li>
           ))}
-      </ul>{' '}
+      </ul>
+    </>
+  );
+
+  return (
+    <>
+      {zoneDisplay}
+      {nowPlayingDisplay}
     </>
   );
 };
