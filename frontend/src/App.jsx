@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import axios from 'axios';
 import { io } from 'socket.io-client';
 import fp from 'lodash/fp.js';
 
@@ -9,17 +8,6 @@ const App = () => {
   });
 
   const socketRef = useRef(null);
-
-  // useEffect(() => {
-  //   axios
-  //     .get('http://localhost:4000/api')
-  //     .then((response) => {
-  //       console.log('response =', response);
-  //     })
-  //     .catch((error) => console.error(error));
-  // }, []);
-
-  // let socket;
 
   useEffect(() => {
     socketRef.current = io('http://192.168.2.102:4000');
