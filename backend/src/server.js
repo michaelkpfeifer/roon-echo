@@ -28,6 +28,12 @@ io.on('connection', (socket) => {
     transport.control(zoneId, 'pause');
   });
 
+  socket.on('play', ({ zoneId }) => {
+    console.log('server.js: processing play message: message:', zoneId);
+
+    transport.control(zoneId, 'play');
+  });
+
   socket.on('disconnect', () => {
     console.log('server.js: disconnected: socket.id', socket.id);
   });
