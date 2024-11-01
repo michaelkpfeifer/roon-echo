@@ -63,40 +63,64 @@ const App = () => {
   const zoneDisplay = (
     <>
       <h1>Zones</h1>
-      <ul>
-        {Object.values(roonState.zones).map((zone) => (
-          <li key={zone.zoneId}>
-            {zone.displayName}, {zone.state}, {zone.queueTimeRemaining}
-          </li>
-        ))}
-      </ul>
+      {Object.values(roonState.zones).map((zone) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '60%',
+          }}
+          key={zone.zoneId}
+        >
+          <span style={{ flex: 1 }}>{zone.displayName}</span>
+          <span style={{ flex: 1 }}>{zone.state}</span>
+          <span style={{ flex: 1 }}>{zone.queueTimeRemaining}</span>
+        </div>
+      ))}
     </>
   );
 
   const nowPlayingDisplay = (
     <>
       <h1>Playing</h1>
-      <ul>
-        {Object.values(roonState.zones)
-          .filter((zone) => zone.nowPlaying)
-          .map((zone) => (
-            <li key={zone.zoneId}>
-              <span>
-                {zone.displayName}, {zone.nowPlaying.oneLine.line1},{' '}
-                {zone.nowPlaying.seekPosition}
-              </span>
-              <span>
-                <button
-                  onClick={() => {
-                    socketRef.current.emit('pause', { zoneId: zone.zoneId });
-                  }}
-                >
-                  Click Me
-                </button>
-              </span>
-            </li>
-          ))}
-      </ul>
+      {Object.values(roonState.zones)
+        .filter((zone) => zone.nowPlaying)
+        .map((zone) => (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '60%',
+            }}
+            key={zone.zoneId}
+          >
+            <span style={{ flex: 3 }}>{zone.displayName}</span>
+            <span style={{ flex: 3 }}>{zone.nowPlaying.oneLine.line1}</span>
+            <span style={{ flex: 1 }}>{zone.nowPlaying.seekPosition}</span>
+            <span style={{ flex: 1 }}>
+              <button
+                onClick={() => {
+                  socketRef.current.emit('pause', { zoneId: zone.zoneId });
+                }}
+                disabled={zone.state === 'paused'}
+              >
+                Pause
+              </button>
+            </span>
+            <span style={{ flex: 1 }}>
+              <button
+                onClick={() => {
+                  socketRef.current.emit('play', { zoneId: zone.zoneId });
+                }}
+                disabled={zone.state === 'playing'}
+              >
+                Play
+              </button>
+            </span>
+          </div>
+        ))}
     </>
   );
 
