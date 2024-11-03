@@ -31,17 +31,26 @@ const App = () => {
       setRoonState((currentState) => {
         return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
-
-          return fp.merge(acc, {
-            zones: {
-              [zoneId]: {
-                queueTimeRemaining,
-                nowPlaying: {
-                  seekPosition,
+          if (seekPosition) {
+            return fp.merge(acc, {
+              zones: {
+                [zoneId]: {
+                  queueTimeRemaining,
+                  nowPlaying: {
+                    seekPosition,
+                  },
                 },
               },
-            },
-          });
+            });
+          } else {
+            return fp.merge(acc, {
+              zones: {
+                [zoneId]: {
+                  queueTimeRemaining,
+                },
+              },
+            });
+          }
         }, currentState);
       });
     });
