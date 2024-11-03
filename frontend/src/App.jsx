@@ -71,7 +71,6 @@ const App = () => {
 
   const zoneDisplay = (
     <>
-      <h1>Zones</h1>
       {Object.values(roonState.zones).map((zone) => (
         <div
           style={{
@@ -92,7 +91,6 @@ const App = () => {
 
   const nowPlayingDisplay = (
     <>
-      <h1>Playing</h1>
       {Object.values(roonState.zones)
         .filter((zone) => zone.nowPlaying)
         .map((zone) => (
@@ -134,10 +132,13 @@ const App = () => {
   );
 
   return (
-    <>
-      {zoneDisplay}
-      {nowPlayingDisplay}
-    </>
+    <div className="page">
+      <div className="container">
+        <div className="left"></div>
+        <div className="right">{zoneDisplay}</div>
+      </div>
+      <div className="bottom">{nowPlayingDisplay}</div>
+    </div>
   );
 };
 
