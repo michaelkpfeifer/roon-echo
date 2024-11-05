@@ -1,10 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import fp from 'lodash/fp.js';
+import AppContext from './AppContext';
+import NowPlaying from './NowPlaying';
 
 const App = () => {
   const [roonState, setRoonState] = useState({
     zones: {},
+  });
+  const [appState, setAppState] = useState({
+    selectedZoneId: null,
   });
 
   const socketRef = useRef(null);
@@ -67,78 +72,23 @@ const App = () => {
     });
   }, []);
 
-  // console.log('App.jsx: App(): roonState:', roonState);
-
-  const zoneDisplay = (
-    <>
-      {Object.values(roonState.zones).map((zone) => (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '60%',
-          }}
-          key={zone.zoneId}
-        >
-          <span style={{ flex: 1 }}>{zone.displayName}</span>
-          <span style={{ flex: 1 }}>{zone.state}</span>
-          <span style={{ flex: 1 }}>{zone.queueTimeRemaining}</span>
-        </div>
-      ))}
-    </>
-  );
-
-  const nowPlayingDisplay = (
-    <>
-      {Object.values(roonState.zones)
-        .filter((zone) => zone.nowPlaying)
-        .map((zone) => (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '60%',
-            }}
-            key={zone.zoneId}
-          >
-            <span style={{ flex: 3 }}>{zone.displayName}</span>
-            <span style={{ flex: 3 }}>{zone.nowPlaying.oneLine.line1}</span>
-            <span style={{ flex: 1 }}>{zone.nowPlaying.seekPosition}</span>
-            <span style={{ flex: 1 }}>
-              <button
-                onClick={() => {
-                  socketRef.current.emit('pause', { zoneId: zone.zoneId });
-                }}
-                disabled={zone.state === 'paused'}
-              >
-                Pause
-              </button>
-            </span>
-            <span style={{ flex: 1 }}>
-              <button
-                onClick={() => {
-                  socketRef.current.emit('play', { zoneId: zone.zoneId });
-                }}
-                disabled={zone.state === 'playing'}
-              >
-                Play
-              </button>
-            </span>
-          </div>
-        ))}
-    </>
-  );
+  console.log('App.jsx: App(): roonState:', roonState);
+  console.log('App.jsx: App(): appState:', appState);
 
   return (
-    <div className="page">
-      <div className="container">
-        <div className="left"></div>
-        <div className="right">{zoneDisplay}</div>
+    <AppContext.Provider
+      value={{ roonState, setRoonState, appState, setAppState, socketRef }}
+    >
+      <div className="page">
+        <div className="container">
+          <div className="left"></div>
+          <div className="right"></div>
+        </div>
+        <div className="bottom">
+          <NowPlaying roonState={roonState} appState={appState} />
+        </div>
       </div>
-      <div className="bottom">{nowPlayingDisplay}</div>
-    </div>
+    </AppContext.Provider>
   );
 };
 
