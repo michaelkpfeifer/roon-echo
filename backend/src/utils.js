@@ -1,6 +1,6 @@
 import fp from 'lodash/fp.js';
 
-function camelCaseKeys(obj) {
+const camelCaseKeys = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(camelCaseKeys);
   } else if (fp.isPlainObject(obj)) {
@@ -11,9 +11,9 @@ function camelCaseKeys(obj) {
   } else {
     return obj;
   }
-}
+};
 
-function snakeCaseKeys(obj) {
+const snakeCaseKeys = (obj) => {
   if (Array.isArray(obj)) {
     return obj.map(snakeCaseKeys);
   } else if (fp.isPlainObject(obj)) {
@@ -24,7 +24,7 @@ function snakeCaseKeys(obj) {
   } else {
     return obj;
   }
-}
+};
 
 const extractZoneData = (zoneData) => {
   return {
