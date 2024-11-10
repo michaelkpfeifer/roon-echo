@@ -19,8 +19,15 @@ app.use(cors());
 app.use(express.json());
 
 io.on('connection', (socket) => {
+  console.log('server.js: connected: socket.id:', socket.id);
+
+  const { host: coreAddress, port: corePort } = transport.core.moo.transport;
+  const coreUrl = `http://${coreAddress}:${corePort}`;
+
+  console.log('server.js: connected: coreUrl:', coreUrl);
+
+  socket.emit('coreUrl', coreUrl);
   socket.emit('subscribedState', getSubscribedState());
-  console.log('server.js: connected: socket.id', socket.id);
 
   socket.on('pause', ({ zoneId }) => {
     console.log('server.js: processing pause message: message:', zoneId);
