@@ -1,11 +1,12 @@
 import RoonApi from 'node-roon-api';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
+
 import { coreMessageHandler } from './roon_state.js';
 
 let transport;
 
-let roon = new RoonApi({
+const roon = new RoonApi({
   /* eslint-disable camelcase */
   extension_id: 'com.roon-remote-backend.test',
   display_name: 'Roon Web Remote Extension',
