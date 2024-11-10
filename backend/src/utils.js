@@ -37,7 +37,10 @@ const extractZoneData = (zoneData) => {
 };
 
 const buildFrontendRoonState = (zonesMsg) => {
-  console.log("utils.js: buildFrontendRoonState(): zonesMsg:", JSON.stringify(zonesMsg, null, 4));
+  // console.log(
+  //   'utils.js: buildFrontendRoonState(): zonesMsg:',
+  //   JSON.stringify(zonesMsg, null, 4),
+  // );
 
   return {
     zones: Object.fromEntries(

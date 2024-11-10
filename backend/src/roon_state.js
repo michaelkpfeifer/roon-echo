@@ -1,5 +1,6 @@
 import { camelCaseKeys } from './utils.js';
 import { io } from './server.js';
+import { buildFrontendRoonState } from './utils.js';
 
 const coreMessageHandler = (cmd, snakeCaseData) => {
   const data = camelCaseKeys(snakeCaseData);
@@ -37,7 +38,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             //   JSON.stringify(data[attr], null, 4),
             // );
 
-            const zonesChangedMessage = buildZonesChangedMessage(data[attr]);
+            const zonesChangedMessage = buildFrontendRoonState(data[attr]);
 
             // console.log(
             //   'roon_state.js: emitting zonesChanged message: zonesChangedMessage):',
@@ -64,26 +65,6 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
   }
 };
 
-const extractZoneData = (zoneData) => {
-  return {
-    zoneId: zoneData.zoneId,
-    displayName: zoneData.displayName,
-    state: zoneData.state,
-    queueTimeRemaining: zoneData.queueTimeRemaining,
-    nowPlaying: zoneData.nowPlaying ? zoneData.nowPlaying : null,
-  };
-};
-
-const buildSubscribedState = (data) => {
-  return {
-    zones: Object.fromEntries(
-      data.zones.map((zoneData) => {
-        return [zoneData.zoneId, extractZoneData(zoneData)];
-      }),
-    ),
-  };
-};
-
 const buildZonesSeekChangedMessage = (coreMsg) => {
   return Object.fromEntries(
     coreMsg.map((zoneData) => {
@@ -97,16 +78,6 @@ const buildZonesSeekChangedMessage = (coreMsg) => {
       ];
     }),
   );
-};
-
-const buildZonesChangedMessage = (coreMsg) => {
-  return {
-    zones: Object.fromEntries(
-      coreMsg.map((zoneData) => {
-        return [zoneData.zoneId, extractZoneData(zoneData)];
-      }),
-    ),
-  };
 };
 
 export { coreMessageHandler };
