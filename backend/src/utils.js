@@ -51,4 +51,24 @@ const buildFrontendRoonState = (zonesMsg) => {
   };
 };
 
-export { buildFrontendRoonState, camelCaseKeys, snakeCaseKeys };
+const buildZonesSeekChangedMessage = (msg) => {
+  return Object.fromEntries(
+    msg.map((zoneData) => {
+      return [
+        zoneData.zoneId,
+        {
+          seekPosition: zoneData.seekPosition,
+          queueTimeRemaining: zoneData.queueTimeRemaining,
+          zoneId: zoneData.zoneId,
+        },
+      ];
+    }),
+  );
+};
+
+export {
+  buildFrontendRoonState,
+  buildZonesSeekChangedMessage,
+  camelCaseKeys,
+  snakeCaseKeys,
+};

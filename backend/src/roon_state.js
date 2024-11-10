@@ -1,6 +1,9 @@
 import { camelCaseKeys } from './utils.js';
 import { io } from './server.js';
-import { buildFrontendRoonState } from './utils.js';
+import {
+  buildFrontendRoonState,
+  buildZonesSeekChangedMessage,
+} from './utils.js';
 
 const coreMessageHandler = (cmd, snakeCaseData) => {
   const data = camelCaseKeys(snakeCaseData);
@@ -63,21 +66,6 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
       }
       break;
   }
-};
-
-const buildZonesSeekChangedMessage = (coreMsg) => {
-  return Object.fromEntries(
-    coreMsg.map((zoneData) => {
-      return [
-        zoneData.zoneId,
-        {
-          seekPosition: zoneData.seekPosition,
-          queueTimeRemaining: zoneData.queueTimeRemaining,
-          zoneId: zoneData.zoneId,
-        },
-      ];
-    }),
-  );
 };
 
 export { coreMessageHandler };
