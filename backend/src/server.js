@@ -2,8 +2,8 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { getSubscribedState } from './roon_state.js';
 import { transport } from './roon_init.js';
+import { buildFrontendRoonState, camelCaseKeys } from './utils.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -27,7 +27,15 @@ io.on('connection', (socket) => {
   console.log('server.js: connected: coreUrl:', coreUrl);
 
   socket.emit('coreUrl', coreUrl);
-  socket.emit('subscribedState', getSubscribedState());
+
+  transport.get_zones((error, body) => {
+    if (error) {
+    }
+
+    const frontendRoonState = buildFrontendRoonState(camelCaseKeys(body.zones));
+
+    socket.emit('subscribedState', frontendRoonState);
+  });
 
   socket.on('pause', ({ zoneId }) => {
     console.log('server.js: processing pause message: message:', zoneId);

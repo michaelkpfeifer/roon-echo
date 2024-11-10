@@ -1,7 +1,7 @@
 import RoonApi from 'node-roon-api';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
-import { subscribedMessageHandler } from './roon_state.js';
+import { coreMessageHandler } from './roon_state.js';
 
 let transport;
 
@@ -16,7 +16,7 @@ let roon = new RoonApi({
 
   core_paired: function (core) {
     transport = core.services.RoonApiTransport;
-    transport.subscribe_zones(subscribedMessageHandler);
+    transport.subscribe_zones(coreMessageHandler);
   },
 
   core_unpaired: function (_core) {},

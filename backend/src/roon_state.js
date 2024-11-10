@@ -1,19 +1,12 @@
 import { camelCaseKeys } from './utils.js';
 import { io } from './server.js';
 
-let subscribedState = {};
-
-const getSubscribedState = () => subscribedState;
-
-const subscribedMessageHandler = (cmd, snakeCaseData) => {
+const coreMessageHandler = (cmd, snakeCaseData) => {
   const data = camelCaseKeys(snakeCaseData);
   switch (cmd) {
     case 'Subscribed':
-      subscribedState = buildSubscribedState(data);
-
       console.log(
-        'roon_state.js: subscribedMessageHandler(): subscribedState:',
-        JSON.stringify(subscribedState, null, 4),
+        'roon_state.js: coreMessageHandler(): Received "Subscribed" message.',
       );
 
       break;
@@ -116,4 +109,4 @@ const buildZonesChangedMessage = (coreMsg) => {
   };
 };
 
-export { getSubscribedState, subscribedMessageHandler };
+export { coreMessageHandler };

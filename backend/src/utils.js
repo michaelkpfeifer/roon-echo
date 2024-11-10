@@ -26,4 +26,26 @@ function snakeCaseKeys(obj) {
   }
 }
 
-export { camelCaseKeys, snakeCaseKeys };
+const extractZoneData = (zoneData) => {
+  return {
+    zoneId: zoneData.zoneId,
+    displayName: zoneData.displayName,
+    state: zoneData.state,
+    queueTimeRemaining: zoneData.queueTimeRemaining,
+    nowPlaying: zoneData.nowPlaying ? zoneData.nowPlaying : null,
+  };
+};
+
+const buildFrontendRoonState = (zonesMsg) => {
+  console.log("utils.js: buildFrontendRoonState(): zonesMsg:", JSON.stringify(zonesMsg, null, 4));
+
+  return {
+    zones: Object.fromEntries(
+      zonesMsg.map((zoneData) => {
+        return [zoneData.zoneId, extractZoneData(zoneData)];
+      }),
+    ),
+  };
+};
+
+export { buildFrontendRoonState, camelCaseKeys, snakeCaseKeys };
