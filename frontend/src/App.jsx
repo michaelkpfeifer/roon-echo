@@ -13,10 +13,17 @@ const App = () => {
   });
 
   const socketRef = useRef(null);
+  const coreUrlRef = useRef('');
 
   useEffect(() => {
     socketRef.current = io('http://192.168.2.102:4000');
     const socket = socketRef.current;
+
+    socket.on('coreUrl', (coreUrl) => {
+      // console.log('App.jsx, processing coreUrl message: coreUrl:', coreUrl);
+
+      coreUrlRef.current = coreUrl;
+    });
 
     socket.on('subscribedState', (subscribedState) => {
       console.log(
@@ -72,12 +79,19 @@ const App = () => {
     });
   }, []);
 
-  console.log('App.jsx: App(): roonState:', roonState);
-  console.log('App.jsx: App(): appState:', appState);
+  // console.log('App.jsx: App(): roonState:', roonState);
+  // console.log('App.jsx: App(): appState:', appState);
 
   return (
     <AppContext.Provider
-      value={{ roonState, setRoonState, appState, setAppState, socketRef }}
+      value={{
+        appState,
+        coreUrlRef,
+        roonState,
+        setAppState,
+        setRoonState,
+        socketRef,
+      }}
     >
       <div className="page">
         <div className="container">
