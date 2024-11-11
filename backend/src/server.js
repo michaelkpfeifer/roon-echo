@@ -38,7 +38,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 
       break;
     case 'Changed':
-      for (const attr in data) {
+      Object.keys(data).forEach((attr) => {
         switch (attr) {
           case 'zonesSeekChanged': {
             // console.log(
@@ -93,7 +93,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             break;
           }
         }
-      }
+      });
       break;
 
     default: {
