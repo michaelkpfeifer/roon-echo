@@ -1,5 +1,4 @@
-import { server } from './src/server.js';
-import { roon } from './src/roon_init.js';
+import { roon, server } from './src/server.js';
 
 const PORT = 4000;
 server.listen(PORT, '0.0.0.0', () => {

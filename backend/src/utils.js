@@ -38,18 +38,11 @@ const extractZoneData = (zoneData) => ({
   nowPlaying: zoneData.nowPlaying ? zoneData.nowPlaying : null,
 });
 
-const buildFrontendRoonState = (zonesMsg) => {
-  // console.log(
-  //   'utils.js: buildFrontendRoonState(): zonesMsg:',
-  //   JSON.stringify(zonesMsg, null, 4),
-  // );
-
-  return {
-    zones: Object.fromEntries(
-      zonesMsg.map((zoneData) => [zoneData.zoneId, extractZoneData(zoneData)]),
-    ),
-  };
-};
+const buildFrontendRoonState = (zonesMsg) => ({
+  zones: Object.fromEntries(
+    zonesMsg.map((zoneData) => [zoneData.zoneId, extractZoneData(zoneData)]),
+  ),
+});
 
 const buildZonesSeekChangedMessage = (msg) =>
   Object.fromEntries(
