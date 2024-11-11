@@ -8,6 +8,7 @@ module.exports = {
   extends: ['airbnb', 'prettier'],
   globals: {
     module: true,
+    process: true,
   },
   plugins: ['import'],
   rules: {

@@ -1,6 +1,7 @@
 import http from 'http';
 
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import RoonApi from 'node-roon-api';
 import RoonApiStatus from 'node-roon-api-status';
@@ -24,6 +25,10 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+
+dotenv.config();
+
+const coreUrlConfigured = process.env.CORE_URL;
 
 const coreMessageHandler = (cmd, snakeCaseData) => {
   const data = camelCaseKeys(snakeCaseData);
@@ -149,14 +154,19 @@ io.on('connection', (socket) => {
   console.log('server.js: connected: socket.id:', socket.id);
   /* eslint-enable no-console */
 
-  const { host: coreAddress, port: corePort } = transport.core.moo.transport;
-  const coreUrl = `http://${coreAddress}:${corePort}`;
+  let coreUrl;
+  if (coreUrlConfigured) {
+    coreUrl = coreUrlConfigured;
+  } else {
+    const { host: coreAddress, port: corePort } = transport.core.moo.transport;
+    coreUrl = `http://${coreAddress}:${corePort}`;
+  }
 
   /* eslint-disable no-console */
-  console.log(
-    'server.js: connected: transport.core.moo.transport:',
-    transport.core.moo.transport,
-  );
+  // console.log(
+  //   'server.js: connected: transport.core.moo.transport:',
+  //   transport.core.moo.transport,
+  // );
   /* eslint-enable no-console */
   /* eslint-disable no-console */
   console.log('server.js: connected: coreUrl:', coreUrl);
