@@ -1,8 +1,8 @@
-import Cover from './NowPlaying/Cover';
 import Controls from './NowPlaying/Controls';
+import Cover from './NowPlaying/Cover';
 import Zones from './NowPlaying/Zones';
 
-const NowPlaying = () => {
+function NowPlaying() {
   return (
     <div className="now-playing">
       <div className="cover">
@@ -16,6 +16,6 @@ const NowPlaying = () => {
       </div>
     </div>
   );
-};
+}
 
 export default NowPlaying;

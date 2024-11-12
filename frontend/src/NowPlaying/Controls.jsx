@@ -1,8 +1,9 @@
 import { useContext } from 'react';
+
 import AppContext from '../AppContext';
 import { findSelectedZone } from '../utils';
 
-const Controls = () => {
+function Controls() {
   const { appState, roonState, socketRef } = useContext(AppContext);
 
   // console.log('Controls.jsx: Controls(): roonState:', roonState);
@@ -42,6 +43,7 @@ const Controls = () => {
       <span style={{ flex: 1 }}>{selectedZone.nowPlaying.seekPosition}</span>
       <span style={{ flex: 1 }}>
         <button
+          type="button"
           onClick={() => {
             socketRef.current.emit('pause', { zoneId: selectedZone.zoneId });
           }}
@@ -52,6 +54,7 @@ const Controls = () => {
       </span>
       <span style={{ flex: 1 }}>
         <button
+          type="button"
           onClick={() => {
             socketRef.current.emit('play', { zoneId: selectedZone.zoneId });
           }}
@@ -69,6 +72,6 @@ const Controls = () => {
       {controls}
     </div>
   );
-};
+}
 
 export default Controls;

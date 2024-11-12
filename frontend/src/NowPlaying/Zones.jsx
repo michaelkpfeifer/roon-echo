@@ -1,30 +1,30 @@
 import { useContext } from 'react';
+
 import AppContext from '../AppContext';
 
-const Zones = () => {
+function Zones() {
   const { appState, roonState, setAppState } = useContext(AppContext);
 
   // console.log('Zones.jsx: Zones(): roonState:', roonState);
   // console.log('Zones.jsx: Zones(): appState:', appState);
 
-  const isZoneSelected = (zoneId) => {
+  const isZoneSelected = (zoneId) =>
     // console.log('Zones.jsx: isZoneSelected(): zoneId:', zoneId);
 
-    return appState.selectedZoneId === zoneId;
-  };
-
+    appState.selectedZoneId === zoneId;
   const handleZoneSelection = (zoneId) => {
     // console.log('Zone.jsx: Zones:(): zoneId:', zoneId);
 
     if (isZoneSelected(zoneId)) {
-      return setAppState((currentAppState) => {
-        return { ...currentAppState, selectedZoneId: null };
-      });
-    } else {
-      return setAppState((currentAppState) => {
-        return { ...currentAppState, selectedZoneId: zoneId };
-      });
+      return setAppState((currentAppState) => ({
+        ...currentAppState,
+        selectedZoneId: null,
+      }));
     }
+    return setAppState((currentAppState) => ({
+      ...currentAppState,
+      selectedZoneId: zoneId,
+    }));
   };
 
   // console.log('Zones.jsx, Zones(): appState:', appState);
@@ -49,12 +49,12 @@ const Zones = () => {
               type="checkbox"
               checked={isZoneSelected(zone.zoneId)}
               onChange={() => handleZoneSelection(zone.zoneId)}
-            ></input>
+            />
           </span>
         </div>
       ))}
     </>
   );
-};
+}
 
 export default Zones;

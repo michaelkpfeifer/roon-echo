@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import fp from 'lodash/fp';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
-import fp from 'lodash/fp.js';
+
 import AppContext from './AppContext';
 import NowPlaying from './NowPlaying';
 
-const App = () => {
+function App() {
   const [roonState, setRoonState] = useState({
     zones: {},
   });
@@ -26,10 +27,12 @@ const App = () => {
     });
 
     socket.on('subscribedState', (subscribedState) => {
+      /* eslint-disable no-console */
       console.log(
         'App.jsx: processing subscribedState message: subscribedState:',
         subscribedState,
       );
+      /* eslint-enable no-console */
 
       setRoonState(subscribedState);
     });
@@ -40,8 +43,8 @@ const App = () => {
       //   zonesSeekChangedMessage,
       // );
 
-      setRoonState((currentState) => {
-        return Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
+      setRoonState((currentState) =>
+        Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
           if (seekPosition) {
             return fp.merge(acc, {
@@ -63,8 +66,8 @@ const App = () => {
               },
             });
           }
-        }, currentState);
-      });
+        }, currentState),
+      );
     });
 
     socket.on('zonesChanged', (zonesChangedMessage) => {
@@ -73,30 +76,33 @@ const App = () => {
       //   zonesChangedMessage,
       // );
 
-      setRoonState((currentState) => {
-        return fp.merge(currentState, zonesChangedMessage);
-      });
+      setRoonState((currentState) =>
+        fp.merge(currentState, zonesChangedMessage),
+      );
     });
   }, []);
 
   // console.log('App.jsx: App(): roonState:', roonState);
   // console.log('App.jsx: App(): appState:', appState);
 
+  const contextValue = useMemo(
+    () => ({
+      appState,
+      coreUrlRef,
+      roonState,
+      setAppState,
+      setRoonState,
+      socketRef,
+    }),
+    [appState, coreUrlRef, roonState, setAppState, setRoonState, socketRef],
+  );
+
   return (
-    <AppContext.Provider
-      value={{
-        appState,
-        coreUrlRef,
-        roonState,
-        setAppState,
-        setRoonState,
-        socketRef,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       <div className="page">
         <div className="container">
-          <div className="left"></div>
-          <div className="right"></div>
+          <div className="left" />
+          <div className="right" />
         </div>
         <div className="bottom">
           <NowPlaying roonState={roonState} appState={appState} />
@@ -104,6 +110,6 @@ const App = () => {
       </div>
     </AppContext.Provider>
   );
-};
+}
 
 export default App;

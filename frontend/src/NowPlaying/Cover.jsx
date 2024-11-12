@@ -1,8 +1,9 @@
 import { useContext } from 'react';
+
 import AppContext from '../AppContext';
 import { findSelectedZone } from '../utils';
 
-const Cover = () => {
+function Cover() {
   const { appState, roonState, coreUrlRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
@@ -34,14 +35,16 @@ const Cover = () => {
 
   const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
 
+  /* eslint-disable no-console */
   console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);
+  /* eslint-enable no-console */
 
   return (
     <div>
       <b>Cover</b>
-      <img src={imageUrl}></img>
+      <img src={imageUrl} alt="" />
     </div>
   );
-};
+}
 
 export default Cover;
