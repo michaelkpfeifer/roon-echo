@@ -6,6 +6,9 @@
   "author": "Michael Pfeifer",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "lint": "(find src -name \\*.js) | xargs yarn eslint"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
