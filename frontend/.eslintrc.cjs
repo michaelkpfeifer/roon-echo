@@ -5,21 +5,23 @@ module.exports = {
     es6: true,
     jest: true,
   },
-  extends: ['airbnb', 'prettier'],
+  extends: [
+    'airbnb',
+    'prettier',
+    'plugin:react/recommended',
+    'plugin:react/recommended',
+  ],
   globals: {
     module: true,
     process: true,
   },
-  plugins: ['import'],
+  plugins: ['import', 'react-hooks'],
   rules: {
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      {
-        js: 'always',
-      },
-    ],
-
+    'no-else-return': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
     'import/order': [
       'error',
       {
