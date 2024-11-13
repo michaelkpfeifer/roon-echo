@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 import AppContext from './AppContext';
+import { loadConfig, saveConfig } from './config';
 import NowPlaying from './NowPlaying';
 
 function App() {
@@ -12,9 +13,14 @@ function App() {
   const [appState, setAppState] = useState({
     selectedZoneId: null,
   });
+  const [config, setConfig] = useState(
+    () => loadConfig() || { selectedZoneId: null },
+  );
 
   const socketRef = useRef(null);
   const coreUrlRef = useRef('');
+
+  useEffect(() => saveConfig(config), [config]);
 
   useEffect(() => {
     socketRef.current = io('http://192.168.2.102:4000');
@@ -88,13 +94,22 @@ function App() {
   const contextValue = useMemo(
     () => ({
       appState,
+      config,
       coreUrlRef,
       roonState,
       setAppState,
       setRoonState,
       socketRef,
     }),
-    [appState, coreUrlRef, roonState, setAppState, setRoonState, socketRef],
+    [
+      appState,
+      config,
+      coreUrlRef,
+      roonState,
+      setAppState,
+      setRoonState,
+      socketRef,
+    ],
   );
 
   return (

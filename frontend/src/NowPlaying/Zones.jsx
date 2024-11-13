@@ -8,13 +8,9 @@ function Zones() {
   // console.log('Zones.jsx: Zones(): roonState:', roonState);
   // console.log('Zones.jsx: Zones(): appState:', appState);
 
-  const isZoneSelected = (zoneId) =>
-    // console.log('Zones.jsx: isZoneSelected(): zoneId:', zoneId);
+  const isZoneSelected = (zoneId) => appState.selectedZoneId === zoneId;
 
-    appState.selectedZoneId === zoneId;
   const handleZoneSelection = (zoneId) => {
-    // console.log('Zone.jsx: Zones:(): zoneId:', zoneId);
-
     if (isZoneSelected(zoneId)) {
       return setAppState((currentAppState) => ({
         ...currentAppState,
