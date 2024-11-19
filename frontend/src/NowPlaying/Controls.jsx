@@ -1,33 +1,23 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { findSelectedZone } from '../utils';
+import { findConfiguredZone } from '../utils';
 
 function Controls() {
-  const { appState, roonState, socketRef } = useContext(AppContext);
+  const { config, roonState, socketRef } = useContext(AppContext);
 
-  // console.log('Controls.jsx: Controls(): roonState:', roonState);
-  // console.log('Controls.jsx: Controls(): appState:', appState);
-
-  const selectedZone = findSelectedZone(
-    Object.values(roonState.zones),
-    appState.selectedZoneId,
+  const configuredZone = findConfiguredZone(
+    roonState.zones,
+    config.configuredZoneId,
   );
 
-  // console.log('Controls.jsx: Controls(): selectedZone:', selectedZone);
-
-  if (selectedZone === null) {
+  if (configuredZone === null) {
     return null;
   }
 
-  if (selectedZone.nowPlaying === null) {
+  if (configuredZone.nowPlaying === null) {
     return null;
   }
-
-  // console.log(
-  //   'Controls.jsx: Controls(): selectedZone.zoneId:',
-  //   selectedZone.zoneId,
-  // );
 
   const controls = (
     <div
@@ -36,18 +26,18 @@ function Controls() {
         justifyContent: 'space-between',
         alignItems: 'center',
       }}
-      key={selectedZone.zoneId}
+      key={configuredZone.zoneId}
     >
-      <span style={{ flex: 3 }}>{selectedZone.displayName}</span>
-      <span style={{ flex: 3 }}>{selectedZone.nowPlaying.oneLine.line1}</span>
-      <span style={{ flex: 1 }}>{selectedZone.nowPlaying.seekPosition}</span>
+      <span style={{ flex: 3 }}>{configuredZone.displayName}</span>
+      <span style={{ flex: 3 }}>{configuredZone.nowPlaying.oneLine.line1}</span>
+      <span style={{ flex: 1 }}>{configuredZone.nowPlaying.seekPosition}</span>
       <span style={{ flex: 1 }}>
         <button
           type="button"
           onClick={() => {
-            socketRef.current.emit('pause', { zoneId: selectedZone.zoneId });
+            socketRef.current.emit('pause', { zoneId: configuredZone.zoneId });
           }}
-          disabled={selectedZone.state === 'paused'}
+          disabled={configuredZone.state === 'paused'}
         >
           Pause
         </button>
@@ -56,9 +46,9 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
-            socketRef.current.emit('play', { zoneId: selectedZone.zoneId });
+            socketRef.current.emit('play', { zoneId: configuredZone.zoneId });
           }}
-          disabled={selectedZone.state === 'playing'}
+          disabled={configuredZone.state === 'playing'}
         >
           Play
         </button>
@@ -66,12 +56,7 @@ function Controls() {
     </div>
   );
 
-  return (
-    <div>
-      <b>Controls</b>
-      {controls}
-    </div>
-  );
+  return <div>{controls}</div>;
 }
 
 export default Controls;

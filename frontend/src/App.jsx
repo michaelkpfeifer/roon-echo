@@ -10,20 +10,22 @@ function App() {
   const [roonState, setRoonState] = useState({
     zones: {},
   });
+
   const [appState, setAppState] = useState({
-    selectedZoneId: null,
+    isZonesModalOpen: false,
   });
+
   const [config, setConfig] = useState(
-    () => loadConfig() || { selectedZoneId: null },
+    () => loadConfig() || { configuredZoneId: null },
   );
+
+  useEffect(() => saveConfig(config), [config]);
 
   const socketRef = useRef(null);
   const coreUrlRef = useRef('');
 
-  useEffect(() => saveConfig(config), [config]);
-
   useEffect(() => {
-    socketRef.current = io('http://192.168.2.102:4000');
+    socketRef.current = io('http://192.168.103.103:4000');
     const socket = socketRef.current;
 
     socket.on('coreUrl', (coreUrl) => {
@@ -34,10 +36,7 @@ function App() {
 
     socket.on('subscribedState', (subscribedState) => {
       /* eslint-disable no-console */
-      console.log(
-        'App.jsx: processing subscribedState message: subscribedState:',
-        subscribedState,
-      );
+      console.log('App.jsx: App(): subscribedState:', subscribedState);
       /* eslint-enable no-console */
 
       setRoonState(subscribedState);
@@ -86,10 +85,19 @@ function App() {
         fp.merge(currentState, zonesChangedMessage),
       );
     });
-  }, []);
+  }, [config]);
 
+  /* eslint-disable no-console */
   // console.log('App.jsx: App(): roonState:', roonState);
+  /* eslint-enable no-console */
+
+  /* eslint-disable no-console */
   // console.log('App.jsx: App(): appState:', appState);
+  /* eslint-enable no-console */
+
+  /* eslint-disable no-console */
+  // console.log('App.jsx: App(): config:', config);
+  /* eslint-enable no-console */
 
   const contextValue = useMemo(
     () => ({
@@ -98,18 +106,11 @@ function App() {
       coreUrlRef,
       roonState,
       setAppState,
+      setConfig,
       setRoonState,
       socketRef,
     }),
-    [
-      appState,
-      config,
-      coreUrlRef,
-      roonState,
-      setAppState,
-      setRoonState,
-      socketRef,
-    ],
+    [config, appState, coreUrlRef, roonState, socketRef],
   );
 
   return (

@@ -1,17 +1,11 @@
-const findSelectedZone = (zones, zoneId) => {
-  // console.log(
-  //   'utils.js: findSelectedZone(): zones.map((z) => z.zoneId):',
-  //   zones.map((z) => z.zoneId),
-  // );
-  // console.log('utils.js: findSelectedZone(): zoneId:', zoneId);
-
-  if (zoneId === null) {
+const findConfiguredZone = (roonZones, configuredZoneId) => {
+  if (configuredZoneId === null) {
     return null;
   }
 
-  return zones.find((zone) => zone.zoneId === zoneId) || null;
+  return roonZones[configuredZoneId] || null;
 };
 
 /* eslint-disable import/prefer-default-export */
-export { findSelectedZone };
+export { findConfiguredZone };
 /* eslint-enable import/prefer-default-export */

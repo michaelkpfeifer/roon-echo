@@ -1,47 +1,33 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { findSelectedZone } from '../utils';
+import { findConfiguredZone } from '../utils';
 
 function Cover() {
-  const { appState, roonState, coreUrlRef } = useContext(AppContext);
+  const { config, coreUrlRef, roonState } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
-  // console.log('Cover.jsx: Cover(), coreUrl:', coreUrl);
-  // console.log('Cover.jsx: Cover(), roonState:', roonState);
-
-  const selectedZone = findSelectedZone(
-    Object.values(roonState.zones),
-    appState.selectedZoneId,
+  const configuredZone = findConfiguredZone(
+    roonState.zones,
+    config.configuredZoneId,
   );
 
-  if (selectedZone === null) {
+  if (configuredZone === null) {
     return null;
   }
 
-  if (selectedZone.nowPlaying === null) {
+  if (configuredZone.nowPlaying === null) {
     return null;
   }
 
-  // console.log(
-  //   'Cover.jsx: Cover(): selectedZone:',
-  //   JSON.stringify(selectedZone, null, 4),
-  // );
-
-  // console.log(
-  //   'Cover.jsx: Cover(): selectedZone.nowPlaying.imageKey:',
-  //   selectedZone.nowPlaying.imageKey,
-  // );
-
-  const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
+  const imageUrl = `${coreUrl}/api/image/${configuredZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
 
   /* eslint-disable no-console */
-  console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);
+  // console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);
   /* eslint-enable no-console */
 
   return (
     <div>
-      <b>Cover</b>
       <img src={imageUrl} alt="" />
     </div>
   );
