@@ -1,5 +1,3 @@
-import fp from 'lodash/fp';
-
 const saveConfig = (config) => {
   localStorage.setItem('roonRemoteFrontendConfig', JSON.stringify(config));
 };
