@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 
-import './styles/modal.css';
-
 function Modal({ isOpen, onClose, onConfirm, children }) {
   if (!isOpen) return null;
 
