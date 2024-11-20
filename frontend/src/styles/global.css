@@ -1,3 +1,9 @@
+:root {
+    --modal-confirm-button-bg: #4CAF50;
+    --modal-confirm-button-hover-bg: #45a049;
+    --modal-confirm-button-text: white;
+}
+
 body {
     margin: 0;
 }
@@ -89,13 +95,13 @@ body {
 .modal-confirm {
   margin-top: 15px;
   padding: 10px 15px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--modal-confirm-button-bg);
+  color: var(--modal-confirm-button-text);
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .modal-confirm:hover {
-  background-color: #45a049;
+  background-color: var(--modal-confirm-button-hover-bg);
 }
