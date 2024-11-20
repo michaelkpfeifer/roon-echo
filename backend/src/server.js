@@ -184,7 +184,7 @@ io.on('connection', (socket) => {
 
     const frontendRoonState = buildFrontendRoonState(camelCaseKeys(body.zones));
 
-    socket.emit('subscribedState', frontendRoonState);
+    socket.emit('initialState', frontendRoonState);
   });
 
   socket.on('pause', ({ zoneId }) => {
