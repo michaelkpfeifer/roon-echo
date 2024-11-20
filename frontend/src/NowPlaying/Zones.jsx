@@ -3,27 +3,27 @@ import { useContext, useState } from 'react';
 import AppContext from '../AppContext';
 import Modal from '../Modal';
 import SelectedZone from './SelectedZone';
-import { findConfiguredZone } from '../utils';
+import { findSelectedZone } from '../utils';
 
 function Zones() {
   const { appState, config, roonState, setAppState, setConfig } =
     useContext(AppContext);
 
   const [tmpZoneId, setTmpZoneId] = useState(() => {
-    const configuredZone = findConfiguredZone(
+    const selectedZone = findSelectedZone(
       roonState.zones,
-      config.configuredZoneId,
+      config.selectedZoneId,
     );
 
-    if (configuredZone === null) {
+    if (selectedZone === null) {
       return null;
     }
 
-    if (configuredZone.nowPlaying === null) {
+    if (selectedZone.nowPlaying === null) {
       return null;
     }
 
-    return config.configuredZoneId;
+    return config.selectedZoneId;
   });
 
   const openModal = () =>
@@ -45,7 +45,7 @@ function Zones() {
   const handleConfirm = () =>
     setConfig((currentConfig) => ({
       ...currentConfig,
-      configuredZoneId: tmpZoneId,
+      selectedZoneId: tmpZoneId,
     }));
 
   return (

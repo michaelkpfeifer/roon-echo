@@ -1,25 +1,22 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { findConfiguredZone } from '../utils';
+import { findSelectedZone } from '../utils';
 
 function SelectedZone() {
   const { config, roonState } = useContext(AppContext);
 
-  const configuredZone = findConfiguredZone(
-    roonState.zones,
-    config.configuredZoneId,
-  );
+  const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
-  if (configuredZone === null) {
+  if (selectedZone === null) {
     return null;
   }
 
-  if (configuredZone.nowPlaying === null) {
+  if (selectedZone.nowPlaying === null) {
     return null;
   }
 
-  return <b>{configuredZone.displayName}</b>;
+  return <b>{selectedZone.displayName}</b>;
 }
 
 export default SelectedZone;

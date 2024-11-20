@@ -16,7 +16,7 @@ function App() {
   });
 
   const [config, setConfig] = useState(
-    () => loadConfig() || { configuredZoneId: null },
+    () => loadConfig() || { selectedZoneId: null },
   );
 
   useEffect(() => saveConfig(config), [config]);

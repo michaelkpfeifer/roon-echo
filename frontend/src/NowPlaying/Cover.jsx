@@ -1,26 +1,23 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { findConfiguredZone } from '../utils';
+import { findSelectedZone } from '../utils';
 
 function Cover() {
   const { config, coreUrlRef, roonState } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
-  const configuredZone = findConfiguredZone(
-    roonState.zones,
-    config.configuredZoneId,
-  );
+  const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
-  if (configuredZone === null) {
+  if (selectedZone === null) {
     return null;
   }
 
-  if (configuredZone.nowPlaying === null) {
+  if (selectedZone.nowPlaying === null) {
     return null;
   }
 
-  const imageUrl = `${coreUrl}/api/image/${configuredZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
+  const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
 
   /* eslint-disable no-console */
   // console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);

@@ -1,21 +1,18 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { findConfiguredZone } from '../utils';
+import { findSelectedZone } from '../utils';
 
 function Controls() {
   const { config, roonState, socketRef } = useContext(AppContext);
 
-  const configuredZone = findConfiguredZone(
-    roonState.zones,
-    config.configuredZoneId,
-  );
+  const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
-  if (configuredZone === null) {
+  if (selectedZone === null) {
     return null;
   }
 
-  if (configuredZone.nowPlaying === null) {
+  if (selectedZone.nowPlaying === null) {
     return null;
   }
 
@@ -26,18 +23,18 @@ function Controls() {
         justifyContent: 'space-between',
         alignItems: 'center',
       }}
-      key={configuredZone.zoneId}
+      key={selectedZone.zoneId}
     >
-      <span style={{ flex: 3 }}>{configuredZone.displayName}</span>
-      <span style={{ flex: 3 }}>{configuredZone.nowPlaying.oneLine.line1}</span>
-      <span style={{ flex: 1 }}>{configuredZone.nowPlaying.seekPosition}</span>
+      <span style={{ flex: 3 }}>{selectedZone.displayName}</span>
+      <span style={{ flex: 3 }}>{selectedZone.nowPlaying.oneLine.line1}</span>
+      <span style={{ flex: 1 }}>{selectedZone.nowPlaying.seekPosition}</span>
       <span style={{ flex: 1 }}>
         <button
           type="button"
           onClick={() => {
-            socketRef.current.emit('pause', { zoneId: configuredZone.zoneId });
+            socketRef.current.emit('pause', { zoneId: selectedZone.zoneId });
           }}
-          disabled={configuredZone.state === 'paused'}
+          disabled={selectedZone.state === 'paused'}
         >
           Pause
         </button>
@@ -46,9 +43,9 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
-            socketRef.current.emit('play', { zoneId: configuredZone.zoneId });
+            socketRef.current.emit('play', { zoneId: selectedZone.zoneId });
           }}
-          disabled={configuredZone.state === 'playing'}
+          disabled={selectedZone.state === 'playing'}
         >
           Play
         </button>
