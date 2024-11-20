@@ -34,12 +34,12 @@ function App() {
       coreUrlRef.current = coreUrl;
     });
 
-    socket.on('subscribedState', (subscribedState) => {
+    socket.on('initialState', (initialState) => {
       /* eslint-disable no-console */
-      console.log('App.jsx: App(): subscribedState:', subscribedState);
+      console.log('App.jsx: App(): initialState:', initialState);
       /* eslint-enable no-console */
 
-      setRoonState(subscribedState);
+      setRoonState(initialState);
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
