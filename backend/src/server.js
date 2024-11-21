@@ -151,7 +151,7 @@ serviceStatus.set_status('All is good', false);
 
 io.on('connection', (socket) => {
   /* eslint-disable no-console */
-  console.log('server.js: connected: socket.id:', socket.id);
+  console.log('server.js: io.on(): Connected: socket.id:', socket.id);
   /* eslint-enable no-console */
 
   let coreUrl;
@@ -164,12 +164,12 @@ io.on('connection', (socket) => {
 
   /* eslint-disable no-console */
   // console.log(
-  //   'server.js: connected: transport.core.moo.transport:',
+  //   'server.js: io.on(): transport.core.moo.transport:',
   //   transport.core.moo.transport,
   // );
   /* eslint-enable no-console */
   /* eslint-disable no-console */
-  console.log('server.js: connected: coreUrl:', coreUrl);
+  console.log('server.js: io.on(): coreUrl:', coreUrl);
   /* eslint-enable no-console */
 
   socket.emit('coreUrl', coreUrl);
@@ -177,10 +177,18 @@ io.on('connection', (socket) => {
   transport.get_zones((error, body) => {
     if (error) {
       /* eslint-disable no-console */
-      console.log('server.js: Error getting zone data:', error);
-      return;
+      console.log('server.js: io.on(): Error getting zone data: error:', error);
       /* eslint-enable no-console */
+
+      return;
     }
+
+    /* eslint-disable no-console */
+    // console.log(
+    //   'server.js: io.on(): camelCaseKeys(body.zones)',
+    //   JSON.stringify(camelCaseKeys(body.zones)),
+    // );
+    /* eslint-enable no-console */
 
     const frontendRoonState = buildFrontendRoonState(camelCaseKeys(body.zones));
 
