@@ -17,7 +17,7 @@ function Cover() {
     return null;
   }
 
-  const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=80&height=80`;
+  const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=72&height=72`;
 
   /* eslint-disable no-console */
   // console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);

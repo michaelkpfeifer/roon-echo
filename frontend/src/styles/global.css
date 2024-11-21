@@ -6,19 +6,20 @@
 
 body {
     margin: 0;
+    box-sizing: border-box;
 }
 
 .page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     box-sizing: border-box;
+    height: 100vh;
 }
 
 .container {
     display: flex;
-    flex-direction: row;
     flex: 4;
+    flex-direction: row;
     box-sizing: border-box;
 }
 
@@ -45,21 +46,31 @@ body {
     flex-direction: row;
     box-sizing: border-box;
     border: 1px solid black;
+    align-items: center;
 }
 
 .cover {
     flex: 2;
     box-sizing: border-box;
+    /* border: 1px solid black; */
 }
 
 .controls {
-    flex: 4;
+    flex: 10;
     box-sizing: border-box;
+    /* border: 1px solid black; */
 }
 
 .zones {
-    flex: 4;
+    flex: 1;
     box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.volume {
+    flex: 1;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
 }
 
 .modal-overlay {
