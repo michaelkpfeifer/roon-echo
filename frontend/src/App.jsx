@@ -13,6 +13,7 @@ function App() {
 
   const [appState, setAppState] = useState({
     isZonesModalOpen: false,
+    tmpSelectedZoneId: null,
   });
 
   const [config, setConfig] = useState(
@@ -40,6 +41,11 @@ function App() {
       /* eslint-enable no-console */
 
       setRoonState(initialState);
+
+      setAppState((currentAppState) => ({
+        ...currentAppState,
+        tmpSelectedZoneId: loadConfig().selectedZoneId || null,
+      }));
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {

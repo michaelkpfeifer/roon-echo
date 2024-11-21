@@ -3,28 +3,10 @@ import { useContext, useState } from 'react';
 import AppContext from '../AppContext';
 import Modal from '../Modal';
 import SelectedZone from './SelectedZone';
-import { findSelectedZone } from '../utils';
 
 function Zones() {
-  const { appState, config, roonState, setAppState, setConfig } =
+  const { appState, roonState, setAppState, setConfig } =
     useContext(AppContext);
-
-  const [tmpZoneId, setTmpZoneId] = useState(() => {
-    const selectedZone = findSelectedZone(
-      roonState.zones,
-      config.selectedZoneId,
-    );
-
-    if (selectedZone === null) {
-      return null;
-    }
-
-    if (selectedZone.nowPlaying === null) {
-      return null;
-    }
-
-    return config.selectedZoneId;
-  });
 
   const openModal = () =>
     setAppState((currentAppState) => ({
@@ -38,14 +20,18 @@ function Zones() {
       isZonesModalOpen: false,
     }));
 
-  const isZoneSelected = (zoneId) => zoneId === tmpZoneId;
+  const isZoneSelected = (zoneId) => appState.tmpSelectedZoneId === zoneId;
 
-  const handleZoneSelection = (zoneId) => setTmpZoneId(zoneId);
+  const handleZoneSelection = (zoneId) =>
+    setAppState((currentAppState) => ({
+      ...currentAppState,
+      tmpSelectedZoneId: zoneId,
+    }));
 
   const handleConfirm = () =>
     setConfig((currentConfig) => ({
       ...currentConfig,
-      selectedZoneId: tmpZoneId,
+      selectedZoneId: appState.tmpSelectedZoneId,
     }));
 
   return (
