@@ -23,9 +23,18 @@ function Cover() {
   // console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);
   /* eslint-enable no-console */
 
+  /* eslint-disable no-console */
+  // console.log('Cover.jsx: Cover(), selectedZone:', selectedZone);
+  /* eslint-enable no-console */
+
   return (
     <div>
       <img src={imageUrl} alt="" />
+      <div>
+        <span>{selectedZone.nowPlaying.twoLine.line1}</span>
+        <br />
+        <span>{selectedZone.nowPlaying.twoLine.line2}</span>
+      </div>
     </div>
   );
 }

@@ -12,11 +12,13 @@ function NowPlaying() {
       <div className="controls">
         <Controls />
       </div>
-      <div className="zones">
-        <Zones />
-      </div>
-      <div className="volume">
-        <Volume />
+      <div className="zones-and-volume">
+        <span>
+          <Zones />
+        </span>
+        <span>
+          <Volume />
+        </span>
       </div>
     </div>
   );

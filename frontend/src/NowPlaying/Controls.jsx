@@ -26,7 +26,6 @@ function Controls() {
       key={selectedZone.zoneId}
     >
       <span style={{ flex: 3 }}>{selectedZone.displayName}</span>
-      <span style={{ flex: 3 }}>{selectedZone.nowPlaying.oneLine.line1}</span>
       <span style={{ flex: 1 }}>{selectedZone.nowPlaying.seekPosition}</span>
       <span style={{ flex: 1 }}>
         <button

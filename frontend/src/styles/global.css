@@ -50,24 +50,29 @@ body {
 }
 
 .cover {
-    flex: 2;
-    box-sizing: border-box;
-    /* border: 1px solid black; */
-}
-
-.controls {
-    flex: 10;
-    box-sizing: border-box;
-    /* border: 1px solid black; */
-}
-
-.zones {
     flex: 1;
     box-sizing: border-box;
     /* border: 1px solid black; */
 }
 
-.volume {
+.cover > :first-child {
+    display: flex;
+    align-items: center;
+}
+
+.cover img {
+  width: 72px;
+  height: auto;
+  margin-right: 16px;
+}
+
+.controls {
+    flex: 1;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.zones-and-volume {
     flex: 1;
     box-sizing: border-box;
     /* border: 1px solid black; */
