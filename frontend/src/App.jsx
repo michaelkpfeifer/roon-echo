@@ -26,7 +26,7 @@ function App() {
   const coreUrlRef = useRef('');
 
   useEffect(() => {
-    socketRef.current = io('http://192.168.103.103:4000');
+    socketRef.current = io('http://192.168.2.102:4000');
     const socket = socketRef.current;
 
     socket.on('coreUrl', (coreUrl) => {
