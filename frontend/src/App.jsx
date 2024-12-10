@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import NowPlaying from './NowPlaying';
+import Sidebar from './Sidebar';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -91,6 +92,27 @@ function App() {
         fp.merge(currentState, zonesChangedMessage),
       );
     });
+
+    socket.on('allAlbums', (allAlbums) => {
+      console.log(
+        'App.jsx: processing allAlbums message: allAlbums:',
+        allAlbums,
+      );
+    });
+
+    socket.on('allArtists', (allArtists) => {
+      console.log(
+        'App.jsx: processing allArtists message: allArtists:',
+        allArtists,
+      );
+    });
+
+    socket.on('allTracks', (allTracks) => {
+      console.log(
+        'App.jsx: processing allTracks message: allTracks:',
+        allTracks,
+      );
+    });
   }, [config]);
 
   /* eslint-disable no-console */
@@ -123,7 +145,9 @@ function App() {
     <AppContext.Provider value={contextValue}>
       <div className="page">
         <div className="container">
-          <div className="left" />
+          <div className="left">
+            <Sidebar />
+          </div>
           <div className="right" />
         </div>
         <div className="bottom">
