@@ -4,10 +4,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import RoonApi from 'node-roon-api';
+import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
+import * as browser from './browser.js';
 import {
   buildFrontendRoonState,
   buildZonesSeekChangedMessage,
@@ -119,6 +121,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 };
 
 let transport;
+let browseInstance;
 
 const roon = new RoonApi({
   /* eslint-disable camelcase */
@@ -132,6 +135,7 @@ const roon = new RoonApi({
   core_paired: (core) => {
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
+    browseInstance = new RoonApiBrowse(core);
   },
 
   core_unpaired: (/* core */) => {},
@@ -193,6 +197,51 @@ io.on('connection', (socket) => {
     const frontendRoonState = buildFrontendRoonState(camelCaseKeys(body.zones));
 
     socket.emit('initialState', frontendRoonState);
+  });
+
+  socket.on('albums', () => {
+    /* eslint-disable no-console */
+    console.log('server.js: processing albums message');
+    /* eslint-enable no-console */
+
+    browser.loadAlbums(browseInstance).then((albumsLoadData) => {
+      /* eslint-disable no-console */
+      console.log('albumsLoadData.items.length:', albumsLoadData.items.length);
+      /* eslint-enable no-console */
+
+      socket.emit('allAlbums', albumsLoadData.items);
+    });
+  });
+
+  socket.on('artists', () => {
+    /* eslint-disable no-console */
+    console.log('server.js: processing artists message');
+    /* eslint-enable no-console */
+
+    browser.loadArtists(browseInstance).then((artistsLoadData) => {
+      /* eslint-disable no-console */
+      console.log(
+        'artistsLoadData.items.length:',
+        artistsLoadData.items.length,
+      );
+      /* eslint-enable no-console */
+
+      socket.emit('allArtists', artistsLoadData.items);
+    });
+  });
+
+  socket.on('tracks', () => {
+    /* eslint-disable no-console */
+    console.log('server.js: processing tracks message');
+    /* eslint-enable no-console */
+
+    browser.loadTracks(browseInstance).then((tracksLoadData) => {
+      /* eslint-disable no-console */
+      console.log('tracksLoadData.items.length:', tracksLoadData.items.length);
+      /* eslint-enable no-console */
+
+      socket.emit('allTracks', tracksLoadData.items);
+    });
   });
 
   socket.on('pause', ({ zoneId }) => {
