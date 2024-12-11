@@ -6,6 +6,11 @@ const findSelectedZone = (roonZones, selectedZoneId) => {
   return roonZones[selectedZoneId] || null;
 };
 
+const setSelectedScreen = (currentAppState, selectedScreen) => ({
+  ...currentAppState,
+  selectedScreen,
+});
+
 /* eslint-disable import/prefer-default-export */
-export { findSelectedZone };
+export { findSelectedZone, setSelectedScreen };
 /* eslint-enable import/prefer-default-export */

@@ -15,6 +15,7 @@ function App() {
   const [appState, setAppState] = useState({
     isZonesModalOpen: false,
     tmpSelectedZoneId: null,
+    selectedScreen: null,
   });
 
   const [config, setConfig] = useState(
@@ -130,12 +131,12 @@ function App() {
   const contextValue = useMemo(
     () => ({
       appState,
-      config,
-      coreUrlRef,
-      roonState,
       setAppState,
-      setConfig,
+      roonState,
       setRoonState,
+      config,
+      setConfig,
+      coreUrlRef,
       socketRef,
     }),
     [config, appState, coreUrlRef, roonState, socketRef],

@@ -1,28 +1,49 @@
 import { useContext } from 'react';
 
 import AppContext from './AppContext';
+import { setSelectedScreen } from './utils';
 
 function Sidebar() {
-  const { socketRef } = useContext(AppContext);
+  const { socketRef, setAppState } = useContext(AppContext);
+
+  const handleScreenSelection = (event) => {
+    const selectedScreen = event.target.value;
+    setAppState((currentAppContext) =>
+      setSelectedScreen(currentAppContext, selectedScreen),
+    );
+    socketRef.current.emit(selectedScreen);
+  };
 
   return (
-    <>
+    <div>
       <div>
-        <button type="button" onClick={() => socketRef.current.emit('artists')}>
-          Artists
-        </button>
+        Artists
+        <input
+          name="selectedScreen"
+          value="artists"
+          type="radio"
+          onChange={handleScreenSelection}
+        />
       </div>
       <div>
-        <button type="button" onClick={() => socketRef.current.emit('albums')}>
-          Albums
-        </button>
+        Albums
+        <input
+          name="selectedScreen"
+          value="albums"
+          type="radio"
+          onChange={handleScreenSelection}
+        />
       </div>
       <div>
-        <button type="button" onClick={() => socketRef.current.emit('tracks')}>
-          Tracks
-        </button>
+        Tracks
+        <input
+          name="selectedScreen"
+          value="tracks"
+          type="radio"
+          onChange={handleScreenSelection}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
