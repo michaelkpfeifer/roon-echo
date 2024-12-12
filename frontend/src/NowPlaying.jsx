@@ -1,7 +1,7 @@
 import Controls from './NowPlaying/Controls';
 import Cover from './NowPlaying/Cover';
-import Zones from './NowPlaying/Zones';
 import Volume from './NowPlaying/Volume';
+import Zones from './NowPlaying/Zones';
 
 function NowPlaying() {
   return (

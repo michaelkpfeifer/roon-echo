@@ -95,24 +95,30 @@ function App() {
     });
 
     socket.on('allAlbums', (allAlbums) => {
+      /* eslint-disable no-console */
       console.log(
         'App.jsx: processing allAlbums message: allAlbums:',
         allAlbums,
       );
+      /* eslint-enable no-console */
     });
 
     socket.on('allArtists', (allArtists) => {
+      /* eslint-disable no-console */
       console.log(
         'App.jsx: processing allArtists message: allArtists:',
         allArtists,
       );
+      /* eslint-enable no-console */
     });
 
     socket.on('allTracks', (allTracks) => {
+      /* eslint-disable no-console */
       console.log(
         'App.jsx: processing allTracks message: allTracks:',
         allTracks,
       );
+      /* eslint-enable no-console */
     });
   }, [config]);
 
