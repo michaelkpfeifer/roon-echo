@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
+import Main from './Main';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 
@@ -155,7 +156,9 @@ function App() {
           <div className="left">
             <Sidebar />
           </div>
-          <div className="right" />
+          <div className="right">
+            <Main />
+          </div>
         </div>
         <div className="bottom">
           <NowPlaying roonState={roonState} appState={appState} />
