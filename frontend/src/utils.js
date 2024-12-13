@@ -11,6 +11,9 @@ const setSelectedScreen = (currentAppState, selectedScreen) => ({
   selectedScreen,
 });
 
-/* eslint-disable import/prefer-default-export */
-export { findSelectedZone, setSelectedScreen };
-/* eslint-enable import/prefer-default-export */
+const setAlbums = (currentAppState, albums) => ({
+  ...currentAppState,
+  albums,
+});
+
+export { findSelectedZone, setAlbums, setSelectedScreen };

@@ -7,6 +7,7 @@ import { loadConfig, saveConfig } from './config';
 import Main from './Main';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
+import { setAlbums } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -14,9 +15,12 @@ function App() {
   });
 
   const [appState, setAppState] = useState({
+    albums: [],
+    artists: [],
     isZonesModalOpen: false,
-    tmpSelectedZoneId: null,
     selectedScreen: null,
+    tmpSelectedZoneId: null,
+    tracks: [],
   });
 
   const [config, setConfig] = useState(
@@ -102,6 +106,8 @@ function App() {
         allAlbums,
       );
       /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
     });
 
     socket.on('allArtists', (allArtists) => {
