@@ -17,19 +17,19 @@ function Sidebar() {
   return (
     <div>
       <div>
-        Artists
+        Albums
         <input
           name="selectedScreen"
-          value="artists"
+          value="albums"
           type="radio"
           onChange={handleScreenSelection}
         />
       </div>
       <div>
-        Albums
+        Artists
         <input
           name="selectedScreen"
-          value="albums"
+          value="artists"
           type="radio"
           onChange={handleScreenSelection}
         />
