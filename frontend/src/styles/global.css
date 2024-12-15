@@ -121,3 +121,46 @@ body {
 .modal-confirm:hover {
   background-color: var(--modal-confirm-button-hover-bg);
 }
+
+.album-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.album-card:hover {
+  transform: scale(1.05);
+}
+
+.album-card__image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.album-card__title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.album-card__subtitle {
+  font-size: 14px;
+  color: #555;
+}
+
+.albums-container {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin-top: 16px;
+}

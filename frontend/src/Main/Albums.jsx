@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import AlbumCard from './AlbumCard';
 
 function Albums() {
-  const { albums, appState, coreUrlRef } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { appState } = useContext(AppContext);
 
   if (appState.selectedScreen !== 'albums') {
     return null;
@@ -13,13 +13,10 @@ function Albums() {
   return (
     <>
       <h1>Albums</h1>
-      <div>
+      <div className="albums-container">
         {appState.albums.map((album) => (
           <div key={album.image_key}>
-            <div>
-              <b>{album.title}</b>
-            </div>
-            <div>{album.subtitle}</div>
+            <AlbumCard album={album} />
           </div>
         ))}
       </div>
