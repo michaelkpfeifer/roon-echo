@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { useContext } from 'react';
 
-import noAlbumArt from '../../public/no-album-art.svg';
 import AppContext from '../AppContext';
+import noAlbumArt from '../images/no-album-art.svg';
 
 function AlbumCard({ album }) {
   const { coreUrlRef } = useContext(AppContext);
