@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useContext } from 'react';
 
+import noAlbumArt from '../../public/no-album-art.svg';
 import AppContext from '../AppContext';
 
 function AlbumCard({ album }) {
@@ -9,11 +10,15 @@ function AlbumCard({ album }) {
 
   return (
     <div className="album-card">
-      <img
-        src={`${coreUrl}/api/image/${album.image_key}?scale=fit&width=216&height=216`}
-        alt={album.title}
-        className="album-card__image"
-      />
+      {album.image_key ? (
+        <img
+          src={`${coreUrl}/api/image/${album.image_key}?scale=fit&width=150&height=150`}
+          alt={album.title}
+          className="album-card__image"
+        />
+      ) : (
+        <img src={noAlbumArt} alt={album.title} className="album-card__image" />
+      )}
       <div className="album-card__title">
         <b>{album.title}</b>
       </div>

@@ -16,6 +16,7 @@ module.exports = {
     process: true,
   },
   plugins: ['import', 'react-hooks'],
+  ignorePatterns: ['*.svg'],
   rules: {
     'no-else-return': 'off',
     'react/react-in-jsx-scope': 'off',
