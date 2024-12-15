@@ -15,7 +15,7 @@ function Albums() {
       <h1>Albums</h1>
       <div className="albums-container">
         {appState.albums.map((album) => (
-          <div key={album.image_key}>
+          <div key={album.item_key}>
             <AlbumCard album={album} />
           </div>
         ))}

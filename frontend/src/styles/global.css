@@ -122,6 +122,7 @@ body {
   background-color: var(--modal-confirm-button-hover-bg);
 }
 
+
 .album-card {
   display: flex;
   flex-direction: column;
@@ -163,4 +164,43 @@ body {
   gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   margin-top: 16px;
+}
+
+
+.track-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr; /* Fixed width for image, equal width for name and artist */
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.2s;
+}
+
+.track-row:hover {
+  background-color: #f9f9f9;
+}
+
+.track-row__image {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.track-row__name,
+.track-row__artist {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px; /* Adds some horizontal padding */
+}
+
+.track-row__name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.track-row__artist {
+  font-size: 14px;
+  color: #555;
 }

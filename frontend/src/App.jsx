@@ -7,7 +7,7 @@ import { loadConfig, saveConfig } from './config';
 import Main from './Main';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums } from './utils';
+import { setAlbums, setTracks } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -126,6 +126,8 @@ function App() {
         allTracks,
       );
       /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setTracks(currentAppState, allTracks));
     });
   }, [config]);
 
