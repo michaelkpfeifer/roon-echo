@@ -31,7 +31,7 @@ AlbumCard.propTypes = {
   album: PropTypes.shape({
     title: PropTypes.string.isRequired,
     subtitle: PropTypes.string.isRequired,
-    image_key: PropTypes.string.isRequired,
+    image_key: PropTypes.string,
   }).isRequired,
 };
 
