@@ -16,9 +16,20 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
+const setArtists = (currentAppState, artists) => ({
+  ...currentAppState,
+  artists,
+});
+
 const setTracks = (currentAppState, tracks) => ({
   ...currentAppState,
   tracks,
 });
 
-export { findSelectedZone, setAlbums, setSelectedScreen, setTracks };
+export {
+  findSelectedZone,
+  setAlbums,
+  setArtists,
+  setSelectedScreen,
+  setTracks,
+};
