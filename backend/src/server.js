@@ -146,7 +146,7 @@ const serviceStatus = new RoonApiStatus(roon);
 
 roon.init_services({
   /* eslint-disable camelcase */
-  required_services: [RoonApiTransport],
+  required_services: [RoonApiTransport, RoonApiBrowse],
   provided_services: [serviceStatus],
   /* eslint-enable camelcase */
 });
