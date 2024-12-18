@@ -244,6 +244,24 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('trackAddNext', ({ itemKey, zoneId }) => {
+    /* eslint-disable no-console */
+    console.log('server.js: processing trackAddNext message');
+    /* eslint-enable no-console */
+
+    browser.loadTrack(browseInstance, itemKey).then((trackActions) => {
+      const trackAddNextItem = trackActions.items.find(
+        (item) => item.title === 'Add Next',
+      );
+
+      browseInstance.browse({
+        hierarchy: 'browse',
+        item_key: trackAddNextItem.item_key,
+        zone_or_output_id: zoneId,
+      });
+    });
+  });
+
   socket.on('pause', ({ zoneId }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing pause message: message:', zoneId);
