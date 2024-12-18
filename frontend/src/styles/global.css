@@ -213,7 +213,7 @@ body {
 
 .track-row {
   display: grid;
-  grid-template-columns: 80px 1fr 1fr; /* Fixed width for image, equal width for name and artist */
+  grid-template-columns: 80px 1fr 1fr 80px;
   align-items: center;
   padding: 8px 16px;
   border-bottom: 1px solid #ddd;
@@ -236,7 +236,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 8px; /* Adds some horizontal padding */
+  padding: 0 8px;
 }
 
 .track-row__name {
@@ -247,4 +247,7 @@ body {
 .track-row__artist {
   font-size: 14px;
   color: #555;
+}
+
+.track-row__track-add-next {
 }
