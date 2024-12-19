@@ -136,10 +136,6 @@ body {
   transition: transform 0.2s;
 }
 
-.album-card:hover {
-  transform: scale(1.05);
-}
-
 .album-card__image {
   width: 150px;
   height: 150px;
@@ -178,10 +174,6 @@ body {
   background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
-}
-
-.artist-card:hover {
-  transform: scale(1.05);
 }
 
 .artist-card__image {
