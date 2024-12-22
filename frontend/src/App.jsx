@@ -7,7 +7,7 @@ import { loadConfig, saveConfig } from './config';
 import Main from './Main';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setArtists, setTracks } from './utils';
+import { setAlbum, setAlbums, setArtists, setTracks } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -15,6 +15,7 @@ function App() {
   });
 
   const [appState, setAppState] = useState({
+    album: [],
     albums: [],
     artists: [],
     isZonesModalOpen: false,
@@ -108,6 +109,14 @@ function App() {
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
+    });
+
+    socket.on('album', (album) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing album message: album:', album);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setAlbum(currentAppState, album));
     });
 
     socket.on('allArtists', (allArtists) => {

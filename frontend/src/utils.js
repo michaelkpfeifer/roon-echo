@@ -16,6 +16,11 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
+const setAlbum = (currentAppState, album) => ({
+  ...currentAppState,
+  album,
+});
+
 const setArtists = (currentAppState, artists) => ({
   ...currentAppState,
   artists,
@@ -29,6 +34,7 @@ const setTracks = (currentAppState, tracks) => ({
 export {
   findSelectedZone,
   setAlbums,
+  setAlbum,
   setArtists,
   setSelectedScreen,
   setTracks,

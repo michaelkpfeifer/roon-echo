@@ -3,22 +3,37 @@ import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
+import { setSelectedScreen } from '../utils';
 
 function AlbumCard({ album }) {
-  const { coreUrlRef } = useContext(AppContext);
+  const { coreUrlRef, setAppState, socketRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
   return (
     <div className="album-card">
-      {album.image_key ? (
-        <img
-          src={`${coreUrl}/api/image/${album.image_key}?scale=fit&width=150&height=150`}
-          alt={album.title}
-          className="album-card__image"
-        />
-      ) : (
-        <img src={noAlbumArt} alt={album.title} className="album-card__image" />
-      )}
+      <button
+        type="button"
+        onClick={() => {
+          setAppState((currentAppState) =>
+            setSelectedScreen(currentAppState, 'album'),
+          );
+          socketRef.current.emit('album', { itemKey: album.item_key });
+        }}
+      >
+        {album.image_key ? (
+          <img
+            src={`${coreUrl}/api/image/${album.image_key}?scale=fit&width=150&height=150`}
+            alt={album.title}
+            className="album-card__image"
+          />
+        ) : (
+          <img
+            src={noAlbumArt}
+            alt={album.title}
+            className="album-card__image"
+          />
+        )}
+      </button>
       <div className="album-card__title">
         <b>{album.title}</b>
       </div>
@@ -32,6 +47,7 @@ AlbumCard.propTypes = {
     title: PropTypes.string.isRequired,
     subtitle: PropTypes.string.isRequired,
     image_key: PropTypes.string,
+    item_key: PropTypes.string,
   }).isRequired,
 };
 
