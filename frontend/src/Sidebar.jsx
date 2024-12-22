@@ -8,8 +8,8 @@ function Sidebar() {
 
   const handleScreenSelection = (event) => {
     const selectedScreen = event.target.value;
-    setAppState((currentAppContext) =>
-      setSelectedScreen(currentAppContext, selectedScreen),
+    setAppState((currentAppState) =>
+      setSelectedScreen(currentAppState, selectedScreen),
     );
     socketRef.current.emit(selectedScreen);
   };
