@@ -167,6 +167,31 @@ const loadTracks = async (browseInstance) => {
   return tracksLoadData;
 };
 
+const loadAlbum = async (browseInstance, itemKey) => {
+  try {
+    const albumBrowseData = await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: itemKey,
+    });
+
+    const albumLoadData = await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: albumBrowseData.list.count,
+    });
+
+    /* eslint-disable no-console */
+    // console.log('browser.js: loadTopLevel(): albumLoadData:', albumLoadData);
+    /* eslint-enable no-console */
+
+    return albumLoadData;
+  } catch (err) {
+    process.stderr.write('Error: Failed to load track by item key.\n');
+    exit(1);
+    return null;
+  }
+};
+
 const loadTrack = async (browseInstance, itemKey) => {
   try {
     const trackBrowseData = await browseAsync(browseInstance, {
@@ -192,4 +217,4 @@ const loadTrack = async (browseInstance, itemKey) => {
   }
 };
 
-export { loadAlbums, loadArtists, loadTrack, loadTracks };
+export { loadAlbum, loadAlbums, loadArtists, loadTrack, loadTracks };

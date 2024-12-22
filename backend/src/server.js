@@ -213,6 +213,20 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('album', ({ itemKey }) => {
+    /* eslint-disable no-console */
+    console.log('server.js: processing track message');
+    /* eslint-enable no-console */
+
+    browser.loadAlbum(browseInstance, itemKey).then((albumLoadData) => {
+      /* eslint-disable no-console */
+      console.log('albumLoadData.items:', albumLoadData.items);
+      /* eslint-enable no-console */
+
+      socket.emit('album', albumLoadData.items);
+    });
+  });
+
   socket.on('artists', () => {
     /* eslint-disable no-console */
     console.log('server.js: processing artists message');
@@ -250,6 +264,10 @@ io.on('connection', (socket) => {
     /* eslint-enable no-console */
 
     browser.loadTrack(browseInstance, itemKey).then((trackActions) => {
+      /* eslint-disable no-console */
+      console.log('trackActions.items:', trackActions.items);
+      /* eslint-enable no-console */
+
       const trackAddNextItem = trackActions.items.find(
         (item) => item.title === 'Add Next',
       );
