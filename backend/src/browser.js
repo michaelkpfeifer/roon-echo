@@ -169,18 +169,22 @@ const loadTracks = async (browseInstance) => {
 
 const loadTrack = async (browseInstance, itemKey) => {
   try {
-    const browseData = await browseAsync(browseInstance, {
+    const trackBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',
       item_key: itemKey,
     });
 
-    const loadData = await loadAsync(browseInstance, {
+    const trackLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
       offset: 0,
-      count: browseData.list.count,
+      count: trackBrowseData.list.count,
     });
 
-    return loadData;
+    /* eslint-disable no-console */
+    // console.log('browser.js: loadTopLevel(): trackLoadData:', trackLoadData);
+    /* eslint-enable no-console */
+
+    return trackLoadData;
   } catch (err) {
     process.stderr.write('Error: Failed to load track by item key.\n');
     exit(1);
