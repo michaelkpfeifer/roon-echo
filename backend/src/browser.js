@@ -217,4 +217,12 @@ const loadTrack = async (browseInstance, itemKey) => {
   }
 };
 
-export { loadAlbum, loadAlbums, loadArtists, loadTrack, loadTracks };
+export {
+  browseAsync,
+  loadAlbum,
+  loadAlbums,
+  loadArtists,
+  loadAsync,
+  loadTrack,
+  loadTracks,
+};

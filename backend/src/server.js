@@ -199,6 +199,21 @@ io.on('connection', (socket) => {
     socket.emit('initialState', frontendRoonState);
   });
 
+  socket.on('loadData', async (dataRef) => {
+    let browseOptions;
+    if (dataRef === undefined) {
+      browseOptions = { hierarchy: 'browse', pop_all: true, item_key: null };
+    } else {
+      browseOptions = { hierarchy: 'browse', item_key: dataRef.itemKey };
+    }
+    await browser.browseAsync(browseInstance, browseOptions);
+    const loadData = await browser.loadAsync(browseInstance, {
+      hierarchy: 'browse',
+    });
+
+    socket.emit('loadData', loadData);
+  });
+
   socket.on('albums', () => {
     /* eslint-disable no-console */
     console.log('server.js: processing albums message');
