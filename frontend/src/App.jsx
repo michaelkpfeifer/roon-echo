@@ -113,6 +113,7 @@ function App() {
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => setLoadData(currentAppState, loadData));
+      window.scrollTo(0, 0);
     });
 
     socket.on('allAlbums', (allAlbums) => {
