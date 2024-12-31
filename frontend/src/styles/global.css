@@ -61,9 +61,9 @@ body {
 }
 
 .cover img {
-  width: 72px;
-  height: auto;
-  margin-right: 16px;
+    width: 72px;
+    height: auto;
+    margin-right: 16px;
 }
 
 .controls {
@@ -79,166 +79,166 @@ body {
 }
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
-  min-width: 400px;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+    min-width: 400px;
 }
 
 .modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 .modal-confirm {
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: var(--modal-confirm-button-bg);
-  color: var(--modal-confirm-button-text);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: var(--modal-confirm-button-bg);
+    color: var(--modal-confirm-button-text);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 .modal-confirm:hover {
-  background-color: var(--modal-confirm-button-hover-bg);
+    background-color: var(--modal-confirm-button-hover-bg);
 }
 
 
 .album-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
 .album-card__image {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
 }
 
 .album-card__title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
 .album-card__subtitle {
-  font-size: 14px;
-  color: #555;
+    font-size: 14px;
+    color: #555;
 }
 
 .albums-container {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  margin-top: 16px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-top: 16px;
 }
 
 
 .artist-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
 .artist-card__image {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
 }
 
 .artist-card__title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
 .artist-card__subtitle {
-  font-size: 14px;
-  color: #555;
+    font-size: 14px;
+    color: #555;
 }
 
 .artists-container {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  margin-top: 16px;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-top: 16px;
 }
 
 
 .track-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 1fr 80px;
-  align-items: center;
-  padding: 8px 16px;
-  border-bottom: 1px solid #ddd;
-  transition: background-color 0.2s;
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 80px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s;
 }
 
 .track-row:hover {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
 
 .track-row__image {
-  width: 75px;
-  height: 75px;
-  object-fit: cover;
-  border-radius: 4px;
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 .track-row__name,
 .track-row__artist {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
 }
 
 .track-row__name {
-  font-size: 16px;
-  font-weight: bold;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .track-row__artist {
-  font-size: 14px;
-  color: #555;
+    font-size: 14px;
+    color: #555;
 }
 
 .track-row__track-add-next {
