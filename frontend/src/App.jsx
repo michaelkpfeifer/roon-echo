@@ -7,7 +7,13 @@ import { loadConfig, saveConfig } from './config';
 import Main from './Main';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbum, setAlbums, setArtists, setTracks } from './utils';
+import {
+  setAlbum,
+  setAlbums,
+  setArtists,
+  setLoadData,
+  setTracks,
+} from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -19,6 +25,7 @@ function App() {
     albums: [],
     artists: [],
     isZonesModalOpen: false,
+    loadData: {},
     selectedScreen: null,
     tmpSelectedZoneId: null,
     tracks: [],
@@ -98,6 +105,14 @@ function App() {
       setRoonState((currentState) =>
         fp.merge(currentState, zonesChangedMessage),
       );
+    });
+
+    socket.on('loadData', (loadData) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing loadData message: loadData:', loadData);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setLoadData(currentAppState, loadData));
     });
 
     socket.on('allAlbums', (allAlbums) => {

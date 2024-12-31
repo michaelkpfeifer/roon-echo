@@ -31,11 +31,17 @@ const setTracks = (currentAppState, tracks) => ({
   tracks,
 });
 
+const setLoadData = (currentAppState, loadData) => ({
+  ...currentAppState,
+  loadData,
+});
+
 export {
   findSelectedZone,
-  setAlbums,
   setAlbum,
+  setAlbums,
   setArtists,
+  setLoadData,
   setSelectedScreen,
   setTracks,
 };

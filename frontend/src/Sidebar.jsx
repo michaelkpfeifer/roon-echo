@@ -11,11 +11,21 @@ function Sidebar() {
     setAppState((currentAppState) =>
       setSelectedScreen(currentAppState, selectedScreen),
     );
+
     socketRef.current.emit(selectedScreen);
   };
 
   return (
     <div>
+      <div>
+        Load Data
+        <input
+          name="selectedScreen"
+          value="loadData"
+          type="radio"
+          onChange={handleScreenSelection}
+        />
+      </div>
       <div>
         Albums
         <input
