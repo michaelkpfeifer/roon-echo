@@ -9,6 +9,7 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
+import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
   buildFrontendRoonState,
@@ -214,18 +215,22 @@ io.on('connection', (socket) => {
     socket.emit('loadData', loadData);
   });
 
-  socket.on('albums', () => {
+  socket.on('albums', async () => {
     /* eslint-disable no-console */
     console.log('server.js: processing albums message');
     /* eslint-enable no-console */
 
-    browser.loadAlbums(browseInstance).then((albumsLoadData) => {
-      /* eslint-disable no-console */
-      console.log('albumsLoadData.items.length:', albumsLoadData.items.length);
-      /* eslint-enable no-console */
+    const albumsLoadData = await browser.loadAlbums(browseInstance);
+    const enrichedAlbums = await enrichList(
+      browseInstance,
+      albumsLoadData.items,
+    );
 
-      socket.emit('allAlbums', albumsLoadData.items);
-    });
+    /* eslint-disable no-console */
+    console.log('enrichedAlbums.length:', enrichedAlbums.length);
+    /* eslint-enable no-console */
+
+    socket.emit('allAlbums', enrichedAlbums);
   });
 
   socket.on('album', ({ itemKey }) => {
