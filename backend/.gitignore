@@ -1,5 +1,6 @@
 /.env
+/.ignore/
 /config.json
+/db/
 /node_modules/
 /trash/
-/.ignore/
