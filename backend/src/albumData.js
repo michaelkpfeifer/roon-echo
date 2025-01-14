@@ -1,11 +1,16 @@
+import knexInit from 'knex';
 import fp from 'lodash/fp.js';
 /* eslint-disable import/no-unresolved */
 import PQueue from 'p-queue';
 /* eslint-enable import/no-unresolved */
 
+import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
 import findByArtistAndAlbumName from './database.js';
+import { insertAlbumWithTracks } from './repository.js';
 import { camelCaseKeys } from './utils.js';
+
+const knex = knexInit(knexConfig.development);
 
 const artistName = (enrichedAlbum) => enrichedAlbum.roonAlbum.subtitle;
 
@@ -129,6 +134,15 @@ const addMbData = async (enrichedAlbum) => {
       enrichedAlbum.roonAlbumTracks,
     );
 
+    if (matchingMbRelease !== null) {
+      insertAlbumWithTracks({
+        knex,
+        artistName: artistName(enrichedAlbum),
+        albumName: albumName(enrichedAlbum),
+        mbRelease: matchingMbRelease,
+      });
+    }
+
     // TODO. Using mbData as a key is a temporary hack. What we really
     // want to do if we found a match is write the data in a
     // standardized way to the database and the call addStoredData to
@@ -200,11 +214,20 @@ const buildEnrichedAlbum = (roonAlbum) => {
 };
 
 const enrichList = async (browseInstance, roonAlbums) => {
+  // TODO. The following lines cleaning the database need to be
+  // removed once we reach a state where we want to keep the data we
+  // have already processed.
+
+  await knex('albums').del();
+  await knex('tracks').del();
+
+  await knex.raw('PRAGMA journal_mode = WAL;');
+
   // TODO. tmpRoonAlbums needs to be removed again. It has been
   // introduced to allow working with smaller lists before processing
   // more than 1000 albums.
 
-  const tmpRoonAlbums = roonAlbums.slice(0, 60);
+  const tmpRoonAlbums = roonAlbums.slice(0, 4);
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
