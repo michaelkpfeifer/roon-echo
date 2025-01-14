@@ -6,8 +6,10 @@ import PQueue from 'p-queue';
 
 import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
-import findByArtistAndAlbumName from './database.js';
-import { insertAlbumWithTracks } from './repository.js';
+import {
+  findByArtistAndAlbumName,
+  insertAlbumWithTracks,
+} from './repository.js';
 import { camelCaseKeys } from './utils.js';
 
 const knex = knexInit(knexConfig.development);
@@ -180,6 +182,7 @@ const addStoredData = (enrichedAlbum) => {
   }
 
   const storedData = findByArtistAndAlbumName(
+    knex,
     artistName(enrichedAlbum),
     albumName(enrichedAlbum),
   );
@@ -227,7 +230,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // introduced to allow working with smaller lists before processing
   // more than 1000 albums.
 
-  const tmpRoonAlbums = roonAlbums.slice(0, 4);
+  const tmpRoonAlbums = roonAlbums.slice(0, 10);
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
