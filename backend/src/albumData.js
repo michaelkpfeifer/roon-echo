@@ -6,10 +6,7 @@ import PQueue from 'p-queue';
 
 import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
-import {
-  findByArtistAndAlbumName,
-  insertAlbumWithTracks,
-} from './repository.js';
+import { getAlbumWithTracks, insertAlbumWithTracks } from './repository.js';
 import { camelCaseKeys } from './utils.js';
 
 const knex = knexInit(knexConfig.development);
@@ -176,12 +173,12 @@ const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
   };
 };
 
-const addStoredData = (enrichedAlbum) => {
+const addStoredData = async (enrichedAlbum) => {
   if (enrichedAlbum.status !== 'pending') {
     return enrichedAlbum;
   }
 
-  const storedData = findByArtistAndAlbumName(
+  const storedData = await getAlbumWithTracks(
     knex,
     artistName(enrichedAlbum),
     albumName(enrichedAlbum),
@@ -221,8 +218,8 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // removed once we reach a state where we want to keep the data we
   // have already processed.
 
-  await knex('albums').del();
-  await knex('tracks').del();
+  // await knex('albums').del();
+  // await knex('tracks').del();
 
   await knex.raw('PRAGMA journal_mode = WAL;');
 
@@ -234,13 +231,14 @@ const enrichList = async (browseInstance, roonAlbums) => {
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
-    .map((enrichedAlbum) => identifyUnknown(enrichedAlbum))
-    .map((enrichedAlbum) => addStoredData(enrichedAlbum));
+    .map((enrichedAlbum) => identifyUnknown(enrichedAlbum));
 
   // TODO. It is unclear how the reduce() call below behaves in
   // practice for a large amount of data. If things become really
   // slow, it should still be possible to use the more conventional
-  // loop below (that ESLint complains about).
+  // loop below (that ESLint complains about). And for consisteny
+  // reasons it may be a good idea to move the two map calls into the
+  // reduce call as well.
 
   // const results = [];
   // for (const album of tmpRoonAlbums) {
@@ -251,11 +249,12 @@ const enrichList = async (browseInstance, roonAlbums) => {
   enrichedAlbums = await enrichedAlbums.reduce(
     async (previousPromise, currentAlbum) => {
       const processedAlbums = await previousPromise;
-      const updatedAlbum = await addRoonAlbumTracks(
+      const currentAlbumWithStoreddata = await addStoredData(currentAlbum);
+      const currentAlbumWithRoonAlbumTracks = await addRoonAlbumTracks(
         browseInstance,
-        currentAlbum,
+        currentAlbumWithStoreddata,
       );
-      return [...processedAlbums, updatedAlbum];
+      return [...processedAlbums, currentAlbumWithRoonAlbumTracks];
     },
     Promise.resolve([]),
   );

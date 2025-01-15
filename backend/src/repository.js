@@ -1,4 +1,23 @@
-const findByArtistAndAlbumName = (knex, artistName, albumName) => null;
+const getAlbumWithTracks = async (knex, artistName, albumName) => {
+  const albumWithTracks = await knex('albums')
+    .where({ artistName, albumName })
+    .select('*')
+    .first()
+    .then(async (album) => {
+      if (!album) {
+        return null;
+      }
+
+      const tracks = await knex('tracks')
+        .where({ album_id: album.id })
+        .select('*')
+        .orderBy('number', 'asc');
+
+      return { ...album, tracks };
+    });
+
+  return albumWithTracks;
+};
 
 const insertAlbumWithTracks = async ({
   knex,
@@ -19,4 +38,4 @@ const insertAlbumWithTracks = async ({
     await trx('tracks').insert(tracks);
   });
 
-export { findByArtistAndAlbumName, insertAlbumWithTracks };
+export { getAlbumWithTracks, insertAlbumWithTracks };
