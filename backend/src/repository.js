@@ -1,3 +1,5 @@
+import Result from './result.js';
+
 const getAlbumWithTracks = async (knex, artistName, albumName) => {
   const albumWithTracks = await knex('albums')
     .where({ artistName, albumName })
@@ -5,7 +7,7 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
     .first()
     .then(async (album) => {
       if (!album) {
-        return null;
+        return Result.Err('getAlbumWithTracks: albumNotFound');
       }
 
       const tracks = await knex('tracks')
@@ -13,7 +15,11 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
         .select('id', 'number', 'name')
         .orderBy('number', 'asc');
 
-      return { ...album, tracks };
+      if (!tracks) {
+        return Result.Err('getAlbumWithTracks: tracksNotFound');
+      }
+
+      return Result.Ok({ album, tracks });
     });
 
   return albumWithTracks;

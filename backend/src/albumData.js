@@ -4,6 +4,7 @@ import fp from 'lodash/fp.js';
 import PQueue from 'p-queue';
 /* eslint-enable import/no-unresolved */
 
+import Result from './result.js';
 import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
 import { getAlbumWithTracks, insertAlbumWithTracks } from './repository.js';
@@ -114,7 +115,7 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
   return null;
 };
 
-const addMbData = async (enrichedAlbum) => {
+const getMbData = async (enrichedAlbum) => {
   if (enrichedAlbum.status === 'roonAlbumTracksAdded') {
     const roonAlbumTrackCount = enrichedAlbum.roonAlbumTracks.length;
     const mbSearchData = await runMbSearch(enrichedAlbum);
@@ -144,8 +145,8 @@ const addMbData = async (enrichedAlbum) => {
 
     // TODO. Using mbData as a key is a temporary hack. What we really
     // want to do if we found a match is write the data in a
-    // standardized way to the database and the call addStoredData to
-    // get the information back as if had always been in the
+    // standardized way to the database and the call readMbDataFromDb
+    // to get the information back as if had always been in the
     // database.
 
     return { ...enrichedAlbum, mbData: matchingMbRelease };
@@ -173,19 +174,20 @@ const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
   };
 };
 
-const addStoredData = async (enrichedAlbum) => {
+const readMbDataFromDb = async (enrichedAlbum) => {
   if (enrichedAlbum.status !== 'pending') {
     return enrichedAlbum;
   }
 
-  const storedData = await getAlbumWithTracks(
+  const mbData = await getAlbumWithTracks(
     knex,
     artistName(enrichedAlbum),
     albumName(enrichedAlbum),
   );
 
-  if (storedData) {
-    return { ...enrichedAlbum, storedData, status: 'storedDataLoaded' };
+  if (Result.isOk(mbData)) {
+    const { album: mbAlbum, tracks: mbAlbumTracks } = Result.unwrap(mbData);
+    return { ...enrichedAlbum, mbAlbum, mbAlbumTracks, status: 'mbDataLoaded' };
   }
 
   return enrichedAlbum;
@@ -206,7 +208,8 @@ const buildEnrichedAlbum = (roonAlbum) => {
     status: 'pending',
     roonAlbum: camelCaseKeys(roonAlbum),
     roonAlbumTracks: null,
-    storedData: null,
+    mbAlbum: null,
+    mbAlbumTracks: null,
     mbData: null,
   };
 
@@ -249,10 +252,10 @@ const enrichList = async (browseInstance, roonAlbums) => {
   enrichedAlbums = await enrichedAlbums.reduce(
     async (previousPromise, currentAlbum) => {
       const processedAlbums = await previousPromise;
-      const currentAlbumWithStoreddata = await addStoredData(currentAlbum);
+      const currentAlbumWithMbdata = await readMbDataFromDb(currentAlbum);
       const currentAlbumWithRoonAlbumTracks = await addRoonAlbumTracks(
         browseInstance,
-        currentAlbumWithStoreddata,
+        currentAlbumWithMbdata,
       );
       return [...processedAlbums, currentAlbumWithRoonAlbumTracks];
     },
@@ -266,7 +269,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
 
   enrichedAlbums = await Promise.all(
     enrichedAlbums.map(async (enrichedAlbum) =>
-      mbQueue.add(() => addMbData(enrichedAlbum)),
+      mbQueue.add(() => getMbData(enrichedAlbum)),
     ),
   );
 
