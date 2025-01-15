@@ -1,7 +1,7 @@
 const getAlbumWithTracks = async (knex, artistName, albumName) => {
   const albumWithTracks = await knex('albums')
     .where({ artistName, albumName })
-    .select('*')
+    .select('id', 'artistName', 'albumName')
     .first()
     .then(async (album) => {
       if (!album) {
@@ -10,7 +10,7 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
 
       const tracks = await knex('tracks')
         .where({ album_id: album.id })
-        .select('*')
+        .select('id', 'number', 'name')
         .orderBy('number', 'asc');
 
       return { ...album, tracks };

@@ -227,7 +227,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // introduced to allow working with smaller lists before processing
   // more than 1000 albums.
 
-  const tmpRoonAlbums = roonAlbums.slice(0, 10);
+  const tmpRoonAlbums = roonAlbums.slice(0, 4);
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
