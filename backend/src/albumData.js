@@ -116,43 +116,58 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
 };
 
 const getMbData = async (enrichedAlbum) => {
-  if (enrichedAlbum.status === 'roonAlbumTracksAdded') {
-    const roonAlbumTrackCount = enrichedAlbum.roonAlbumTracks.length;
-    const mbSearchData = await runMbSearch(enrichedAlbum);
-
-    const highScoreMbSearchData = {
-      ...mbSearchData,
-      releases: mbSearchData.releases.filter(
-        (release) =>
-          release.score === 100 &&
-          release['track-count'] === roonAlbumTrackCount,
-      ),
-    };
-
-    const matchingMbRelease = await findMatchingMbRelease(
-      highScoreMbSearchData.releases.map((release) => release.id),
-      enrichedAlbum.roonAlbumTracks,
-    );
-
-    if (matchingMbRelease !== null) {
-      insertAlbumWithTracks({
-        knex,
-        artistName: artistName(enrichedAlbum),
-        albumName: albumName(enrichedAlbum),
-        mbRelease: matchingMbRelease,
-      });
-    }
-
-    // TODO. Using mbData as a key is a temporary hack. What we really
-    // want to do if we found a match is write the data in a
-    // standardized way to the database and the call readMbDataFromDb
-    // to get the information back as if had always been in the
-    // database.
-
-    return { ...enrichedAlbum, mbData: matchingMbRelease };
+  if (enrichedAlbum.status !== 'roonAlbumTracksAdded') {
+    return enrichedAlbum;
   }
 
-  return enrichedAlbum;
+  const roonAlbumTrackCount = enrichedAlbum.roonAlbumTracks.length;
+  const mbSearchData = await runMbSearch(enrichedAlbum);
+
+  const highScoreMbSearchData = {
+    ...mbSearchData,
+    releases: mbSearchData.releases.filter(
+      (release) =>
+        release.score === 100 && release['track-count'] === roonAlbumTrackCount,
+    ),
+  };
+
+  const matchingMbRelease = await findMatchingMbRelease(
+    highScoreMbSearchData.releases.map((release) => release.id),
+    enrichedAlbum.roonAlbumTracks,
+  );
+
+  if (matchingMbRelease !== null) {
+    await insertAlbumWithTracks({
+      knex,
+      artistName: artistName(enrichedAlbum),
+      albumName: albumName(enrichedAlbum),
+      mbRelease: matchingMbRelease,
+    });
+
+    const albumWithTracks = await getAlbumWithTracks(
+      knex,
+      artistName(enrichedAlbum),
+      albumName(enrichedAlbum),
+    );
+
+    if (Result.isOk(albumWithTracks)) {
+      const { album: mbAlbum, tracks: mbAlbumTracks } =
+        Result.unwrap(albumWithTracks);
+      return {
+        ...enrichedAlbum,
+        mbAlbum,
+        mbAlbumTracks,
+        status: 'mbDataLoaded',
+        mbData: [],
+      };
+    }
+  }
+
+  // TODO. Simply returning highScoreMbSearchData is not quite what we
+  // need. We need the track information because we certainly don't
+  // want to run another round of API calls to MusicBrainz.
+
+  return { ...enrichedAlbum, mbData: highScoreMbSearchData };
 };
 
 const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
@@ -179,14 +194,15 @@ const readMbDataFromDb = async (enrichedAlbum) => {
     return enrichedAlbum;
   }
 
-  const mbData = await getAlbumWithTracks(
+  const albumWithTracks = await getAlbumWithTracks(
     knex,
     artistName(enrichedAlbum),
     albumName(enrichedAlbum),
   );
 
-  if (Result.isOk(mbData)) {
-    const { album: mbAlbum, tracks: mbAlbumTracks } = Result.unwrap(mbData);
+  if (Result.isOk(albumWithTracks)) {
+    const { album: mbAlbum, tracks: mbAlbumTracks } =
+      Result.unwrap(albumWithTracks);
     return { ...enrichedAlbum, mbAlbum, mbAlbumTracks, status: 'mbDataLoaded' };
   }
 
@@ -210,7 +226,7 @@ const buildEnrichedAlbum = (roonAlbum) => {
     roonAlbumTracks: null,
     mbAlbum: null,
     mbAlbumTracks: null,
-    mbData: null,
+    mbData: [],
   };
 
   return enrichedAlbum;
@@ -221,8 +237,8 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // removed once we reach a state where we want to keep the data we
   // have already processed.
 
-  // await knex('albums').del();
-  // await knex('tracks').del();
+  await knex('albums').del();
+  await knex('tracks').del();
 
   await knex.raw('PRAGMA journal_mode = WAL;');
 
@@ -230,7 +246,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // introduced to allow working with smaller lists before processing
   // more than 1000 albums.
 
-  const tmpRoonAlbums = roonAlbums.slice(0, 4);
+  const tmpRoonAlbums = roonAlbums.slice(8, 9);
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
@@ -263,8 +279,8 @@ const enrichList = async (browseInstance, roonAlbums) => {
   );
 
   const mbQueue = new PQueue({
-    interval: 200,
-    intervalCap: 2,
+    interval: 500,
+    intervalCap: 1,
   });
 
   enrichedAlbums = await Promise.all(
