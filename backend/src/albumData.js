@@ -97,6 +97,8 @@ const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
   );
 
 const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
+  let nonMatchinMbReleases = [];
+
   for (const mbReleaseId of mbReleaseIds) {
     const mbRelease = await runMbFetch(mbReleaseId);
 
@@ -108,11 +110,13 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
         roonAlbumTracks,
       )
     ) {
-      return mbRelease;
+      nonMatchinMbReleases = [];
+      return Result.Ok(mbRelease);
     }
+    nonMatchinMbReleases = [...nonMatchinMbReleases, mbRelease];
   }
 
-  return null;
+  return Result.Err(nonMatchinMbReleases);
 };
 
 const getMbData = async (enrichedAlbum) => {
@@ -131,43 +135,46 @@ const getMbData = async (enrichedAlbum) => {
     ),
   };
 
-  const matchingMbRelease = await findMatchingMbRelease(
+  const matchingMbReleaseResult = await findMatchingMbRelease(
     highScoreMbSearchData.releases.map((release) => release.id),
     enrichedAlbum.roonAlbumTracks,
   );
 
-  if (matchingMbRelease !== null) {
-    await insertAlbumWithTracks({
-      knex,
-      artistName: artistName(enrichedAlbum),
-      albumName: albumName(enrichedAlbum),
-      mbRelease: matchingMbRelease,
-    });
+  if (Result.isOk(matchingMbReleaseResult)) {
+    const matchingMbRelease = Result.unwrap(matchingMbReleaseResult);
 
-    const albumWithTracks = await getAlbumWithTracks(
-      knex,
-      artistName(enrichedAlbum),
-      albumName(enrichedAlbum),
-    );
+    if (matchingMbRelease !== null) {
+      await insertAlbumWithTracks({
+        knex,
+        artistName: artistName(enrichedAlbum),
+        albumName: albumName(enrichedAlbum),
+        mbRelease: matchingMbRelease,
+      });
 
-    if (Result.isOk(albumWithTracks)) {
-      const { album: mbAlbum, tracks: mbAlbumTracks } =
-        Result.unwrap(albumWithTracks);
-      return {
-        ...enrichedAlbum,
-        mbAlbum,
-        mbAlbumTracks,
-        status: 'mbDataLoaded',
-        mbData: [],
-      };
+      const albumWithTracks = await getAlbumWithTracks(
+        knex,
+        artistName(enrichedAlbum),
+        albumName(enrichedAlbum),
+      );
+
+      if (Result.isOk(albumWithTracks)) {
+        const { album: mbAlbum, tracks: mbAlbumTracks } =
+          Result.unwrap(albumWithTracks);
+        return {
+          ...enrichedAlbum,
+          mbAlbum,
+          mbAlbumTracks,
+          status: 'mbDataLoaded',
+          mbData: [],
+        };
+      }
     }
   }
 
-  // TODO. Simply returning highScoreMbSearchData is not quite what we
-  // need. We need the track information because we certainly don't
-  // want to run another round of API calls to MusicBrainz.
-
-  return { ...enrichedAlbum, mbData: highScoreMbSearchData };
+  return {
+    ...enrichedAlbum,
+    mbData: Result.unwrapErr(matchingMbReleaseResult),
+  };
 };
 
 const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
