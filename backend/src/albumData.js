@@ -96,6 +96,20 @@ const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
     roonAlbumTracks,
   );
 
+const extractRelevantData = (mbRelease) => ({
+  id: mbRelease.id,
+  title: mbRelease.title,
+  tracks: mbRelease.media
+    .flatMap((media) => media.tracks)
+    .map((track) => ({
+      id: track.id,
+      title: track.title,
+      length: track.length,
+      position: track.position,
+      number: track.number,
+    })),
+});
+
 const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
   let nonMatchinMbReleases = [];
 
@@ -113,7 +127,11 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
       nonMatchinMbReleases = [];
       return Result.Ok(mbRelease);
     }
-    nonMatchinMbReleases = [...nonMatchinMbReleases, mbRelease];
+
+    nonMatchinMbReleases = [
+      ...nonMatchinMbReleases,
+      extractRelevantData(mbRelease),
+    ];
   }
 
   return Result.Err(nonMatchinMbReleases);
@@ -253,7 +271,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // introduced to allow working with smaller lists before processing
   // more than 1000 albums.
 
-  const tmpRoonAlbums = roonAlbums.slice(8, 9);
+  const tmpRoonAlbums = roonAlbums.slice(9, 10);
 
   let enrichedAlbums = tmpRoonAlbums
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
