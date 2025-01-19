@@ -13,8 +13,11 @@ export function up(knex) {
       .inTable('albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
-    table.string('number').notNullable();
+    table.string('mb_track_id').notNullable();
     table.string('name').notNullable();
+    table.string('number').notNullable();
+    table.integer('position').notNullable();
+    table.integer('length').notNullable();
     table.timestamps(true, true);
   });
 }

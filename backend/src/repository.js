@@ -32,13 +32,20 @@ const insertAlbumWithTracks = async ({
   mbRelease,
 }) =>
   knex.transaction(async (trx) => {
-    const [albumId] = await trx('albums').insert({ artistName, albumName });
+    const [albumId] = await trx('albums').insert({
+      artistName,
+      albumName,
+      mb_release_id: mbRelease.id,
+    });
     const tracks = mbRelease.media
       .flatMap((medium) => medium.tracks)
       .map((track) => ({
+        album_id: albumId,
+        mb_track_id: track.id,
         name: track.title,
         number: track.number,
-        album_id: albumId,
+        position: track.position,
+        length: track.length,
       }));
 
     await trx('tracks').insert(tracks);
