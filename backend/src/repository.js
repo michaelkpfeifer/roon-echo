@@ -13,7 +13,7 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
       const tracks = await knex('tracks')
         .where({ album_id: album.id })
         .select('id', 'number', 'name')
-        .orderBy('number', 'asc');
+        .orderBy('position', 'asc');
 
       if (!tracks) {
         return Result.Err('getAlbumWithTracks: tracksNotFound');
