@@ -233,20 +233,6 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('album', ({ itemKey }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing track message');
-    /* eslint-enable no-console */
-
-    browser.loadAlbum(browseInstance, itemKey).then((albumLoadData) => {
-      /* eslint-disable no-console */
-      console.log('albumLoadData.items:', albumLoadData.items);
-      /* eslint-enable no-console */
-
-      socket.emit('album', albumLoadData.items);
-    });
-  });
-
   socket.on('artists', () => {
     /* eslint-disable no-console */
     console.log('server.js: processing artists message');
