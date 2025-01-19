@@ -1,4 +1,3 @@
-import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import LoadData from './Main/LoadData';
@@ -12,9 +11,6 @@ function Main() {
       </div>
       <div>
         <Albums />
-      </div>
-      <div>
-        <Album />
       </div>
       <div>
         <Artists />

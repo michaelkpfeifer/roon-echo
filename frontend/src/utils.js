@@ -16,11 +16,6 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
-const setAlbum = (currentAppState, album) => ({
-  ...currentAppState,
-  album,
-});
-
 const setArtists = (currentAppState, artists) => ({
   ...currentAppState,
   artists,
@@ -38,7 +33,6 @@ const setLoadData = (currentAppState, loadData) => ({
 
 export {
   findSelectedZone,
-  setAlbum,
   setAlbums,
   setArtists,
   setLoadData,
