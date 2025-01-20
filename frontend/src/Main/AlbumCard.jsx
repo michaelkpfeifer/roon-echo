@@ -10,29 +10,41 @@ function AlbumCard({ album }) {
 
   return (
     <div className="album-card">
-      {album.image_key ? (
+      <div>{album.status}</div>
+      {album.roonAlbum.imageKey ? (
         <img
-          src={`${coreUrl}/api/image/${album.image_key}?scale=fit&width=150&height=150`}
-          alt={album.title}
+          src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
+          alt={album.roonAlbum.title}
           className="album-card__image"
         />
       ) : (
-        <img src={noAlbumArt} alt={album.title} className="album-card__image" />
+        <img
+          src={noAlbumArt}
+          alt={album.roonAlbum.title}
+          className="album-card__image"
+        />
       )}
       <div className="album-card__title">
-        <b>{album.title}</b>
+        <b>{album.roonAlbum.title}</b>
       </div>
-      <div className="album-card__subtitle">{album.subtitle}</div>
+      <div className="album-card__subtitle">{album.roonAlbum.subtitle}</div>
     </div>
   );
 }
 
 AlbumCard.propTypes = {
   album: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    subtitle: PropTypes.string.isRequired,
-    image_key: PropTypes.string,
-    item_key: PropTypes.string,
+    status: PropTypes.oneOf([
+      'unknownArtistOrTitle',
+      'mbDataLoaded',
+      'roonAlbumTracksAdded',
+    ]).isRequired,
+    roonAlbum: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      subtitle: PropTypes.string.isRequired,
+      imageKey: PropTypes.string,
+      itemKey: PropTypes.string.isRequired,
+    }),
   }).isRequired,
 };
 
