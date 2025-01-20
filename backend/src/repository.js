@@ -3,7 +3,7 @@ import Result from './result.js';
 const getAlbumWithTracks = async (knex, artistName, albumName) => {
   const albumWithTracks = await knex('albums')
     .where({ artistName, albumName })
-    .select('id', 'artistName', 'albumName')
+    .select('id', 'artistName', 'albumName', 'release_date')
     .first()
     .then(async (album) => {
       if (!album) {
@@ -33,9 +33,10 @@ const insertAlbumWithTracks = async ({
 }) =>
   knex.transaction(async (trx) => {
     const [albumId] = await trx('albums').insert({
+      mb_release_id: mbRelease.id,
       artistName,
       albumName,
-      mb_release_id: mbRelease.id,
+      release_date: mbRelease.date,
     });
     const tracks = mbRelease.media
       .flatMap((medium) => medium.tracks)

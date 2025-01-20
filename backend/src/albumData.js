@@ -99,6 +99,7 @@ const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
 const extractRelevantData = (mbRelease) => ({
   id: mbRelease.id,
   title: mbRelease.title,
+  release_date: mbRelease.date,
   tracks: mbRelease.media
     .flatMap((media) => media.tracks)
     .map((track) => ({
@@ -304,8 +305,8 @@ const enrichList = async (browseInstance, roonAlbums) => {
   );
 
   const mbQueue = new PQueue({
-    interval: 500,
-    intervalCap: 1,
+    interval: 250,
+    intervalCap: 4,
   });
 
   enrichedAlbums = await Promise.all(
@@ -326,7 +327,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   );
   /* eslint-enable no-console */
 
-  return roonAlbums;
+  return enrichedAlbums;
 };
 
 export default enrichList;

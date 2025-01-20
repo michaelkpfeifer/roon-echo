@@ -8,6 +8,8 @@ export function up(knex) {
     table.string('mb_release_id').notNullable();
     table.string('artistName').notNullable();
     table.string('albumName').notNullable();
+    table.string('release_date');
+
     table.timestamps(true, true);
   });
 }
