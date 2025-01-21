@@ -99,7 +99,7 @@ const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
 const extractRelevantData = (mbRelease) => ({
   id: mbRelease.id,
   title: mbRelease.title,
-  release_date: mbRelease.date,
+  releaseDate: mbRelease.date,
   tracks: mbRelease.media
     .flatMap((media) => media.tracks)
     .map((track) => ({

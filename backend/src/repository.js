@@ -1,9 +1,10 @@
 import Result from './result.js';
+import { camelCaseKeys } from './utils.js';
 
 const getAlbumWithTracks = async (knex, artistName, albumName) => {
   const albumWithTracks = await knex('albums')
-    .where({ artistName, albumName })
-    .select('id', 'artistName', 'albumName', 'release_date')
+    .where({ artist_name: artistName, album_name: albumName })
+    .select('id', 'artist_name', 'album_name', 'release_date')
     .first()
     .then(async (album) => {
       if (!album) {
@@ -19,7 +20,10 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
         return Result.Err('getAlbumWithTracks: tracksNotFound');
       }
 
-      return Result.Ok({ album, tracks });
+      return Result.Ok({
+        album: camelCaseKeys(album),
+        tracks: camelCaseKeys(tracks),
+      });
     });
 
   return albumWithTracks;
@@ -34,8 +38,8 @@ const insertAlbumWithTracks = async ({
   knex.transaction(async (trx) => {
     const [albumId] = await trx('albums').insert({
       mb_release_id: mbRelease.id,
-      artistName,
-      albumName,
+      artist_name: artistName,
+      album_name: albumName,
       release_date: mbRelease.date,
     });
     const tracks = mbRelease.media
