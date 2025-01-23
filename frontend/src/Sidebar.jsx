@@ -1,58 +1,25 @@
-import { useContext } from 'react';
-
-import AppContext from './AppContext';
-import { setSelectedScreen } from './utils';
+import { Link } from 'react-router-dom';
 
 function Sidebar() {
-  const { socketRef, setAppState } = useContext(AppContext);
-
-  const handleScreenSelection = (event) => {
-    const selectedScreen = event.target.value;
-    setAppState((currentAppState) =>
-      setSelectedScreen(currentAppState, selectedScreen),
-    );
-
-    socketRef.current.emit(selectedScreen);
-  };
-
   return (
     <div>
-      <div>
-        Load Data
-        <input
-          name="selectedScreen"
-          value="loadData"
-          type="radio"
-          onChange={handleScreenSelection}
-        />
-      </div>
-      <div>
-        Albums
-        <input
-          name="selectedScreen"
-          value="albums"
-          type="radio"
-          onChange={handleScreenSelection}
-        />
-      </div>
-      <div>
-        Artists
-        <input
-          name="selectedScreen"
-          value="artists"
-          type="radio"
-          onChange={handleScreenSelection}
-        />
-      </div>
-      <div>
-        Tracks
-        <input
-          name="selectedScreen"
-          value="tracks"
-          type="radio"
-          onChange={handleScreenSelection}
-        />
-      </div>
+      <nav>
+        <div>
+          <Link to="/">Home</Link>
+        </div>
+        <div>
+          <Link to="/load-data">Load Data</Link>
+        </div>
+        <div>
+          <Link to="/albums">Albums</Link>
+        </div>
+        <div>
+          <Link to="/artists">Artists</Link>
+        </div>
+        <div>
+          <Link to="tracks">Tracks</Link>
+        </div>
+      </nav>
     </div>
   );
 }

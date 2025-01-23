@@ -6,10 +6,6 @@ import ArtistCard from './ArtistCard';
 function Artists() {
   const { appState } = useContext(AppContext);
 
-  if (appState.selectedScreen !== 'artists') {
-    return null;
-  }
-
   return (
     <>
       <h1>Artists</h1>

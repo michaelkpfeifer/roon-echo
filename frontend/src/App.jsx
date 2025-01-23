@@ -1,10 +1,15 @@
 import fp from 'lodash/fp';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
-import Main from './Main';
+import Albums from './Main/Albums';
+import Artists from './Main/Artists';
+import Home from './Main/Home';
+import LoadData from './Main/LoadData';
+import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { setAlbums, setArtists, setLoadData, setTracks } from './utils';
@@ -19,7 +24,6 @@ function App() {
     artists: [],
     isZonesModalOpen: false,
     loadData: {},
-    selectedScreen: null,
     tmpSelectedZoneId: null,
     tracks: [],
   });
@@ -54,6 +58,11 @@ function App() {
         ...currentAppState,
         tmpSelectedZoneId: loadConfig().selectedZoneId || null,
       }));
+
+      socket.emit('loadData');
+      socket.emit('albums');
+      socket.emit('artists');
+      socket.emit('tracks');
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
@@ -171,19 +180,27 @@ function App() {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <div className="page">
-        <div className="container">
-          <div className="left">
-            <Sidebar />
+      <Router>
+        <div className="page">
+          <div className="container">
+            <div className="left">
+              <Sidebar />
+            </div>
+            <div className="right">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/load-data" element={<LoadData />} />
+                <Route path="/albums" element={<Albums />} />
+                <Route path="/artists" element={<Artists />} />
+                <Route path="/tracks" element={<Tracks />} />
+              </Routes>
+            </div>
           </div>
-          <div className="right">
-            <Main />
+          <div className="bottom">
+            <NowPlaying roonState={roonState} appState={appState} />
           </div>
         </div>
-        <div className="bottom">
-          <NowPlaying roonState={roonState} appState={appState} />
-        </div>
-      </div>
+      </Router>
     </AppContext.Provider>
   );
 }

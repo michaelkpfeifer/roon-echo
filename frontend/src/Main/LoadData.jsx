@@ -110,10 +110,6 @@ function LoadData() {
   const { appState, coreUrlRef, socketRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
-  if (appState.selectedScreen !== 'loadData') {
-    return null;
-  }
-
   if (appState.loadData.offset === undefined) {
     return null;
   }

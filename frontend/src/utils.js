@@ -6,11 +6,6 @@ const findSelectedZone = (roonZones, selectedZoneId) => {
   return roonZones[selectedZoneId] || null;
 };
 
-const setSelectedScreen = (currentAppState, selectedScreen) => ({
-  ...currentAppState,
-  selectedScreen,
-});
-
 const setAlbums = (currentAppState, albums) => ({
   ...currentAppState,
   albums,
@@ -31,11 +26,4 @@ const setLoadData = (currentAppState, loadData) => ({
   loadData,
 });
 
-export {
-  findSelectedZone,
-  setAlbums,
-  setArtists,
-  setLoadData,
-  setSelectedScreen,
-  setTracks,
-};
+export { findSelectedZone, setAlbums, setArtists, setLoadData, setTracks };
