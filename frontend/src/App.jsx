@@ -58,11 +58,6 @@ function App() {
         ...currentAppState,
         tmpSelectedZoneId: loadConfig().selectedZoneId || null,
       }));
-
-      socket.emit('loadData');
-      socket.emit('albums');
-      socket.emit('artists');
-      socket.emit('tracks');
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {

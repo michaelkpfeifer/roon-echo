@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
@@ -109,6 +109,10 @@ const renderItems = ({ items, coreUrl, socketRef }) => (
 function LoadData() {
   const { appState, coreUrlRef, socketRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
+
+  useEffect(() => {
+    socketRef.current.emit('loadData');
+  }, [socketRef]);
 
   if (appState.loadData.offset === undefined) {
     return null;
