@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
+import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import Home from './Main/Home';
@@ -186,6 +187,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/load-data" element={<LoadData />} />
                 <Route path="/albums" element={<Albums />} />
+                <Route path="/albums/:id" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
               </Routes>
