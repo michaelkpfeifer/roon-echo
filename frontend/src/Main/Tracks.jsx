@@ -1,10 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
 
 function Tracks() {
-  const { appState } = useContext(AppContext);
+  const { appState, socketRef } = useContext(AppContext);
+
+  useEffect(() => {
+    socketRef.current.emit('tracks');
+  }, [socketRef]);
 
   return (
     <>
