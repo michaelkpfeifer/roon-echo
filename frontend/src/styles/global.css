@@ -1,0 +1,366 @@
+:root {
+    --modal-confirm-button-bg: #4CAF50;
+    --modal-confirm-button-hover-bg: #45a049;
+    --modal-confirm-button-text: white;
+}
+
+body {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.page {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex: 4;
+    flex-direction: row;
+    box-sizing: border-box;
+}
+
+.left {
+    width: 12vw;
+    box-sizing: border-box;
+    border: 1px solid black;
+}
+
+.right {
+    width: 88vw;
+    box-sizing: border-box;
+    border: 1px solid black;
+}
+
+.bottom {
+    flex: 1;
+    box-sizing: border-box;
+    border: 1px solid black;
+}
+
+.now-playing {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    border: 1px solid black;
+    align-items: center;
+}
+
+.cover {
+    flex: 1;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.cover > :first-child {
+    display: flex;
+    align-items: center;
+}
+
+.cover img {
+    width: 72px;
+    height: auto;
+    margin-right: 16px;
+}
+
+.controls {
+    flex: 1;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.zones-and-volume {
+    flex: 1;
+    box-sizing: border-box;
+    /* border: 1px solid black; */
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+    min-width: 400px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.modal-confirm {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: var(--modal-confirm-button-bg);
+    color: var(--modal-confirm-button-text);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modal-confirm:hover {
+    background-color: var(--modal-confirm-button-hover-bg);
+}
+
+
+.album-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.album-card__image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.album-card__title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.album-card__subtitle {
+    font-size: 14px;
+    color: #555;
+}
+
+.albums-container {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-top: 16px;
+}
+
+
+.artist-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.artist-card__image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.artist-card__title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.artist-card__subtitle {
+    font-size: 14px;
+    color: #555;
+}
+
+.artists-container {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    margin-top: 16px;
+}
+
+
+.track-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr 80px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+
+.track-row:hover {
+    background-color: #f9f9f9;
+}
+
+.track-row__image {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+ .track-row__artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+}
+
+.track-row__name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.track-row__artist {
+    font-size: 14px;
+    color: #555;
+}
+
+.track-row__track-add-next {
+}
+
+
+.album-track-row {
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+
+.album-track-row:hover {
+    background-color: #f9f9f9;
+}
+
+.album-track-row__name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.album-track-row__track-add-next {
+}
+
+
+.load-data-list {
+    border-bottom: 1px solid #ddd;
+}
+
+.load-data-list__heading {
+}
+
+.load-data-list__list {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.load-data-list__card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    align-items: center;
+    padding: 8px 16px;
+    transition: background-color 0.2s;
+    flex: 1;
+}
+
+.load-data-list__key_desc {
+}
+
+.load-data-list__key {
+}
+
+.load-data-list__value {
+}
+
+.load-data-list__image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    float: right;
+    margin-right: 1rem;
+}
+
+
+.load-data-items {
+}
+
+.load-data-items__heading {
+}
+
+.load-data-item {
+}
+
+.load-data-item__heading {
+}
+
+.load-data-item__list {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.load-data-item__card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    align-items: center;
+    padding: 8px 16px;
+    transition: background-color 0.2s;
+    flex: 1;
+}
+
+.load-data-item__key_desc {
+}
+
+.load-data-item__key {
+}
+
+.load-data-item__value {
+}
+
+.load-data-item__image {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    float: right;
+    margin-right: 1rem;
+}
+
+.load-data-item__link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 1rem;
+}

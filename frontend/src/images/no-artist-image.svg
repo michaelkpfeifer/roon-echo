@@ -1,0 +1,21 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 400 400"
+  width="400"
+  height="400"
+  fill="none"
+>
+  <rect width="400" height="400" fill="#F0F0F0" rx="20" />
+
+  <text
+    x="50%"
+    y="60%"
+    fill="#B0B0B0"
+    font-size="36"
+    font-family="Arial, sans-serif"
+    text-anchor="middle"
+    alignment-baseline="middle"
+  >
+    No Artist Image
+  </text>
+</svg>
