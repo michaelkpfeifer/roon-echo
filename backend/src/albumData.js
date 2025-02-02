@@ -1,3 +1,6 @@
+import { exit } from 'node:process';
+
+import dotenv from 'dotenv';
 import knexInit from 'knex';
 import fp from 'lodash/fp.js';
 /* eslint-disable import/no-unresolved */
@@ -18,9 +21,11 @@ const albumName = (enrichedAlbum) => enrichedAlbum.roonAlbum.title;
 
 const albumItemKey = (enrichedAlbum) => enrichedAlbum.roonAlbum.itemKey;
 
-const mbUserAgent = 'Roon Remote/0.0.0 (michael.k.pfeifer@googlemail.com)';
+dotenv.config();
 
-const mbReleaseEndpoint = 'http://bruce03:5000/ws/2/release';
+const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
+
+const mbUserAgent = process.env.MB_USER_AGENT;
 
 const buildMbSearch = (enrichedAlbum) => {
   const queryString = [
@@ -259,6 +264,22 @@ const buildEnrichedAlbum = (roonAlbum) => {
 };
 
 const enrichList = async (browseInstance, roonAlbums) => {
+  if (!mbReleaseEndpoint) {
+    process.stderr.write(
+      'Error: Failed to load URL for MusicBrainz release endpoint.\n',
+    );
+    exit(11);
+    return null;
+  }
+
+  if (!mbUserAgent) {
+    process.stderr.write(
+      'Error: Failed to load user agent for MusicBrainz release endpoint.\n',
+    );
+    exit(12);
+    return null;
+  }
+
   // TODO. The following lines cleaning the database need to be
   // removed once we reach a state where we want to keep the data we
   // have already processed.
@@ -314,11 +335,6 @@ const enrichList = async (browseInstance, roonAlbums) => {
       mbQueue.add(() => getMbData(enrichedAlbum)),
     ),
   );
-
-  // TODO. In the end, we want to return the enriched set of data and
-  // not the unchanged list of albums we passed in. But that means the
-  // frontend has to be adjusted accordingly (which hasn't happened
-  // yet).
 
   /* eslint-disable no-console */
   console.log(
