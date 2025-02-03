@@ -30,7 +30,7 @@ function AlbumCard({ album }) {
       </div>
       <div className="album-card__subtitle">{album.roonAlbum.subtitle}</div>
       {album.mbAlbum ? (
-        <Link to={`/albums/${album.mbAlbum.id}`}>View Details</Link>
+        <Link to={`/albums/${album.mbAlbum.mbAlbumId}`}>View Details</Link>
       ) : null}
     </div>
   );
@@ -50,7 +50,7 @@ AlbumCard.propTypes = {
       itemKey: PropTypes.string.isRequired,
     }),
     mbAlbum: PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      mbAlbumId: PropTypes.string.isRequired,
       artistName: PropTypes.string.isRequired,
       albumName: PropTypes.string.isRequired,
       releaseDate: PropTypes.string,

@@ -187,7 +187,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/load-data" element={<LoadData />} />
                 <Route path="/albums" element={<Albums />} />
-                <Route path="/albums/:id" element={<Album />} />
+                <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
               </Routes>

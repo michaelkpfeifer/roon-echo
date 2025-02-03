@@ -4,8 +4,7 @@
  */
 export function up(knex) {
   return knex.schema.createTable('albums', (table) => {
-    table.increments('id').primary();
-    table.string('mb_release_id').notNullable();
+    table.string('mb_album_id').notNullable().primary();
     table.string('artist_name').notNullable();
     table.string('album_name').notNullable();
     table.string('release_date');

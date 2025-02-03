@@ -4,7 +4,7 @@ import { camelCaseKeys } from './utils.js';
 const getAlbumWithTracks = async (knex, artistName, albumName) => {
   const albumWithTracks = await knex('albums')
     .where({ artist_name: artistName, album_name: albumName })
-    .select('id', 'artist_name', 'album_name', 'release_date')
+    .select('artist_name', 'album_name', 'mb_album_id', 'release_date')
     .first()
     .then(async (album) => {
       if (!album) {
@@ -12,8 +12,8 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
       }
 
       const tracks = await knex('tracks')
-        .where({ album_id: album.id })
-        .select('id', 'number', 'name')
+        .where({ mb_album_id: album.mb_album_id })
+        .select('mb_track_id', 'number', 'name')
         .orderBy('position', 'asc');
 
       if (!tracks) {
@@ -36,16 +36,17 @@ const insertAlbumWithTracks = async ({
   mbRelease,
 }) =>
   knex.transaction(async (trx) => {
-    const [albumId] = await trx('albums').insert({
-      mb_release_id: mbRelease.id,
+    await trx('albums').insert({
+      mb_album_id: mbRelease.id,
       artist_name: artistName,
       album_name: albumName,
       release_date: mbRelease.date,
     });
+
     const tracks = mbRelease.media
       .flatMap((medium) => medium.tracks)
       .map((track) => ({
-        album_id: albumId,
+        mb_album_id: mbRelease.id,
         mb_track_id: track.id,
         name: track.title,
         number: track.number,
@@ -54,6 +55,21 @@ const insertAlbumWithTracks = async ({
       }));
 
     await trx('tracks').insert(tracks);
+
+    for (const artist of mbRelease['artist-credit']) {
+      await trx('artists').insert({
+        mb_artist_id: artist.artist.id,
+        name: artist.name,
+        sort_name: artist.artist['sort-name'],
+        type: artist.artist.type,
+        disambiguation: artist.artist.disambiguation,
+      });
+
+      await trx('albums_artists').insert({
+        mb_album_id: mbRelease.id,
+        mb_artist_id: artist.artist.id,
+      });
+    }
   });
 
 export { getAlbumWithTracks, insertAlbumWithTracks };

@@ -58,7 +58,7 @@ const runMbSearch = async (enrichedAlbum) => {
 };
 
 const buildMbFetch = (releaseId) =>
-  `${mbReleaseEndpoint}/${releaseId}?inc=recordings&fmt=json`;
+  `${mbReleaseEndpoint}/${releaseId}?inc=artists+recordings&fmt=json`;
 
 const runMbFetch = async (mbReleaseId) => {
   const response = await fetch(buildMbFetch(mbReleaseId), {
@@ -284,8 +284,9 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // removed once we reach a state where we want to keep the data we
   // have already processed.
 
-  await knex('albums').del();
   await knex('tracks').del();
+  await knex('albums').del();
+  await knex('artists').del();
 
   await knex.raw('PRAGMA journal_mode = WAL;');
 
