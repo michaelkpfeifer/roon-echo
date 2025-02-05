@@ -9,6 +9,11 @@ export function up(knex) {
     table.string('album_name').notNullable();
     table.string('release_date');
 
+    table.unique(
+      ['artist_name', 'album_name'],
+      'albums_unique_on_artist_name_album_name',
+    );
+
     table.timestamps(true, true);
   });
 }

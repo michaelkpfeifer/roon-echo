@@ -16,7 +16,10 @@ export function up(knex) {
       .references('artists.mb_artist_id')
       .onDelete('CASCADE');
 
-    table.primary(['mb_album_id', 'mb_artist_id']);
+    table.primary(['mb_album_id', 'mb_artist_id'], 'albums_artists_on_mb_artist_id_mb_album_id',);
+
+    table.index('mb_artist_id', 'albums_artists_on_mb_artist_id');
+    table.index('mb_album_id', 'albums_artists_on_mb_album_id');
 
     table.timestamps(true, true);
   });
