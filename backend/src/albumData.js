@@ -119,6 +119,8 @@ const extractRelevantData = (mbRelease) => ({
 const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
   let nonMatchinMbReleases = [];
 
+  /* eslint-disable no-restricted-syntax */
+  /* eslint-disable no-await-in-loop */
   for (const mbReleaseId of mbReleaseIds) {
     const mbRelease = await runMbFetch(mbReleaseId);
 
@@ -139,6 +141,8 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
       extractRelevantData(mbRelease),
     ];
   }
+  /* eslint-enable no-await-in-loop */
+  /* eslint-enable no-restricted-syntax */
 
   return Result.Err(nonMatchinMbReleases);
 };

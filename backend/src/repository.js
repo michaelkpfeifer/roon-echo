@@ -62,6 +62,8 @@ const insertAlbumWithTracks = async ({
 
     await trx('tracks').insert(tracks);
 
+    /* eslint-disable no-restricted-syntax */
+    /* eslint-disable no-await-in-loop */
     for (const artist of mbRelease['artist-credit']) {
       await trx('artists').insert({
         mb_artist_id: artist.artist.id,
@@ -76,6 +78,8 @@ const insertAlbumWithTracks = async ({
         mb_artist_id: artist.artist.id,
       });
     }
+    /* eslint-enable no-await-in-loop */
+    /* eslint-enable no-restricted-syntax */
   });
 
 export { getAlbumWithTracks, insertAlbumWithTracks };
