@@ -11,6 +11,12 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
         return Result.Err('getAlbumWithTracks: albumNotFound');
       }
 
+      const mbArtistIds = await knex('albums_artists')
+        .where({
+          mb_album_id: album.mb_album_id,
+        })
+        .pluck('mb_artist_id');
+
       const tracks = await knex('tracks')
         .where({ mb_album_id: album.mb_album_id })
         .select('mb_track_id', 'number', 'name')
@@ -21,7 +27,7 @@ const getAlbumWithTracks = async (knex, artistName, albumName) => {
       }
 
       return Result.Ok({
-        album: camelCaseKeys(album),
+        album: { ...camelCaseKeys(album), mbArtistIds },
         tracks: camelCaseKeys(tracks),
       });
     });
