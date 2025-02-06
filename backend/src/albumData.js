@@ -155,7 +155,7 @@ const getMbData = async (enrichedAlbum) => {
     ...mbSearchData,
     releases: mbSearchData.releases.filter(
       (release) =>
-        release.score === 100 && release['track-count'] === roonAlbumTrackCount,
+        release.score >= 25 && release['track-count'] === roonAlbumTrackCount,
     ),
   };
 
