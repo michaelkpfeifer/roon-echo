@@ -30,13 +30,7 @@ const getAlbumWithArtistsAndTracks = async (knex, artistName, albumName) => {
         return Result.Err('getAlbumWithArtistsAndTracks: tracksNotFound');
       }
 
-      return Result.Ok(
-        camelCaseKeys({
-          album: mbAlbum,
-          artists: mbArtists,
-          tracks: mbTracks,
-        }),
-      );
+      return Result.Ok(camelCaseKeys({ mbAlbum, mbArtists, mbTracks }));
     });
 
   return albumWithArtistsAndTracks;

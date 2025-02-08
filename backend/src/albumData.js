@@ -189,11 +189,7 @@ const getMbData = async (enrichedAlbum) => {
       );
 
       if (Result.isOk(albumWithTracks)) {
-        const {
-          album: mbAlbum,
-          artists: mbArtists,
-          tracks: mbTracks,
-        } = Result.unwrap(albumWithTracks);
+        const { mbAlbum, mbArtists, mbTracks } = Result.unwrap(albumWithTracks);
         return {
           ...enrichedAlbum,
           mbAlbum,
@@ -243,11 +239,7 @@ const readMbDataFromDb = async (enrichedAlbum) => {
   );
 
   if (Result.isOk(albumWithTracks)) {
-    const {
-      album: mbAlbum,
-      artists: mbArtists,
-      tracks: mbTracks,
-    } = Result.unwrap(albumWithTracks);
+    const { mbAlbum, mbArtists, mbTracks } = Result.unwrap(albumWithTracks);
     return {
       ...enrichedAlbum,
       mbAlbum,
