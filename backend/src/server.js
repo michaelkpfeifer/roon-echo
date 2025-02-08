@@ -233,23 +233,6 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('artists', () => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing artists message');
-    /* eslint-enable no-console */
-
-    browser.loadArtists(browseInstance).then((artistsLoadData) => {
-      /* eslint-disable no-console */
-      console.log(
-        'artistsLoadData.items.length:',
-        artistsLoadData.items.length,
-      );
-      /* eslint-enable no-console */
-
-      socket.emit('allArtists', artistsLoadData.items);
-    });
-  });
-
   socket.on('tracks', () => {
     /* eslint-disable no-console */
     console.log('server.js: processing tracks message');

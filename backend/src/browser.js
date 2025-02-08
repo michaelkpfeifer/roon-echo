@@ -133,23 +133,6 @@ const loadAlbums = async (browseInstance) => {
   return albumsLoadData;
 };
 
-const loadArtists = async (browseInstance) => {
-  const libraryLoadData = await browseTopLevel(browseInstance);
-  const artistsItem = libraryLoadData.items.find(
-    (item) => item.title === 'Artists',
-  );
-  const artistsBrowseData = await browseAsync(browseInstance, {
-    hierarchy: 'browse',
-    item_key: artistsItem.item_key,
-  });
-  const artistsLoadData = await loadAsync(browseInstance, {
-    hierarchy: 'browse',
-    offset: 0,
-    count: Math.min(64, artistsBrowseData.list.count),
-  });
-  return artistsLoadData;
-};
-
 const loadTracks = async (browseInstance) => {
   const libraryLoadData = await browseTopLevel(browseInstance);
   const tracksItem = libraryLoadData.items.find(
@@ -221,7 +204,6 @@ export {
   browseAsync,
   loadAlbum,
   loadAlbums,
-  loadArtists,
   loadAsync,
   loadTrack,
   loadTracks,
