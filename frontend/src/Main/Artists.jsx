@@ -1,20 +1,25 @@
-import { useContext, useEffect } from 'react';
+import fp from 'lodash/fp';
+import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import ArtistCard from './ArtistCard';
 
 function Artists() {
-  const { appState, socketRef } = useContext(AppContext);
+  const { appState } = useContext(AppContext);
 
-  useEffect(() => {
-    socketRef.current.emit('artists');
-  }, [socketRef]);
+  const artists = fp.sortBy('sortName', [
+    ...new Set(
+      appState.albums
+        .filter((album) => album.status === 'mbDataLoaded')
+        .flatMap((album) => album.mbArtists),
+    ),
+  ]);
 
   return (
     <>
       <h1>Artists</h1>
       <div className="artists-container">
-        {appState.artists.map((artist) => (
+        {artists.map((artist) => (
           <div key={artist.item_key}>
             <ArtistCard artist={artist} />
           </div>

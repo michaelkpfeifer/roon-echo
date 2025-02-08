@@ -10,7 +10,10 @@ import PQueue from 'p-queue';
 import Result from './result.js';
 import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
-import { getAlbumWithTracks, insertAlbumWithTracks } from './repository.js';
+import {
+  getAlbumWithArtistsAndTracks,
+  insertAlbumWithArtistsAndTracks,
+} from './repository.js';
 import { camelCaseKeys } from './utils.js';
 
 const knex = knexInit(knexConfig.development);
@@ -172,25 +175,29 @@ const getMbData = async (enrichedAlbum) => {
     const matchingMbRelease = Result.unwrap(matchingMbReleaseResult);
 
     if (matchingMbRelease !== null) {
-      await insertAlbumWithTracks({
+      await insertAlbumWithArtistsAndTracks({
         knex,
         artistName: artistName(enrichedAlbum),
         albumName: albumName(enrichedAlbum),
         mbRelease: matchingMbRelease,
       });
 
-      const albumWithTracks = await getAlbumWithTracks(
+      const albumWithTracks = await getAlbumWithArtistsAndTracks(
         knex,
         artistName(enrichedAlbum),
         albumName(enrichedAlbum),
       );
 
       if (Result.isOk(albumWithTracks)) {
-        const { album: mbAlbum, tracks: mbAlbumTracks } =
-          Result.unwrap(albumWithTracks);
+        const {
+          album: mbAlbum,
+          artists: mbArtists,
+          tracks: mbAlbumTracks,
+        } = Result.unwrap(albumWithTracks);
         return {
           ...enrichedAlbum,
           mbAlbum,
+          mbArtists,
           mbAlbumTracks,
           status: 'mbDataLoaded',
           mbData: [],
@@ -229,16 +236,25 @@ const readMbDataFromDb = async (enrichedAlbum) => {
     return enrichedAlbum;
   }
 
-  const albumWithTracks = await getAlbumWithTracks(
+  const albumWithTracks = await getAlbumWithArtistsAndTracks(
     knex,
     artistName(enrichedAlbum),
     albumName(enrichedAlbum),
   );
 
   if (Result.isOk(albumWithTracks)) {
-    const { album: mbAlbum, tracks: mbAlbumTracks } =
-      Result.unwrap(albumWithTracks);
-    return { ...enrichedAlbum, mbAlbum, mbAlbumTracks, status: 'mbDataLoaded' };
+    const {
+      album: mbAlbum,
+      artists: mbArtists,
+      tracks: mbAlbumTracks,
+    } = Result.unwrap(albumWithTracks);
+    return {
+      ...enrichedAlbum,
+      mbAlbum,
+      mbArtists,
+      mbAlbumTracks,
+      status: 'mbDataLoaded',
+    };
   }
 
   return enrichedAlbum;

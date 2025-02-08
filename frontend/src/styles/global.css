@@ -176,23 +176,10 @@ body {
     transition: transform 0.2s;
 }
 
-.artist-card__image {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 12px;
-}
-
-.artist-card__title {
+.artist-card__name {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 8px;
-}
-
-.artist-card__subtitle {
-    font-size: 14px;
-    color: #555;
 }
 
 .artists-container {

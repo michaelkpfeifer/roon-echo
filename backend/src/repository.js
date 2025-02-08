@@ -1,41 +1,48 @@
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
 
-const getAlbumWithTracks = async (knex, artistName, albumName) => {
-  const albumWithTracks = await knex('albums')
+const getAlbumWithArtistsAndTracks = async (knex, artistName, albumName) => {
+  const albumWithArtistsAndTracks = await knex('albums')
     .where({ artist_name: artistName, album_name: albumName })
     .select('artist_name', 'album_name', 'mb_album_id', 'release_date')
     .first()
-    .then(async (album) => {
-      if (!album) {
-        return Result.Err('getAlbumWithTracks: albumNotFound');
+    .then(async (mbAlbum) => {
+      if (!mbAlbum) {
+        return Result.Err('getAlbumWithArtistsAndTracks: albumNotFound');
       }
 
       const mbArtistIds = await knex('albums_artists')
         .where({
-          mb_album_id: album.mb_album_id,
+          mb_album_id: mbAlbum.mb_album_id,
         })
         .pluck('mb_artist_id');
 
-      const tracks = await knex('tracks')
-        .where({ mb_album_id: album.mb_album_id })
+      const mbArtists = await knex('artists')
+        .whereIn('mb_artist_id', mbArtistIds)
+        .select('mb_artist_id', 'name', 'sort_name');
+
+      const mbTracks = await knex('tracks')
+        .where({ mb_album_id: mbAlbum.mb_album_id })
         .select('mb_track_id', 'number', 'name')
         .orderBy('position', 'asc');
 
-      if (!tracks) {
-        return Result.Err('getAlbumWithTracks: tracksNotFound');
+      if (!mbTracks) {
+        return Result.Err('getAlbumWithArtistsAndTracks: tracksNotFound');
       }
 
-      return Result.Ok({
-        album: { ...camelCaseKeys(album), mbArtistIds },
-        tracks: camelCaseKeys(tracks),
-      });
+      return Result.Ok(
+        camelCaseKeys({
+          album: mbAlbum,
+          artists: mbArtists,
+          tracks: mbTracks,
+        }),
+      );
     });
 
-  return albumWithTracks;
+  return albumWithArtistsAndTracks;
 };
 
-const insertAlbumWithTracks = async ({
+const insertAlbumWithArtistsAndTracks = async ({
   knex,
   artistName,
   albumName,
@@ -82,4 +89,4 @@ const insertAlbumWithTracks = async ({
     /* eslint-enable no-restricted-syntax */
   });
 
-export { getAlbumWithTracks, insertAlbumWithTracks };
+export { getAlbumWithArtistsAndTracks, insertAlbumWithArtistsAndTracks };
