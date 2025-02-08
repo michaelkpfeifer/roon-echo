@@ -15,7 +15,7 @@ function Album() {
     <>
       <h1>Album</h1>
       <h2>{album.mbAlbum.albumName}</h2>
-      {album.mbAlbumTracks.map((track) => (
+      {album.mbTracks.map((track) => (
         <div key={track.mbTrackId} className="album-track-row">
           <div className="track-row__name">
             <b>{track.name}</b>

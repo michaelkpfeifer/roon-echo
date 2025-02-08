@@ -41,7 +41,7 @@ AlbumCard.propTypes = {
     status: PropTypes.oneOf([
       'unknownArtistOrTitle',
       'mbDataLoaded',
-      'roonAlbumTracksAdded',
+      'roonTracksAdded',
     ]).isRequired,
     roonAlbum: PropTypes.shape({
       title: PropTypes.string.isRequired,

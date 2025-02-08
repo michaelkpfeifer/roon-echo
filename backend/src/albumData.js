@@ -91,7 +91,7 @@ const normalizeTrackTitle = (title) =>
     .toLowerCase()
     .trim();
 
-const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
+const compareMbAndRoonTracks = (mbTracks, roonTracks) =>
   fp.isEqualWith(
     (a, b) => {
       if (Array.isArray(a) && Array.isArray(b)) {
@@ -100,8 +100,8 @@ const compareMbAndRoonAlbumTracks = (mbAlbumTracks, roonAlbumTracks) =>
 
       return normalizeTrackTitle(a) === normalizeTrackTitle(b);
     },
-    mbAlbumTracks,
-    roonAlbumTracks,
+    mbTracks,
+    roonTracks,
   );
 
 const extractRelevantData = (mbRelease) => ({
@@ -119,7 +119,7 @@ const extractRelevantData = (mbRelease) => ({
     })),
 });
 
-const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
+const findMatchingMbRelease = async (mbReleaseIds, roonTracks) => {
   let nonMatchinMbReleases = [];
 
   /* eslint-disable no-restricted-syntax */
@@ -128,11 +128,11 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
     const mbRelease = await runMbFetch(mbReleaseId);
 
     if (
-      compareMbAndRoonAlbumTracks(
+      compareMbAndRoonTracks(
         mbRelease.media
           .flatMap((medium) => medium.tracks)
           .map((track) => track.title),
-        roonAlbumTracks,
+        roonTracks,
       )
     ) {
       nonMatchinMbReleases = [];
@@ -151,11 +151,11 @@ const findMatchingMbRelease = async (mbReleaseIds, roonAlbumTracks) => {
 };
 
 const getMbData = async (enrichedAlbum) => {
-  if (enrichedAlbum.status !== 'roonAlbumTracksAdded') {
+  if (enrichedAlbum.status !== 'roonTracksAdded') {
     return enrichedAlbum;
   }
 
-  const roonAlbumTrackCount = enrichedAlbum.roonAlbumTracks.length;
+  const roonAlbumTrackCount = enrichedAlbum.roonTracks.length;
   const mbSearchData = await runMbSearch(enrichedAlbum);
 
   const highScoreMbSearchData = {
@@ -168,7 +168,7 @@ const getMbData = async (enrichedAlbum) => {
 
   const matchingMbReleaseResult = await findMatchingMbRelease(
     highScoreMbSearchData.releases.map((release) => release.id),
-    enrichedAlbum.roonAlbumTracks,
+    enrichedAlbum.roonTracks,
   );
 
   if (Result.isOk(matchingMbReleaseResult)) {
@@ -192,13 +192,13 @@ const getMbData = async (enrichedAlbum) => {
         const {
           album: mbAlbum,
           artists: mbArtists,
-          tracks: mbAlbumTracks,
+          tracks: mbTracks,
         } = Result.unwrap(albumWithTracks);
         return {
           ...enrichedAlbum,
           mbAlbum,
           mbArtists,
-          mbAlbumTracks,
+          mbTracks,
           status: 'mbDataLoaded',
           mbData: [],
         };
@@ -212,7 +212,7 @@ const getMbData = async (enrichedAlbum) => {
   };
 };
 
-const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
+const addRoonTracks = async (browseInstance, enrichedAlbum) => {
   const roonAlbumData = await browser.loadAlbum(
     browseInstance,
     albumItemKey(enrichedAlbum),
@@ -220,14 +220,14 @@ const addRoonAlbumTracks = async (browseInstance, enrichedAlbum) => {
 
   return {
     ...enrichedAlbum,
-    roonAlbumTracks: roonAlbumData.items
+    roonTracks: roonAlbumData.items
       .filter((item) => item.title !== 'Play Album')
       .map((item) => item.title)
       .map((title) => title.split(/\s(.+)/)[1] || ''),
     status:
       enrichedAlbum.status !== 'pending'
         ? enrichedAlbum.status
-        : 'roonAlbumTracksAdded',
+        : 'roonTracksAdded',
   };
 };
 
@@ -246,13 +246,13 @@ const readMbDataFromDb = async (enrichedAlbum) => {
     const {
       album: mbAlbum,
       artists: mbArtists,
-      tracks: mbAlbumTracks,
+      tracks: mbTracks,
     } = Result.unwrap(albumWithTracks);
     return {
       ...enrichedAlbum,
       mbAlbum,
       mbArtists,
-      mbAlbumTracks,
+      mbTracks,
       status: 'mbDataLoaded',
     };
   }
@@ -274,9 +274,9 @@ const buildEnrichedAlbum = (roonAlbum) => {
   const enrichedAlbum = {
     status: 'pending',
     roonAlbum: camelCaseKeys(roonAlbum),
-    roonAlbumTracks: null,
+    roonTracks: null,
     mbAlbum: null,
-    mbAlbumTracks: null,
+    mbTracks: null,
     mbData: [],
   };
 
@@ -329,7 +329,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
 
   // const results = [];
   // for (const album of tmpRoonAlbums) {
-  //   const updatedAlbum = await addRoonAlbumTracks(browseInstance, album);
+  //   const updatedAlbum = await addRoonTracks(browseInstance, album);
   //   results.push(updatedAlbum);
   // }
 
@@ -337,11 +337,11 @@ const enrichList = async (browseInstance, roonAlbums) => {
     async (previousPromise, currentAlbum) => {
       const processedAlbums = await previousPromise;
       const currentAlbumWithMbdata = await readMbDataFromDb(currentAlbum);
-      const currentAlbumWithRoonAlbumTracks = await addRoonAlbumTracks(
+      const currentAlbumWithRoonTracks = await addRoonTracks(
         browseInstance,
         currentAlbumWithMbdata,
       );
-      return [...processedAlbums, currentAlbumWithRoonAlbumTracks];
+      return [...processedAlbums, currentAlbumWithRoonTracks];
     },
     Promise.resolve([]),
   );
