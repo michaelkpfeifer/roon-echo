@@ -20,7 +20,7 @@ function Artists() {
       <h1>Artists</h1>
       <div className="artists-container">
         {artists.map((artist) => (
-          <div key={artist.item_key}>
+          <div key={artist.mbArtistId}>
             <ArtistCard artist={artist} />
           </div>
         ))}
