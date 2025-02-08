@@ -5,17 +5,12 @@ module.exports = {
     es6: true,
     jest: true,
   },
-  extends: [
-    'airbnb',
-    'prettier',
-    'plugin:react/recommended',
-    'plugin:react/recommended',
-  ],
+  extends: ['airbnb', 'prettier', 'plugin:react/recommended'],
   globals: {
     module: true,
     process: true,
   },
-  plugins: ['import', 'react-hooks'],
+  plugins: ['import', 'react-hooks', 'unused-imports'],
   ignorePatterns: ['*.svg'],
   rules: {
     'no-else-return': 'off',
@@ -39,5 +34,7 @@ module.exports = {
         },
       },
     ],
+    'unused-imports/no-unused-imports': 'warn',
+    'unused-imports/no-unused-vars': ['warn', { args: 'none' }],
   },
 };

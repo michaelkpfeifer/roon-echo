@@ -10,7 +10,7 @@ module.exports = {
     module: true,
     process: true,
   },
-  plugins: ['import'],
+  plugins: ['import', 'unused-imports'],
   rules: {
     'import/extensions': [
       'error',
@@ -19,7 +19,6 @@ module.exports = {
         js: 'always',
       },
     ],
-
     'import/order': [
       'error',
       {
@@ -36,5 +35,7 @@ module.exports = {
         },
       },
     ],
+    'unused-imports/no-unused-imports': 'warn',
+    'unused-imports/no-unused-vars': ['warn', { args: 'none' }],
   },
 };
