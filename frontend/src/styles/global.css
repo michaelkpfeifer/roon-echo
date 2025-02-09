@@ -192,7 +192,7 @@ body {
 
 .track-row {
     display: grid;
-    grid-template-columns: 40px 80px 1fr 1fr 1fr 80px;
+    grid-template-columns: 40px 80px 1fr 80px 1fr 1fr 80px;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #ddd;
@@ -214,23 +214,28 @@ body {
     border-radius: 4px;
 }
 
- .track-row__artist {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 8px;
- }
-
- .track-row__album {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 8px;
- }
-
 .track-row__name {
     font-size: 16px;
     font-weight: bold;
+}
+
+.track-row__duration {
+    text-align: right;
+    padding: 0 16px;
+}
+
+.track-row__artist {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+}
+
+.track-row__album {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
 }
 
 .track-row__artist {

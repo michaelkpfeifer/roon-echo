@@ -3,6 +3,7 @@ import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
+import { formatMbTrackLength } from '../utils';
 
 function TrackRow({ track }) {
   const { coreUrlRef } = useContext(AppContext);
@@ -22,6 +23,9 @@ function TrackRow({ track }) {
         <img src={noAlbumArt} alt={track.name} />
       )}
       <div className="track-row__name">{track.name}</div>
+      <div className="track-row__duration">
+        {formatMbTrackLength(track.length)}
+      </div>
       <div className="track-row__artist">{track.mbArtistNames}</div>
       <div className="track-row__artist">{track.mbAlbumName}</div>
       <div className="track-row__track-add-next">
@@ -47,6 +51,7 @@ TrackRow.propTypes = {
     number: PropTypes.string.isRequired,
     position: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
+    length: PropTypes.number.isRequired,
     roonAlbumImageKey: PropTypes.string.isRequired,
     roonAlbumItemKey: PropTypes.string.isRequired,
     mbArtistNames: PropTypes.string.isRequired,
