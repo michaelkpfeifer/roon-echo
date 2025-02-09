@@ -6,8 +6,7 @@ import noAlbumArt from '../images/no-album-art.svg';
 import { formatMbTrackLength } from '../utils';
 
 function TrackRow({ track }) {
-  const { coreUrlRef } = useContext(AppContext);
-  // const { config, coreUrlRef, socketRef } = useContext(AppContext);
+  const { config, coreUrlRef, socketRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
   return (
@@ -31,13 +30,13 @@ function TrackRow({ track }) {
       <div className="track-row__track-add-next">
         <button
           type="button"
-          onClick={() => {}}
-          /* onClick={() => { */
-          /*   socketRef.current.emit('trackAddNext', { */
-          /*     itemKey: track.item_key, */
-          /*     zoneId: config.selectedZoneId, */
-          /*   }); */
-          /* }} */
+          onClick={() => {
+            socketRef.current.emit('trackAddNext', {
+              albumKey: track.roonAlbumItemKey,
+              position: track.position,
+              zoneId: config.selectedZoneId,
+            });
+          }}
         >
           Play Next
         </button>

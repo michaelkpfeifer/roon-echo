@@ -233,24 +233,23 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('trackAddNext', ({ itemKey, zoneId }) => {
+  socket.on('trackAddNext', ({ albumKey, position, zoneId }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
     /* eslint-enable no-console */
 
-    browser.loadTrack(browseInstance, itemKey).then((trackActions) => {
-      /* eslint-disable no-console */
-      console.log('trackActions.items:', trackActions.items);
-      /* eslint-enable no-console */
+    browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
+      const trackKey = albumItems.items[position].item_key;
+      browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
+        const trackAddNextItem = trackActions.items.find(
+          (item) => item.title === 'Add Next',
+        );
 
-      const trackAddNextItem = trackActions.items.find(
-        (item) => item.title === 'Add Next',
-      );
-
-      browseInstance.browse({
-        hierarchy: 'browse',
-        item_key: trackAddNextItem.item_key,
-        zone_or_output_id: zoneId,
+        browseInstance.browse({
+          hierarchy: 'browse',
+          item_key: trackAddNextItem.item_key,
+          zone_or_output_id: zoneId,
+        });
       });
     });
   });
