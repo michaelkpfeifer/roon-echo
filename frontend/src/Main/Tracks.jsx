@@ -1,20 +1,33 @@
-import { useContext, useEffect } from 'react';
+import fp from 'lodash/fp';
+import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
 
 function Tracks() {
-  const { appState, socketRef } = useContext(AppContext);
+  const { appState } = useContext(AppContext);
 
-  useEffect(() => {
-    socketRef.current.emit('tracks');
-  }, [socketRef]);
+  const tracks = fp
+    .sortBy(
+      (album) => album.mbArtists[0].sortName,
+      appState.albums.filter((album) => album.status === 'mbDataLoaded'),
+    )
+    .map((album) =>
+      album.mbTracks.map((track) => ({
+        ...track,
+        mbArtistNames: album.mbArtists.map((artist) => artist.name).join(', '),
+        mbAlbumName: album.mbAlbum.albumName,
+        roonAlbumImageKey: album.roonAlbum.imageKey,
+        roonAlbumItemKey: album.roonAlbum.itemKey,
+      })),
+    )
+    .flat();
 
   return (
     <>
       <h1>Tracks</h1>
       <div className="tracks-container">
-        {appState.tracks.map((track) => (
+        {tracks.map((track) => (
           <div key={track.item_key}>
             <TrackRow track={track} />
           </div>

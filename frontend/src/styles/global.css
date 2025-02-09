@@ -192,7 +192,7 @@ body {
 
 .track-row {
     display: grid;
-    grid-template-columns: 80px 1fr 1fr 80px;
+    grid-template-columns: 40px 80px 1fr 1fr 1fr 80px;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #ddd;
@@ -201,6 +201,10 @@ body {
 
 .track-row:hover {
     background-color: #f9f9f9;
+}
+
+.track-row__number {
+    font-size: 16px;
 }
 
 .track-row__image {
@@ -215,7 +219,14 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 8px;
-}
+ }
+
+ .track-row__album {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+ }
 
 .track-row__name {
     font-size: 16px;

@@ -5,33 +5,35 @@ import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
 
 function TrackRow({ track }) {
-  const { config, coreUrlRef, socketRef } = useContext(AppContext);
+  const { coreUrlRef } = useContext(AppContext);
+  // const { config, coreUrlRef, socketRef } = useContext(AppContext);
   const coreUrl = coreUrlRef.current;
 
   return (
     <div className="track-row">
-      {track.image_key ? (
+      <div className="track-row__number">{track.number}</div>
+      {track.roonAlbumImageKey ? (
         <img
-          src={`${coreUrl}/api/image/${track.image_key}?scale=fit&width=75&height=75`}
-          alt={track.title}
+          src={`${coreUrl}/api/image/${track.roonAlbumImageKey}?scale=fit&width=75&height=75`}
+          alt={track.name}
           className="track-row__image"
         />
       ) : (
-        <img src={noAlbumArt} alt={track.title} />
+        <img src={noAlbumArt} alt={track.name} />
       )}
-      <div className="track-row__name">
-        <b>{track.title}</b>
-      </div>
-      <div className="track-row__artist">{track.subtitle}</div>
+      <div className="track-row__name">{track.name}</div>
+      <div className="track-row__artist">{track.mbArtistNames}</div>
+      <div className="track-row__artist">{track.mbAlbumName}</div>
       <div className="track-row__track-add-next">
         <button
           type="button"
-          onClick={() => {
-            socketRef.current.emit('trackAddNext', {
-              itemKey: track.item_key,
-              zoneId: config.selectedZoneId,
-            });
-          }}
+          onClick={() => {}}
+          /* onClick={() => { */
+          /*   socketRef.current.emit('trackAddNext', { */
+          /*     itemKey: track.item_key, */
+          /*     zoneId: config.selectedZoneId, */
+          /*   }); */
+          /* }} */
         >
           Play Next
         </button>
@@ -42,10 +44,13 @@ function TrackRow({ track }) {
 
 TrackRow.propTypes = {
   track: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    subtitle: PropTypes.string.isRequired,
-    image_key: PropTypes.string,
-    item_key: PropTypes.string,
+    number: PropTypes.string.isRequired,
+    position: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    roonAlbumImageKey: PropTypes.string.isRequired,
+    roonAlbumItemKey: PropTypes.string.isRequired,
+    mbArtistNames: PropTypes.string.isRequired,
+    mbAlbumName: PropTypes.string.isRequired,
   }).isRequired,
 };
 

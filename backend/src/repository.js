@@ -23,7 +23,7 @@ const getAlbumWithArtistsAndTracks = async (knex, artistName, albumName) => {
 
       const mbTracks = await knex('tracks')
         .where({ mb_album_id: mbAlbum.mb_album_id })
-        .select('mb_track_id', 'number', 'name')
+        .select('mb_track_id', 'name', 'number', 'position', 'length')
         .orderBy('position', 'asc');
 
       if (!mbTracks) {
