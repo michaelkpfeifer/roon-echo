@@ -28,7 +28,7 @@ function Tracks() {
       <h1>Tracks</h1>
       <div className="tracks-container">
         {tracks.map((track) => (
-          <div key={track.item_key}>
+          <div key={track.mbTrackId}>
             <TrackRow track={track} />
           </div>
         ))}
