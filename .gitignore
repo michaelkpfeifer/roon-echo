@@ -1,0 +1,8 @@
+/backend/.env
+/backend/.ignore/
+/backend/config.json
+/backend/db/
+/backend/node_modules/
+
+/frontend/dist/
+/frontend/node_modules/
