@@ -233,20 +233,6 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('tracks', () => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing tracks message');
-    /* eslint-enable no-console */
-
-    browser.loadTracks(browseInstance).then((tracksLoadData) => {
-      /* eslint-disable no-console */
-      console.log('tracksLoadData.items.length:', tracksLoadData.items.length);
-      /* eslint-enable no-console */
-
-      socket.emit('allTracks', tracksLoadData.items);
-    });
-  });
-
   socket.on('trackAddNext', ({ itemKey, zoneId }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');

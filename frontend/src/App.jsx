@@ -13,7 +13,7 @@ import LoadData from './Main/LoadData';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setLoadData, setTracks } from './utils';
+import { setAlbums, setLoadData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -25,7 +25,6 @@ function App() {
     isZonesModalOpen: false,
     loadData: {},
     tmpSelectedZoneId: null,
-    tracks: [],
   });
 
   const [config, setConfig] = useState(
@@ -122,17 +121,6 @@ function App() {
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
-    });
-
-    socket.on('allTracks', (allTracks) => {
-      /* eslint-disable no-console */
-      console.log(
-        'App.jsx: processing allTracks message: allTracks:',
-        allTracks,
-      );
-      /* eslint-enable no-console */
-
-      setAppState((currentAppState) => setTracks(currentAppState, allTracks));
     });
   }, [config]);
 
