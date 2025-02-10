@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext';
+import noAlbumArt from '../images/no-album-art.svg';
 
 function Album() {
   const { appState, config, coreUrlRef, socketRef } = useContext(AppContext);
@@ -15,8 +16,24 @@ function Album() {
 
   return (
     <>
-      <h1>Album</h1>
-      <h2>{album.mbAlbum.albumName}</h2>
+      <div className="album__heading">
+        {album.roonAlbum.imageKey ? (
+          <img
+            src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=75&height=75`}
+            alt={album.mbAlbum.mbAlbumName}
+            className="album__image"
+          />
+        ) : (
+          <img src={noAlbumArt} alt={album.mbAlbum.mbAlbumName} />
+        )}
+        <div>
+          <div className="album__artists">
+            {album.mbArtists.map((artist) => artist.name).join(', ')}
+          </div>
+          <div className="album__name">{album.mbAlbum.albumName}</div>
+        </div>
+      </div>
+
       {album.mbTracks.map((track) => (
         <div key={track.mbTrackId} className="album-track-row">
           <div className="track-row__name">

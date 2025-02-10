@@ -123,6 +123,30 @@ body {
 }
 
 
+.album__heading {
+    display: flex;
+    padding: 36px;
+}
+
+.album__image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.album__name {
+    font-size: 36px;
+    font-weight: bold;
+    padding-left: 36px;
+}
+
+.album__artists {
+    font-size: 18px;
+    font-weight: bold;
+    padding-left: 36px;
+}
+
 .album-card {
     display: flex;
     flex-direction: column;
