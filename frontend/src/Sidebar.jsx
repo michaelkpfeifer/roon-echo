@@ -9,7 +9,7 @@ function Sidebar() {
           <Link to="/">Home</Link>
         </div>
         <div>
-          <Link to="/load-data">Load Data</Link>
+          <Link to="/browse">Browse</Link>
         </div>
         <div>
           <Link to="/albums">Albums</Link>

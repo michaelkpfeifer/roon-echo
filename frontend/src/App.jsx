@@ -8,12 +8,12 @@ import { loadConfig, saveConfig } from './config';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
+import Browse from './Main/Browse';
 import Home from './Main/Home';
-import LoadData from './Main/LoadData';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setLoadData } from './utils';
+import { setAlbums, setBrowseData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -23,7 +23,7 @@ function App() {
   const [appState, setAppState] = useState({
     albums: [],
     isZonesModalOpen: false,
-    loadData: {},
+    browseData: {},
     tmpSelectedZoneId: null,
   });
 
@@ -103,12 +103,17 @@ function App() {
       );
     });
 
-    socket.on('loadData', (loadData) => {
+    socket.on('browseData', (browseData) => {
       /* eslint-disable no-console */
-      console.log('App.jsx: processing loadData message: loadData:', loadData);
+      console.log(
+        'App.jsx: processing browseData message: browseData:',
+        browseData,
+      );
       /* eslint-enable no-console */
 
-      setAppState((currentAppState) => setLoadData(currentAppState, loadData));
+      setAppState((currentAppState) =>
+        setBrowseData(currentAppState, browseData),
+      );
       window.scrollTo(0, 0);
     });
 
@@ -161,7 +166,7 @@ function App() {
             <div className="right">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/load-data" element={<LoadData />} />
+                <Route path="/browse" element={<Browse />} />
                 <Route path="/albums" element={<Albums />} />
                 <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />

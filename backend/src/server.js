@@ -200,7 +200,7 @@ io.on('connection', (socket) => {
     socket.emit('initialState', frontendRoonState);
   });
 
-  socket.on('loadData', async (dataRef) => {
+  socket.on('browse', async (dataRef) => {
     let browseOptions;
     if (dataRef === undefined) {
       browseOptions = { hierarchy: 'browse', pop_all: true, item_key: null };
@@ -208,11 +208,11 @@ io.on('connection', (socket) => {
       browseOptions = { hierarchy: 'browse', item_key: dataRef.itemKey };
     }
     await browser.browseAsync(browseInstance, browseOptions);
-    const loadData = await browser.loadAsync(browseInstance, {
+    const browseData = await browser.loadAsync(browseInstance, {
       hierarchy: 'browse',
     });
 
-    socket.emit('loadData', loadData);
+    socket.emit('browseData', browseData);
   });
 
   socket.on('albums', async () => {
