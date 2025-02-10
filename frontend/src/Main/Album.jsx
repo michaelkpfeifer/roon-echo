@@ -4,7 +4,9 @@ import { useParams } from 'react-router-dom';
 import AppContext from '../AppContext';
 
 function Album() {
-  const { appState } = useContext(AppContext);
+  const { appState, config, coreUrlRef, socketRef } = useContext(AppContext);
+  const coreUrl = coreUrlRef.current;
+
   const { mbAlbumId } = useParams();
 
   const album = appState.albums.find(
@@ -21,7 +23,18 @@ function Album() {
             <b>{track.name}</b>
           </div>
           <div className="album-track-row__track-add-next">
-            <button type="button">Play Next</button>
+            <button
+              type="button"
+              onClick={() => {
+                socketRef.current.emit('trackAddNext', {
+                  albumKey: album.roonAlbum.itemKey,
+                  position: track.position,
+                  zoneId: config.selectedZoneId,
+                });
+              }}
+            >
+              Play Next
+            </button>
           </div>
         </div>
       ))}
