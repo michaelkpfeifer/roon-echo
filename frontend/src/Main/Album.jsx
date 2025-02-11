@@ -16,27 +16,27 @@ function Album() {
 
   return (
     <>
-      <div className="album__heading">
+      <div className="album-heading">
         {album.roonAlbum.imageKey ? (
           <img
-            src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=75&height=75`}
+            src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
             alt={album.mbAlbum.mbAlbumName}
-            className="album__image"
+            className="album-heading__image"
           />
         ) : (
           <img src={noAlbumArt} alt={album.mbAlbum.mbAlbumName} />
         )}
         <div>
-          <div className="album__artists">
+          <div className="album-heading__artists">
             {album.mbArtists.map((artist) => artist.name).join(', ')}
           </div>
-          <div className="album__name">{album.mbAlbum.albumName}</div>
+          <div className="album-heading__name">{album.mbAlbum.albumName}</div>
         </div>
       </div>
 
       {album.mbTracks.map((track) => (
         <div key={track.mbTrackId} className="album-track-row">
-          <div className="track-row__name">
+          <div className="album-track-row__name">
             <b>{track.name}</b>
           </div>
           <div className="album-track-row__track-add-next">
