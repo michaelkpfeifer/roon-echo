@@ -22,7 +22,7 @@ function TrackRow({ track }) {
         <img src={noAlbumArt} alt={track.name} />
       )}
       <div className="track-row__name">{track.name}</div>
-      <div className="track-row__duration">
+      <div className="track-row__length">
         {formatMbTrackLength(track.length)}
       </div>
       <div className="track-row__artist">{track.mbArtistNames}</div>

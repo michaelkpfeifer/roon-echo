@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
+import { formatMbTrackLength } from '../utils';
 
 function Album() {
   const { appState, config, coreUrlRef, socketRef } = useContext(AppContext);
@@ -36,8 +37,10 @@ function Album() {
 
       {album.mbTracks.map((track) => (
         <div key={track.mbTrackId} className="album-track-row">
-          <div className="album-track-row__name">
-            <b>{track.name}</b>
+          <div className="album-track-row__number">{track.number}</div>
+          <div className="album-track-row__name">{track.name}</div>
+          <div className="album-track-row__length">
+            {formatMbTrackLength(track.length)}
           </div>
           <div className="album-track-row__track-add-next">
             <button

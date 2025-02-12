@@ -24,7 +24,7 @@
 
 .album-track-row {
     display: grid;
-    grid-template-columns: 1fr 80px;
+    grid-template-columns: 40px 1fr 80px 80px;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #ddd;
@@ -33,6 +33,11 @@
 
 .album-track-row:hover {
     background-color: #f9f9f9;
+}
+
+.album-track-row__length {
+    text-align: right;
+    padding: 0 16px;
 }
 
 .album-track-row__name {
