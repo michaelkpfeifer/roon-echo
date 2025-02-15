@@ -233,9 +233,10 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('trackAddNext', ({ albumKey, position, zoneId }) => {
+  socket.on('trackAddNext', ({ albumKey, position, zoneId, historyEntry }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
+    console.log('server.js: io.on(): historyEntry:', historyEntry);
     /* eslint-enable no-console */
 
     browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {

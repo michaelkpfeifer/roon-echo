@@ -35,6 +35,12 @@ function TrackRow({ track }) {
               albumKey: track.roonAlbumItemKey,
               position: track.position,
               zoneId: config.selectedZoneId,
+              historyEntry: {
+                trackName: track.name,
+                albumName: track.mbAlbumName,
+                artistNames: track.mbArtistNames,
+                mbTrackId: track.mbTrackId,
+              },
             });
           }}
         >
@@ -53,6 +59,7 @@ TrackRow.propTypes = {
     length: PropTypes.number.isRequired,
     roonAlbumImageKey: PropTypes.string.isRequired,
     roonAlbumItemKey: PropTypes.string.isRequired,
+    mbTrackId: PropTypes.string.isRequired,
     mbArtistNames: PropTypes.string.isRequired,
     mbAlbumName: PropTypes.string.isRequired,
   }).isRequired,

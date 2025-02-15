@@ -15,23 +15,26 @@ function Album() {
     (a) => a.mbAlbum && a.mbAlbum.mbAlbumId === mbAlbumId,
   );
 
+  const { mbAlbum, mbArtists, roonAlbum } = album;
+  const { imageKey } = roonAlbum;
+  const { albumName } = mbAlbum;
+  const artistNames = mbArtists.map((artist) => artist.name).join(', ');
+
   return (
     <>
       <div className="album-heading">
-        {album.roonAlbum.imageKey ? (
+        {imageKey ? (
           <img
-            src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-            alt={album.mbAlbum.mbAlbumName}
+            src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+            alt={albumName}
             className="album-heading__image"
           />
         ) : (
-          <img src={noAlbumArt} alt={album.mbAlbum.mbAlbumName} />
+          <img src={noAlbumArt} alt={albumName} />
         )}
         <div>
-          <div className="album-heading__artists">
-            {album.mbArtists.map((artist) => artist.name).join(', ')}
-          </div>
-          <div className="album-heading__name">{album.mbAlbum.albumName}</div>
+          <div className="album-heading__artists">{artistNames}</div>
+          <div className="album-heading__name">{albumName}</div>
         </div>
       </div>
 
@@ -50,6 +53,12 @@ function Album() {
                   albumKey: album.roonAlbum.itemKey,
                   position: track.position,
                   zoneId: config.selectedZoneId,
+                  historyEntry: {
+                    trackName: track.name,
+                    albumName,
+                    artistNames,
+                    mbTrackId: track.mbTrackId,
+                  },
                 });
               }}
             >
