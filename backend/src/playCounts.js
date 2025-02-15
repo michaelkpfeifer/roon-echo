@@ -1,0 +1,19 @@
+import Fuse from 'fuse.js';
+
+export function findMatch(history, nowPlaying) {
+  const options = {
+    keys: ['trackName', 'albumName', 'artistNames'],
+    threshold: 0.5,
+    ignoreLocation: true,
+    findAllMatches: true,
+    shouldSort: true,
+    tokenize: true,
+    matchAllTokens: false,
+    includeScore: true,
+  };
+
+  const fuse = new Fuse(history, options);
+  const results = fuse.search(nowPlaying);
+
+  return results.length ? results[0].item : null;
+}
