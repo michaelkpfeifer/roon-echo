@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "lint": "(find src -name \\*.js) | xargs yarn eslint",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.2",
