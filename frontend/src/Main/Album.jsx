@@ -54,9 +54,9 @@ function Album() {
                   position: track.position,
                   zoneId: config.selectedZoneId,
                   historyEntry: {
-                    trackName: track.name,
-                    albumName,
-                    artistNames,
+                    mbTrackName: track.name,
+                    mbAlbumName: albumName,
+                    mbArtistNames: artistNames,
                     mbTrackId: track.mbTrackId,
                   },
                 });

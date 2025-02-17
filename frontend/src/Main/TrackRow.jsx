@@ -36,9 +36,9 @@ function TrackRow({ track }) {
               position: track.position,
               zoneId: config.selectedZoneId,
               historyEntry: {
-                trackName: track.name,
-                albumName: track.mbAlbumName,
-                artistNames: track.mbArtistNames,
+                mbTrackName: track.name,
+                mbAlbumName: track.mbAlbumName,
+                mbArtistNames: track.mbArtistNames,
                 mbTrackId: track.mbTrackId,
               },
             });
