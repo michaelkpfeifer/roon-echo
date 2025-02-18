@@ -35,7 +35,7 @@ function TrackRow({ track }) {
               albumKey: track.roonAlbumItemKey,
               position: track.position,
               zoneId: config.selectedZoneId,
-              historyEntry: {
+              mbTrackData: {
                 mbTrackName: track.name,
                 mbAlbumName: track.mbAlbumName,
                 mbArtistNames: track.mbArtistNames,

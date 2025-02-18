@@ -237,10 +237,10 @@ io.on('connection', (socket) => {
     socket.emit('allAlbums', enrichedAlbums);
   });
 
-  socket.on('trackAddNext', ({ albumKey, position, zoneId, historyEntry }) => {
+  socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
-    console.log('server.js: io.on(): historyEntry:', historyEntry);
+    console.log('server.js: io.on(): mbTrackData:', mbTrackData);
     /* eslint-enable no-console */
 
     browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {

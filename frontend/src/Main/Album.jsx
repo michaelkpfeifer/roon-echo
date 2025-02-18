@@ -53,7 +53,7 @@ function Album() {
                   albumKey: album.roonAlbum.itemKey,
                   position: track.position,
                   zoneId: config.selectedZoneId,
-                  historyEntry: {
+                  mbTrackData: {
                     mbTrackName: track.name,
                     mbAlbumName: albumName,
                     mbArtistNames: artistNames,
