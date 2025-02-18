@@ -49,10 +49,12 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
       Object.keys(data).forEach((attr) => {
         switch (attr) {
           case 'zonesSeekChanged': {
+            /* eslint-disable no-console */
             // console.log(
             //   'server.js: processing zonesSeekChanged message: data[attr]:',
             //   JSON.stringify(data[attr], null, 4),
             // );
+            /* eslint-enable no-console */
 
             const zonesSeekChangedMessage = buildZonesSeekChangedMessage(
               data[attr],
@@ -68,10 +70,12 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
           }
 
           case 'zonesChanged': {
+            /* eslint-disable no-console */
             // console.log(
             //   'server.js: processing zonesChanged message: data[attr]:',
             //   JSON.stringify(data[attr], null, 4),
             // );
+            /* eslint-enable no-console */
 
             const zonesChangedMessage = buildFrontendRoonState(data[attr]);
 
