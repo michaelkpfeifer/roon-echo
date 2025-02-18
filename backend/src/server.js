@@ -11,6 +11,7 @@ import { Server } from 'socket.io';
 
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
+import { appendToScheduledTracks } from './playCounts.js';
 import {
   buildFrontendRoonState,
   buildZonesSeekChangedMessage,
@@ -158,6 +159,8 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
+let scheduledTracks = [];
+
 io.on('connection', (socket) => {
   /* eslint-disable no-console */
   console.log('server.js: io.on(): Connected: socket.id:', socket.id);
@@ -241,6 +244,17 @@ io.on('connection', (socket) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
     console.log('server.js: io.on(): mbTrackData:', mbTrackData);
+    /* eslint-enable no-console */
+
+    scheduledTracks = appendToScheduledTracks(
+      scheduledTracks,
+      mbTrackData,
+      Date.now(),
+      zoneId,
+    );
+
+    /* eslint-disable no-console */
+    console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
     /* eslint-enable no-console */
 
     browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {

@@ -1,6 +1,16 @@
 import Fuse from 'fuse.js';
 
-export function findMatch(history, nowPlaying) {
+const appendToScheduledTracks = (
+  scheduledTracks,
+  mbTrackData,
+  scheduledAt,
+  zoneId,
+) => {
+  const scheduledTrack = { ...mbTrackData, scheduledAt, zoneId };
+
+  return [...scheduledTracks, scheduledTrack];
+};
+
 const findMatch = (history, nowPlaying) => {
   const options = {
     keys: ['mbTrackName', 'mbAlbumName', 'mbArtistNames'],
