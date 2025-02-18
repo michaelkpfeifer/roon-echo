@@ -1,8 +1,9 @@
 import Fuse from 'fuse.js';
 
 export function findMatch(history, nowPlaying) {
+const findMatch = (history, nowPlaying) => {
   const options = {
-    keys: ['trackName', 'albumName', 'artistNames'],
+    keys: ['mbTrackName', 'mbAlbumName', 'mbArtistNames'],
     threshold: 0.5,
     ignoreLocation: true,
     findAllMatches: true,
@@ -16,4 +17,6 @@ export function findMatch(history, nowPlaying) {
   const results = fuse.search(nowPlaying);
 
   return results.length ? results[0].item : null;
-}
+};
+
+export { appendToScheduledTracks, findMatch };
