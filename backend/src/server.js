@@ -11,12 +11,12 @@ import { Server } from 'socket.io';
 
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
-import { appendToScheduledTracks } from './playCounts.js';
 import {
-  buildFrontendRoonState,
-  buildZonesSeekChangedMessage,
-  camelCaseKeys,
-} from './utils.js';
+  frontendZonesChangedMessage,
+  frontendZonesSeekChangedMessage,
+} from './messages.js';
+import { appendToScheduledTracks } from './playCounts.js';
+import { camelCaseKeys } from './utils.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -57,16 +57,17 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            const zonesSeekChangedMessage = buildZonesSeekChangedMessage(
-              data[attr],
-            );
+            const frontendMessage = frontendZonesSeekChangedMessage(data[attr]);
 
+            /* eslint-disable no-console */
             // console.log(
-            //   'server.js: emitting zonesSeekChanged message: zonesSeekChangedMessage:',
-            //   JSON.stringify(zonesSeekChangedMessage, null, 4),
+            //   'server.js: emitting zonesSeekChanged message: frontendMessage:',
+            //   JSON.stringify(frontendMessage, null, 4),
             // );
+            /* eslint-enable no-console */
 
-            io.emit('zonesSeekChanged', zonesSeekChangedMessage);
+            io.emit('zonesSeekChanged', frontendMessage);
+
             break;
           }
 
@@ -78,14 +79,17 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            const zonesChangedMessage = buildFrontendRoonState(data[attr]);
+            const zonesChangedMessage = frontendZonesChangedMessage(data[attr]);
 
+            /* eslint-disable no-console */
             // console.log(
             //   'server.js: emitting zonesChanged message: zonesChangedMessage):',
             //   JSON.stringify(zonesChangedMessage, null, 4),
             // );
+            /* eslint-enable no-console */
 
             io.emit('zonesChanged', zonesChangedMessage);
+
             break;
           }
 
@@ -202,7 +206,9 @@ io.on('connection', (socket) => {
     // );
     /* eslint-enable no-console */
 
-    const frontendRoonState = buildFrontendRoonState(camelCaseKeys(body.zones));
+    const frontendRoonState = frontendZonesChangedMessage(
+      camelCaseKeys(body.zones),
+    );
 
     socket.emit('initialState', frontendRoonState);
   });

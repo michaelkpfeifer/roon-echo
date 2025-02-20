@@ -30,35 +30,4 @@ const snakeCaseKeys = (obj) => {
   return obj;
 };
 
-const extractZoneData = (zoneData) => ({
-  zoneId: zoneData.zoneId,
-  displayName: zoneData.displayName,
-  state: zoneData.state,
-  queueTimeRemaining: zoneData.queueTimeRemaining,
-  nowPlaying: zoneData.nowPlaying ? zoneData.nowPlaying : null,
-});
-
-const buildFrontendRoonState = (zonesMsg) => ({
-  zones: Object.fromEntries(
-    zonesMsg.map((zoneData) => [zoneData.zoneId, extractZoneData(zoneData)]),
-  ),
-});
-
-const buildZonesSeekChangedMessage = (msg) =>
-  Object.fromEntries(
-    msg.map((zoneData) => [
-      zoneData.zoneId,
-      {
-        seekPosition: zoneData.seekPosition,
-        queueTimeRemaining: zoneData.queueTimeRemaining,
-        zoneId: zoneData.zoneId,
-      },
-    ]),
-  );
-
-export {
-  buildFrontendRoonState,
-  buildZonesSeekChangedMessage,
-  camelCaseKeys,
-  snakeCaseKeys,
-};
+export { camelCaseKeys, snakeCaseKeys };
