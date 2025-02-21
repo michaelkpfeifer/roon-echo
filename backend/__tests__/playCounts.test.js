@@ -83,8 +83,11 @@ describe('findMatch', () => {
       mbAlbumName: 'Let It Be',
       mbTrackName: 'Across the Universe',
     };
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
-    expect(findMatch(scheduledTracks, nowPlaying)).toEqual(scheduledTracks[0]);
+    expect(findMatch(scheduledTracks, zoneId, nowPlaying)).toEqual(
+      scheduledTracks[0],
+    );
   });
 
   test('finds a close fuzzy match', () => {
@@ -93,7 +96,11 @@ describe('findMatch', () => {
       mbAlbumName: 'Let It Be',
       mbTrackName: 'Across Universe',
     };
-    expect(findMatch(scheduledTracks, nowPlaying)).toEqual(scheduledTracks[0]);
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+
+    expect(findMatch(scheduledTracks, zoneId, nowPlaying)).toEqual(
+      scheduledTracks[0],
+    );
   });
 
   test('finds another not so close fuzzy match', () => {
@@ -102,7 +109,10 @@ describe('findMatch', () => {
       mbAlbumName: 'Yoshimi Battles the Pink Robots',
       mbTrackName: 'Do You Realize?? (commentary)',
     };
-    expect(findMatch(scheduledTracks, nowPlaying)).toEqual(scheduledTracks[1]);
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    expect(findMatch(scheduledTracks, zoneId, nowPlaying)).toEqual(
+      scheduledTracks[1],
+    );
   });
 
   test('returns null for a non-matching track', () => {
@@ -111,6 +121,18 @@ describe('findMatch', () => {
       mbAlbumName: 'A Night at the Opera',
       mbTrackName: 'Bohemian Rhapsody',
     };
-    expect(findMatch(scheduledTracks, nowPlaying)).toBeNull();
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    expect(findMatch(scheduledTracks, zoneId, nowPlaying)).toBeNull();
+  });
+
+  test('returns null if the zone ID does not match', () => {
+    const nowPlaying = {
+      mbArtistNames: 'The Beatles',
+      mbAlbumName: 'Let It Be',
+      mbTrackName: 'Across the Universe',
+    };
+    const zoneId = '1601f4f798ff1773c83b77e489ea00000000';
+
+    expect(findMatch(scheduledTracks, zoneId, nowPlaying)).toBeNull();
   });
 });

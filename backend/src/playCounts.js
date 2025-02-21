@@ -11,9 +11,13 @@ const appendToScheduledTracks = (
   return [...scheduledTracks, scheduledTrack];
 };
 
-const findMatch = (history, nowPlaying) => {
+const findMatch = (history, zoneId, nowPlaying) => {
   const options = {
-    keys: ['mbTrackName', 'mbAlbumName', 'mbArtistNames'],
+    keys: [
+      { name: 'mbTrackName', weight: 0.25 },
+      { name: 'mbAlbumName', weight: 0.5 },
+      { name: 'mbArtistNames', weight: 1.0 },
+    ],
     threshold: 0.5,
     ignoreLocation: true,
     findAllMatches: true,
@@ -23,7 +27,10 @@ const findMatch = (history, nowPlaying) => {
     includeScore: true,
   };
 
-  const fuse = new Fuse(history, options);
+  const fuse = new Fuse(
+    history.filter((scheduledTrack) => scheduledTrack.zoneId === zoneId),
+    options,
+  );
   const results = fuse.search(nowPlaying);
 
   return results.length ? results[0].item : null;
