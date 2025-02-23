@@ -11,27 +11,27 @@ const appendToScheduledTracks = (
   return [...scheduledTracks, scheduledTrack];
 };
 
-const fuzzySearchInScheduledTracks = (scheduledTracks, zoneId, nowPlaying) => {
-  const options = {
-    keys: [
-      { name: 'mbTrackName', weight: 0.25 },
-      { name: 'mbAlbumName', weight: 0.5 },
-      { name: 'mbArtistNames', weight: 1.0 },
-    ],
-    threshold: 0.5,
-    ignoreLocation: true,
-    findAllMatches: true,
-    shouldSort: true,
-    tokenize: true,
-    matchAllTokens: false,
-    includeScore: true,
-  };
+const fuzzySearchOptions = {
+  keys: [
+    { name: 'mbTrackName', weight: 0.25 },
+    { name: 'mbAlbumName', weight: 0.5 },
+    { name: 'mbArtistNames', weight: 1.0 },
+  ],
+  threshold: 0.5,
+  ignoreLocation: true,
+  findAllMatches: true,
+  shouldSort: true,
+  tokenize: true,
+  matchAllTokens: false,
+  includeScore: true,
+};
 
+const fuzzySearchInScheduledTracks = (scheduledTracks, zoneId, nowPlaying) => {
   const fuse = new Fuse(
     scheduledTracks.filter(
       (scheduledTrack) => scheduledTrack.zoneId === zoneId,
     ),
-    options,
+    fuzzySearchOptions,
   );
   const results = fuse.search(nowPlaying);
 
