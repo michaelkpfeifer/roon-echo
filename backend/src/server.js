@@ -8,6 +8,7 @@ import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
@@ -97,6 +98,14 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 
             io.emit('zonesChanged', zonesChangedMessage);
 
+            /* eslint-disable no-console */
+            console.log(
+              'server.js: io.on(): scheduledTracks:',
+              scheduledTracks,
+            );
+            console.log('server.js: io.on(): playingTracks:', playingTracks);
+            /* eslint-enable no-console */
+
             [scheduledTracks, playingTracks] =
               extractNowPlayingFromZonesChangedMessages(data[attr]).reduce(
                 (
@@ -111,6 +120,15 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
                   ),
                 [scheduledTracks, playingTracks],
               );
+
+            /* eslint-disable no-console */
+            console.log(
+              'server.js: io.on(): scheduledTracks:',
+              scheduledTracks,
+            );
+            console.log('server.js: io.on(): playingTracks:', playingTracks);
+            /* eslint-enable no-console */
+
             break;
           }
 
@@ -274,6 +292,7 @@ io.on('connection', (socket) => {
     scheduledTracks = appendToScheduledTracks(
       scheduledTracks,
       mbTrackData,
+      uuidv4(),
       Date.now(),
       zoneId,
     );

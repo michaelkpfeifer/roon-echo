@@ -3,10 +3,11 @@ import Fuse from 'fuse.js';
 const appendToScheduledTracks = (
   scheduledTracks,
   mbTrackData,
+  uuid,
   scheduledAt,
   zoneId,
 ) => {
-  const scheduledTrack = { ...mbTrackData, scheduledAt, zoneId };
+  const scheduledTrack = { ...mbTrackData, uuid, scheduledAt, zoneId };
 
   return [...scheduledTracks, scheduledTrack];
 };
@@ -62,8 +63,7 @@ const findMatchInScheduledTracks = (
 
   return [
     scheduledTracks.filter(
-      (scheduledTrack) =>
-        scheduledTrack.mbTrackId !== fuzzySearchResults.mbTrackId,
+      (scheduledTrack) => scheduledTrack.uuid !== fuzzySearchResults.uuid,
     ),
     [...playingTracks, fuzzySearchResults],
   ];

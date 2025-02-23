@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import {
   appendToScheduledTracks,
   findMatchInScheduledTracks,
@@ -13,18 +15,20 @@ describe('appendToScheduledTracks', () => {
       mbArtistNames: 'Lucrecia Dalt',
       mbTrackId: 'b6e4d347-67b6-4cc5-aea7-5a4c0db9747a',
     };
+    const uuid = uuidv4();
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
     const newScheduledTracks = appendToScheduledTracks(
       scheduledTracks,
       mbTrackData,
+      uuid,
       scheduledAt,
       zoneId,
     );
 
     expect(newScheduledTracks).toEqual([
-      { ...mbTrackData, scheduledAt, zoneId },
+      { ...mbTrackData, uuid, scheduledAt, zoneId },
     ]);
   });
 
@@ -34,6 +38,7 @@ describe('appendToScheduledTracks', () => {
       mbAlbumName: 'Let It Be',
       mbArtistNames: 'The Beatles',
       mbTrackId: 'b6e4d347-67b6-4cc5-aea7-5a4c0db9747a',
+      uuid: 'f6bbfa30-3f63-450b-85ad-abe56a40727d',
       scheduledAt: 1739915100000,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     };
@@ -44,19 +49,21 @@ describe('appendToScheduledTracks', () => {
       mbArtistNames: 'Lucrecia Dalt',
       mbTrackId: 'b6e4d347-67b6-4cc5-aea7-5a4c0db9747a',
     };
+    const uuid = 'd4a4f947-f203-4edb-b61b-26abbe3d2a1c';
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
     const newScheduledTracks = appendToScheduledTracks(
       scheduledTracks,
       mbTrackData,
+      uuid,
       scheduledAt,
       zoneId,
     );
 
     expect(newScheduledTracks).toEqual([
       scheduledTrack,
-      { ...mbTrackData, scheduledAt, zoneId },
+      { ...mbTrackData, uuid, scheduledAt, zoneId },
     ]);
   });
 });
@@ -68,6 +75,7 @@ describe('fuzzySearchInScheduledTracks', () => {
       mbAlbumName: 'Let It Be',
       mbTrackName: 'Across the Universe',
       mbTrackId: '12345',
+      uuid: 'f6bbfa30-3f63-450b-85ad-abe56a40727d',
       scheduledAt: 1739915100000,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     },
@@ -76,7 +84,8 @@ describe('fuzzySearchInScheduledTracks', () => {
       mbAlbumName: 'Yoshimi Battles the Pink Robots',
       mbTrackName: 'Do You Realize??',
       mbTrackId: '23456',
-      scheduledAt: 1739915200000,
+      uuid: 'd4a4f947-f203-4edb-b61b-26abbe3d2a1c',
+      scheduledAt: 1739915122222,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     },
   ];
@@ -152,6 +161,7 @@ describe('findMatchInScheduledTracks', () => {
       mbAlbumName: 'Let It Be',
       mbTrackName: 'Across the Universe',
       mbTrackId: '12345',
+      uuid: 'f6bbfa30-3f63-450b-85ad-abe56a40727d',
       scheduledAt: 1739915100000,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     },
@@ -160,6 +170,7 @@ describe('findMatchInScheduledTracks', () => {
       mbAlbumName: 'Yoshimi Battles the Pink Robots',
       mbTrackName: 'Do You Realize??',
       mbTrackId: '23456',
+      uuid: 'd4a4f947-f203-4edb-b61b-26abbe3d2a1c',
       scheduledAt: 1739915200000,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     },
@@ -185,6 +196,7 @@ describe('findMatchInScheduledTracks', () => {
         mbAlbumName: 'Yoshimi Battles the Pink Robots',
         mbTrackName: 'Do You Realize??',
         mbTrackId: '23456',
+        uuid: 'd4a4f947-f203-4edb-b61b-26abbe3d2a1c',
         scheduledAt: 1739915200000,
         zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
       },
@@ -195,6 +207,7 @@ describe('findMatchInScheduledTracks', () => {
         mbAlbumName: 'Let It Be',
         mbTrackName: 'Across the Universe',
         mbTrackId: '12345',
+        uuid: 'f6bbfa30-3f63-450b-85ad-abe56a40727d',
         scheduledAt: 1739915100000,
         zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
       },
