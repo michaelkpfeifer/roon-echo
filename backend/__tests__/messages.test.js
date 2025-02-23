@@ -1,9 +1,11 @@
 import {
   zonesChangedMessages1,
+  zonesChangedMessages2,
   zonesSeekChangedMessages1,
   zonesSeekChangedMessages2,
 } from '../__fixtures__/roonCoreMessages.js';
 import {
+  extractNowPlayingFromZonesChangedMessages,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from '../src/messages.js';
@@ -75,5 +77,32 @@ describe('frontendZonesSeekChangedMessage', () => {
         zoneId: '1601f4f798ff1773c83b77e489eaff954634',
       },
     });
+  });
+});
+
+describe('extractNowPlayingFromZonesChangedMessages', () => {
+  test('extracts Roon data about the currently playing track', () => {
+    const nowPlaying = extractNowPlayingFromZonesChangedMessages(
+      zonesChangedMessages1,
+    );
+
+    expect(nowPlaying).toEqual([
+      [
+        '1601f4f798ff1773c83b77e489eaff98f7f4',
+        {
+          roonTrackName: 'Kids Turned Out Fine',
+          roonAlbumName: 'TESTING',
+          roonArtistNames: 'A$AP Rocky',
+        },
+      ],
+    ]);
+  });
+
+  test('ignores messages without a nowPlaying key', () => {
+    const nowPlaying = extractNowPlayingFromZonesChangedMessages(
+      zonesChangedMessages2,
+    );
+
+    expect(nowPlaying).toEqual([]);
   });
 });

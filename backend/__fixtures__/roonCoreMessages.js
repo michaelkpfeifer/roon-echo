@@ -68,6 +68,58 @@ const zonesChangedMessages1 = [
   },
 ];
 
+const zonesChangedMessages2 = [
+  {
+    zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
+    displayName: 'mp2000',
+    outputs: [
+      {
+        outputId: '1701fa3b3ee4f063ed8d5549632fd4e18fcf',
+        zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
+        canGroupWithOutputIds: [
+          '170158f78109afd4b2d01d3b44e0d50be5bb',
+          '1701f786e879b107e5e4d9555a47bc6e83a1',
+          '1701fa3b3ee4f063ed8d5549632fd4e18fcf',
+          '1701f4f798ff1773c83b77e489eaff98f7f4',
+        ],
+        displayName: 'mp2000',
+        volume: {
+          type: 'number',
+          min: 0,
+          max: 85,
+          value: 20,
+          step: 1,
+          isMuted: true,
+          hardLimitMin: 0,
+          hardLimitMax: 60,
+          softLimit: 48,
+        },
+        sourceControls: [
+          {
+            controlKey: '1',
+            displayName: 'T+A MP 2000 R',
+            supportsStandby: true,
+            status: 'selected',
+          },
+        ],
+      },
+    ],
+    state: 'stopped',
+    isNextAllowed: false,
+    isPreviousAllowed: true,
+    isPauseAllowed: false,
+    isPlayAllowed: false,
+    isSeekAllowed: false,
+    queueItemsRemaining: 0,
+    queueTimeRemaining: 0,
+    settings: {
+      loop: 'disabled',
+      shuffle: false,
+      autoRadio: false,
+    },
+  },
+];
+
 const zonesSeekChangedMessages1 = [
   {
     zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
@@ -91,6 +143,7 @@ const zonesSeekChangedMessages2 = [
 
 export {
   zonesChangedMessages1,
+  zonesChangedMessages2,
   zonesSeekChangedMessages1,
   zonesSeekChangedMessages2,
 };
