@@ -11,7 +11,7 @@ const appendToScheduledTracks = (
   return [...scheduledTracks, scheduledTrack];
 };
 
-const findMatch = (history, zoneId, nowPlaying) => {
+const fuzzySearchInScheduledTracks = (scheduledTracks, zoneId, nowPlaying) => {
   const options = {
     keys: [
       { name: 'mbTrackName', weight: 0.25 },
@@ -28,7 +28,9 @@ const findMatch = (history, zoneId, nowPlaying) => {
   };
 
   const fuse = new Fuse(
-    history.filter((scheduledTrack) => scheduledTrack.zoneId === zoneId),
+    scheduledTracks.filter(
+      (scheduledTrack) => scheduledTrack.zoneId === zoneId,
+    ),
     options,
   );
   const results = fuse.search(nowPlaying);
@@ -36,4 +38,39 @@ const findMatch = (history, zoneId, nowPlaying) => {
   return results.length ? results[0].item : null;
 };
 
-export { appendToScheduledTracks, findMatch };
+const findMatchInScheduledTracks = (
+  scheduledTracks,
+  playingTracks,
+  zoneId,
+  { roonTrackName, roonAlbumName, roonArtistNames },
+) => {
+  const nowPlaying = {
+    mbTrackName: roonTrackName,
+    mbAlbumName: roonAlbumName,
+    mbArtistNames: roonArtistNames,
+  };
+
+  const fuzzySearchResults = fuzzySearchInScheduledTracks(
+    scheduledTracks,
+    zoneId,
+    nowPlaying,
+  );
+
+  if (!fuzzySearchResults) {
+    return [scheduledTracks, playingTracks];
+  }
+
+  return [
+    scheduledTracks.filter(
+      (scheduledTrack) =>
+        scheduledTrack.mbTrackId !== fuzzySearchResults.mbTrackId,
+    ),
+    [...playingTracks, fuzzySearchResults],
+  ];
+};
+
+export {
+  appendToScheduledTracks,
+  findMatchInScheduledTracks,
+  fuzzySearchInScheduledTracks,
+};
