@@ -12,10 +12,14 @@ import { Server } from 'socket.io';
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
+  extractNowPlayingFromZonesChangedMessages,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
-import { appendToScheduledTracks } from './playCounts.js';
+import {
+  appendToScheduledTracks,
+  findMatchInScheduledTracks,
+} from './playCounts.js';
 import { camelCaseKeys } from './utils.js';
 
 const app = express();
@@ -33,6 +37,9 @@ app.use(express.json());
 dotenv.config();
 
 const coreUrlConfigured = process.env.CORE_URL;
+
+let scheduledTracks = [];
+let playingTracks = [];
 
 const coreMessageHandler = (cmd, snakeCaseData) => {
   const data = camelCaseKeys(snakeCaseData);
@@ -90,6 +97,20 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 
             io.emit('zonesChanged', zonesChangedMessage);
 
+            [scheduledTracks, playingTracks] =
+              extractNowPlayingFromZonesChangedMessages(data[attr]).reduce(
+                (
+                  [currentScheduledTracks, currentPlayingTracks],
+                  [zoneId, nowPlaying],
+                ) =>
+                  findMatchInScheduledTracks(
+                    currentScheduledTracks,
+                    currentPlayingTracks,
+                    zoneId,
+                    nowPlaying,
+                  ),
+                [scheduledTracks, playingTracks],
+              );
             break;
           }
 
@@ -162,8 +183,6 @@ roon.init_services({
 });
 
 serviceStatus.set_status('All is good', false);
-
-let scheduledTracks = [];
 
 io.on('connection', (socket) => {
   /* eslint-disable no-console */
