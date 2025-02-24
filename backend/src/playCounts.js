@@ -49,12 +49,12 @@ const fuzzySearchInScheduledTracks = ({
   return results.length ? results[0].item : null;
 };
 
-const findMatchInScheduledTracks = (
+const findMatchInScheduledTracks = ({
   scheduledTracks,
   playingTracks,
   zoneId,
-  { roonTrackName, roonAlbumName, roonArtistNames },
-) => {
+  nowPlaying: { roonTrackName, roonAlbumName, roonArtistNames },
+}) => {
   const nowPlaying = {
     mbTrackName: roonTrackName,
     mbAlbumName: roonAlbumName,

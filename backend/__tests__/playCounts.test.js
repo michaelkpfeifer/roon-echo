@@ -190,12 +190,12 @@ describe('findMatchInScheduledTracks', () => {
     const roonAlbumName = 'Let It Be';
     const roonTrackName = 'Across the Universe';
 
-    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks(
+    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks({
       scheduledTracks,
       playingTracks,
       zoneId,
-      { roonArtistNames, roonAlbumName, roonTrackName },
-    );
+      nowPlaying: { roonArtistNames, roonAlbumName, roonTrackName },
+    });
 
     expect(newScheduledTracks).toEqual([
       {
@@ -229,12 +229,12 @@ describe('findMatchInScheduledTracks', () => {
     const roonAlbumName = 'Choclate And Cheese';
     const roonTrackName = 'Buenas Tardes Amigos';
 
-    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks(
+    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks({
       scheduledTracks,
       playingTracks,
       zoneId,
-      { roonArtistNames, roonAlbumName, roonTrackName },
-    );
+      nowPlaying: { roonArtistNames, roonAlbumName, roonTrackName },
+    });
 
     expect(newScheduledTracks).toEqual(scheduledTracks);
     expect(newPlayingTracks).toEqual(playingTracks);

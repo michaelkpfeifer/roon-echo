@@ -112,12 +112,12 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
                   [currentScheduledTracks, currentPlayingTracks],
                   [zoneId, nowPlaying],
                 ) =>
-                  findMatchInScheduledTracks(
-                    currentScheduledTracks,
-                    currentPlayingTracks,
+                  findMatchInScheduledTracks({
+                    scheduledTracks: currentScheduledTracks,
+                    playingTracks: currentPlayingTracks,
                     zoneId,
                     nowPlaying,
-                  ),
+                  }),
                 [scheduledTracks, playingTracks],
               );
 
