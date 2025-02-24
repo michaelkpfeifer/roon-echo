@@ -33,7 +33,11 @@ const fuzzySearchOptions = {
   includeScore: true,
 };
 
-const fuzzySearchInScheduledTracks = (scheduledTracks, zoneId, nowPlaying) => {
+const fuzzySearchInScheduledTracks = ({
+  scheduledTracks,
+  zoneId,
+  nowPlaying,
+}) => {
   const fuse = new Fuse(
     scheduledTracks.filter(
       (scheduledTrack) => scheduledTrack.zoneId === zoneId,
@@ -57,11 +61,11 @@ const findMatchInScheduledTracks = (
     mbArtistNames: roonArtistNames,
   };
 
-  const fuzzySearchResults = fuzzySearchInScheduledTracks(
+  const fuzzySearchResults = fuzzySearchInScheduledTracks({
     scheduledTracks,
     zoneId,
     nowPlaying,
-  );
+  });
 
   if (!fuzzySearchResults) {
     return [scheduledTracks, playingTracks];

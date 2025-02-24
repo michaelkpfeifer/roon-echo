@@ -104,7 +104,7 @@ describe('fuzzySearchInScheduledTracks', () => {
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
     expect(
-      fuzzySearchInScheduledTracks(scheduledTracks, zoneId, nowPlaying),
+      fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toEqual(scheduledTracks[0]);
   });
 
@@ -117,7 +117,7 @@ describe('fuzzySearchInScheduledTracks', () => {
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
     expect(
-      fuzzySearchInScheduledTracks(scheduledTracks, zoneId, nowPlaying),
+      fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toEqual(scheduledTracks[0]);
   });
 
@@ -129,7 +129,7 @@ describe('fuzzySearchInScheduledTracks', () => {
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     expect(
-      fuzzySearchInScheduledTracks(scheduledTracks, zoneId, nowPlaying),
+      fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toEqual(scheduledTracks[1]);
   });
 
@@ -141,7 +141,7 @@ describe('fuzzySearchInScheduledTracks', () => {
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     expect(
-      fuzzySearchInScheduledTracks(scheduledTracks, zoneId, nowPlaying),
+      fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toBeNull();
   });
 
@@ -154,7 +154,7 @@ describe('fuzzySearchInScheduledTracks', () => {
     const zoneId = '1601f4f798ff1773c83b77e489ea00000000';
 
     expect(
-      fuzzySearchInScheduledTracks(scheduledTracks, zoneId, nowPlaying),
+      fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toBeNull();
   });
 });
