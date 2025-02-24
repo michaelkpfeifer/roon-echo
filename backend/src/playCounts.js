@@ -1,12 +1,12 @@
 import Fuse from 'fuse.js';
 
-const appendToScheduledTracks = (
+const appendToScheduledTracks = ({
   scheduledTracks,
   mbTrackData,
   uuid,
   scheduledAt,
   zoneId,
-) => {
+}) => {
   const scheduledTrack = {
     ...mbTrackData,
     mbLength: Math.floor(mbTrackData.mbLength / 1000),

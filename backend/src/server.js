@@ -289,13 +289,13 @@ io.on('connection', (socket) => {
     console.log('server.js: io.on(): mbTrackData:', mbTrackData);
     /* eslint-enable no-console */
 
-    scheduledTracks = appendToScheduledTracks(
+    scheduledTracks = appendToScheduledTracks({
       scheduledTracks,
       mbTrackData,
-      uuidv4(),
-      Date.now(),
+      uuid: uuidv4(),
+      scheduledAt: Date.now(),
       zoneId,
-    );
+    });
 
     /* eslint-disable no-console */
     console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);

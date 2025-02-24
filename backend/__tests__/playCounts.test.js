@@ -20,13 +20,13 @@ describe('appendToScheduledTracks', () => {
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
-    const newScheduledTracks = appendToScheduledTracks(
+    const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
       mbTrackData,
       uuid,
       scheduledAt,
       zoneId,
-    );
+    });
 
     expect(newScheduledTracks).toEqual([
       { ...mbTrackData, mbLength: 235, uuid, scheduledAt, zoneId },
@@ -56,13 +56,13 @@ describe('appendToScheduledTracks', () => {
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
-    const newScheduledTracks = appendToScheduledTracks(
+    const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
       mbTrackData,
       uuid,
       scheduledAt,
       zoneId,
-    );
+    });
 
     expect(newScheduledTracks).toEqual([
       scheduledTrack,
