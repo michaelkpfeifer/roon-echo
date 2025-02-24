@@ -58,6 +58,7 @@ function Album() {
                     mbAlbumName: albumName,
                     mbArtistNames: artistNames,
                     mbTrackId: track.mbTrackId,
+                    mbLength: track.length,
                   },
                 });
               }}

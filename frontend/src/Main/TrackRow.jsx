@@ -40,6 +40,7 @@ function TrackRow({ track }) {
                 mbAlbumName: track.mbAlbumName,
                 mbArtistNames: track.mbArtistNames,
                 mbTrackId: track.mbTrackId,
+                mbLength: track.length,
               },
             });
           }}

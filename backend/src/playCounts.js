@@ -7,7 +7,13 @@ const appendToScheduledTracks = (
   scheduledAt,
   zoneId,
 ) => {
-  const scheduledTrack = { ...mbTrackData, uuid, scheduledAt, zoneId };
+  const scheduledTrack = {
+    ...mbTrackData,
+    mbLength: Math.floor(mbTrackData.mbLength / 1000),
+    uuid,
+    scheduledAt,
+    zoneId,
+  };
 
   return [...scheduledTracks, scheduledTrack];
 };
