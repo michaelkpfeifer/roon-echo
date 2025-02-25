@@ -1,4 +1,4 @@
-const zonesChangedMessages1 = [
+const zonesChangedMessage1 = [
   {
     zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     displayName: 'WiiM',
@@ -68,7 +68,7 @@ const zonesChangedMessages1 = [
   },
 ];
 
-const zonesChangedMessages2 = [
+const zonesChangedMessage2 = [
   {
     zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
     displayName: 'mp2000',
@@ -120,7 +120,7 @@ const zonesChangedMessages2 = [
   },
 ];
 
-const zonesSeekChangedMessages1 = [
+const zonesSeekChangedMessage1 = [
   {
     zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     queueTimeRemaining: 1875,
@@ -128,7 +128,7 @@ const zonesSeekChangedMessages1 = [
   },
 ];
 
-const zonesSeekChangedMessages2 = [
+const zonesSeekChangedMessage2 = [
   {
     zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
     queueTimeRemaining: 1875,
@@ -142,8 +142,8 @@ const zonesSeekChangedMessages2 = [
 ];
 
 export {
-  zonesChangedMessages1,
-  zonesChangedMessages2,
-  zonesSeekChangedMessages1,
-  zonesSeekChangedMessages2,
+  zonesChangedMessage1,
+  zonesChangedMessage2,
+  zonesSeekChangedMessage1,
+  zonesSeekChangedMessage2,
 };

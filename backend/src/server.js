@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
-  extractNowPlayingFromZonesChangedMessages,
+  extractNowPlayingFromZonesChangedMessage,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
@@ -107,7 +107,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             /* eslint-enable no-console */
 
             [scheduledTracks, playingTracks] =
-              extractNowPlayingFromZonesChangedMessages(data[attr]).reduce(
+              extractNowPlayingFromZonesChangedMessage(data[attr]).reduce(
                 (
                   [currentScheduledTracks, currentPlayingTracks],
                   [zoneId, nowPlaying],

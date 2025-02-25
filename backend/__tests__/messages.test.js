@@ -1,18 +1,18 @@
 import {
-  zonesChangedMessages1,
-  zonesChangedMessages2,
-  zonesSeekChangedMessages1,
-  zonesSeekChangedMessages2,
+  zonesChangedMessage1,
+  zonesChangedMessage2,
+  zonesSeekChangedMessage1,
+  zonesSeekChangedMessage2,
 } from '../__fixtures__/roonCoreMessages.js';
 import {
-  extractNowPlayingFromZonesChangedMessages,
+  extractNowPlayingFromZonesChangedMessage,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from '../src/messages.js';
 
 describe('frontendZonesChangedMessage', () => {
   test('extracts nowPlaying data and adds zoneId key', () => {
-    const frontendMessage = frontendZonesChangedMessage(zonesChangedMessages1);
+    const frontendMessage = frontendZonesChangedMessage(zonesChangedMessage1);
 
     expect(frontendMessage).toEqual({
       zones: {
@@ -48,7 +48,7 @@ describe('frontendZonesChangedMessage', () => {
 describe('frontendZonesSeekChangedMessage', () => {
   test('extracts single queueTimeRemaining and seekPosition and adds zoneId key', () => {
     const frontendMessage = frontendZonesSeekChangedMessage(
-      zonesSeekChangedMessages1,
+      zonesSeekChangedMessage1,
     );
 
     expect(frontendMessage).toEqual({
@@ -62,7 +62,7 @@ describe('frontendZonesSeekChangedMessage', () => {
 
   test('extracts multiple queueTimeRemaining and seekPosition and adds zoneId key', () => {
     const frontendMessage = frontendZonesSeekChangedMessage(
-      zonesSeekChangedMessages2,
+      zonesSeekChangedMessage2,
     );
 
     expect(frontendMessage).toEqual({
@@ -80,11 +80,10 @@ describe('frontendZonesSeekChangedMessage', () => {
   });
 });
 
-describe('extractNowPlayingFromZonesChangedMessages', () => {
+describe('extractNowPlayingFromZonesChangedMessage', () => {
   test('extracts Roon data about the currently playing track', () => {
-    const nowPlaying = extractNowPlayingFromZonesChangedMessages(
-      zonesChangedMessages1,
-    );
+    const nowPlaying =
+      extractNowPlayingFromZonesChangedMessage(zonesChangedMessage1);
 
     expect(nowPlaying).toEqual([
       [
@@ -99,9 +98,8 @@ describe('extractNowPlayingFromZonesChangedMessages', () => {
   });
 
   test('ignores messages without a nowPlaying key', () => {
-    const nowPlaying = extractNowPlayingFromZonesChangedMessages(
-      zonesChangedMessages2,
-    );
+    const nowPlaying =
+      extractNowPlayingFromZonesChangedMessage(zonesChangedMessage2);
 
     expect(nowPlaying).toEqual([]);
   });

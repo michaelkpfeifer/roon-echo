@@ -33,7 +33,7 @@ const mapThreeLineToNowPlaying = ({ line1, line2, line3 }) => ({
   roonArtistNames: line2,
 });
 
-const extractNowPlayingFromZonesChangedMessages = (zonesChangedMessage) =>
+const extractNowPlayingFromZonesChangedMessage = (zonesChangedMessage) =>
   zonesChangedMessage
     .filter((message) => message.nowPlaying)
     .map((message) => [
@@ -42,7 +42,7 @@ const extractNowPlayingFromZonesChangedMessages = (zonesChangedMessage) =>
     ]);
 
 export {
-  extractNowPlayingFromZonesChangedMessages,
+  extractNowPlayingFromZonesChangedMessage,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 };
