@@ -13,12 +13,21 @@ import { v4 as uuidv4 } from 'uuid';
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
+  logChanged,
+  logChangedUnknown,
+  logChangedZones,
+  logChangedZonesSeek,
+  logSubscribed,
+  logUnknown,
+} from './logging.js';
+import {
   extractNowPlayingFromZonesChangedMessage,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
 import {
   appendToScheduledTracks,
+  findMatchInPlayingTracks,
   findMatchInScheduledTracks,
 } from './playCounts.js';
 import { camelCaseKeys } from './utils.js';
@@ -41,31 +50,46 @@ const coreUrlConfigured = process.env.CORE_URL;
 
 let scheduledTracks = [];
 let playingTracks = [];
+let playedTracks = [];
 
-const coreMessageHandler = (cmd, snakeCaseData) => {
-  const data = camelCaseKeys(snakeCaseData);
+const coreMessageHandler = (messageType, snakeCaseData) => {
+  const message = camelCaseKeys(snakeCaseData);
 
-  switch (cmd) {
+  switch (messageType) {
     case 'Subscribed':
       /* eslint-disable no-console */
-      console.log(
-        'server.js: coreMessageHandler(): Received "Subscribed" message.',
-      );
+      // console.log(
+      //   'server.js: coreMessageHandler(): Received "Subscribed" message: message:',
+      //   JSON.stringify(message, null, 4),
+      // );
       /* eslint-enable no-console */
+
+      logSubscribed(message);
 
       break;
     case 'Changed':
-      Object.keys(data).forEach((attr) => {
-        switch (attr) {
+      /* eslint-disable no-console */
+      // console.log(
+      //   'server.js: coreMessageHandler(): Received "Changed" message: message:',
+      //   JSON.stringify(message, null, 4),
+      // );
+      /* eslint-enable no-console */
+
+      logChanged(message);
+
+      Object.keys(message).forEach((subType) => {
+        switch (subType) {
           case 'zonesSeekChanged': {
             /* eslint-disable no-console */
             // console.log(
-            //   'server.js: processing zonesSeekChanged message: data[attr]:',
-            //   JSON.stringify(data[attr], null, 4),
+            //   'server.js: coreMessageHandler(): Received "zonesSeekChanged" message: message:',
+            //   JSON.stringify(message[subType], null, 4),
             // );
             /* eslint-enable no-console */
 
-            const frontendMessage = frontendZonesSeekChangedMessage(data[attr]);
+            const frontendMessage = frontendZonesSeekChangedMessage(
+              message[subType],
+            );
 
             /* eslint-disable no-console */
             // console.log(
@@ -76,27 +100,32 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 
             io.emit('zonesSeekChanged', frontendMessage);
 
+
+            logChangedZonesSeek(JSON.stringify(message[subType]));
+
             break;
           }
 
           case 'zonesChanged': {
             /* eslint-disable no-console */
             // console.log(
-            //   'server.js: processing zonesChanged message: data[attr]:',
-            //   JSON.stringify(data[attr], null, 4),
+            //   'server.js: coreMessageHandler(): Received "zonesChanged" message: message:',
+            //   JSON.stringify(message[subType], null, 4),
             // );
             /* eslint-enable no-console */
 
-            const zonesChangedMessage = frontendZonesChangedMessage(data[attr]);
+            const frontendMessage = frontendZonesChangedMessage(
+              message[subType],
+            );
 
             /* eslint-disable no-console */
             // console.log(
-            //   'server.js: emitting zonesChanged message: zonesChangedMessage):',
-            //   JSON.stringify(zonesChangedMessage, null, 4),
+            //   'server.js: emitting zonesChanged message: frontendMessage):',
+            //   JSON.stringify(frontendMessage, null, 4),
             // );
             /* eslint-enable no-console */
 
-            io.emit('zonesChanged', zonesChangedMessage);
+            io.emit('zonesChanged', frontendMessage);
 
             /* eslint-disable no-console */
             console.log(
@@ -107,7 +136,7 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             /* eslint-enable no-console */
 
             [scheduledTracks, playingTracks] =
-              extractNowPlayingFromZonesChangedMessage(data[attr]).reduce(
+              extractNowPlayingFromZonesChangedMessage(message[subType]).reduce(
                 (
                   [currentScheduledTracks, currentPlayingTracks],
                   [zoneId, nowPlaying],
@@ -129,22 +158,20 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
             console.log('server.js: io.on(): playingTracks:', playingTracks);
             /* eslint-enable no-console */
 
+            logChangedZones(JSON.stringify(message[subType]));
+
             break;
           }
 
           default: {
             /* eslint-disable no-console */
-            console.log(
-              'server.js: unknown message: attr:',
-              JSON.stringify(attr, null, 4),
-            );
+            // console.log(
+            //   'server.js: coreMessageHandler(): Received unknown "Changed" message: message:',
+            //   JSON.stringify(message[subType], null, 4),
+            // );
             /* eslint-enable no-console */
-            /* eslint-disable no-console */
-            console.log(
-              'server.js: unknown message: data[attr]',
-              JSON.stringify(data[attr], null, 4),
-            );
-            /* eslint-enable no-console */
+
+            logChangedUnknown(JSON.stringify(message[subType]));
 
             break;
           }
@@ -154,17 +181,13 @@ const coreMessageHandler = (cmd, snakeCaseData) => {
 
     default: {
       /* eslint-disable no-console */
-      console.log(
-        'server.js: unknown message: cmd:',
-        JSON.stringify(cmd, null, 4),
-      );
+      // console.log(
+      //   'server.js: coreMessageHandler(): Received unknown message: message:',
+      //   JSON.stringify(message, null, 4),
+      // );
       /* eslint-enable no-console */
-      /* eslint-disable no-console */
-      console.log(
-        'server.js: unknown message: data',
-        JSON.stringify(data, null, 4),
-      );
-      /* eslint-enable no-console */
+
+      logUnknown(message);
     }
   }
 };
@@ -237,10 +260,10 @@ io.on('connection', (socket) => {
     }
 
     /* eslint-disable no-console */
-    // console.log(
-    //   'server.js: io.on(): camelCaseKeys(body.zones)',
-    //   JSON.stringify(camelCaseKeys(body.zones)),
-    // );
+    console.log(
+      'server.js: io.on(): camelCaseKeys(body.zones)',
+      JSON.stringify(camelCaseKeys(body.zones), null, 4),
+    );
     /* eslint-enable no-console */
 
     const frontendRoonState = frontendZonesChangedMessage(
@@ -248,6 +271,23 @@ io.on('connection', (socket) => {
     );
 
     socket.emit('initialState', frontendRoonState);
+
+    const zoneIds = camelCaseKeys(body.zones).map((zone) => zone.zoneId);
+
+    /* eslint-disable no-console */
+    console.log('server.js: io.on(): zoneIds', zoneIds);
+    /* eslint-enable no-console */
+
+    camelCaseKeys(body.zones).forEach((zone) => {
+      transport.subscribe_queue(zone.zoneId, 100, (response, msg) => {
+        /* eslint-disable no-console */
+        console.log(
+          `>>> Queue update for zone ${zone.displayName}:`,
+          JSON.stringify(msg, null, 4),
+        );
+        /* eslint-enable no-console */
+      });
+    });
   });
 
   socket.on('browse', async (dataRef) => {
