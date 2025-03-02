@@ -16,6 +16,8 @@ import {
   logChanged,
   logChangedUnknown,
   logChangedZones,
+  logChangedZonesAdded,
+  logChangedZonesRemoved,
   logChangedZonesSeek,
   logSubscribed,
   logUnknown,
@@ -27,7 +29,6 @@ import {
 } from './messages.js';
 import {
   appendToScheduledTracks,
-  findMatchInPlayingTracks,
   findMatchInScheduledTracks,
 } from './playCounts.js';
 import { camelCaseKeys } from './utils.js';
@@ -48,9 +49,11 @@ dotenv.config();
 
 const coreUrlConfigured = process.env.CORE_URL;
 
+let transport;
+let browseInstance;
+
 let scheduledTracks = [];
 let playingTracks = [];
-let playedTracks = [];
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -99,7 +102,6 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             /* eslint-enable no-console */
 
             io.emit('zonesSeekChanged', frontendMessage);
-
 
             logChangedZonesSeek(JSON.stringify(message[subType]));
 
@@ -163,6 +165,41 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             break;
           }
 
+          case 'zonesAdded': {
+            /* eslint-disable no-console */
+            // console.log(
+            //   'server.js: coreMessageHandler(): Received "zonesAdded" message: message:',
+            //   JSON.stringify(message[subType], null, 4),
+            // );
+            /* eslint-enable no-console */
+
+            message[subType].forEach((zone) =>
+              transport.subscribe_queue(zone.zoneId, 100, (response, msg) =>
+                console.log(
+                  `>>> Queue update for zone ${zone.displayName}:`,
+                  JSON.stringify(msg, null, 4),
+                ),
+              ),
+            );
+
+            logChangedZonesAdded(JSON.stringify(message[subType]));
+
+            break;
+          }
+
+          case 'zonesRemoved': {
+            /* eslint-disable no-console */
+            // console.log(
+            //   'server.js: coreMessageHandler(): Received "zonesRemoved" message: message:',
+            //   JSON.stringify(message[subType], null, 4),
+            // );
+            /* eslint-enable no-console */
+
+            logChangedZonesRemoved(JSON.stringify(message[subType]));
+
+            break;
+          }
+
           default: {
             /* eslint-disable no-console */
             // console.log(
@@ -191,9 +228,6 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
     }
   }
 };
-
-let transport;
-let browseInstance;
 
 const roon = new RoonApi({
   /* eslint-disable camelcase */
@@ -259,33 +293,22 @@ io.on('connection', (socket) => {
       return;
     }
 
+    const zones = camelCaseKeys(body.zones);
+
     /* eslint-disable no-console */
-    console.log(
-      'server.js: io.on(): camelCaseKeys(body.zones)',
-      JSON.stringify(camelCaseKeys(body.zones), null, 4),
-    );
+    console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
     /* eslint-enable no-console */
 
-    const frontendRoonState = frontendZonesChangedMessage(
-      camelCaseKeys(body.zones),
-    );
+    const frontendRoonState = frontendZonesChangedMessage(zones);
 
     socket.emit('initialState', frontendRoonState);
 
-    const zoneIds = camelCaseKeys(body.zones).map((zone) => zone.zoneId);
-
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): zoneIds', zoneIds);
-    /* eslint-enable no-console */
-
-    camelCaseKeys(body.zones).forEach((zone) => {
+    zones.forEach((zone) => {
       transport.subscribe_queue(zone.zoneId, 100, (response, msg) => {
-        /* eslint-disable no-console */
         console.log(
           `>>> Queue update for zone ${zone.displayName}:`,
           JSON.stringify(msg, null, 4),
         );
-        /* eslint-enable no-console */
       });
     });
   });

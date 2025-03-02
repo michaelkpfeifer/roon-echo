@@ -39,6 +39,30 @@ const logChangedZones = (subMessage) => {
   return null;
 };
 
+const logChangedZonesAdded = (subMessage) => {
+  knex.transaction(async (trx) => {
+    await trx('roon_messages').insert({
+      message_type: 'Changed',
+      sub_type: 'zonesAdded',
+      message: subMessage,
+    });
+  });
+
+  return null;
+};
+
+const logChangedZonesRemoved = (subMessage) => {
+  knex.transaction(async (trx) => {
+    await trx('roon_messages').insert({
+      message_type: 'Changed',
+      sub_type: 'zonesRemoved',
+      message: subMessage,
+    });
+  });
+
+  return null;
+};
+
 const logChangedZonesSeek = (subMessage) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
@@ -77,6 +101,8 @@ export {
   logChanged,
   logChangedUnknown,
   logChangedZones,
+  logChangedZonesAdded,
+  logChangedZonesRemoved,
   logChangedZonesSeek,
   logSubscribed,
   logUnknown,
