@@ -15,11 +15,11 @@ const logChanged = (message) => {
   return null;
 };
 
-const logChangedUnknown = (subMessage) => {
+const logChangedUnknown = (subType, subMessage) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
-      sub_type: 'Unknown',
+      sub_type: subType,
       message: subMessage,
     });
   });

@@ -171,7 +171,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            logChangedUnknown(JSON.stringify(message[subType]));
+            logChangedUnknown(subType, JSON.stringify(message[subType]));
 
             break;
           }
