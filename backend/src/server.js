@@ -8,7 +8,6 @@ import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
@@ -355,7 +354,6 @@ io.on('connection', (socket) => {
     scheduledTracks = appendToScheduledTracks({
       scheduledTracks,
       mbTrackData,
-      uuid: uuidv4(),
       scheduledAt: Date.now(),
       zoneId,
     });
