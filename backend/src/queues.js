@@ -13,6 +13,8 @@ const extractQueueItems = (queue) => {
     if (insertOperation) {
       return insertOperation.items;
     }
+
+    return [];
   }
 
   throw new Error('Error: Cannot extract items from queue');

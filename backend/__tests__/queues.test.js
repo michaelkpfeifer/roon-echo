@@ -1,4 +1,4 @@
-import extractQueueItems from '../src/queues.js';
+import { extractQueueItems } from '../src/queues.js';
 
 describe('extractQueueItems', () => {
   const items = [
@@ -66,6 +66,22 @@ describe('extractQueueItems', () => {
     const queueItems = extractQueueItems(queue);
 
     expect(queueItems).toEqual(items);
+  });
+
+  test('returns an empty list if all items are removed', () => {
+    const queue = {
+      changes: [
+        {
+          operation: 'remove',
+          index: 0,
+          count: 5,
+        },
+      ],
+    };
+
+    const queueItems = extractQueueItems(queue);
+
+    expect(queueItems).toEqual([]);
   });
 
   test('throws error if queue has unexpected shape', () => {
