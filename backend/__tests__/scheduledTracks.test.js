@@ -47,17 +47,7 @@ describe('appendToScheduledTracks', () => {
   });
 
   test('appends track data to an existing list of scheduled tracks', () => {
-    const scheduledTrack = {
-      mbTrackName: 'Across the Universe',
-      mbAlbumName: 'Let It Be',
-      mbArtistNames: 'The Beatles',
-      mbTrackId: 'b6e4d347-67b6-4cc5-aea7-5a4c0db9747a',
-      mbLength: 300,
-      scheduledAt: 1739915100000,
-      zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-      queueItemId: null,
-    };
-    const scheduledTracks = [scheduledTrack];
+    const scheduledTracks = [stWeen01Wiim];
     const mbTrackData = {
       mbTrackName: 'Contenida',
       mbAlbumName: '¡Ay!',
@@ -77,7 +67,7 @@ describe('appendToScheduledTracks', () => {
     });
 
     expect(newScheduledTracks).toEqual([
-      scheduledTrack,
+      stWeen01Wiim,
       { ...mbTrackData, mbLength: 235, scheduledAt, zoneId, queueItemId },
     ]);
   });
