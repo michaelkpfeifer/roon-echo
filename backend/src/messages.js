@@ -27,22 +27,4 @@ const frontendZonesSeekChangedMessage = (zonesSeekChangedMessage) =>
     ]),
   );
 
-const mapThreeLineToNowPlaying = ({ line1, line2, line3 }) => ({
-  roonTrackName: line1,
-  roonAlbumName: line3,
-  roonArtistNames: line2,
-});
-
-const extractNowPlayingFromZonesChangedMessage = (zonesChangedMessage) =>
-  zonesChangedMessage
-    .filter((message) => message.nowPlaying)
-    .map((message) => [
-      message.zoneId,
-      mapThreeLineToNowPlaying(message.nowPlaying.threeLine),
-    ]);
-
-export {
-  extractNowPlayingFromZonesChangedMessage,
-  frontendZonesChangedMessage,
-  frontendZonesSeekChangedMessage,
-};
+export { frontendZonesChangedMessage, frontendZonesSeekChangedMessage };
