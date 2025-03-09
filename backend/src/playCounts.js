@@ -19,17 +19,19 @@ const appendToScheduledTracks = ({
 
 const fuzzySearchOptions = {
   keys: [
-    { name: 'mbTrackName', weight: 0.25 },
+    { name: 'mbTrackName', weight: 1.0 },
     { name: 'mbAlbumName', weight: 0.5 },
-    { name: 'mbArtistNames', weight: 1.0 },
+    { name: 'mbArtistNames', weight: 0.1 },
   ],
-  threshold: 0.5,
-  ignoreLocation: true,
-  findAllMatches: true,
-  shouldSort: true,
-  tokenize: true,
-  matchAllTokens: false,
+  threshold: 0.75,
+  isCaseSensitive: true,
+  ignoreDiacritics: true,
   includeScore: true,
+  minMatchCharLength: 2,
+  shouldSort: true,
+  findAllMatches: true,
+  ignoreLocation: true,
+  matchAllTokens: false,
 };
 
 const fuzzySearchInScheduledTracks = ({
@@ -48,39 +50,79 @@ const fuzzySearchInScheduledTracks = ({
   return results.length ? results[0].item : null;
 };
 
-const findMatchInScheduledTracks = ({
+const setQueueItemIdsInScheduledTracks = ({
   scheduledTracks,
-  playingTracks,
   zoneId,
-  nowPlaying: { roonTrackName, roonAlbumName, roonArtistNames },
+  queueItems,
 }) => {
-  const nowPlaying = {
-    mbTrackName: roonTrackName,
-    mbAlbumName: roonAlbumName,
-    mbArtistNames: roonArtistNames,
+  /* eslint-disable no-console */
+  // console.log(
+  //   'playCount.js, setQueueItemIdsInScheduledTracks(), scheduledTracks:',
+  //   scheduledTracks,
+  // );
+  // console.log(
+  //   'playCount.js, setQueueItemIdsInScheduledTracks(), zoneId:',
+  //   zoneId,
+  // );
+  // console.log(
+  //   'playCount.js, setQueueItemIdsInScheduledTracks(), queueItems:',
+  //   JSON.stringify(queueItems, null, 4),
+  // );
+  /* eslint-enable no-console */
+
+  const matchedQueueItemIds = scheduledTracks
+    .filter((scheduledTrack) => scheduledTrack.queueItemId !== null)
+    .map((scheduledTrack) => scheduledTrack.queueItemId);
+  const unmatchedQueueItems = queueItems.filter(
+    (item) => !matchedQueueItemIds.includes(item),
+  );
+
+  const combiningFunction = (currentScheduledTracks, unmatchedQueueItem) => {
+    const nowPlaying = {
+      mbTrackName: unmatchedQueueItem.threeLine.line1,
+      mbAlbumName: unmatchedQueueItem.threeLine.line3,
+      mbArtistNames: unmatchedQueueItem.threeLine.line2,
+    };
+
+    const fuzzySearchResult = fuzzySearchInScheduledTracks({
+      scheduledTracks: currentScheduledTracks,
+      zoneId,
+      nowPlaying,
+    });
+
+    if (!fuzzySearchResult) {
+      return currentScheduledTracks;
+    }
+
+    /* eslint-disable no-console */
+    // console.log('fuzzySearchResult.mbTrackId', fuzzySearchResult.mbTrackId);
+    /* eslint-enable no-console */
+
+    return currentScheduledTracks.map((currentScheduledTrack) => {
+      if (currentScheduledTrack.queueItemId) {
+        return currentScheduledTrack;
+      }
+
+      if (currentScheduledTrack.mbTrackId === fuzzySearchResult.mbTrackId) {
+        return {
+          ...currentScheduledTrack,
+          queueItemId: unmatchedQueueItem.queueItemId,
+        };
+      }
+
+      return currentScheduledTrack;
+    });
   };
 
-  const fuzzySearchResults = fuzzySearchInScheduledTracks({
+  return unmatchedQueueItems.reduce(
+    (currentScheduledTracks, unmatchedQueueItem) =>
+      combiningFunction(currentScheduledTracks, unmatchedQueueItem),
     scheduledTracks,
-    zoneId,
-    nowPlaying,
-  });
-
-  if (!fuzzySearchResults) {
-    return [scheduledTracks, playingTracks];
-  }
-
-  return [
-    scheduledTracks.filter(
-      (scheduledTrack) =>
-        scheduledTrack.mbTrackId !== fuzzySearchResults.mbTrackId,
-    ),
-    [...playingTracks, fuzzySearchResults],
-  ];
+  );
 };
 
 export {
   appendToScheduledTracks,
-  findMatchInScheduledTracks,
   fuzzySearchInScheduledTracks,
+  setQueueItemIdsInScheduledTracks,
 };

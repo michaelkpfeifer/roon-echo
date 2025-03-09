@@ -22,14 +22,14 @@ import {
   logUnknown,
 } from './logging.js';
 import {
-  extractNowPlayingFromZonesChangedMessage,
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
 import {
   appendToScheduledTracks,
-  findMatchInScheduledTracks,
+  setQueueItemIdsInScheduledTracks,
 } from './playCounts.js';
+import { extractQueueItems } from './queues.js';
 import { camelCaseKeys } from './utils.js';
 
 const app = express();
@@ -51,8 +51,10 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport;
 let browseInstance;
 
+// TODO: It should be possible to persist the list of scheduled
+// tracks. The Roon core also keeps its queues across restarts.
+
 let scheduledTracks = [];
-let playingTracks = [];
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -128,37 +130,6 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
 
             io.emit('zonesChanged', frontendMessage);
 
-            /* eslint-disable no-console */
-            console.log(
-              'server.js: io.on(): scheduledTracks:',
-              scheduledTracks,
-            );
-            console.log('server.js: io.on(): playingTracks:', playingTracks);
-            /* eslint-enable no-console */
-
-            [scheduledTracks, playingTracks] =
-              extractNowPlayingFromZonesChangedMessage(message[subType]).reduce(
-                (
-                  [currentScheduledTracks, currentPlayingTracks],
-                  [zoneId, nowPlaying],
-                ) =>
-                  findMatchInScheduledTracks({
-                    scheduledTracks: currentScheduledTracks,
-                    playingTracks: currentPlayingTracks,
-                    zoneId,
-                    nowPlaying,
-                  }),
-                [scheduledTracks, playingTracks],
-              );
-
-            /* eslint-disable no-console */
-            console.log(
-              'server.js: io.on(): scheduledTracks:',
-              scheduledTracks,
-            );
-            console.log('server.js: io.on(): playingTracks:', playingTracks);
-            /* eslint-enable no-console */
-
             logChangedZones(JSON.stringify(message[subType]));
 
             break;
@@ -173,11 +144,41 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             /* eslint-enable no-console */
 
             message[subType].forEach((zone) =>
-              transport.subscribe_queue(zone.zoneId, 100, (response, msg) =>
-                console.log(
-                  `>>> Queue update for zone ${zone.displayName}:`,
-                  JSON.stringify(msg, null, 4),
-                ),
+              transport.subscribe_queue(
+                zone.zoneId,
+                100,
+                (response, snakeCaseQueue) => {
+                  const queue = camelCaseKeys(snakeCaseQueue);
+
+                  /* eslint-disable no-console */
+                  console.log(
+                    'server.js: coreMessageHandler(): queue:',
+                    JSON.stringify(queue, null, 4),
+                  );
+                  /* eslint-enable no-console */
+
+                  /* eslint-disable no-console */
+                  console.log(
+                    'server.js: coreMessageHandler(): scheduledTracks:',
+                    scheduledTracks,
+                  );
+                  /* eslint-enable no-console */
+
+                  scheduledTracks = setQueueItemIdsInScheduledTracks({
+                    scheduledTracks,
+                    zoneId: zone.zoneId,
+                    queueItems: extractQueueItems(queue),
+                  });
+
+                  /* eslint-disable no-console */
+                  console.log(
+                    'server.js: coreMessageHandler(): scheduledTracks:',
+                    scheduledTracks,
+                  );
+                  /* eslint-enable no-console */
+
+                  return null;
+                },
               ),
             );
 
@@ -303,12 +304,36 @@ io.on('connection', (socket) => {
     socket.emit('initialState', frontendRoonState);
 
     zones.forEach((zone) => {
-      transport.subscribe_queue(zone.zoneId, 100, (response, msg) => {
-        console.log(
-          `>>> Queue update for zone ${zone.displayName}:`,
-          JSON.stringify(msg, null, 4),
-        );
-      });
+      transport.subscribe_queue(
+        zone.zoneId,
+        100,
+        (response, snakeCaseQueue) => {
+          const queue = camelCaseKeys(snakeCaseQueue);
+
+          /* eslint-disable no-console */
+          console.log(
+            'server.js: io.on(): queue:',
+            JSON.stringify(queue, null, 4),
+          );
+          /* eslint-enable no-console */
+
+          /* eslint-disable no-console */
+          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
+          /* eslint-enable no-console */
+
+          scheduledTracks = setQueueItemIdsInScheduledTracks({
+            scheduledTracks,
+            zoneId: zone.zoneId,
+            queueItems: extractQueueItems(queue),
+          });
+
+          /* eslint-disable no-console */
+          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
+          /* eslint-enable no-console */
+
+          return null;
+        },
+      );
     });
   });
 

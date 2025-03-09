@@ -1,7 +1,23 @@
 import {
+  qiBurial01Wiim,
+  qiBurial02Wiim,
+  qiWeen01Wiim,
+  qiWeen02Wiim,
+  qiWeen03Wiim,
+  qiWeen04Wiim,
+} from '../__fixtures__/roonQueueMessages.js';
+import {
+  stHerbert01Mp2000,
+  stHerbert02Mp2000,
+  stWeen01Wiim,
+  stWeen02Wiim,
+  stWeen03Wiim,
+  stWeen04Wiim,
+} from '../__fixtures__/scheduledTracks.js';
+import {
   appendToScheduledTracks,
-  findMatchInScheduledTracks,
   fuzzySearchInScheduledTracks,
+  setQueueItemIdsInScheduledTracks,
 } from '../src/playCounts.js';
 
 describe('appendToScheduledTracks', () => {
@@ -153,80 +169,136 @@ describe('fuzzySearchInScheduledTracks', () => {
   });
 });
 
-describe('findMatchInScheduledTracks', () => {
-  const scheduledTracks = [
-    {
-      mbArtistNames: 'The Beatles',
-      mbAlbumName: 'Let It Be',
-      mbTrackName: 'Across the Universe',
-      mbTrackId: '12345',
-      mbLength: 300,
-      scheduledAt: 1739915100000,
-      zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-    },
-    {
-      mbArtistNames: 'The Flaming Lips',
-      mbAlbumName: 'Yoshimi Battles the Pink Robots',
-      mbTrackName: 'Do You Realize??',
-      mbTrackId: '23456',
-      mbLength: 235,
-      scheduledAt: 1739915200000,
-      zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-    },
-  ];
-  const playingTracks = [];
-
-  test('shuffles scheduled tracks and playing tracks', () => {
+describe('setQueueItemIdsInScheduledTracks', () => {
+  test('works for a single scheduled track and a single corresponding queued track', () => {
+    const scheduledTracks = [stWeen01Wiim];
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
-    const roonArtistNames = 'The Beatles';
-    const roonAlbumName = 'Let It Be';
-    const roonTrackName = 'Across the Universe';
+    const queueItems = [qiWeen01Wiim];
 
-    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks({
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
       scheduledTracks,
-      playingTracks,
       zoneId,
-      nowPlaying: { roonArtistNames, roonAlbumName, roonTrackName },
+      queueItems,
     });
 
-    expect(newScheduledTracks).toEqual([
-      {
-        mbArtistNames: 'The Flaming Lips',
-        mbAlbumName: 'Yoshimi Battles the Pink Robots',
-        mbTrackName: 'Do You Realize??',
-        mbTrackId: '23456',
-        mbLength: 235,
-        scheduledAt: 1739915200000,
-        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-      },
-    ]);
-    expect(newPlayingTracks).toEqual([
-      {
-        mbArtistNames: 'The Beatles',
-        mbAlbumName: 'Let It Be',
-        mbTrackName: 'Across the Universe',
-        mbTrackId: '12345',
-        mbLength: 300,
-        scheduledAt: 1739915100000,
-        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-      },
-    ]);
+    expect(newScheduledTracks[0]).toEqual({
+      ...stWeen01Wiim,
+      queueItemId: qiWeen01Wiim.queueItemId,
+    });
   });
 
-  test('keeps scheduled and playing tracks unchanged if no match is found', () => {
+  test('works for two scheduled tracks and two corresponding queued tracks', () => {
+    const scheduledTracks = [stWeen01Wiim, stWeen02Wiim];
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
-    const roonArtistNames = 'Ween';
-    const roonAlbumName = 'Choclate And Cheese';
-    const roonTrackName = 'Buenas Tardes Amigos';
+    const queueItems = [qiWeen01Wiim, qiWeen02Wiim];
 
-    const [newScheduledTracks, newPlayingTracks] = findMatchInScheduledTracks({
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
       scheduledTracks,
-      playingTracks,
       zoneId,
-      nowPlaying: { roonArtistNames, roonAlbumName, roonTrackName },
+      queueItems,
     });
 
-    expect(newScheduledTracks).toEqual(scheduledTracks);
-    expect(newPlayingTracks).toEqual(playingTracks);
+    expect(newScheduledTracks[0]).toEqual({
+      ...stWeen01Wiim,
+      queueItemId: qiWeen01Wiim.queueItemId,
+    });
+    expect(newScheduledTracks[1]).toEqual({
+      ...stWeen02Wiim,
+      queueItemId: qiWeen02Wiim.queueItemId,
+    });
+  });
+
+  test('does not do anything if track ID does not match', () => {
+    const scheduledTracks = [stWeen01Wiim, stWeen02Wiim];
+    const zoneId = '1601fa3b3ee4f063ed8d5549632fd4e18fcf';
+    const queueItems = [qiWeen01Wiim, qiWeen02Wiim];
+
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
+      scheduledTracks,
+      zoneId,
+      queueItems,
+    });
+
+    expect(newScheduledTracks[0]).toEqual(stWeen01Wiim);
+    expect(newScheduledTracks[1]).toEqual(stWeen02Wiim);
+  });
+
+  test('finds the right tracks when scheduled across different zones', () => {
+    const scheduledTracks = [
+      stWeen01Wiim,
+      stHerbert01Mp2000,
+      stWeen02Wiim,
+      stHerbert02Mp2000,
+    ];
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen01Wiim, qiWeen02Wiim];
+
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
+      scheduledTracks,
+      zoneId,
+      queueItems,
+    });
+
+    expect(newScheduledTracks[0]).toEqual({
+      ...stWeen01Wiim,
+      queueItemId: qiWeen01Wiim.queueItemId,
+    });
+    expect(newScheduledTracks[1]).toEqual(stHerbert01Mp2000);
+    expect(newScheduledTracks[2]).toEqual({
+      ...stWeen02Wiim,
+      queueItemId: qiWeen02Wiim.queueItemId,
+    });
+    expect(newScheduledTracks[3]).toEqual(stHerbert02Mp2000);
+  });
+
+  test('does not do anything if tracks are not scheduled by Roon Echo', () => {
+    const scheduledTracks = [stWeen01Wiim, stWeen02Wiim];
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiBurial01Wiim, qiBurial02Wiim];
+
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
+      scheduledTracks,
+      zoneId,
+      queueItems,
+    });
+
+    expect(newScheduledTracks[0]).toEqual(stWeen01Wiim);
+    expect(newScheduledTracks[1]).toEqual(stWeen02Wiim);
+  });
+
+  test('does not touch scheduled tracks that have already been matched', () => {
+    const matchedTrack01 = {
+      ...stWeen01Wiim,
+      queueItemId: qiWeen01Wiim.queueItemId,
+    };
+    const matchedTrack02 = {
+      ...stWeen02Wiim,
+      queueItemId: qiWeen02Wiim.queueItemId,
+    };
+    const scheduledTracks = [
+      matchedTrack01,
+      matchedTrack02,
+      stWeen03Wiim,
+      stWeen04Wiim,
+    ];
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen03Wiim, qiWeen04Wiim];
+
+    const newScheduledTracks = setQueueItemIdsInScheduledTracks({
+      scheduledTracks,
+      zoneId,
+      queueItems,
+    });
+
+    expect(newScheduledTracks[0]).toEqual(matchedTrack01);
+    expect(newScheduledTracks[1]).toEqual(matchedTrack02);
+    expect(newScheduledTracks[2]).toEqual({
+      ...stWeen03Wiim,
+      queueItemId: qiWeen03Wiim.queueItemId,
+    });
+    expect(newScheduledTracks[3]).toEqual({
+      ...stWeen04Wiim,
+      queueItemId: qiWeen04Wiim.queueItemId,
+    });
   });
 });
