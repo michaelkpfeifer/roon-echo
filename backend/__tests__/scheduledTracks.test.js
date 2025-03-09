@@ -18,7 +18,7 @@ import {
   appendToScheduledTracks,
   fuzzySearchInScheduledTracks,
   setQueueItemIdsInScheduledTracks,
-} from '../src/playCounts.js';
+} from '../src/scheduledTracks.js';
 
 describe('appendToScheduledTracks', () => {
   test('appends track data to an empty list of scheduled tracks', () => {

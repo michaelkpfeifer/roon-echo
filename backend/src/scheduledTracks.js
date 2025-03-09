@@ -57,15 +57,15 @@ const setQueueItemIdsInScheduledTracks = ({
 }) => {
   /* eslint-disable no-console */
   // console.log(
-  //   'playCount.js, setQueueItemIdsInScheduledTracks(), scheduledTracks:',
+  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), scheduledTracks:',
   //   scheduledTracks,
   // );
   // console.log(
-  //   'playCount.js, setQueueItemIdsInScheduledTracks(), zoneId:',
+  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), zoneId:',
   //   zoneId,
   // );
   // console.log(
-  //   'playCount.js, setQueueItemIdsInScheduledTracks(), queueItems:',
+  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), queueItems:',
   //   JSON.stringify(queueItems, null, 4),
   // );
   /* eslint-enable no-console */
