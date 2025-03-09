@@ -50,10 +50,6 @@ const coreUrlConfigured = process.env.CORE_URL;
 
 let transport;
 let browseInstance;
-
-// TODO: It should be possible to persist the list of scheduled
-// tracks. The Roon core also keeps its queues across restarts.
-
 let scheduledTracks = [];
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
