@@ -66,13 +66,16 @@ const insertAlbumWithArtistsAndTracks = async ({
     /* eslint-disable no-restricted-syntax */
     /* eslint-disable no-await-in-loop */
     for (const artist of mbRelease['artist-credit']) {
-      await trx('artists').insert({
-        mb_artist_id: artist.artist.id,
-        name: artist.name,
-        sort_name: artist.artist['sort-name'],
-        type: artist.artist.type,
-        disambiguation: artist.artist.disambiguation,
-      });
+      await trx('artists')
+        .insert({
+          mb_artist_id: artist.artist.id,
+          name: artist.name,
+          sort_name: artist.artist['sort-name'],
+          type: artist.artist.type,
+          disambiguation: artist.artist.disambiguation,
+        })
+        .onConflict('mb_artist_id')
+        .merge();
 
       await trx('albums_artists').insert({
         mb_album_id: mbRelease.id,
