@@ -15,7 +15,7 @@ export function up(knex) {
     table.string('name').notNullable();
     table.string('number').notNullable();
     table.integer('position').notNullable();
-    table.integer('length').notNullable();
+    table.integer('length');
 
     table.timestamps(true, true);
   });
