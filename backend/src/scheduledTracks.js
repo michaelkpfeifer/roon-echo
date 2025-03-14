@@ -12,6 +12,7 @@ const appendToScheduledTracks = ({
     scheduledAt,
     zoneId,
     queueItemId: null,
+    playedSegments: [],
   };
 
   return [...scheduledTracks, scheduledTrack];
