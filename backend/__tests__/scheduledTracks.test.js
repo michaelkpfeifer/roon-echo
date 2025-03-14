@@ -33,6 +33,7 @@ describe('appendToScheduledTracks', () => {
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     const queueItemId = null;
+    const playedSegments = [];
 
     const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
@@ -42,7 +43,14 @@ describe('appendToScheduledTracks', () => {
     });
 
     expect(newScheduledTracks).toEqual([
-      { ...mbTrackData, mbLength: 235, scheduledAt, zoneId, queueItemId },
+      {
+        ...mbTrackData,
+        mbLength: 235,
+        scheduledAt,
+        zoneId,
+        queueItemId,
+        playedSegments,
+      },
     ]);
   });
 
@@ -58,6 +66,7 @@ describe('appendToScheduledTracks', () => {
     const scheduledAt = 1739915176129;
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     const queueItemId = null;
+    const playedSegments = [];
 
     const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
@@ -68,7 +77,14 @@ describe('appendToScheduledTracks', () => {
 
     expect(newScheduledTracks).toEqual([
       stWeen01Wiim,
-      { ...mbTrackData, mbLength: 235, scheduledAt, zoneId, queueItemId },
+      {
+        ...mbTrackData,
+        mbLength: 235,
+        scheduledAt,
+        zoneId,
+        queueItemId,
+        playedSegments,
+      },
     ]);
   });
 });
@@ -83,6 +99,7 @@ describe('fuzzySearchInScheduledTracks', () => {
       mbLength: 300,
       scheduledAt: 1739915100000,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+      playedSegemnts: [],
     },
     {
       mbArtistNames: 'The Flaming Lips',
@@ -92,6 +109,7 @@ describe('fuzzySearchInScheduledTracks', () => {
       mbLength: 235,
       scheduledAt: 1739915122222,
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+      playedSegments: [],
     },
   ];
 
