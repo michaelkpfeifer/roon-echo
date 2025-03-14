@@ -90,34 +90,13 @@ describe('appendToScheduledTracks', () => {
 });
 
 describe('fuzzySearchInScheduledTracks', () => {
-  const scheduledTracks = [
-    {
-      mbArtistNames: 'The Beatles',
-      mbAlbumName: 'Let It Be',
-      mbTrackName: 'Across the Universe',
-      mbTrackId: '12345',
-      mbLength: 300,
-      scheduledAt: 1739915100000,
-      zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-      playedSegemnts: [],
-    },
-    {
-      mbArtistNames: 'The Flaming Lips',
-      mbAlbumName: 'Yoshimi Battles the Pink Robots',
-      mbTrackName: 'Do You Realize??',
-      mbTrackId: '23456',
-      mbLength: 235,
-      scheduledAt: 1739915122222,
-      zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-      playedSegments: [],
-    },
-  ];
+  const scheduledTracks = [stWeen01Wiim, stHerbert01Mp2000];
 
   test('finds an exact match', () => {
     const nowPlaying = {
-      mbArtistNames: 'The Beatles',
-      mbAlbumName: 'Let It Be',
-      mbTrackName: 'Across the Universe',
+      mbArtistNames: 'Ween',
+      mbAlbumName: '12 Golden Country Greats',
+      mbTrackName: "I'm holding you",
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
@@ -128,9 +107,9 @@ describe('fuzzySearchInScheduledTracks', () => {
 
   test('finds a close fuzzy match', () => {
     const nowPlaying = {
-      mbArtistNames: 'The Beatles',
-      mbAlbumName: 'Let It Be',
-      mbTrackName: 'Across Universe',
+      mbArtistNames: 'Ween',
+      mbAlbumName: '12 Golden Country Greats',
+      mbTrackName: "I'm Holding You Tight",
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
 
@@ -141,14 +120,15 @@ describe('fuzzySearchInScheduledTracks', () => {
 
   test('finds another not so close fuzzy match', () => {
     const nowPlaying = {
-      mbArtistNames: 'Flaming Lips',
-      mbAlbumName: 'Yoshimi Battles the Pink Robots',
-      mbTrackName: 'Do You Realize?? (commentary)',
+      mbArtistNames: 'Ween',
+      mbAlbumName: '12 Golden Chutney Greats',
+      mbTrackName: 'I Am Still Holding You Tight',
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+
     expect(
       fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
-    ).toEqual(scheduledTracks[1]);
+    ).toEqual(scheduledTracks[0]);
   });
 
   test('returns null for a non-matching track', () => {
@@ -158,6 +138,7 @@ describe('fuzzySearchInScheduledTracks', () => {
       mbTrackName: 'Bohemian Rhapsody',
     };
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+
     expect(
       fuzzySearchInScheduledTracks({ scheduledTracks, zoneId, nowPlaying }),
     ).toBeNull();
@@ -165,9 +146,9 @@ describe('fuzzySearchInScheduledTracks', () => {
 
   test('returns null if the zone ID does not match', () => {
     const nowPlaying = {
-      mbArtistNames: 'The Beatles',
-      mbAlbumName: 'Let It Be',
-      mbTrackName: 'Across the Universe',
+      mbArtistNames: 'Ween',
+      mbAlbumName: '12 Golden Country Greats',
+      mbTrackName: "I'm holding you",
     };
     const zoneId = '1601f4f798ff1773c83b77e489ea00000000';
 
