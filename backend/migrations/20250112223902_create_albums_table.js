@@ -5,12 +5,12 @@
 export function up(knex) {
   return knex.schema.createTable('albums', (table) => {
     table.string('mb_album_id').notNullable().primary();
-    table.string('artist_name').notNullable();
-    table.string('album_name').notNullable();
-    table.string('release_date');
+    table.string('roon_artist_name').notNullable();
+    table.string('roon_album_name').notNullable();
+    table.string('mb_release_date');
 
     table.unique(
-      ['artist_name', 'album_name'],
+      ['roon_artist_name', 'roon_album_name'],
       'albums_unique_on_artist_name_album_name',
     );
 
