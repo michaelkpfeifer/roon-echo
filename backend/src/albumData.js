@@ -18,9 +18,9 @@ import { camelCaseKeys } from './utils.js';
 
 const knex = knexInit(knexConfig.development);
 
-const artistName = (enrichedAlbum) => enrichedAlbum.roonAlbum.subtitle;
+const roonArtistName = (enrichedAlbum) => enrichedAlbum.roonAlbum.subtitle;
 
-const albumName = (enrichedAlbum) => enrichedAlbum.roonAlbum.title;
+const roonAlbumName = (enrichedAlbum) => enrichedAlbum.roonAlbum.title;
 
 const albumItemKey = (enrichedAlbum) => enrichedAlbum.roonAlbum.itemKey;
 
@@ -32,9 +32,9 @@ const mbUserAgent = process.env.MB_USER_AGENT;
 
 const buildMbSearch = (enrichedAlbum) => {
   const queryString = [
-    `artist:${encodeURIComponent(artistName(enrichedAlbum))}`,
+    `artist:${encodeURIComponent(roonArtistName(enrichedAlbum))}`,
     `${encodeURIComponent(' AND ')}`,
-    `release:${encodeURIComponent(albumName(enrichedAlbum))}`,
+    `release:${encodeURIComponent(roonAlbumName(enrichedAlbum))}`,
   ].join('');
 
   return `${mbReleaseEndpoint}?query=${queryString}&fmt=json`;
@@ -107,7 +107,7 @@ const compareMbAndRoonTracks = (mbTracks, roonTracks) =>
 const extractRelevantData = (mbRelease) => ({
   id: mbRelease.id,
   title: mbRelease.title,
-  releaseDate: mbRelease.date,
+  mbReleaseDate: mbRelease.date,
   tracks: mbRelease.media
     .flatMap((media) => media.tracks)
     .map((track) => ({
@@ -177,15 +177,15 @@ const getMbData = async (enrichedAlbum) => {
     if (matchingMbRelease !== null) {
       await insertAlbumWithArtistsAndTracks({
         knex,
-        artistName: artistName(enrichedAlbum),
-        albumName: albumName(enrichedAlbum),
+        roonArtistName: roonArtistName(enrichedAlbum),
+        roonAlbumName: roonAlbumName(enrichedAlbum),
         mbRelease: matchingMbRelease,
       });
 
       const albumWithTracks = await getAlbumWithArtistsAndTracks(
         knex,
-        artistName(enrichedAlbum),
-        albumName(enrichedAlbum),
+        roonArtistName(enrichedAlbum),
+        roonAlbumName(enrichedAlbum),
       );
 
       if (Result.isOk(albumWithTracks)) {
@@ -234,8 +234,8 @@ const readMbDataFromDb = async (enrichedAlbum) => {
 
   const albumWithTracks = await getAlbumWithArtistsAndTracks(
     knex,
-    artistName(enrichedAlbum),
-    albumName(enrichedAlbum),
+    roonArtistName(enrichedAlbum),
+    roonAlbumName(enrichedAlbum),
   );
 
   if (Result.isOk(albumWithTracks)) {
@@ -254,8 +254,8 @@ const readMbDataFromDb = async (enrichedAlbum) => {
 
 const identifyUnknown = (enrichedAlbum) => {
   if (
-    albumName(enrichedAlbum) === '' ||
-    artistName(enrichedAlbum) === 'UnknownArtist'
+    roonAlbumName(enrichedAlbum) === '' ||
+    roonArtistName(enrichedAlbum) === 'UnknownArtist'
   ) {
     return { ...enrichedAlbum, status: 'unknownArtistOrTitle' };
   }
@@ -315,7 +315,7 @@ const enrichList = async (browseInstance, roonAlbums) => {
   // TODO. It is unclear how the reduce() call below behaves in
   // practice for a large amount of data. If things become really
   // slow, it should still be possible to use the more conventional
-  // loop below (that ESLint complains about). And for consisteny
+  // loop below (that ESLint complains about). And for consistency
   // reasons it may be a good idea to move the two map calls into the
   // reduce call as well.
 

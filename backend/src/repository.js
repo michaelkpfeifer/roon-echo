@@ -1,10 +1,22 @@
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
 
-const getAlbumWithArtistsAndTracks = async (knex, artistName, albumName) => {
+const getAlbumWithArtistsAndTracks = async (
+  knex,
+  roonArtistName,
+  roonAlbumName,
+) => {
   const albumWithArtistsAndTracks = await knex('albums')
-    .where({ artist_name: artistName, album_name: albumName })
-    .select('artist_name', 'album_name', 'mb_album_id', 'release_date')
+    .where({
+      roon_artist_name: roonArtistName,
+      roon_album_name: roonAlbumName,
+    })
+    .select(
+      'roon_artist_name',
+      'roon_album_name',
+      'mb_album_id',
+      'mb_release_date',
+    )
     .first()
     .then(async (mbAlbum) => {
       if (!mbAlbum) {
@@ -38,16 +50,16 @@ const getAlbumWithArtistsAndTracks = async (knex, artistName, albumName) => {
 
 const insertAlbumWithArtistsAndTracks = async ({
   knex,
-  artistName,
-  albumName,
+  roonArtistName,
+  roonAlbumName,
   mbRelease,
 }) =>
   knex.transaction(async (trx) => {
     await trx('albums').insert({
       mb_album_id: mbRelease.id,
-      artist_name: artistName,
-      album_name: albumName,
-      release_date: mbRelease.date,
+      roon_artist_name: roonArtistName,
+      roon_album_name: roonAlbumName,
+      mb_release_date: mbRelease.date,
     });
 
     const tracks = mbRelease.media
