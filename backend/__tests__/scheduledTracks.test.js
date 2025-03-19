@@ -17,6 +17,7 @@ import {
 import {
   appendToScheduledTracks,
   fuzzySearchInScheduledTracks,
+  setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
 } from '../src/scheduledTracks.js';
 
@@ -288,6 +289,75 @@ describe('setQueueItemIdsInScheduledTracks', () => {
     expect(newScheduledTracks[3]).toEqual({
       ...stWeen04Wiim,
       queueItemId: qiWeen04Wiim.queueItemId,
+    });
+  });
+});
+
+describe('setPlayingTracks', () => {
+  test('sets the playing track for the given zone to null if there are no queue items', () => {
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1019008,
+        length: 132,
+        imageKey: '36fc347f98b0adcc52218463dd36f972',
+        nowPlaying: {
+          roonArtistName: 'A Tribe Called Quest',
+          roonAlbumName: 'The Low End Theory',
+          roonTrackName: 'Skypager',
+        },
+      },
+      '1601f4f798ff1773c83b77e489ea00000000': null,
+    };
+
+    const newPlayingTracks = setPlayingTracks({
+      zoneId,
+      queueItems,
+      playingTracks,
+    });
+
+    expect(newPlayingTracks).toEqual({
+      '1601f4f798ff1773c83b77e489eaff98f7f4': null,
+      '1601f4f798ff1773c83b77e489ea00000000': null,
+    });
+  });
+
+  test('replaces the current playing track for the given zone', () => {
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen04Wiim, qiWeen01Wiim];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1019008,
+        length: 132,
+        imageKey: '36fc347f98b0adcc52218463dd36f972',
+        nowPlaying: {
+          roonArtistName: 'A Tribe Called Quest',
+          roonAlbumName: 'The Low End Theory',
+          roonTrackName: 'Skypager',
+        },
+      },
+      '1601f4f798ff1773c83b77e489ea00000000': null,
+    };
+
+    const newPlayingTracks = setPlayingTracks({
+      zoneId,
+      queueItems,
+      playingTracks,
+    });
+
+    expect(newPlayingTracks).toEqual({
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 886042,
+        length: 241,
+        imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
+        nowPlaying: {
+          roonArtistName: 'Ween',
+          roonAlbumName: '12 Golden Country Greats',
+          roonTrackName: "I'm Holding You",
+        },
+      },
+      '1601f4f798ff1773c83b77e489ea00000000': null,
     });
   });
 });

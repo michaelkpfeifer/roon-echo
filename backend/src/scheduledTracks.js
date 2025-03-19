@@ -1,4 +1,5 @@
 import Fuse from 'fuse.js';
+import fp from 'lodash/fp.js';
 
 const appendToScheduledTracks = ({
   scheduledTracks,
@@ -58,15 +59,15 @@ const setQueueItemIdsInScheduledTracks = ({
 }) => {
   /* eslint-disable no-console */
   // console.log(
-  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), scheduledTracks:',
+  //   'scheduledTracks.js, setQueueItemIdsInScheduledTracks(), scheduledTracks:',
   //   scheduledTracks,
   // );
   // console.log(
-  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), zoneId:',
+  //   'scheduledTracks.js, setQueueItemIdsInScheduledTracks(), zoneId:',
   //   zoneId,
   // );
   // console.log(
-  //   'scheduleTracks.js, setQueueItemIdsInScheduledTracks(), queueItems:',
+  //   'scheduledTracks.js, setQueueItemIdsInScheduledTracks(), queueItems:',
   //   JSON.stringify(queueItems, null, 4),
   // );
   /* eslint-enable no-console */
@@ -122,8 +123,31 @@ const setQueueItemIdsInScheduledTracks = ({
   );
 };
 
+const buildPlayingTrack = (queueItem) => ({
+  queueItemId: queueItem.queueItemId,
+  length: queueItem.length,
+  imageKey: queueItem.imageKey,
+  nowPlaying: {
+    roonArtistName: queueItem.threeLine.line2,
+    roonAlbumName: queueItem.threeLine.line3,
+    roonTrackName: queueItem.threeLine.line1,
+  },
+});
+
+const setPlayingTracks = ({ zoneId, queueItems, playingTracks }) => {
+  if (queueItems.length === 0) {
+    return { ...playingTracks, [zoneId]: null };
+  }
+
+  return {
+    ...playingTracks,
+    [zoneId]: buildPlayingTrack(fp.sortBy('queueItemId', queueItems)[0]),
+  };
+};
+
 export {
   appendToScheduledTracks,
   fuzzySearchInScheduledTracks,
+  setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
 };
