@@ -186,13 +186,24 @@ const buildPlayingTrack = (queueItem) => ({
 });
 
 const setPlayingTracks = ({ zoneId, queueItems, playingTracks }) => {
+  /* eslint-disable no-console */
+  // console.log(
+  //   'scheduledTracks.js: setPlayingTracks(): queueItems:',
+  //   queueItems,
+  // );
+  // console.log(
+  //   'scheduledTracks.js: setPlayingTracks(): playingTracks:',
+  //   playingTracks,
+  // );
+  /* eslint-enable no-console */
+
   if (queueItems.length === 0) {
     return { ...playingTracks, [zoneId]: null };
   }
 
   return {
     ...playingTracks,
-    [zoneId]: buildPlayingTrack(fp.sortBy('queueItemId', queueItems)[0]),
+    [zoneId]: buildPlayingTrack(queueItems[0]),
   };
 };
 

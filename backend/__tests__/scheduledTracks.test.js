@@ -325,7 +325,45 @@ describe('setPlayingTracks', () => {
     });
   });
 
-  test('replaces the current playing track for the given zone', () => {
+  test('does not change the currently playing track is another track is scheduled', () => {
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen04Wiim, qiWeen01Wiim];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 886045,
+        length: 163,
+        imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
+        nowPlaying: {
+          roonArtistName: 'Ween',
+          roonAlbumName: '12 Golden Country Greats',
+          roonTrackName: "I Don't Wanna Leave You on the Farm",
+        },
+      },
+      '1601f4f798ff1773c83b77e489ea00000000': null,
+    };
+
+    const newPlayingTracks = setPlayingTracks({
+      zoneId,
+      queueItems,
+      playingTracks,
+    });
+
+    expect(newPlayingTracks).toEqual({
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 886045,
+        length: 163,
+        imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
+        nowPlaying: {
+          roonArtistName: 'Ween',
+          roonAlbumName: '12 Golden Country Greats',
+          roonTrackName: "I Don't Wanna Leave You on the Farm",
+        },
+      },
+      '1601f4f798ff1773c83b77e489ea00000000': null,
+    });
+  });
+
+  test('replaces the currently playing track by the current head of the queue', () => {
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     const queueItems = [qiWeen04Wiim, qiWeen01Wiim];
     const playingTracks = {
@@ -350,19 +388,20 @@ describe('setPlayingTracks', () => {
 
     expect(newPlayingTracks).toEqual({
       '1601f4f798ff1773c83b77e489eaff98f7f4': {
-        queueItemId: 886042,
-        length: 241,
+        queueItemId: 886045,
+        length: 163,
         imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
         nowPlaying: {
           roonArtistName: 'Ween',
           roonAlbumName: '12 Golden Country Greats',
-          roonTrackName: "I'm Holding You",
+          roonTrackName: "I Don't Wanna Leave You on the Farm",
         },
       },
       '1601f4f798ff1773c83b77e489ea00000000': null,
     });
   });
 });
+
 describe('mergePlayedSegments', () => {
   test('leaves an empty list of segments untouched', () => {
     const segments = [];
