@@ -123,6 +123,57 @@ const setQueueItemIdsInScheduledTracks = ({
   );
 };
 
+const mergePlayedSegments = (playedSegments) => {
+  const sorted = playedSegments.sort((s1, s2) => s1[0] - s2[0]);
+
+  return sorted.reduce((acc, currentSegment) => {
+    if (acc.length === 0) {
+      acc.push(currentSegment);
+      return acc;
+    }
+
+    const lastSegment = acc[acc.length - 1];
+    if (lastSegment[1] === currentSegment[0]) {
+      acc[acc.length - 1] = [lastSegment[0], currentSegment[1]];
+      return acc;
+    }
+
+    acc.push(currentSegment);
+    return acc;
+  }, []);
+};
+
+const applySeekTimeToPlayedSegments = (seekTime, playedSegments) => {
+  if (playedSegments.length === 0) {
+    return [[seekTime, seekTime]];
+  }
+
+  const seekTimeExtendsPlayedSegment = playedSegments.some(
+    ([, end]) => end + 1 === seekTime,
+  );
+
+  if (seekTimeExtendsPlayedSegment) {
+    return mergePlayedSegments(
+      playedSegments.map(([start, end]) => {
+        if (end + 1 === seekTime) {
+          return [start, seekTime];
+        }
+        return [start, end];
+      }),
+    );
+  }
+
+  const seekTimeIncludedInPlayedSegments = playedSegments.some(
+    ([start, end]) => start <= seekTime && seekTime <= end,
+  );
+
+  if (seekTimeIncludedInPlayedSegments) {
+    return playedSegments;
+  }
+
+  return [...playedSegments, [seekTime, seekTime]];
+};
+
 const buildPlayingTrack = (queueItem) => ({
   queueItemId: queueItem.queueItemId,
   length: queueItem.length,
@@ -147,7 +198,9 @@ const setPlayingTracks = ({ zoneId, queueItems, playingTracks }) => {
 
 export {
   appendToScheduledTracks,
+  applySeekTimeToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  mergePlayedSegments,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
 };

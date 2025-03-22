@@ -16,7 +16,9 @@ import {
 } from '../__fixtures__/scheduledTracks.js';
 import {
   appendToScheduledTracks,
+  applySeekTimeToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  mergePlayedSegments,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
 } from '../src/scheduledTracks.js';
@@ -359,5 +361,207 @@ describe('setPlayingTracks', () => {
       },
       '1601f4f798ff1773c83b77e489ea00000000': null,
     });
+  });
+});
+describe('mergePlayedSegments', () => {
+  test('leaves an empty list of segments untouched', () => {
+    const segments = [];
+
+    const newSegments = mergePlayedSegments(segments);
+
+    expect(newSegments).toEqual([]);
+  });
+
+  test('leaves a list of a single played segment untouched', () => {
+    const segments = [[10, 100]];
+
+    const newSegments = mergePlayedSegments(segments);
+
+    expect(newSegments).toEqual([[10, 100]]);
+  });
+
+  test('merges two adjacent segments', () => {
+    const segments = [
+      [1, 2],
+      [2, 3],
+    ];
+
+    const newSegments = mergePlayedSegments(segments);
+
+    expect(newSegments).toEqual([[1, 3]]);
+  });
+
+  test('merges two adjacent segments even if they are in the wrong order', () => {
+    const segments = [
+      [2, 3],
+      [1, 2],
+    ];
+
+    const newSegments = mergePlayedSegments(segments);
+
+    expect(newSegments).toEqual([[1, 3]]);
+  });
+
+  test('finds the interval to merge in a larger list of segments', () => {
+    const segments = [
+      [10, 20],
+      [80, 90],
+      [40, 50],
+      [30, 40],
+    ];
+
+    const newSegments = mergePlayedSegments(segments);
+
+    expect(newSegments).toEqual([
+      [10, 20],
+      [30, 50],
+      [80, 90],
+    ]);
+  });
+});
+
+describe('applySeekTimeToPlayedSegments', () => {
+  test('inserts first segment into an empty list of segments', () => {
+    const seekTime = 0;
+    const playedSegments = [];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([[0, 0]]);
+  });
+
+  test('inserts first segment into an empty list of segments if track does not play from the beginning', () => {
+    const seekTime = 30;
+    const playedSegments = [];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([[30, 30]]);
+  });
+
+  test('appends to an existing segment', () => {
+    const seekTime = 30;
+    const playedSegments = [
+      [20, 29],
+      [40, 50],
+    ];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([
+      [20, 30],
+      [40, 50],
+    ]);
+  });
+
+  test('finds the right segment to append to in a larger list of segments', () => {
+    const seekTime = 30;
+    const playedSegments = [
+      [40, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+    ];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([
+      [20, 30],
+      [40, 50],
+      [60, 70],
+      [80, 90],
+    ]);
+  });
+
+  test('does not change segments if seekTime is included in played segments', () => {
+    const seekTime = 30;
+    const playedSegments = [
+      [20, 30],
+      [80, 90],
+      [60, 70],
+    ];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([
+      [20, 30],
+      [80, 90],
+      [60, 70],
+    ]);
+  });
+
+  test('merges segments if they become adjacent', () => {
+    const seekTime = 30;
+    const playedSegments = [
+      [30, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+    ];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([
+      [20, 50],
+      [60, 70],
+      [80, 90],
+    ]);
+  });
+
+  test('inserts a new segment if seekTime jumps', () => {
+    const seekTime = 100;
+    const playedSegments = [
+      [30, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+    ];
+
+    const newPlayedSegments = applySeekTimeToPlayedSegments(
+      seekTime,
+      playedSegments,
+    );
+
+    expect(newPlayedSegments).toEqual([
+      [30, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+      [100, 100],
+    ]);
+  });
+
+  test('builds the list of played segments when fed with a list of seek times', () => {
+    const finalPlayedSegmewnts = [
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 5, 6, 7, 8, 9,
+      10, 11, 12, 13, 14, 15,
+    ].reduce(
+      (playedSegments, seekTime) =>
+        applySeekTimeToPlayedSegments(seekTime, playedSegments),
+      [],
+    );
+
+    expect(finalPlayedSegmewnts).toEqual([
+      [0, 15],
+      [20, 25],
+    ]);
   });
 });
