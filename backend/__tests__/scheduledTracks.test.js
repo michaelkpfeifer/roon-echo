@@ -21,6 +21,7 @@ import {
   mergePlayedSegments,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
+  updatePlayedSegmentsInScheduledTracks,
 } from '../src/scheduledTracks.js';
 
 describe('appendToScheduledTracks', () => {
@@ -602,5 +603,160 @@ describe('applySeekTimeToPlayedSegments', () => {
       [0, 15],
       [20, 25],
     ]);
+  });
+});
+
+describe('updatePlayedSegmentsInScheduledTracks', () => {
+  test('does nothing if the scheduled track does not have a queue item ID', () => {
+    const zonesSeekChangedMessage = [
+      {
+        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+        queueTimeRemaining: 4299,
+        seekPosition: 225,
+      },
+    ];
+    const scheduledTracks = [stWeen01Wiim];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1115722,
+        length: 228,
+        imageKey: '33e959e7c3411302f3583d70ab7fcd41',
+        nowPlaying: {
+          roonArtistName: 'Makaya McCraven',
+          roonAlbumName: 'Universal Beings',
+          roonTrackName: 'Mantra',
+        },
+      },
+      '160158f78109afd4b2d01d3b44e0d50be5bb': null,
+      '1601f786e879b107e5e4d9555a47bc6e83a1': null,
+      '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
+    };
+
+    const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
+      zonesSeekChangedMessage,
+      scheduledTracks,
+      playingTracks,
+    });
+
+    expect(newScheduledTracks).toEqual(scheduledTracks);
+  });
+
+  test('does nothing if the scheduled track is not the playing track', () => {
+    const zonesSeekChangedMessage = [
+      {
+        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+        queueTimeRemaining: 4299,
+        seekPosition: 111,
+      },
+    ];
+    const scheduledTracks = [{ ...stWeen01Wiim, queueItemId: 888888 }];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1115722,
+        length: 228,
+        imageKey: '33e959e7c3411302f3583d70ab7fcd41',
+        nowPlaying: {
+          roonArtistName: 'Makaya McCraven',
+          roonAlbumName: 'Universal Beings',
+          roonTrackName: 'Mantra',
+        },
+      },
+      '160158f78109afd4b2d01d3b44e0d50be5bb': null,
+      '1601f786e879b107e5e4d9555a47bc6e83a1': null,
+      '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
+    };
+
+    const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
+      zonesSeekChangedMessage,
+      scheduledTracks,
+      playingTracks,
+    });
+
+    expect(newScheduledTracks).toEqual(scheduledTracks);
+  });
+
+  test('updates played segements playing track refere to scheduled track', () => {
+    const zonesSeekChangedMessage = [
+      {
+        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+        queueTimeRemaining: 4299,
+        seekPosition: 111,
+      },
+    ];
+    const scheduledTracks = [{ ...stWeen01Wiim, queueItemId: 1115722 }];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1115722,
+        length: 228,
+        imageKey: '33e959e7c3411302f3583d70ab7fcd41',
+        nowPlaying: {
+          roonArtistName: 'Ween',
+          roonAlbumName: '12 Golden Country Greats',
+          roonTrackName: 'I’m Holding You',
+        },
+      },
+      '160158f78109afd4b2d01d3b44e0d50be5bb': null,
+      '1601f786e879b107e5e4d9555a47bc6e83a1': null,
+      '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
+    };
+
+    const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
+      zonesSeekChangedMessage,
+      scheduledTracks,
+      playingTracks,
+    });
+
+    expect(newScheduledTracks[0]).toEqual({
+      ...scheduledTracks[0],
+      playedSegments: [[111, 111]],
+    });
+  });
+
+  test('updates played segments when fed with a list of seek changed messages', () => {
+    const seekTimes = [
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 5, 6, 7, 8, 9,
+      10, 11, 12, 13, 14, 15,
+    ];
+    const zonesSeekChangedMessages = seekTimes.map((seekTime) => [
+      {
+        zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
+        queueTimeRemaining: 4000 - seekTime,
+        seekPosition: seekTime,
+      },
+    ]);
+    const scheduledTracks = [{ ...stWeen01Wiim, queueItemId: 1115722 }];
+    const playingTracks = {
+      '1601f4f798ff1773c83b77e489eaff98f7f4': {
+        queueItemId: 1115722,
+        length: 228,
+        imageKey: '33e959e7c3411302f3583d70ab7fcd41',
+        nowPlaying: {
+          roonArtistName: 'Ween',
+          roonAlbumName: '12 Golden Country Greats',
+          roonTrackName: 'I’m Holding You',
+        },
+      },
+      '160158f78109afd4b2d01d3b44e0d50be5bb': null,
+      '1601f786e879b107e5e4d9555a47bc6e83a1': null,
+      '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
+    };
+
+    const newScheduledTracks = zonesSeekChangedMessages.reduce(
+      (currentScheduledTracks, zonesSeekChangedMessage) =>
+        updatePlayedSegmentsInScheduledTracks({
+          zonesSeekChangedMessage,
+          scheduledTracks: currentScheduledTracks,
+          playingTracks,
+        }),
+      scheduledTracks,
+    );
+
+    expect(newScheduledTracks[0]).toEqual({
+      ...scheduledTracks[0],
+      playedSegments: [
+        [0, 15],
+        [20, 25],
+      ],
+    });
   });
 });

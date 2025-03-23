@@ -30,6 +30,7 @@ import {
   appendToScheduledTracks,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
+  updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
 import { camelCaseKeys } from './utils.js';
 
@@ -101,6 +102,12 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             /* eslint-enable no-console */
 
             io.emit('zonesSeekChanged', frontendMessage);
+
+            scheduledTracks = updatePlayedSegmentsInScheduledTracks({
+              zonesSeekChangedMessage: message[subType],
+              scheduledTracks,
+              playingTracks,
+            });
 
             logChangedZonesSeek(JSON.stringify(message[subType]));
 

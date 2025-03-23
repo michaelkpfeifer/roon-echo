@@ -41,6 +41,21 @@ const fuzzySearchInScheduledTracks = ({
   zoneId,
   nowPlaying,
 }) => {
+  /* eslint-disable no-console */
+  // console.log(
+  //   'scheduledTracks.js, fuzzySearchInScheduledTracks(): scheduledTracks:',
+  //   scheduledTracks,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, fuzzySearchInScheduledTracks(): zoneId:',
+  //   zoneId,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, fuzzySearchInScheduledTracks(): nowPlaying:',
+  //   nowPlaying,
+  // );
+  /* eslint-enable no-console */
+
   const fuse = new Fuse(
     scheduledTracks.filter(
       (scheduledTrack) => scheduledTrack.zoneId === zoneId,
@@ -48,6 +63,13 @@ const fuzzySearchInScheduledTracks = ({
     fuzzySearchOptions,
   );
   const results = fuse.search(nowPlaying);
+
+  /* eslint-disable no-console */
+  // console.log(
+  //   'scheduledTracks.js: fuzzySearchInScheduledTracks(): results:',
+  //   results,
+  // );
+  /* eslint-enable no-console */
 
   return results.length ? results[0].item : null;
 };
@@ -207,6 +229,56 @@ const setPlayingTracks = ({ zoneId, queueItems, playingTracks }) => {
   };
 };
 
+const updatePlayedSegmentsInScheduledTracks = ({
+  zonesSeekChangedMessage,
+  scheduledTracks,
+  playingTracks,
+}) => {
+  /* eslint-disable no-console */
+  console.log(
+    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), zonesSeekChangedMessage:',
+    zonesSeekChangedMessage,
+  );
+  console.log(
+    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), scheduledTracks:',
+    JSON.stringify(scheduledTracks, null, 4),
+  );
+  console.log(
+    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), playingTracks:',
+    playingTracks,
+  );
+  /* eslint-enable no-console */
+
+  return zonesSeekChangedMessage.reduce(
+    (newScheduledTracks, { zoneId, seekPosition }) => {
+      const playingTrack = playingTracks[zoneId];
+      if (playingTrack) {
+        const { queueItemId } = playingTrack;
+
+        return scheduledTracks.map((scheduledTrack) => {
+          if (
+            scheduledTrack.queueItemId === queueItemId &&
+            scheduledTrack.zoneId === zoneId
+          ) {
+            return {
+              ...scheduledTrack,
+              playedSegments: applySeekTimeToPlayedSegments(
+                seekPosition,
+                scheduledTrack.playedSegments,
+              ),
+            };
+          }
+
+          return scheduledTrack;
+        });
+      }
+
+      return newScheduledTracks;
+    },
+    scheduledTracks,
+  );
+};
+
 export {
   appendToScheduledTracks,
   applySeekTimeToPlayedSegments,
@@ -214,4 +286,5 @@ export {
   mergePlayedSegments,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
+  updatePlayedSegmentsInScheduledTracks,
 };
