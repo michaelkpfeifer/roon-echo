@@ -28,7 +28,9 @@ import {
 import { extractQueueItems } from './queues.js';
 import {
   appendToScheduledTracks,
+  setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
+  updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
 import { camelCaseKeys } from './utils.js';
 
@@ -51,6 +53,7 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport;
 let browseInstance;
 let scheduledTracks = [];
+let playingTracks = [];
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -100,6 +103,12 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
 
             io.emit('zonesSeekChanged', frontendMessage);
 
+            scheduledTracks = updatePlayedSegmentsInScheduledTracks({
+              zonesSeekChangedMessage: message[subType],
+              scheduledTracks,
+              playingTracks,
+            });
+
             logChangedZonesSeek(JSON.stringify(message[subType]));
 
             break;
@@ -145,11 +154,25 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
                 100,
                 (response, snakeCaseQueue) => {
                   const queue = camelCaseKeys(snakeCaseQueue);
+                  const queueItems = extractQueueItems(queue);
 
                   /* eslint-disable no-console */
                   console.log(
-                    'server.js: coreMessageHandler(): queue:',
-                    JSON.stringify(queue, null, 4),
+                    'server.js: coreMessageHandler(): playingTracks:',
+                    playingTracks,
+                  );
+                  /* eslint-enable no-console */
+
+                  playingTracks = setPlayingTracks({
+                    zoneId: zone.zoneId,
+                    queueItems,
+                    playingTracks,
+                  });
+
+                  /* eslint-disable no-console */
+                  console.log(
+                    'server.js: coreMessageHandler(): playingTracks:',
+                    playingTracks,
                   );
                   /* eslint-enable no-console */
 
@@ -163,7 +186,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
                   scheduledTracks = setQueueItemIdsInScheduledTracks({
                     scheduledTracks,
                     zoneId: zone.zoneId,
-                    queueItems: extractQueueItems(queue),
+                    queueItems,
                   });
 
                   /* eslint-disable no-console */
@@ -305,12 +328,20 @@ io.on('connection', (socket) => {
         100,
         (response, snakeCaseQueue) => {
           const queue = camelCaseKeys(snakeCaseQueue);
+          const queueItems = extractQueueItems(queue);
 
           /* eslint-disable no-console */
-          console.log(
-            'server.js: io.on(): queue:',
-            JSON.stringify(queue, null, 4),
-          );
+          console.log('server.js: io.on(): playingTracks:', playingTracks);
+          /* eslint-enable no-console */
+
+          playingTracks = setPlayingTracks({
+            zoneId: zone.zoneId,
+            queueItems,
+            playingTracks,
+          });
+
+          /* eslint-disable no-console */
+          console.log('server.js: io.on(): playingTracks:', playingTracks);
           /* eslint-enable no-console */
 
           /* eslint-disable no-console */
@@ -320,7 +351,7 @@ io.on('connection', (socket) => {
           scheduledTracks = setQueueItemIdsInScheduledTracks({
             scheduledTracks,
             zoneId: zone.zoneId,
-            queueItems: extractQueueItems(queue),
+            queueItems,
           });
 
           /* eslint-disable no-console */
