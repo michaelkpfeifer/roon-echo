@@ -16,7 +16,7 @@ import {
 } from '../__fixtures__/scheduledTracks.js';
 import {
   appendToScheduledTracks,
-  applySeekTimeToPlayedSegments,
+  applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   mergePlayedSegments,
   setPlayingTracks,
@@ -460,13 +460,13 @@ describe('mergePlayedSegments', () => {
   });
 });
 
-describe('applySeekTimeToPlayedSegments', () => {
+describe('applySeekPositionToPlayedSegments', () => {
   test('inserts first segment into an empty list of segments', () => {
-    const seekTime = 0;
+    const seekPosition = 0;
     const playedSegments = [];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -474,11 +474,11 @@ describe('applySeekTimeToPlayedSegments', () => {
   });
 
   test('inserts first segment into an empty list of segments if track does not play from the beginning', () => {
-    const seekTime = 30;
+    const seekPosition = 30;
     const playedSegments = [];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -486,14 +486,14 @@ describe('applySeekTimeToPlayedSegments', () => {
   });
 
   test('appends to an existing segment', () => {
-    const seekTime = 30;
+    const seekPosition = 30;
     const playedSegments = [
       [20, 29],
       [40, 50],
     ];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -504,7 +504,7 @@ describe('applySeekTimeToPlayedSegments', () => {
   });
 
   test('finds the right segment to append to in a larger list of segments', () => {
-    const seekTime = 30;
+    const seekPosition = 30;
     const playedSegments = [
       [40, 50],
       [20, 29],
@@ -512,8 +512,8 @@ describe('applySeekTimeToPlayedSegments', () => {
       [60, 70],
     ];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -525,16 +525,16 @@ describe('applySeekTimeToPlayedSegments', () => {
     ]);
   });
 
-  test('does not change segments if seekTime is included in played segments', () => {
-    const seekTime = 30;
+  test('does not change segments if seekPosition is included in played segments', () => {
+    const seekPosition = 30;
     const playedSegments = [
       [20, 30],
       [80, 90],
       [60, 70],
     ];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -546,7 +546,7 @@ describe('applySeekTimeToPlayedSegments', () => {
   });
 
   test('merges segments if they become adjacent', () => {
-    const seekTime = 30;
+    const seekPosition = 30;
     const playedSegments = [
       [30, 50],
       [20, 29],
@@ -554,8 +554,8 @@ describe('applySeekTimeToPlayedSegments', () => {
       [60, 70],
     ];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -566,8 +566,8 @@ describe('applySeekTimeToPlayedSegments', () => {
     ]);
   });
 
-  test('inserts a new segment if seekTime jumps', () => {
-    const seekTime = 100;
+  test('inserts a new segment if seekPosition jumps', () => {
+    const seekPosition = 100;
     const playedSegments = [
       [30, 50],
       [20, 29],
@@ -575,8 +575,8 @@ describe('applySeekTimeToPlayedSegments', () => {
       [60, 70],
     ];
 
-    const newPlayedSegments = applySeekTimeToPlayedSegments(
-      seekTime,
+    const newPlayedSegments = applySeekPositionToPlayedSegments(
+      seekPosition,
       playedSegments,
     );
 
@@ -589,13 +589,13 @@ describe('applySeekTimeToPlayedSegments', () => {
     ]);
   });
 
-  test('builds the list of played segments when fed with a list of seek times', () => {
+  test('builds the list of played segments when fed with a list of seek positions', () => {
     const finalPlayedSegmewnts = [
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 5, 6, 7, 8, 9,
       10, 11, 12, 13, 14, 15,
     ].reduce(
-      (playedSegments, seekTime) =>
-        applySeekTimeToPlayedSegments(seekTime, playedSegments),
+      (playedSegments, seekPosition) =>
+        applySeekPositionToPlayedSegments(seekPosition, playedSegments),
       [],
     );
 
@@ -713,15 +713,15 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
   });
 
   test('updates played segments when fed with a list of seek changed messages', () => {
-    const seekTimes = [
+    const seekPositions = [
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 5, 6, 7, 8, 9,
       10, 11, 12, 13, 14, 15,
     ];
-    const zonesSeekChangedMessages = seekTimes.map((seekTime) => [
+    const zonesSeekChangedMessages = seekPositions.map((seekPosition) => [
       {
         zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
-        queueTimeRemaining: 4000 - seekTime,
-        seekPosition: seekTime,
+        queueTimeRemaining: 4000 - seekPosition,
+        seekPosition: seekPosition,
       },
     ]);
     const scheduledTracks = [{ ...stWeen01Wiim, queueItemId: 1115722 }];

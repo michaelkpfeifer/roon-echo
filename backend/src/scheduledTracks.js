@@ -1,5 +1,4 @@
 import Fuse from 'fuse.js';
-import fp from 'lodash/fp.js';
 
 const appendToScheduledTracks = ({
   scheduledTracks,
@@ -165,36 +164,40 @@ const mergePlayedSegments = (playedSegments) => {
   }, []);
 };
 
-const applySeekTimeToPlayedSegments = (seekTime, playedSegments) => {
+const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
   if (playedSegments.length === 0) {
-    return [[seekTime, seekTime]];
+    return [[seekPosition, seekPosition]];
   }
 
-  const seekTimeExtendsPlayedSegment = playedSegments.some(
-    ([, end]) => end + 1 === seekTime,
+  const seekPositionExtendsPlayedSegment = playedSegments.some(
+    ([, end]) => end + 1 === seekPosition,
   );
 
-  if (seekTimeExtendsPlayedSegment) {
+  if (seekPositionExtendsPlayedSegment) {
     return mergePlayedSegments(
       playedSegments.map(([start, end]) => {
-        if (end + 1 === seekTime) {
-          return [start, seekTime];
+        if (end + 1 === seekPosition) {
+          return [start, seekPosition];
         }
         return [start, end];
       }),
     );
   }
 
-  const seekTimeIncludedInPlayedSegments = playedSegments.some(
-    ([start, end]) => start <= seekTime && seekTime <= end,
+  const seekPositionIncludedInPlayedSegments = playedSegments.some(
+    ([start, end]) => start <= seekPosition && seekPosition <= end,
   );
 
-  if (seekTimeIncludedInPlayedSegments) {
+  if (seekPositionIncludedInPlayedSegments) {
     return playedSegments;
   }
 
-  return [...playedSegments, [seekTime, seekTime]];
+  return [...playedSegments, [seekPosition, seekPosition]];
 };
+
+const getPlayedTime = (playedSegments) => {};
+
+const isPlayed = (playedSegments, trackLength) => {};
 
 const buildPlayingTrack = (queueItem) => ({
   queueItemId: queueItem.queueItemId,
@@ -235,18 +238,18 @@ const updatePlayedSegmentsInScheduledTracks = ({
   playingTracks,
 }) => {
   /* eslint-disable no-console */
-  console.log(
-    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), zonesSeekChangedMessage:',
-    zonesSeekChangedMessage,
-  );
-  console.log(
-    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), scheduledTracks:',
-    JSON.stringify(scheduledTracks, null, 4),
-  );
-  console.log(
-    'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), playingTracks:',
-    playingTracks,
-  );
+  // console.log(
+  //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), zonesSeekChangedMessage:',
+  //   zonesSeekChangedMessage,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), scheduledTracks:',
+  //   JSON.stringify(scheduledTracks, null, 4),
+  // );
+  // console.log(
+  //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), playingTracks:',
+  //   playingTracks,
+  // );
   /* eslint-enable no-console */
 
   return zonesSeekChangedMessage.reduce(
@@ -262,7 +265,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
           ) {
             return {
               ...scheduledTrack,
-              playedSegments: applySeekTimeToPlayedSegments(
+              playedSegments: applySeekPositionToPlayedSegments(
                 seekPosition,
                 scheduledTrack.playedSegments,
               ),
@@ -281,7 +284,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
 
 export {
   appendToScheduledTracks,
-  applySeekTimeToPlayedSegments,
+  applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   mergePlayedSegments,
   setPlayingTracks,
