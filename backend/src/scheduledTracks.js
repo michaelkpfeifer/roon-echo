@@ -282,11 +282,43 @@ const updatePlayedSegmentsInScheduledTracks = ({
   );
 };
 
+const removeVanishedFromScheduledTracks = ({
+  scheduledTracks,
+  zoneId,
+  queueItems,
+}) => {
+  /* eslint-disable no-console */
+  // console.log(
+  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): scheduledTracks:',
+  //   scheduledTracks,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): zoneId:',
+  //   zoneId,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): queueItems:',
+  //   queueItems,
+  // );
+  /* eslint-enable no-console */
+
+  const queueItemIds = queueItems.map((queueItem) => queueItem.queueItemId);
+
+  return scheduledTracks.filter(
+    (scheduledTrack) =>
+      !(
+        queueItemIds.includes(scheduledTrack.queueItemIds) &&
+        scheduledTrack.zoneId !== zoneId
+      ),
+  );
+};
+
 export {
   appendToScheduledTracks,
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   mergePlayedSegments,
+  removeVanishedFromScheduledTracks,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,

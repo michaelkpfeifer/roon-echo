@@ -28,6 +28,7 @@ import {
 import { extractQueueItems } from './queues.js';
 import {
   appendToScheduledTracks,
+  removeVanishedFromScheduledTracks,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
@@ -184,6 +185,19 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
                   /* eslint-enable no-console */
 
                   scheduledTracks = setQueueItemIdsInScheduledTracks({
+                    scheduledTracks,
+                    zoneId: zone.zoneId,
+                    queueItems,
+                  });
+
+                  /* eslint-disable no-console */
+                  console.log(
+                    'server.js: coreMessageHandler(): scheduledTracks:',
+                    scheduledTracks,
+                  );
+                  /* eslint-enable no-console */
+
+                  scheduledTracks = removeVanishedFromScheduledTracks({
                     scheduledTracks,
                     zoneId: zone.zoneId,
                     queueItems,
