@@ -375,6 +375,20 @@ io.on('connection', (socket) => {
           console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
           /* eslint-enable no-console */
 
+          [potentiallyPlayedTracks, scheduledTracks] =
+            partitionScheduledTracksForPlays({
+              scheduledTracks,
+              zoneId: zone.zoneId,
+              queueItems,
+            });
+
+          /* eslint-disable no-console */
+          console.log(
+            'server.js: coreMessageHandler(): scheduledTracks:',
+            scheduledTracks,
+          );
+          /* eslint-enable no-console */
+
           return null;
         },
       );
