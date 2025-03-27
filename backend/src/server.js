@@ -28,7 +28,7 @@ import {
 import { extractQueueItems } from './queues.js';
 import {
   appendToScheduledTracks,
-  removeVanishedFromScheduledTracks,
+  partitionScheduledTracksForPlays,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
@@ -53,8 +53,10 @@ const coreUrlConfigured = process.env.CORE_URL;
 
 let transport;
 let browseInstance;
+
 let scheduledTracks = [];
 let playingTracks = [];
+let potentiallyPlayedTracks = [];
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -197,11 +199,12 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
                   );
                   /* eslint-enable no-console */
 
-                  scheduledTracks = removeVanishedFromScheduledTracks({
-                    scheduledTracks,
-                    zoneId: zone.zoneId,
-                    queueItems,
-                  });
+                  [potentiallyPlayedTracks, scheduledTracks] =
+                    partitionScheduledTracksForPlays({
+                      scheduledTracks,
+                      zoneId: zone.zoneId,
+                      queueItems,
+                    });
 
                   /* eslint-disable no-console */
                   console.log(

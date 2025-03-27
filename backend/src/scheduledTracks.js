@@ -1,4 +1,5 @@
 import Fuse from 'fuse.js';
+import fp from 'lodash/fp.js';
 
 const appendToScheduledTracks = ({
   scheduledTracks,
@@ -282,35 +283,41 @@ const updatePlayedSegmentsInScheduledTracks = ({
   );
 };
 
-const removeVanishedFromScheduledTracks = ({
+const partitionScheduledTracksForPlays = ({
   scheduledTracks,
   zoneId,
   queueItems,
 }) => {
   /* eslint-disable no-console */
   // console.log(
-  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): scheduledTracks:',
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): scheduledTracks:',
   //   scheduledTracks,
   // );
   // console.log(
-  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): zoneId:',
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): zoneId:',
   //   zoneId,
   // );
   // console.log(
-  //   'scheduledTracks.js, removeVanishedFromScheduledTracks(): queueItems:',
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): queueItems:',
   //   queueItems,
   // );
   /* eslint-enable no-console */
 
-  const queueItemIds = queueItems.map((queueItem) => queueItem.queueItemId);
-
-  return scheduledTracks.filter(
-    (scheduledTrack) =>
-      !(
-        queueItemIds.includes(scheduledTrack.queueItemIds) &&
-        scheduledTrack.zoneId !== zoneId
-      ),
+  const presentQueueItemIds = queueItems.map(
+    (queueItem) => queueItem.queueItemId,
   );
+  const predicate = (scheduledTrack) => {
+    if (scheduledTrack.zoneId !== zoneId) {
+      return false;
+    }
+
+    return !(
+      presentQueueItemIds.includes(scheduledTrack.queueItemId) ||
+      scheduledTrack.queueItemId === null
+    );
+  };
+
+  return fp.partition(predicate, scheduledTracks);
 };
 
 export {
@@ -318,7 +325,7 @@ export {
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   mergePlayedSegments,
-  removeVanishedFromScheduledTracks,
+  partitionScheduledTracksForPlays,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
