@@ -18,6 +18,7 @@ import {
   appendToScheduledTracks,
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  getPlayedTime,
   mergePlayedSegments,
   partitionScheduledTracksForPlays,
   setPlayingTracks,
@@ -759,6 +760,25 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
         [20, 25],
       ],
     });
+  });
+});
+
+describe('getPlayedTime', () => {
+  test('returns 0 if there are no played segments', () => {
+    const playedSegments = [];
+
+    expect(getPlayedTime(playedSegments)).toEqual(0);
+  });
+
+  test('returns the sum of durations of the played segments', () => {
+    const playedSegments = [
+      [30, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+    ];
+
+    expect(getPlayedTime(playedSegments)).toEqual(20 + 9 + 10 + 10);
   });
 });
 

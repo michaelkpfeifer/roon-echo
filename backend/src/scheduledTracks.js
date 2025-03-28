@@ -196,10 +196,6 @@ const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
   return [...playedSegments, [seekPosition, seekPosition]];
 };
 
-const getPlayedTime = (playedSegments) => {};
-
-const isPlayed = (playedSegments, trackLength) => {};
-
 const buildPlayingTrack = (queueItem) => ({
   queueItemId: queueItem.queueItemId,
   length: queueItem.length,
@@ -283,6 +279,16 @@ const updatePlayedSegmentsInScheduledTracks = ({
   );
 };
 
+const getPlayedTime = (playedSegments) => {
+  if (playedSegments.length === 0) {
+    return 0;
+  }
+
+  return fp.sum(playedSegments.map(([start, end]) => end - start));
+};
+
+const isPlayed = (playedSegments, trackLength) => {};
+
 const partitionScheduledTracksForPlays = ({
   scheduledTracks,
   zoneId,
@@ -324,6 +330,7 @@ export {
   appendToScheduledTracks,
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  getPlayedTime,
   mergePlayedSegments,
   partitionScheduledTracksForPlays,
   setPlayingTracks,
