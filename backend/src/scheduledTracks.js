@@ -287,7 +287,11 @@ const getPlayedTime = (playedSegments) => {
   return fp.sum(playedSegments.map(([start, end]) => end - start));
 };
 
-const isPlayed = (playedSegments, trackLength) => {};
+const isPlayed = (playedSegments, trackLength) => {
+  const playedTime = getPlayedTime(playedSegments);
+
+  return 2 * playedTime >= trackLength;
+};
 
 const partitionScheduledTracksForPlays = ({
   scheduledTracks,
@@ -331,6 +335,7 @@ export {
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   getPlayedTime,
+  isPlayed,
   mergePlayedSegments,
   partitionScheduledTracksForPlays,
   setPlayingTracks,

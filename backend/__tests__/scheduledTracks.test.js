@@ -19,6 +19,7 @@ import {
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
   getPlayedTime,
+  isPlayed,
   mergePlayedSegments,
   partitionScheduledTracksForPlays,
   setPlayingTracks,
@@ -779,6 +780,39 @@ describe('getPlayedTime', () => {
     ];
 
     expect(getPlayedTime(playedSegments)).toEqual(20 + 9 + 10 + 10);
+  });
+});
+
+describe('isPlayed', () => {
+  test('returns false if a track of positive length is not played', () => {
+    const playedSegments = [];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(false);
+  });
+
+  test('returns true if a track of length zero is not played', () => {
+    const playedSegments = [];
+    const trackLength = 0;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(true);
+  });
+
+  test('returns false if a track is played less than 50 percent', () => {
+    const playedSegments = [[20, 60]];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(false);
+  });
+
+  test('returns true if a track is played more than 50 percent', () => {
+    const playedSegments = [
+      [20, 60],
+      [70, 90],
+    ];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(true);
   });
 });
 
