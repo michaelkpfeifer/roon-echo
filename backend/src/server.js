@@ -56,7 +56,80 @@ let browseInstance;
 
 let scheduledTracks = [];
 let playingTracks = [];
-let potentiallyPlayedTracks = [];
+
+const subscribeToQueueChanges = (zoneIds) => {
+  /* eslint-disable no-console */
+  console.log('server.js: subscribeToQueueChanges(): zoneIds:', zoneIds);
+  /* eslint-enable no-console */
+
+  zoneIds.forEach((zoneId) => {
+    transport.subscribe_queue(zoneId, 100, (response, snakeCaseQueue) => {
+      const queue = camelCaseKeys(snakeCaseQueue);
+      const queueItems = extractQueueItems(queue);
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: playingTracks:',
+        playingTracks,
+      );
+      /* eslint-enable no-console */
+
+      playingTracks = setPlayingTracks({
+        zoneId,
+        queueItems,
+        playingTracks,
+      });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: playingTracks:',
+        playingTracks,
+      );
+      /* eslint-enable no-console */
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      scheduledTracks = setQueueItemIdsInScheduledTracks({
+        scheduledTracks,
+        zoneId,
+        queueItems,
+      });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      let potentiallyPlayedTracks;
+      [potentiallyPlayedTracks, scheduledTracks] =
+        partitionScheduledTracksForPlays({
+          scheduledTracks,
+          zoneId,
+          queueItems,
+        });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges(): potentiallyPlayedTracks:',
+        potentiallyPlayedTracks,
+      );
+      console.log(
+        'server.js: subscribeToQueueChanges(): scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      return null;
+    });
+  });
+};
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -151,71 +224,8 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            message[subType].forEach((zone) =>
-              transport.subscribe_queue(
-                zone.zoneId,
-                100,
-                (response, snakeCaseQueue) => {
-                  const queue = camelCaseKeys(snakeCaseQueue);
-                  const queueItems = extractQueueItems(queue);
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): playingTracks:',
-                    playingTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  playingTracks = setPlayingTracks({
-                    zoneId: zone.zoneId,
-                    queueItems,
-                    playingTracks,
-                  });
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): playingTracks:',
-                    playingTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): scheduledTracks:',
-                    scheduledTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  scheduledTracks = setQueueItemIdsInScheduledTracks({
-                    scheduledTracks,
-                    zoneId: zone.zoneId,
-                    queueItems,
-                  });
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): scheduledTracks:',
-                    scheduledTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  [potentiallyPlayedTracks, scheduledTracks] =
-                    partitionScheduledTracksForPlays({
-                      scheduledTracks,
-                      zoneId: zone.zoneId,
-                      queueItems,
-                    });
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): scheduledTracks:',
-                    scheduledTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  return null;
-                },
-              ),
+            subscribeToQueueChanges(
+              message[subType].map((zone) => zone.zoneId),
             );
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
@@ -339,60 +349,7 @@ io.on('connection', (socket) => {
 
     socket.emit('initialState', frontendRoonState);
 
-    zones.forEach((zone) => {
-      transport.subscribe_queue(
-        zone.zoneId,
-        100,
-        (response, snakeCaseQueue) => {
-          const queue = camelCaseKeys(snakeCaseQueue);
-          const queueItems = extractQueueItems(queue);
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): playingTracks:', playingTracks);
-          /* eslint-enable no-console */
-
-          playingTracks = setPlayingTracks({
-            zoneId: zone.zoneId,
-            queueItems,
-            playingTracks,
-          });
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): playingTracks:', playingTracks);
-          /* eslint-enable no-console */
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-          /* eslint-enable no-console */
-
-          scheduledTracks = setQueueItemIdsInScheduledTracks({
-            scheduledTracks,
-            zoneId: zone.zoneId,
-            queueItems,
-          });
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-          /* eslint-enable no-console */
-
-          [potentiallyPlayedTracks, scheduledTracks] =
-            partitionScheduledTracksForPlays({
-              scheduledTracks,
-              zoneId: zone.zoneId,
-              queueItems,
-            });
-
-          /* eslint-disable no-console */
-          console.log(
-            'server.js: coreMessageHandler(): scheduledTracks:',
-            scheduledTracks,
-          );
-          /* eslint-enable no-console */
-
-          return null;
-        },
-      );
-    });
+    subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
   });
 
   socket.on('browse', async (dataRef) => {
