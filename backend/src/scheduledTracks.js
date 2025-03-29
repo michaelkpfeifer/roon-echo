@@ -14,6 +14,7 @@ const appendToScheduledTracks = ({
     zoneId,
     queueItemId: null,
     playedSegments: [],
+    lastPlayed: null,
   };
 
   return [...scheduledTracks, scheduledTrack];
@@ -233,6 +234,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
   zonesSeekChangedMessage,
   scheduledTracks,
   playingTracks,
+  timestamp,
 }) => {
   /* eslint-disable no-console */
   // console.log(
@@ -246,6 +248,10 @@ const updatePlayedSegmentsInScheduledTracks = ({
   // console.log(
   //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), playingTracks:',
   //   playingTracks,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), timestamp:',
+  //   timestamp,
   // );
   /* eslint-enable no-console */
 
@@ -266,6 +272,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
                 seekPosition,
                 scheduledTrack.playedSegments,
               ),
+              lastPlayed: timestamp,
             };
           }
 

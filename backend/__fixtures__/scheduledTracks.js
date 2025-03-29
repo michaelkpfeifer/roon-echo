@@ -8,6 +8,7 @@ const stWeen01Wiim = {
   zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stWeen02Wiim = {
@@ -20,6 +21,7 @@ const stWeen02Wiim = {
   zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stWeen03Wiim = {
@@ -32,6 +34,7 @@ const stWeen03Wiim = {
   zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stWeen04Wiim = {
@@ -44,6 +47,7 @@ const stWeen04Wiim = {
   zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stHerbert01Mp2000 = {
@@ -56,6 +60,7 @@ const stHerbert01Mp2000 = {
   zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stHerbert02Mp2000 = {
@@ -68,6 +73,7 @@ const stHerbert02Mp2000 = {
   zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stHerbert03Mp2000 = {
@@ -80,6 +86,7 @@ const stHerbert03Mp2000 = {
   zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 const stHerbert04Mp2000 = {
@@ -92,6 +99,7 @@ const stHerbert04Mp2000 = {
   zoneId: '1601fa3b3ee4f063ed8d5549632fd4e18fcf',
   queueItemId: null,
   playedSegments: [],
+  lastPlayed: null,
 };
 
 export {
