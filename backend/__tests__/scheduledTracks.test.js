@@ -23,6 +23,7 @@ import {
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
 } from '../src/scheduledTracks.js';
+import { toIso8601 } from '../src/utils.js';
 
 describe('appendToScheduledTracks', () => {
   test('appends track data to an empty list of scheduled tracks', () => {
@@ -38,6 +39,7 @@ describe('appendToScheduledTracks', () => {
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     const queueItemId = null;
     const playedSegments = [];
+    const lastPlayed = null;
 
     const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
@@ -54,6 +56,7 @@ describe('appendToScheduledTracks', () => {
         zoneId,
         queueItemId,
         playedSegments,
+        lastPlayed,
       },
     ]);
   });
@@ -71,6 +74,7 @@ describe('appendToScheduledTracks', () => {
     const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
     const queueItemId = null;
     const playedSegments = [];
+    const lastPlayed = null;
 
     const newScheduledTracks = appendToScheduledTracks({
       scheduledTracks,
@@ -88,6 +92,7 @@ describe('appendToScheduledTracks', () => {
         zoneId,
         queueItemId,
         playedSegments,
+        lastPlayed,
       },
     ]);
   });
@@ -631,11 +636,13 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       '1601f786e879b107e5e4d9555a47bc6e83a1': null,
       '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
     };
+    const timestamp = toIso8601(new Date(2025, 4, 13, 17, 19, 23, 29));
 
     const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
       zonesSeekChangedMessage,
       scheduledTracks,
       playingTracks,
+      timestamp,
     });
 
     expect(newScheduledTracks).toEqual(scheduledTracks);
@@ -665,17 +672,19 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       '1601f786e879b107e5e4d9555a47bc6e83a1': null,
       '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
     };
+    const timestamp = toIso8601(new Date(2025, 4, 13, 17, 19, 23, 29));
 
     const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
       zonesSeekChangedMessage,
       scheduledTracks,
       playingTracks,
+      timestamp,
     });
 
     expect(newScheduledTracks).toEqual(scheduledTracks);
   });
 
-  test('updates played segements playing track refere to scheduled track', () => {
+  test('updates played segements and lastPlayed if playing track refers to scheduled track', () => {
     const zonesSeekChangedMessage = [
       {
         zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
@@ -699,16 +708,19 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       '1601f786e879b107e5e4d9555a47bc6e83a1': null,
       '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
     };
+    const timestamp = toIso8601(new Date(2025, 4, 13, 17, 19, 23, 29));
 
     const newScheduledTracks = updatePlayedSegmentsInScheduledTracks({
       zonesSeekChangedMessage,
       scheduledTracks,
       playingTracks,
+      timestamp,
     });
 
     expect(newScheduledTracks[0]).toEqual({
       ...scheduledTracks[0],
       playedSegments: [[111, 111]],
+      lastPlayed: timestamp,
     });
   });
 
@@ -740,6 +752,7 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       '1601f786e879b107e5e4d9555a47bc6e83a1': null,
       '1601fa3b3ee4f063ed8d5549632fd4e18fcf': null,
     };
+    const timestamp = toIso8601(new Date(2025, 4, 13, 17, 19, 23, 29));
 
     const newScheduledTracks = zonesSeekChangedMessages.reduce(
       (currentScheduledTracks, zonesSeekChangedMessage) =>
@@ -747,6 +760,7 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
           zonesSeekChangedMessage,
           scheduledTracks: currentScheduledTracks,
           playingTracks,
+          timestamp,
         }),
       scheduledTracks,
     );
@@ -757,6 +771,7 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
         [0, 15],
         [20, 25],
       ],
+      lastPlayed: timestamp,
     });
   });
 });
