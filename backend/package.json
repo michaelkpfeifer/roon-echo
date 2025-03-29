@@ -7,7 +7,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "(find src -name \\*.js) | xargs yarn eslint",
+    "lint": "(find src __tests__ -name \\*.js) | xargs yarn eslint",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
