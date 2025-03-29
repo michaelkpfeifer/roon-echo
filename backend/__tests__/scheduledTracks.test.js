@@ -18,7 +18,10 @@ import {
   appendToScheduledTracks,
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  getPlayedTime,
+  isPlayed,
   mergePlayedSegments,
+  partitionScheduledTracksForPlays,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
@@ -773,5 +776,124 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       ],
       lastPlayed: timestamp,
     });
+  });
+});
+
+describe('getPlayedTime', () => {
+  test('returns 0 if there are no played segments', () => {
+    const playedSegments = [];
+
+    expect(getPlayedTime(playedSegments)).toEqual(0);
+  });
+
+  test('returns the sum of durations of the played segments', () => {
+    const playedSegments = [
+      [30, 50],
+      [20, 29],
+      [80, 90],
+      [60, 70],
+    ];
+
+    expect(getPlayedTime(playedSegments)).toEqual(20 + 9 + 10 + 10);
+  });
+});
+
+describe('isPlayed', () => {
+  test('returns false if a track of positive length is not played', () => {
+    const playedSegments = [];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(false);
+  });
+
+  test('returns true if a track of length zero is not played', () => {
+    const playedSegments = [];
+    const trackLength = 0;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(true);
+  });
+
+  test('returns false if a track is played less than 50 percent', () => {
+    const playedSegments = [[20, 60]];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(false);
+  });
+
+  test('returns true if a track is played more than 50 percent', () => {
+    const playedSegments = [
+      [20, 60],
+      [70, 90],
+    ];
+    const trackLength = 100;
+
+    expect(isPlayed(playedSegments, trackLength)).toEqual(true);
+  });
+});
+
+describe('partitionScheduledTracksForPlays', () => {
+  test('does nothing if there are no scheduled tracks', () => {
+    const scheduledTracks = [];
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen01Wiim, qiWeen04Wiim];
+
+    const [newPotentiallyPlayedTracks, newScheduledTracks] =
+      partitionScheduledTracksForPlays({
+        scheduledTracks,
+        zoneId,
+        queueItems,
+      });
+
+    expect(newPotentiallyPlayedTracks).toEqual([]);
+    expect(newScheduledTracks).toEqual([]);
+  });
+
+  test('does not touch the list of scheduled tracks if the zoneId does not match', () => {
+    const stWeen02WiimQueued = { ...stWeen02Wiim, queueItemId: 886043 };
+    const stWeen03WiimQueued = { ...stWeen03Wiim, queueItemId: 886044 };
+    const scheduledTracks = [
+      stWeen01Wiim,
+      stWeen02WiimQueued,
+      stWeen03WiimQueued,
+      stWeen04Wiim,
+    ];
+    const zoneId = '1601f4f798ff1773c83b77e489ea000000000';
+    const queueItems = [qiWeen01Wiim, qiWeen04Wiim];
+
+    const [newPotentiallyPlayedTracks, newScheduledTracks] =
+      partitionScheduledTracksForPlays({
+        scheduledTracks,
+        zoneId,
+        queueItems,
+      });
+
+    expect(newPotentiallyPlayedTracks).toEqual([]);
+    expect(newScheduledTracks).toEqual(scheduledTracks);
+  });
+
+  test('extracts the scheduled tracks with queue item IDs that are no longer queued', () => {
+    const stWeen02WiimQueued = { ...stWeen02Wiim, queueItemId: 886043 };
+    const stWeen03WiimQueued = { ...stWeen03Wiim, queueItemId: 886044 };
+    const scheduledTracks = [
+      stWeen01Wiim,
+      stWeen02WiimQueued,
+      stWeen03WiimQueued,
+      stWeen04Wiim,
+    ];
+    const zoneId = '1601f4f798ff1773c83b77e489eaff98f7f4';
+    const queueItems = [qiWeen01Wiim, qiWeen04Wiim];
+
+    const [newPotentiallyPlayedTracks, newScheduledTracks] =
+      partitionScheduledTracksForPlays({
+        scheduledTracks,
+        zoneId,
+        queueItems,
+      });
+
+    expect(newPotentiallyPlayedTracks).toEqual([
+      stWeen02WiimQueued,
+      stWeen03WiimQueued,
+    ]);
+    expect(newScheduledTracks).toEqual([stWeen01Wiim, stWeen04Wiim]);
   });
 });
