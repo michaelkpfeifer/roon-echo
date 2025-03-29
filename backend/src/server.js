@@ -32,7 +32,7 @@ import {
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
-import { camelCaseKeys } from './utils.js';
+import { camelCaseKeys, toIso8601 } from './utils.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -107,6 +107,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
               zonesSeekChangedMessage: message[subType],
               scheduledTracks,
               playingTracks,
+              timestamp: toIso8601(new Date()),
             });
 
             logChangedZonesSeek(JSON.stringify(message[subType]));
