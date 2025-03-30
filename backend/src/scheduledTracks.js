@@ -1,4 +1,5 @@
 import Fuse from 'fuse.js';
+import fp from 'lodash/fp.js';
 
 const appendToScheduledTracks = ({
   scheduledTracks,
@@ -13,6 +14,7 @@ const appendToScheduledTracks = ({
     zoneId,
     queueItemId: null,
     playedSegments: [],
+    lastPlayed: null,
   };
 
   return [...scheduledTracks, scheduledTrack];
@@ -195,10 +197,6 @@ const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
   return [...playedSegments, [seekPosition, seekPosition]];
 };
 
-const getPlayedTime = (playedSegments) => {};
-
-const isPlayed = (playedSegments, trackLength) => {};
-
 const buildPlayingTrack = (queueItem) => ({
   queueItemId: queueItem.queueItemId,
   length: queueItem.length,
@@ -236,6 +234,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
   zonesSeekChangedMessage,
   scheduledTracks,
   playingTracks,
+  timestamp,
 }) => {
   /* eslint-disable no-console */
   // console.log(
@@ -249,6 +248,10 @@ const updatePlayedSegmentsInScheduledTracks = ({
   // console.log(
   //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), playingTracks:',
   //   playingTracks,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, updatePlayedSegmentsInScheduledTracks(), timestamp:',
+  //   timestamp,
   // );
   /* eslint-enable no-console */
 
@@ -269,6 +272,7 @@ const updatePlayedSegmentsInScheduledTracks = ({
                 seekPosition,
                 scheduledTrack.playedSegments,
               ),
+              lastPlayed: timestamp,
             };
           }
 
@@ -282,11 +286,65 @@ const updatePlayedSegmentsInScheduledTracks = ({
   );
 };
 
+const getPlayedTime = (playedSegments) => {
+  if (playedSegments.length === 0) {
+    return 0;
+  }
+
+  return fp.sum(playedSegments.map(([start, end]) => end - start));
+};
+
+const isPlayed = (playedSegments, trackLength) => {
+  const playedTime = getPlayedTime(playedSegments);
+
+  return 2 * playedTime >= trackLength;
+};
+
+const partitionScheduledTracksForPlays = ({
+  scheduledTracks,
+  zoneId,
+  queueItems,
+}) => {
+  /* eslint-disable no-console */
+  // console.log(
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): scheduledTracks:',
+  //   scheduledTracks,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): zoneId:',
+  //   zoneId,
+  // );
+  // console.log(
+  //   'scheduledTracks.js, partitionScheduledTracksForPlays(): queueItems:',
+  //   queueItems,
+  // );
+  /* eslint-enable no-console */
+
+  const presentQueueItemIds = queueItems.map(
+    (queueItem) => queueItem.queueItemId,
+  );
+  const predicate = (scheduledTrack) => {
+    if (scheduledTrack.zoneId !== zoneId) {
+      return false;
+    }
+
+    return !(
+      presentQueueItemIds.includes(scheduledTrack.queueItemId) ||
+      scheduledTrack.queueItemId === null
+    );
+  };
+
+  return fp.partition(predicate, scheduledTracks);
+};
+
 export {
   appendToScheduledTracks,
   applySeekPositionToPlayedSegments,
   fuzzySearchInScheduledTracks,
+  getPlayedTime,
+  isPlayed,
   mergePlayedSegments,
+  partitionScheduledTracksForPlays,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,

@@ -3,12 +3,14 @@ import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import knexInit from 'knex';
 import RoonApi from 'node-roon-api';
 import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
+import knexConfig from '../knexfile.js';
 import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
@@ -26,13 +28,18 @@ import {
   frontendZonesSeekChangedMessage,
 } from './messages.js';
 import { extractQueueItems } from './queues.js';
+import { insertPlayedTrackInHistory } from './repository.js';
 import {
   appendToScheduledTracks,
+  getPlayedTime,
+  partitionScheduledTracksForPlays,
   setPlayingTracks,
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
-import { camelCaseKeys } from './utils.js';
+import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
+
+const knex = knexInit(knexConfig.development);
 
 const app = express();
 const server = http.createServer(app);
@@ -52,8 +59,99 @@ const coreUrlConfigured = process.env.CORE_URL;
 
 let transport;
 let browseInstance;
+
 let scheduledTracks = [];
 let playingTracks = [];
+
+const subscribeToQueueChanges = (zoneIds) => {
+  /* eslint-disable no-console */
+  console.log('server.js: subscribeToQueueChanges(): zoneIds:', zoneIds);
+  /* eslint-enable no-console */
+
+  zoneIds.forEach((zoneId) => {
+    transport.subscribe_queue(zoneId, 100, (response, snakeCaseQueue) => {
+      const queue = camelCaseKeys(snakeCaseQueue);
+      const queueItems = extractQueueItems(queue);
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: playingTracks:',
+        playingTracks,
+      );
+      /* eslint-enable no-console */
+
+      playingTracks = setPlayingTracks({
+        zoneId,
+        queueItems,
+        playingTracks,
+      });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: playingTracks:',
+        playingTracks,
+      );
+      /* eslint-enable no-console */
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      scheduledTracks = setQueueItemIdsInScheduledTracks({
+        scheduledTracks,
+        zoneId,
+        queueItems,
+      });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges: scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      let potentiallyPlayedTracks;
+      [potentiallyPlayedTracks, scheduledTracks] =
+        partitionScheduledTracksForPlays({
+          scheduledTracks,
+          zoneId,
+          queueItems,
+        });
+
+      /* eslint-disable no-console */
+      console.log(
+        'server.js: subscribeToQueueChanges(): potentiallyPlayedTracks:',
+        potentiallyPlayedTracks,
+      );
+      console.log(
+        'server.js: subscribeToQueueChanges(): scheduledTracks:',
+        scheduledTracks,
+      );
+      /* eslint-enable no-console */
+
+      potentiallyPlayedTracks
+        .filter((track) => getPlayedTime(track.playedSegments) > 0)
+        .map((track) => {
+          const playedTime = getPlayedTime(track.playedSegments);
+          return snakeCaseKeys({
+            mbTrackId: track.mbTrackId,
+            trackName: track.mbTrackName,
+            albumName: track.mbAlbumName,
+            artistNames: track.mbArtistNames,
+            playedAt: track.lastPlayed,
+            fractionPlayed: playedTime / track.mbLength,
+            isPlayed: 2 * playedTime >= track.mbLength,
+          });
+        })
+        .forEach((track) => insertPlayedTrackInHistory({ knex, track }));
+
+      return null;
+    });
+  });
+};
 
 const coreMessageHandler = (messageType, snakeCaseData) => {
   const message = camelCaseKeys(snakeCaseData);
@@ -107,6 +205,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
               zonesSeekChangedMessage: message[subType],
               scheduledTracks,
               playingTracks,
+              timestamp: toIso8601(new Date()),
             });
 
             logChangedZonesSeek(JSON.stringify(message[subType]));
@@ -148,57 +247,8 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            message[subType].forEach((zone) =>
-              transport.subscribe_queue(
-                zone.zoneId,
-                100,
-                (response, snakeCaseQueue) => {
-                  const queue = camelCaseKeys(snakeCaseQueue);
-                  const queueItems = extractQueueItems(queue);
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): playingTracks:',
-                    playingTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  playingTracks = setPlayingTracks({
-                    zoneId: zone.zoneId,
-                    queueItems,
-                    playingTracks,
-                  });
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): playingTracks:',
-                    playingTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): scheduledTracks:',
-                    scheduledTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  scheduledTracks = setQueueItemIdsInScheduledTracks({
-                    scheduledTracks,
-                    zoneId: zone.zoneId,
-                    queueItems,
-                  });
-
-                  /* eslint-disable no-console */
-                  console.log(
-                    'server.js: coreMessageHandler(): scheduledTracks:',
-                    scheduledTracks,
-                  );
-                  /* eslint-enable no-console */
-
-                  return null;
-                },
-              ),
+            subscribeToQueueChanges(
+              message[subType].map((zone) => zone.zoneId),
             );
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
@@ -322,46 +372,7 @@ io.on('connection', (socket) => {
 
     socket.emit('initialState', frontendRoonState);
 
-    zones.forEach((zone) => {
-      transport.subscribe_queue(
-        zone.zoneId,
-        100,
-        (response, snakeCaseQueue) => {
-          const queue = camelCaseKeys(snakeCaseQueue);
-          const queueItems = extractQueueItems(queue);
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): playingTracks:', playingTracks);
-          /* eslint-enable no-console */
-
-          playingTracks = setPlayingTracks({
-            zoneId: zone.zoneId,
-            queueItems,
-            playingTracks,
-          });
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): playingTracks:', playingTracks);
-          /* eslint-enable no-console */
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-          /* eslint-enable no-console */
-
-          scheduledTracks = setQueueItemIdsInScheduledTracks({
-            scheduledTracks,
-            zoneId: zone.zoneId,
-            queueItems,
-          });
-
-          /* eslint-disable no-console */
-          console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-          /* eslint-enable no-console */
-
-          return null;
-        },
-      );
-    });
+    subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
   });
 
   socket.on('browse', async (dataRef) => {

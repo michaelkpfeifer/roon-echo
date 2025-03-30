@@ -98,4 +98,14 @@ const insertAlbumWithArtistsAndTracks = async ({
     /* eslint-enable no-restricted-syntax */
   });
 
-export { getAlbumWithArtistsAndTracks, insertAlbumWithArtistsAndTracks };
+const insertPlayedTrackInHistory = async ({ knex, track }) => {
+  knex.transaction(async (trx) => {
+    await trx('history').insert(track);
+  });
+};
+
+export {
+  getAlbumWithArtistsAndTracks,
+  insertAlbumWithArtistsAndTracks,
+  insertPlayedTrackInHistory,
+};
