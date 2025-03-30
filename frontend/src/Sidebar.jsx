@@ -5,20 +5,28 @@ function Sidebar() {
   return (
     <div>
       <nav>
-        <div>
-          <Link to="/">Home</Link>
+        <div className="link-group">
+          <div>
+            <Link to="/">Home</Link>
+          </div>
         </div>
-        <div>
-          <Link to="/browse">Browse</Link>
+
+        <div className="link-group">
+          <div>
+            <Link to="/browse">Browse</Link>
+          </div>
         </div>
-        <div>
-          <Link to="/albums">Albums</Link>
-        </div>
-        <div>
-          <Link to="/artists">Artists</Link>
-        </div>
-        <div>
-          <Link to="tracks">Tracks</Link>
+
+        <div className="link-group">
+          <div>
+            <Link to="/albums-old">Albums</Link>
+          </div>
+          <div>
+            <Link to="/artists-old">Artists</Link>
+          </div>
+          <div>
+            <Link to="/tracks-old">Tracks</Link>
+          </div>
         </div>
       </nav>
     </div>
