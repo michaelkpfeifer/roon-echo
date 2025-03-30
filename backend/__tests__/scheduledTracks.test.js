@@ -736,7 +736,7 @@ describe('updatePlayedSegmentsInScheduledTracks', () => {
       {
         zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
         queueTimeRemaining: 4000 - seekPosition,
-        seekPosition: seekPosition,
+        seekPosition,
       },
     ]);
     const scheduledTracks = [{ ...stWeen01Wiim, queueItemId: 1115722 }];
