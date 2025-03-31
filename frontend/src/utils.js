@@ -11,6 +11,11 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
+const setAlbumsV2 = (currentAppState, albums) => ({
+  ...currentAppState,
+  albumsV2: albums,
+});
+
 const setBrowseData = (currentAppState, browseData) => ({
   ...currentAppState,
   browseData,
@@ -24,4 +29,10 @@ const formatMbTrackLength = (milliseconds) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export { findSelectedZone, formatMbTrackLength, setAlbums, setBrowseData };
+export {
+  findSelectedZone,
+  formatMbTrackLength,
+  setAlbums,
+  setAlbumsV2,
+  setBrowseData,
+};

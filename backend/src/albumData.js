@@ -359,4 +359,8 @@ const enrichList = async (browseInstance, roonAlbums) => {
   return enrichedAlbums;
 };
 
-export default enrichList;
+const albumData = async (browseInstance, roonAlbums) => {
+  return roonAlbums;
+};
+
+export { albumData, enrichList };
