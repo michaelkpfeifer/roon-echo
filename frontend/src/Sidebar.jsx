@@ -19,13 +19,13 @@ function Sidebar() {
 
         <div className="link-group">
           <div>
-            <Link to="/albums-old">Albums</Link>
+            <Link to="/albums">Albums</Link>
           </div>
           <div>
-            <Link to="/artists-old">Artists</Link>
+            <Link to="/artists">Artists</Link>
           </div>
           <div>
-            <Link to="/tracks-old">Tracks</Link>
+            <Link to="/tracks">Tracks</Link>
           </div>
         </div>
       </nav>
