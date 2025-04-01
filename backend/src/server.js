@@ -1,17 +1,15 @@
-import http from 'http';
+</>import http from 'http';
 
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import knexInit from 'knex';
 import RoonApi from 'node-roon-api';
 import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
-import knexConfig from '../knexfile.js';
-import { albumData, enrichList } from './albumData.js';
+import enrichList from './albumData.js';
 import * as browser from './browser.js';
 import {
   logChanged,
@@ -28,7 +26,7 @@ import {
   frontendZonesSeekChangedMessage,
 } from './messages.js';
 import { extractQueueItems } from './queues.js';
-import { insertPlayedTrackInHistory } from './repository.js';
+import { dbInit, insertPlayedTrackInHistory } from './repository.js';
 import {
   appendToScheduledTracks,
   getPlayedTime,
@@ -39,7 +37,7 @@ import {
 } from './scheduledTracks.js';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
 
-const knex = knexInit(knexConfig.development);
+dbInit();
 
 const app = express();
 const server = http.createServer(app);
@@ -147,7 +145,7 @@ const subscribeToQueueChanges = (zoneIds) => {
             isPlayed: 2 * playedTime >= track.mbLength,
           });
         })
-        .forEach((track) => insertPlayedTrackInHistory({ knex, track }));
+        .forEach((track) => insertPlayedTrackInHistory(track));
 
       return null;
     });
