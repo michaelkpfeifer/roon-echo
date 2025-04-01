@@ -1,22 +1,18 @@
 import { exit } from 'node:process';
 
 import dotenv from 'dotenv';
-import knexInit from 'knex';
 import fp from 'lodash/fp.js';
 /* eslint-disable import/no-unresolved */
 import PQueue from 'p-queue';
 /* eslint-enable import/no-unresolved */
 
-import Result from './result.js';
-import knexConfig from '../knexfile.js';
 import * as browser from './browser.js';
 import {
   getAlbumWithArtistsAndTracks,
   insertAlbumWithArtistsAndTracks,
 } from './repository.js';
+import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
-
-const knex = knexInit(knexConfig.development);
 
 const roonArtistName = (enrichedAlbum) => enrichedAlbum.roonAlbum.subtitle;
 
@@ -176,14 +172,12 @@ const getMbData = async (enrichedAlbum) => {
 
     if (matchingMbRelease !== null) {
       await insertAlbumWithArtistsAndTracks({
-        knex,
         roonArtistName: roonArtistName(enrichedAlbum),
         roonAlbumName: roonAlbumName(enrichedAlbum),
         mbRelease: matchingMbRelease,
       });
 
       const albumWithTracks = await getAlbumWithArtistsAndTracks(
-        knex,
         roonArtistName(enrichedAlbum),
         roonAlbumName(enrichedAlbum),
       );
@@ -233,7 +227,6 @@ const readMbDataFromDb = async (enrichedAlbum) => {
   }
 
   const albumWithTracks = await getAlbumWithArtistsAndTracks(
-    knex,
     roonArtistName(enrichedAlbum),
     roonAlbumName(enrichedAlbum),
   );
@@ -291,16 +284,6 @@ const enrichList = async (browseInstance, roonAlbums) => {
     exit(12);
     return null;
   }
-
-  // TODO. The following lines cleaning the database need to be
-  // removed once we reach a state where we want to keep the data we
-  // have already processed.
-
-  await knex('tracks').del();
-  await knex('albums').del();
-  await knex('artists').del();
-
-  await knex.raw('PRAGMA journal_mode = WAL;');
 
   // TODO. tmpRoonAlbums needs to be removed again. It has been
   // introduced to allow working with smaller lists before processing
