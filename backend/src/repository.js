@@ -1,11 +1,24 @@
+import knexInit from 'knex';
+
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
+import knexConfig from '../knexfile.js';
 
-const getAlbumWithArtistsAndTracks = async (
-  knex,
-  roonArtistName,
-  roonAlbumName,
-) => {
+const knex = knexInit(knexConfig.development);
+
+const dbInit = async () => {
+  await knex.raw('PRAGMA journal_mode = WAL;');
+
+  // TODO. The following lines cleaning the database need to be
+  // removed once we reach a state where we want to keep the data we
+  // have already processed.
+
+  await knex('tracks').del();
+  await knex('albums').del();
+  await knex('artists').del();
+};
+
+const getAlbumWithArtistsAndTracks = async (roonArtistName, roonAlbumName) => {
   const albumWithArtistsAndTracks = await knex('albums')
     .where({
       roon_artist_name: roonArtistName,
@@ -49,7 +62,6 @@ const getAlbumWithArtistsAndTracks = async (
 };
 
 const insertAlbumWithArtistsAndTracks = async ({
-  knex,
   roonArtistName,
   roonAlbumName,
   mbRelease,
@@ -98,13 +110,14 @@ const insertAlbumWithArtistsAndTracks = async ({
     /* eslint-enable no-restricted-syntax */
   });
 
-const insertPlayedTrackInHistory = async ({ knex, track }) => {
+const insertPlayedTrackInHistory = async (track) => {
   knex.transaction(async (trx) => {
     await trx('history').insert(track);
   });
 };
 
 export {
+  dbInit,
   getAlbumWithArtistsAndTracks,
   insertAlbumWithArtistsAndTracks,
   insertPlayedTrackInHistory,
