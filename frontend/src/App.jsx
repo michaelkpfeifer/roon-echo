@@ -7,13 +7,14 @@ import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
+import AlbumsV2 from './Main/AlbumsV2';
 import Artists from './Main/Artists';
 import Browse from './Main/Browse';
 import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setBrowseData } from './utils';
+import { setAlbums, setAlbumsV2, setBrowseData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -22,6 +23,7 @@ function App() {
 
   const [appState, setAppState] = useState({
     albums: [],
+    albumsV2: {},
     isZonesModalOpen: false,
     browseData: {},
     tmpSelectedZoneId: null,
@@ -127,6 +129,14 @@ function App() {
 
       setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
     });
+
+    socket.on('albumsV2', (albums) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing albumsV2 message: albums:', albums);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setAlbumsV2(currentAppState, albums));
+    });
   }, [config]);
 
   /* eslint-disable no-console */
@@ -171,6 +181,7 @@ function App() {
                 <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
+                <Route path="/albums-v2" element={<AlbumsV2 />} />
               </Routes>
             </div>
           </div>

@@ -9,7 +9,7 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
-import enrichList from './albumData.js';
+import { albumData, enrichList } from './albumData.js';
 import * as browser from './browser.js';
 import {
   logChanged,
@@ -60,6 +60,7 @@ let browseInstance;
 
 let scheduledTracks = [];
 let playingTracks = [];
+let roonAlbums;
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */
@@ -309,6 +310,9 @@ const roon = new RoonApi({
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
     browseInstance = new RoonApiBrowse(core);
+    (async () => {
+      roonAlbums = await browser.loadAlbums(browseInstance);
+    })();
   },
 
   core_unpaired: (/* core */) => {},
@@ -350,6 +354,10 @@ io.on('connection', (socket) => {
   /* eslint-enable no-console */
 
   socket.emit('coreUrl', coreUrl);
+
+  (async () => {
+    socket.emit('albumsV2', await albumData(browseInstance, roonAlbums));
+  })();
 
   transport.get_zones((error, body) => {
     if (error) {
@@ -393,11 +401,7 @@ io.on('connection', (socket) => {
     console.log('server.js: processing albums message');
     /* eslint-enable no-console */
 
-    const albumsLoadData = await browser.loadAlbums(browseInstance);
-    const enrichedAlbums = await enrichList(
-      browseInstance,
-      albumsLoadData.items,
-    );
+    const enrichedAlbums = await enrichList(browseInstance, roonAlbums.items);
 
     /* eslint-disable no-console */
     console.log('enrichedAlbums.length:', enrichedAlbums.length);
