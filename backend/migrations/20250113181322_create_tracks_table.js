@@ -1,19 +1,19 @@
 /**
- * @param { import("knex").Knex } knex
+ * @Pam { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 export function up(knex) {
   return knex.schema.createTable('tracks', (table) => {
-    table.string('mb_track_id').notNullable().primary();
+    table.text('mb_track_id').notNullable().primary();
     table
-      .string('mb_album_id')
+      .text('mb_album_id')
       .notNullable()
       .references('mb_album_id')
       .inTable('albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
-    table.string('name').notNullable();
-    table.string('number').notNullable();
+    table.text('name').notNullable();
+    table.text('number').notNullable();
     table.integer('position').notNullable();
     table.integer('length');
 

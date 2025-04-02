@@ -6,15 +6,15 @@ export function up(knex) {
   return knex.schema.createTable('history', (table) => {
     table.increments('id');
     table
-      .string('mb_track_id')
+      .text('mb_track_id')
       .notNullable()
       .references('mb_track_id')
       .inTable('tracks')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
-    table.string('track_name').notNullable();
-    table.string('album_name').notNullable();
-    table.string('artist_names').notNullable();
+    table.text('track_name').notNullable();
+    table.text('album_name').notNullable();
+    table.text('artist_names').notNullable();
     table.text('played_at').notNullable();
     table.float('fraction_played').notNullable();
     table.boolean('is_played').notNullable();

@@ -4,8 +4,8 @@
  */
 export function up(knex) {
   return knex.schema.createTable('albums_artists', (table) => {
-    table.string('mb_album_id').notNullable();
-    table.string('mb_artist_id').notNullable();
+    table.text('mb_album_id').notNullable();
+    table.text('mb_artist_id').notNullable();
 
     table
       .foreign('mb_album_id')
