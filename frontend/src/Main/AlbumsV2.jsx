@@ -22,7 +22,7 @@ function AlbumsV2() {
             appState.albumsV2,
           )
           .map((album) => (
-            <div key={album.roonData.itemKey}>
+            <div key={album.roonAlbum.itemKey}>
               <AlbumCardV2 album={album} />
             </div>
           ))}

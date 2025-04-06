@@ -11,23 +11,23 @@ function AlbumCardV2({ album }) {
   return (
     <div className="album-card">
       <div>{album.status}</div>
-      {album.roonData.imageKey ? (
+      {album.roonAlbum.imageKey ? (
         <img
-          src={`${coreUrl}/api/image/${album.roonData.imageKey}?scale=fit&width=150&height=150`}
-          alt={album.roonData.albumTitle}
+          src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
+          alt={album.roonAlbum.title}
           className="album-card__image"
         />
       ) : (
         <img
           src={noAlbumArt}
-          alt={album.roonData.albumTitle}
+          alt={album.roonAlbum.title}
           className="album-card__image"
         />
       )}
       <div className="album-card__title">
-        <b>{album.roonData.albumTitle}</b>
+        <b>{album.roonAlbum.title}</b>
       </div>
-      <div className="album-card__subtitle">{album.roonData.albumArtist}</div>
+      <div className="album-card__subtitle">{album.roonAlbum.albumArtist}</div>
     </div>
   );
 }
@@ -35,8 +35,8 @@ function AlbumCardV2({ album }) {
 AlbumCardV2.propTypes = {
   album: PropTypes.shape({
     status: PropTypes.oneOf(['roonAlbumLoaded']),
-    roonData: PropTypes.shape({
-      albumTitle: PropTypes.string.isRequired,
+    roonAlbum: PropTypes.shape({
+      title: PropTypes.string.isRequired,
       albumArtist: PropTypes.string.isRequired,
       itemKey: PropTypes.string.isRequired,
       imageKey: PropTypes.string,
@@ -44,7 +44,7 @@ AlbumCardV2.propTypes = {
     sortKeys: PropTypes.shape({
       albumArtist: PropTypes.string.isRequired,
       releaseDate: PropTypes.string,
-      albumTitle: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
     }),
   }).isRequired,
 };

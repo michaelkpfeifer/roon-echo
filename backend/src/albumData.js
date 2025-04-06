@@ -343,22 +343,28 @@ const enrichList = async (browseInstance, roonAlbums) => {
 };
 
 const buildInitialAlbumStruture = (roonAlbums) =>
+const buildInitialAlbumStructure = (roonAlbums) =>
   roonAlbums.items.map((roonAlbum) => ({
     status: 'roonAlbumLoaded',
-    roonData: {
-      albumTitle: roonAlbum.title,
-      albumArtist: roonAlbum.subtitle,
+    sortKeys: {
+      artist: roonAlbum.subtitle,
+      releaseDate: null,
+      title: roonAlbum.title,
+    },
+    roonAlbum: {
+      title: roonAlbum.title,
+      artist: roonAlbum.subtitle,
       itemKey: roonAlbum.item_key,
       imageKey: roonAlbum.image_key,
     },
-    sortKeys: {
-      albumArtist: roonAlbum.subtitle,
-      releaseDate: null,
-      albumTitle: roonAlbum.title,
-    },
+    roonTracks: [],
+    mbAlbum: {},
+    mbTracks: [],
+    mbArtists: [],
+    mbCandidates: [],
   }));
 
 const albumData = async (browseInstance, roonAlbums) =>
-  buildInitialAlbumStruture(roonAlbums);
+  buildInitialAlbumStructure(roonAlbums);
 
-export { albumData, buildInitialAlbumStruture, enrichList };
+export { albumData, buildInitialAlbumStructure, enrichList };

@@ -1,6 +1,6 @@
-import { buildInitialAlbumStruture } from '../src/albumData.js';
+import { buildInitialAlbumStructure } from '../src/albumData.js';
 
-describe('buildInitialAlbumStruture', () => {
+describe('buildInitialAlbumStructure', () => {
   test('builds the initial album structure from a list Roon albums', () => {
     const roonAlbums = {
       items: [
@@ -19,34 +19,44 @@ describe('buildInitialAlbumStruture', () => {
       ],
     };
 
-    expect(buildInitialAlbumStruture(roonAlbums)).toEqual([
+    expect(buildInitialAlbumStructure(roonAlbums)).toEqual([
       {
         status: 'roonAlbumLoaded',
-        roonData: {
-          albumTitle: 'A Ghost Is Born',
-          albumArtist: 'Wilco',
+        sortKeys: {
+          artist: 'Wilco',
+          releaseDate: null,
+          title: 'A Ghost Is Born',
+        },
+        roonAlbum: {
+          title: 'A Ghost Is Born',
+          artist: 'Wilco',
           itemKey: '123:44',
           imageKey: 'imgkey123456',
         },
-        sortKeys: {
-          albumArtist: 'Wilco',
-          releaseDate: null,
-          albumTitle: 'A Ghost Is Born',
-        },
+        roonTracks: [],
+        mbAlbum: {},
+        mbTracks: [],
+        mbArtists: [],
+        mbCandidates: [],
       },
       {
         status: 'roonAlbumLoaded',
-        roonData: {
-          albumTitle: 'A Light for Attracting Attention',
-          albumArtist: 'The Smile',
+        sortKeys: {
+          artist: 'The Smile',
+          releaseDate: null,
+          title: 'A Light for Attracting Attention',
+        },
+        roonAlbum: {
+          title: 'A Light for Attracting Attention',
+          artist: 'The Smile',
           itemKey: '123:55',
           imageKey: 'imgKey234567',
         },
-        sortKeys: {
-          albumArtist: 'The Smile',
-          releaseDate: null,
-          albumTitle: 'A Light for Attracting Attention',
-        },
+        roonTracks: [],
+        mbAlbum: {},
+        mbTracks: [],
+        mbArtists: [],
+        mbCandidates: [],
       },
     ]);
   });
