@@ -16,6 +16,8 @@ const dbInit = async () => {
   await knex('tracks').del();
   await knex('albums').del();
   await knex('artists').del();
+  await knex('albums_artists').del();
+  await knex('history').del();
 };
 
 const getAlbumWithArtistsAndTracks = async (roonArtistName, roonAlbumName) => {
