@@ -351,7 +351,7 @@ const augmentAlbumByStoredMbData = (
     ...album,
     status: 'mbAlbumLoaded',
     sortKeys: {
-      artist: mbArtists.map((mbArtist) => mbArtist.sortName).join('; '),
+      artists: mbArtists.map((mbArtist) => mbArtist.sortName).join('; '),
       releaseDate: mbAlbum.mbReleaseDate,
       title: mbAlbum.roonAlbumName,
     },
@@ -365,7 +365,7 @@ const buildInitialAlbumStructure = (roonAlbums) =>
   roonAlbums.items.map((roonAlbum) => ({
     status: 'roonAlbumLoaded',
     sortKeys: {
-      artist: roonAlbum.subtitle,
+      artists: roonAlbum.subtitle,
       releaseDate: null,
       title: roonAlbum.title,
     },

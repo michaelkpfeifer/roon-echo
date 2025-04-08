@@ -8,7 +8,7 @@ describe('augmentAlbumByStoredMbData', () => {
     const album = {
       status: 'roonAlbumLoaded',
       sortKeys: {
-        artist: 'Avalon Emerson',
+        artists: 'Avalon Emerson',
         releaseDate: null,
         title: '& the Charm',
       },
@@ -70,7 +70,7 @@ describe('augmentAlbumByStoredMbData', () => {
     expect(augmentedAlbum).toEqual({
       status: 'mbAlbumLoaded',
       sortKeys: {
-        artist: 'Emerson, Avalon; TestArtist, Nonexisting',
+        artists: 'Emerson, Avalon; TestArtist, Nonexisting',
         releaseDate: '2024-04-28',
         title: '& the Charm',
       },
@@ -107,7 +107,7 @@ describe('buildInitialAlbumStructure', () => {
       {
         status: 'roonAlbumLoaded',
         sortKeys: {
-          artist: 'Wilco',
+          artists: 'Wilco',
           releaseDate: null,
           title: 'A Ghost Is Born',
         },
@@ -126,7 +126,7 @@ describe('buildInitialAlbumStructure', () => {
       {
         status: 'roonAlbumLoaded',
         sortKeys: {
-          artist: 'The Smile',
+          artists: 'The Smile',
           releaseDate: null,
           title: 'A Light for Attracting Attention',
         },

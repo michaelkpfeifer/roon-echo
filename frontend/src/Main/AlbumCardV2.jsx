@@ -42,7 +42,7 @@ AlbumCardV2.propTypes = {
       imageKey: PropTypes.string,
     }),
     sortKeys: PropTypes.shape({
-      albumArtist: PropTypes.string.isRequired,
+      artists: PropTypes.string.isRequired,
       releaseDate: PropTypes.string,
       title: PropTypes.string.isRequired,
     }),
