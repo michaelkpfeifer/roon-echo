@@ -343,6 +343,24 @@ const enrichList = async (browseInstance, roonAlbums) => {
 };
 
 const buildInitialAlbumStruture = (roonAlbums) =>
+const augmentAlbumByStoredMbData = (
+  album,
+  { mbAlbum, mbArtists, mbTracks },
+) => {
+  return {
+    ...album,
+    status: 'mbAlbumLoaded',
+    sortKeys: {
+      artist: mbArtists.map((mbArtist) => mbArtist.sortName).join('; '),
+      releaseDate: mbAlbum.mbReleaseDate,
+      title: mbAlbum.roonAlbumName,
+    },
+    mbAlbum,
+    mbTracks,
+    mbArtists,
+  };
+};
+
 const buildInitialAlbumStructure = (roonAlbums) =>
   roonAlbums.items.map((roonAlbum) => ({
     status: 'roonAlbumLoaded',
@@ -364,7 +382,25 @@ const buildInitialAlbumStructure = (roonAlbums) =>
     mbCandidates: [],
   }));
 
-const albumData = async (browseInstance, roonAlbums) =>
-  buildInitialAlbumStructure(roonAlbums);
+const albumData = async (browseInstance, roonAlbums) => {
+  const promises = buildInitialAlbumStructure(roonAlbums).map(async (album) => {
+    const albumWithTracks = await getAlbumWithArtistsAndTracks(
+      album.roonAlbum.artist,
+      album.roonAlbum.title,
+    );
 
-export { albumData, buildInitialAlbumStructure, enrichList };
+    if (Result.isOk(albumWithTracks)) {
+      return augmentAlbumByStoredMbData(album, Result.unwrap(albumWithTracks));
+    }
+
+    return album;
+  });
+
+  return Promise.all(promises);
+};
+export {
+  albumData,
+  augmentAlbumByStoredMbData,
+  buildInitialAlbumStructure,
+  enrichList,
+};

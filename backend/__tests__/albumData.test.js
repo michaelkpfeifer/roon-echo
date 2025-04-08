@@ -1,4 +1,88 @@
-import { buildInitialAlbumStructure } from '../src/albumData.js';
+import {
+  augmentAlbumByStoredMbData,
+  buildInitialAlbumStructure,
+} from '../src/albumData.js';
+
+describe('augmentAlbumByStoredMbData', () => {
+  test('builds the correct structure', () => {
+    const album = {
+      status: 'roonAlbumLoaded',
+      sortKeys: {
+        artist: 'Avalon Emerson',
+        releaseDate: null,
+        title: '& the Charm',
+      },
+      roonAlbum: {
+        title: '& the Charm',
+        artist: 'Avalon Emerson',
+        itemKey: '123:44',
+        imageKey: 'imgkey123456',
+      },
+      roonTracks: [],
+      mbAlbum: {},
+      mbTracks: [],
+      mbArtists: [],
+      mbCandidates: [],
+    };
+
+    const mbAlbum = {
+      roonArtistName: 'Avalon Emerson',
+      roonAlbumName: '& the Charm',
+      mbAlbumId: '33a9b962-1029-42fa-ab1d-3daff68eee2e',
+      mbReleaseDate: '2024-04-28',
+    };
+
+    const mbArtists = [
+      {
+        mbArtistId: 'f91ec397-c4be-4672-8faa-2d2983682b1c',
+        name: 'Avalon Emerson',
+        sortName: 'Emerson, Avalon',
+      },
+      {
+        mbArtistId: 'f91kdfj7-c4be-4672-8faa-1234567890ab',
+        name: 'Nonexisting TestArtist',
+        sortName: 'TestArtist, Nonexisting',
+      },
+    ];
+
+    const track1 = {
+      mbTrackId: '87bdf6e3-63f6-4ea6-bc8a-018d29375543',
+      name: 'Sandrail Silhouette',
+      number: '1',
+      position: 1,
+      length: 269446,
+    };
+    const track2 = {
+      mbTrackId: 'db8e930b-3f99-4640-a6a0-dfdd9df30951',
+      name: 'Entombed in Ice',
+      number: '2',
+      position: 2,
+      length: 192960,
+    };
+    const mbTracks = [track1, track2];
+
+    const augmentedAlbum = augmentAlbumByStoredMbData(album, {
+      mbAlbum,
+      mbArtists,
+      mbTracks,
+    });
+
+    expect(augmentedAlbum).toEqual({
+      status: 'mbAlbumLoaded',
+      sortKeys: {
+        artist: 'Emerson, Avalon; TestArtist, Nonexisting',
+        releaseDate: '2024-04-28',
+        title: '& the Charm',
+      },
+      roonAlbum: album.roonAlbum,
+      roonTracks: [],
+      mbAlbum,
+      mbTracks,
+      mbArtists,
+      mbCandidates: [],
+    });
+  });
+});
 
 describe('buildInitialAlbumStructure', () => {
   test('builds the initial album structure from a list Roon albums', () => {
