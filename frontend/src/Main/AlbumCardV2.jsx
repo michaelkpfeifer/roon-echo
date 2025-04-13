@@ -27,17 +27,21 @@ function AlbumCardV2({ album }) {
       <div className="album-card__title">
         <b>{album.roonAlbum.title}</b>
       </div>
-      <div className="album-card__subtitle">{album.roonAlbum.albumArtist}</div>
+      <div className="album-card__subtitle">{album.roonAlbum.artist}</div>
     </div>
   );
 }
 
 AlbumCardV2.propTypes = {
   album: PropTypes.shape({
-    status: PropTypes.oneOf(['roonAlbumLoaded']),
+    status: PropTypes.oneOf([
+      'mbAlbumLoaded',
+      'roonAlbumLoaded',
+      'roonTracksAdded',
+    ]),
     roonAlbum: PropTypes.shape({
       title: PropTypes.string.isRequired,
-      albumArtist: PropTypes.string.isRequired,
+      artist: PropTypes.string.isRequired,
       itemKey: PropTypes.string.isRequired,
       imageKey: PropTypes.string,
     }),

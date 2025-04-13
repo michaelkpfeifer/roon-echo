@@ -295,19 +295,6 @@ const enrichList = async (browseInstance, roonAlbums) => {
     .map((roonAlbum) => buildEnrichedAlbum(roonAlbum))
     .map((enrichedAlbum) => identifyUnknown(enrichedAlbum));
 
-  // TODO. It is unclear how the reduce() call below behaves in
-  // practice for a large amount of data. If things become really
-  // slow, it should still be possible to use the more conventional
-  // loop below (that ESLint complains about). And for consistency
-  // reasons it may be a good idea to move the two map calls into the
-  // reduce call as well.
-
-  // const results = [];
-  // for (const album of tmpRoonAlbums) {
-  //   const updatedAlbum = await addRoonTracks(browseInstance, album);
-  //   results.push(updatedAlbum);
-  // }
-
   enrichedAlbums = await enrichedAlbums.reduce(
     async (previousPromise, currentAlbum) => {
       const processedAlbums = await previousPromise;
@@ -343,23 +330,30 @@ const enrichList = async (browseInstance, roonAlbums) => {
 };
 
 const buildInitialAlbumStruture = (roonAlbums) =>
+const augmentAlbumByRoonTrackData = (album, roonAlbumData) => ({
+  ...album,
+  status: 'roonTracksAdded',
+  roonTracks: roonAlbumData.items
+    .filter((item) => item.title !== 'Play Album')
+    .map((item) => item.title)
+    .map((title) => title.split(/\s(.+)/)[1] || ''),
+});
+
 const augmentAlbumByStoredMbData = (
   album,
   { mbAlbum, mbArtists, mbTracks },
-) => {
-  return {
-    ...album,
-    status: 'mbAlbumLoaded',
-    sortKeys: {
-      artists: mbArtists.map((mbArtist) => mbArtist.sortName).join('; '),
-      releaseDate: mbAlbum.mbReleaseDate,
-      title: mbAlbum.roonAlbumName,
-    },
-    mbAlbum,
-    mbTracks,
-    mbArtists,
-  };
-};
+) => ({
+  ...album,
+  status: 'mbAlbumLoaded',
+  sortKeys: {
+    artists: mbArtists.map((mbArtist) => mbArtist.sortName).join('; '),
+    releaseDate: mbAlbum.mbReleaseDate,
+    title: mbAlbum.roonAlbumName,
+  },
+  mbAlbum,
+  mbTracks,
+  mbArtists,
+});
 
 const buildInitialAlbumStructure = (roonAlbums) =>
   roonAlbums.items.map((roonAlbum) => ({
@@ -383,23 +377,46 @@ const buildInitialAlbumStructure = (roonAlbums) =>
   }));
 
 const albumData = async (browseInstance, roonAlbums) => {
-  const promises = buildInitialAlbumStructure(roonAlbums).map(async (album) => {
-    const albumWithTracks = await getAlbumWithArtistsAndTracks(
-      album.roonAlbum.artist,
-      album.roonAlbum.title,
-    );
+  const initialAlbums = buildInitialAlbumStructure(roonAlbums);
 
-    if (Result.isOk(albumWithTracks)) {
-      return augmentAlbumByStoredMbData(album, Result.unwrap(albumWithTracks));
-    }
+  const newAlbums = await initialAlbums.reduce(
+    async (previousPromise, currentAlbum) => {
+      const accumulatedAlbums = await previousPromise;
+      let augmentedAlbum;
 
-    return album;
-  });
+      const albumWithTracks = await getAlbumWithArtistsAndTracks(
+        currentAlbum.roonAlbum.artist,
+        currentAlbum.roonAlbum.title,
+      );
 
-  return Promise.all(promises);
+      if (Result.isOk(albumWithTracks)) {
+        augmentedAlbum = augmentAlbumByStoredMbData(
+          currentAlbum,
+          Result.unwrap(albumWithTracks),
+        );
+      } else {
+        const roonAlbumData = await browser.loadAlbum(
+          browseInstance,
+          currentAlbum.roonAlbum.itemKey,
+        );
+        augmentedAlbum = augmentAlbumByRoonTrackData(
+          currentAlbum,
+          roonAlbumData,
+        );
+      }
+
+      accumulatedAlbums.push(augmentedAlbum);
+      return accumulatedAlbums;
+    },
+    Promise.resolve([]),
+  );
+
+  return newAlbums;
 };
+
 export {
   albumData,
+  augmentAlbumByRoonTrackData,
   augmentAlbumByStoredMbData,
   buildInitialAlbumStructure,
   enrichList,

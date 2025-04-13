@@ -1,7 +1,88 @@
 import {
+  augmentAlbumByRoonTrackData,
   augmentAlbumByStoredMbData,
   buildInitialAlbumStructure,
 } from '../src/albumData.js';
+
+describe('augmentAlbumByRoonTrackData', () => {
+  test('builds the correct structure', () => {
+    const album = {
+      status: 'roonAlbumLoaded',
+      sortKeys: {
+        artists: 'Massive Attack',
+        releaseDate: null,
+        title: '100th Window',
+      },
+      roonAlbum: {
+        title: '100th Window',
+        artist: 'Massive Attack',
+        itemKey: '123:44',
+        imageKey: 'imgkey123456',
+      },
+      roonTracks: [],
+      mbAlbum: {},
+      mbTracks: [],
+      mbArtists: [],
+      mbCandidates: [],
+    };
+
+    const roonAlbumData = {
+      items: [
+        {
+          title: 'Play Album',
+          subtitle: null,
+          image_key: null,
+          item_key: '9944:0',
+          hint: 'action_list',
+        },
+        {
+          title: '1. Future Proof',
+          subtitle: 'Massive Attack, Robert Del Naja, Neil Davidge',
+          image_key: null,
+          item_key: '9944:1',
+          hint: 'action_list',
+        },
+        {
+          title: '2. What Your Soul Sings',
+          subtitle:
+            'Massive Attack, Robert Del Naja, Sinéad O’Connor, Neil Davidge',
+          image_key: null,
+          item_key: '9944:2',
+          hint: 'action_list',
+        },
+        {
+          title: '3. Everywhen',
+          subtitle: 'Massive Attack, Robert Del Naja, Neil Davidge',
+          image_key: null,
+          item_key: '9944:3',
+          hint: 'action_list',
+        },
+      ],
+      offset: 0,
+      list: {
+        level: 3,
+        title: '100th Window',
+        subtitle: 'Massive Attack',
+        image_key: 'd39ebcee04b5854635411ec3ced1f50f',
+        count: 4,
+        display_offset: null,
+      },
+    };
+
+    const augmentedAlbum = augmentAlbumByRoonTrackData(album, roonAlbumData);
+
+    expect(augmentedAlbum).toEqual({
+      status: 'roonTracksAdded',
+      sortKeys: album.sortKeys,
+      roonAlbum: album.roonAlbum,
+      roonTracks: ['Future Proof', 'What Your Soul Sings', 'Everywhen'],
+      mbAlbum: album.mbAlbum,
+      mbTracks: album.mbTracks,
+      mbArtists: album.mbArtists,
+      mbCandidates: album.mbCandidates,
+    });
+  });
+});
 
 describe('augmentAlbumByStoredMbData', () => {
   test('builds the correct structure', () => {
