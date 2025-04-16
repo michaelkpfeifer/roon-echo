@@ -7,6 +7,7 @@ import {
 describe('augmentAlbumByRoonTrackData', () => {
   test('builds the correct structure', () => {
     const album = {
+      uuid: 'e9cb67bd-235b-4fbb-baa9-5b722dce0a0a',
       status: 'roonAlbumLoaded',
       sortKeys: {
         artists: 'Massive Attack',
@@ -72,6 +73,7 @@ describe('augmentAlbumByRoonTrackData', () => {
     const augmentedAlbum = augmentAlbumByRoonTrackData(album, roonAlbumData);
 
     expect(augmentedAlbum).toEqual({
+      uuid: album.uuid,
       status: 'roonTracksAdded',
       sortKeys: album.sortKeys,
       roonAlbum: album.roonAlbum,
@@ -87,6 +89,7 @@ describe('augmentAlbumByRoonTrackData', () => {
 describe('augmentAlbumByStoredMbData', () => {
   test('builds the correct structure', () => {
     const album = {
+      uuid: 'b79876ed-82a6-40ea-8dea-237c89c7d361',
       status: 'roonAlbumLoaded',
       sortKeys: {
         artists: 'Avalon Emerson',
@@ -149,6 +152,7 @@ describe('augmentAlbumByStoredMbData', () => {
     });
 
     expect(augmentedAlbum).toEqual({
+      uuid: album.uuid,
       status: 'mbAlbumLoaded',
       sortKeys: {
         artists: 'Emerson, Avalon; TestArtist, Nonexisting',
@@ -166,63 +170,34 @@ describe('augmentAlbumByStoredMbData', () => {
 });
 
 describe('buildInitialAlbumStructure', () => {
-  test('builds the initial album structure from a list Roon albums', () => {
-    const roonAlbums = {
-      items: [
-        {
-          title: 'A Ghost Is Born',
-          subtitle: 'Wilco',
-          item_key: '123:44',
-          image_key: 'imgkey123456',
-        },
-        {
-          title: 'A Light for Attracting Attention',
-          subtitle: 'The Smile',
-          item_key: '123:55',
-          image_key: 'imgKey234567',
-        },
-      ],
+  test('builds the initial album structure for a Roon album', () => {
+    const roonAlbum = {
+      title: 'A Ghost Is Born',
+      subtitle: 'Wilco',
+      item_key: '123:44',
+      image_key: 'imgkey123456',
     };
+    const uuid = 'b79876ed-82a6-40ea-8dea-237c89c7d361';
 
-    expect(buildInitialAlbumStructure(roonAlbums)).toEqual([
-      {
-        status: 'roonAlbumLoaded',
-        sortKeys: {
-          artists: 'Wilco',
-          releaseDate: null,
-          title: 'A Ghost Is Born',
-        },
-        roonAlbum: {
-          title: 'A Ghost Is Born',
-          artist: 'Wilco',
-          itemKey: '123:44',
-          imageKey: 'imgkey123456',
-        },
-        roonTracks: [],
-        mbAlbum: {},
-        mbTracks: [],
-        mbArtists: [],
-        mbCandidates: [],
+    expect(buildInitialAlbumStructure(roonAlbum, uuid)).toEqual({
+      uuid,
+      status: 'roonAlbumLoaded',
+      sortKeys: {
+        artists: 'Wilco',
+        releaseDate: null,
+        title: 'A Ghost Is Born',
       },
-      {
-        status: 'roonAlbumLoaded',
-        sortKeys: {
-          artists: 'The Smile',
-          releaseDate: null,
-          title: 'A Light for Attracting Attention',
-        },
-        roonAlbum: {
-          title: 'A Light for Attracting Attention',
-          artist: 'The Smile',
-          itemKey: '123:55',
-          imageKey: 'imgKey234567',
-        },
-        roonTracks: [],
-        mbAlbum: {},
-        mbTracks: [],
-        mbArtists: [],
-        mbCandidates: [],
+      roonAlbum: {
+        title: 'A Ghost Is Born',
+        artist: 'Wilco',
+        itemKey: '123:44',
+        imageKey: 'imgkey123456',
       },
-    ]);
+      roonTracks: [],
+      mbAlbum: {},
+      mbTracks: [],
+      mbArtists: [],
+      mbCandidates: [],
+    });
   });
 });

@@ -5,6 +5,7 @@ import fp from 'lodash/fp.js';
 /* eslint-disable import/no-unresolved */
 import PQueue from 'p-queue';
 /* eslint-enable import/no-unresolved */
+import { v4 as uuidv4 } from 'uuid';
 
 import * as browser from './browser.js';
 import {
@@ -355,29 +356,34 @@ const augmentAlbumByStoredMbData = (
   mbArtists,
 });
 
-const buildInitialAlbumStructure = (roonAlbums) =>
-  roonAlbums.items.map((roonAlbum) => ({
-    status: 'roonAlbumLoaded',
-    sortKeys: {
-      artists: roonAlbum.subtitle,
-      releaseDate: null,
-      title: roonAlbum.title,
-    },
-    roonAlbum: {
-      title: roonAlbum.title,
-      artist: roonAlbum.subtitle,
-      itemKey: roonAlbum.item_key,
-      imageKey: roonAlbum.image_key,
-    },
-    roonTracks: [],
-    mbAlbum: {},
-    mbTracks: [],
-    mbArtists: [],
-    mbCandidates: [],
-  }));
+const buildInitialAlbumStructure = (roonAlbum, uuid) => ({
+  uuid,
+  status: 'roonAlbumLoaded',
+  sortKeys: {
+    artists: roonAlbum.subtitle,
+    releaseDate: null,
+    title: roonAlbum.title,
+  },
+  roonAlbum: {
+    title: roonAlbum.title,
+    artist: roonAlbum.subtitle,
+    itemKey: roonAlbum.item_key,
+    imageKey: roonAlbum.image_key,
+  },
+  roonTracks: [],
+  mbAlbum: {},
+  mbTracks: [],
+  mbArtists: [],
+  mbCandidates: [],
+});
+
+const buildInitialAlbumStructures = (roonAlbums) =>
+  roonAlbums.items.map((roonAlbum) =>
+    buildInitialAlbumStructure(roonAlbum, uuidv4()),
+  );
 
 const albumData = async (browseInstance, roonAlbums) => {
-  const initialAlbums = buildInitialAlbumStructure(roonAlbums);
+  const initialAlbums = buildInitialAlbumStructures(roonAlbums);
 
   const newAlbums = await initialAlbums.reduce(
     async (previousPromise, currentAlbum) => {
@@ -419,5 +425,6 @@ export {
   augmentAlbumByRoonTrackData,
   augmentAlbumByStoredMbData,
   buildInitialAlbumStructure,
+  buildInitialAlbumStructures,
   enrichList,
 };
