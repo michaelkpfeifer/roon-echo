@@ -12,9 +12,9 @@ export function up(knex) {
       .inTable('roon_albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
-    table.text('title').notNullable();
-    table.integer('number');
-    table.integer('position');
+    table.text('track_name').notNullable();
+    table.text('number').notNullable();
+    table.integer('position').notNullable();
 
     table.timestamps(true, true);
   });

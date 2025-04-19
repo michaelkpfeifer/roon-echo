@@ -5,12 +5,12 @@
 export function up(knex) {
   return knex.schema.createTable('roon_albums', (table) => {
     table.increments('id').primary();
-    table.text('title').notNullable();
-    table.text('artist').notNullable();
+    table.text('album_name').notNullable();
+    table.text('artist_name').notNullable();
 
     table.timestamps(true, true);
 
-    table.unique(['title', 'artist']);
+    table.unique(['album_name', 'artist_name']);
   });
 }
 
