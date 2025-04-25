@@ -1,7 +1,7 @@
 import knexInit from 'knex';
 
 import Result from './result.js';
-import { camelCaseKeys } from './utils.js';
+import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import knexConfig from '../knexfile.js';
 
 const knex = knexInit(knexConfig.development);
@@ -13,11 +13,50 @@ const dbInit = async () => {
   // removed once we reach a state where we want to keep the data we
   // have already processed.
 
+  await knex('roon_tracks').del();
+  await knex('roon_albums').del();
   await knex('tracks').del();
   await knex('albums').del();
   await knex('artists').del();
   await knex('albums_artists').del();
   await knex('history').del();
+};
+
+const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
+  const roonAlbumWithTracks = await knex('roon_albums')
+    .where({
+      album_name: roonAlbumName,
+      artist_name: roonArtistName,
+    })
+    .select('id', 'album_name', 'artist_name')
+    .first()
+    .then(async (roonAlbum) => {
+      if (!roonAlbum) {
+        return Result.Err('getRoonAlbumWithTracks: albumNotFound');
+      }
+
+      const roonTracks = await knex('roon_tracks')
+        .where({
+          roon_album_id: roonAlbum.id,
+        })
+        .select('track_name', 'number', 'position')
+        .orderBy('position', 'asc');
+
+      if (!roonTracks) {
+        return Result.Err('getRoonAlbumWithTracks: tracksNotFound');
+      }
+
+      return Result.Ok(camelCaseKeys({ roonAlbum, roonTracks }));
+    });
+
+  return roonAlbumWithTracks;
+};
+
+const insertRoonAlbumWithTracks = async ({ roonAlbum, roonTracks }) => {
+  knex.transaction(async (trx) => {
+    await trx('roon_albums').insert(snakeCaseKeys(roonAlbum)).returning('id');
+    await trx('roon_tracks').insert(snakeCaseKeys(roonTracks));
+  });
 };
 
 const getAlbumWithArtistsAndTracks = async (roonArtistName, roonAlbumName) => {
@@ -121,6 +160,8 @@ const insertPlayedTrackInHistory = async (track) => {
 export {
   dbInit,
   getAlbumWithArtistsAndTracks,
+  getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
   insertPlayedTrackInHistory,
+  insertRoonAlbumWithTracks,
 };

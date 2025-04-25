@@ -14,20 +14,22 @@ function AlbumCardV2({ album }) {
       {album.roonAlbum.imageKey ? (
         <img
           src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={album.roonAlbum.title}
+          alt={album.roonAlbum.albumName}
           className="album-card__image"
         />
       ) : (
         <img
           src={noAlbumArt}
-          alt={album.roonAlbum.title}
+          alt={album.roonAlbum.albumName}
           className="album-card__image"
         />
       )}
-      <div className="album-card__title">
-        <b>{album.roonAlbum.title}</b>
+      <div className="album-card__albumName">
+        <b>{album.roonAlbum.albumName}</b>
       </div>
-      <div className="album-card__subtitle">{album.roonAlbum.artist}</div>
+      <div className="album-card__subalbumName">
+        {album.roonAlbum.artistName}
+      </div>
     </div>
   );
 }
@@ -40,15 +42,15 @@ AlbumCardV2.propTypes = {
       'roonTracksAdded',
     ]),
     roonAlbum: PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      artist: PropTypes.string.isRequired,
+      albumName: PropTypes.string.isRequired,
+      artistName: PropTypes.string.isRequired,
       itemKey: PropTypes.string.isRequired,
       imageKey: PropTypes.string,
     }),
     sortKeys: PropTypes.shape({
       artists: PropTypes.string.isRequired,
       releaseDate: PropTypes.string,
-      title: PropTypes.string.isRequired,
+      albumName: PropTypes.string.isRequired,
     }),
   }).isRequired,
 };

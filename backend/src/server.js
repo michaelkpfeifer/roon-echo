@@ -9,7 +9,7 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
-import { albumData, enrichList } from './albumData.js';
+import { buildStableAlbumData, enrichList } from './albumData.js';
 import * as browser from './browser.js';
 import {
   logChanged,
@@ -306,13 +306,12 @@ const roon = new RoonApi({
   email: 'michael.k.pfeifer@googlemail.com',
   website: 'https://github.com/michaelkpfeifer',
 
-  core_paired: (core) => {
+  core_paired: async (core) => {
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
     browseInstance = new RoonApiBrowse(core);
-    (async () => {
-      roonAlbums = await browser.loadAlbums(browseInstance);
-    })();
+
+    roonAlbums = camelCaseKeys(await browser.loadAlbums(browseInstance));
   },
 
   core_unpaired: (/* core */) => {},
@@ -330,7 +329,7 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
   /* eslint-disable no-console */
   console.log('server.js: io.on(): Connected: socket.id:', socket.id);
   /* eslint-enable no-console */
@@ -356,7 +355,10 @@ io.on('connection', (socket) => {
   socket.emit('coreUrl', coreUrl);
 
   (async () => {
-    socket.emit('albumsV2', await albumData(browseInstance, roonAlbums));
+    socket.emit(
+      'albumsV2',
+      await buildStableAlbumData(browseInstance, roonAlbums),
+    );
   })();
 
   transport.get_zones((error, body) => {
@@ -395,6 +397,11 @@ io.on('connection', (socket) => {
 
     socket.emit('browseData', browseData);
   });
+
+  // TODO. The following block of code should not be needed
+  // anymore. The current plan is to send the list of albums to the
+  // frontend at connection time.  Maybe there will be an option to
+  // reload the state. Maybe not.
 
   socket.on('albums', async () => {
     /* eslint-disable no-console */

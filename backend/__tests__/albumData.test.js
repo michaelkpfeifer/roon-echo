@@ -1,7 +1,7 @@
 import {
   augmentAlbumByRoonTrackData,
   augmentAlbumByStoredMbData,
-  buildInitialAlbumStructure,
+  buildOldInitialAlbumStructure,
 } from '../src/albumData.js';
 
 describe('augmentAlbumByRoonTrackData', () => {
@@ -169,7 +169,7 @@ describe('augmentAlbumByStoredMbData', () => {
   });
 });
 
-describe('buildInitialAlbumStructure', () => {
+describe('buildOldInitialAlbumStructure', () => {
   test('builds the initial album structure for a Roon album', () => {
     const roonAlbum = {
       title: 'A Ghost Is Born',
@@ -179,7 +179,7 @@ describe('buildInitialAlbumStructure', () => {
     };
     const uuid = 'b79876ed-82a6-40ea-8dea-237c89c7d361';
 
-    expect(buildInitialAlbumStructure(roonAlbum, uuid)).toEqual({
+    expect(buildOldInitialAlbumStructure(roonAlbum, uuid)).toEqual({
       uuid,
       status: 'roonAlbumLoaded',
       sortKeys: {

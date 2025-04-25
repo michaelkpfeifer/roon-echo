@@ -5,12 +5,14 @@ import fp from 'lodash/fp.js';
 /* eslint-disable import/no-unresolved */
 import PQueue from 'p-queue';
 /* eslint-enable import/no-unresolved */
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, v7 as uuidv7 } from 'uuid';
 
 import * as browser from './browser.js';
 import {
   getAlbumWithArtistsAndTracks,
+  getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
+  insertRoonAlbumWithTracks,
 } from './repository.js';
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
@@ -330,7 +332,6 @@ const enrichList = async (browseInstance, roonAlbums) => {
   return enrichedAlbums;
 };
 
-const buildInitialAlbumStruture = (roonAlbums) =>
 const augmentAlbumByRoonTrackData = (album, roonAlbumData) => ({
   ...album,
   status: 'roonTracksAdded',
@@ -356,7 +357,7 @@ const augmentAlbumByStoredMbData = (
   mbArtists,
 });
 
-const buildInitialAlbumStructure = (roonAlbum, uuid) => ({
+const buildOldInitialAlbumStructure = (roonAlbum, uuid) => ({
   uuid,
   status: 'roonAlbumLoaded',
   sortKeys: {
@@ -377,13 +378,13 @@ const buildInitialAlbumStructure = (roonAlbum, uuid) => ({
   mbCandidates: [],
 });
 
-const buildInitialAlbumStructures = (roonAlbums) =>
+const buildOldInitialAlbumStructures = (roonAlbums) =>
   roonAlbums.items.map((roonAlbum) =>
-    buildInitialAlbumStructure(roonAlbum, uuidv4()),
+    buildOldInitialAlbumStructure(roonAlbum, uuidv4()),
   );
 
 const albumData = async (browseInstance, roonAlbums) => {
-  const initialAlbums = buildInitialAlbumStructures(roonAlbums);
+  const initialAlbums = buildOldInitialAlbumStructures(roonAlbums);
 
   const newAlbums = await initialAlbums.reduce(
     async (previousPromise, currentAlbum) => {
@@ -420,11 +421,87 @@ const albumData = async (browseInstance, roonAlbums) => {
   return newAlbums;
 };
 
+const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
+  const roonAlbumWithTracks = await getRoonAlbumWithTracks({
+    roonAlbumName: roonApiAlbum.title,
+    roonArtistName: roonApiAlbum.subtitle,
+  });
+
+  if (Result.isOk(roonAlbumWithTracks)) {
+    const { roonAlbum, roonTracks } = Result.unwrap(roonAlbumWithTracks);
+    return {
+      id: roonAlbum.id,
+      roonAlbum: {
+        albumName: roonAlbum.albumName,
+        artistName: roonAlbum.artistName,
+        itemKey: roonApiAlbum.itemKey,
+        imageKey: roonApiAlbum.imageKey,
+      },
+      roonTracks,
+    };
+  } else {
+    const roonAlbumData = camelCaseKeys(
+      await browser.loadAlbum(browseInstance, roonApiAlbum.itemKey),
+    );
+
+    const roonAlbum = {
+      id: uuidv7(),
+      albumName: roonApiAlbum.title,
+      artistName: roonApiAlbum.subtitle,
+    };
+
+    const roonTracks = roonAlbumData.items
+      .filter((item) => item.title !== 'Play Album')
+      .map((item, position) => {
+        const [number, trackName] = item.title.split(/\s(.+)/);
+
+        return {
+          id: uuidv7(),
+          roonAlbumId: roonAlbum.id,
+          trackName,
+          number,
+          position: position + 1,
+        };
+      });
+
+    await insertRoonAlbumWithTracks({ roonAlbum, roonTracks });
+
+    return prepareRoonAlbum(browseInstance, roonApiAlbum);
+  }
+};
+
+const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
+  status: 'roonAlbumLoaded',
+  id,
+  roonAlbum,
+  roonTracks,
+});
+
+const isRoonAlbumUnprocessable = (roonAlbum) =>
+  roonAlbum.title === '' || roonAlbum.subtitle === 'Unknown Artist';
+
+const buildStableAlbumData = async (browseInstance, roonApiAlbums) => {
+  const processableRoonAlbums = roonApiAlbums.items.filter(
+    (roonApiAlbum) => !isRoonAlbumUnprocessable(roonApiAlbum),
+  );
+
+  const initialAlbumStructures = [];
+  for (const processableRoonAlbum of processableRoonAlbums) {
+    const initialAlbumStructure = buildInitialAlbumStructure(
+      await prepareRoonAlbum(browseInstance, processableRoonAlbum),
+    );
+    initialAlbumStructures.push(initialAlbumStructure);
+  }
+
+  return initialAlbumStructures;
+};
+
 export {
   albumData,
   augmentAlbumByRoonTrackData,
   augmentAlbumByStoredMbData,
-  buildInitialAlbumStructure,
-  buildInitialAlbumStructures,
+  buildOldInitialAlbumStructure,
+  buildOldInitialAlbumStructures,
+  buildStableAlbumData,
   enrichList,
 };

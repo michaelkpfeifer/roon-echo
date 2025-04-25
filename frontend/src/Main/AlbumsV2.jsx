@@ -26,7 +26,7 @@ function AlbumsV2() {
               <AlbumCardV2 album={album} />
             </div>
           ))}
-      </div>{' '}
+      </div>
     </>
   );
 }
