@@ -7,8 +7,8 @@ export function up(knex) {
     table.text('mb_artist_id').notNullable().primary();
     table.text('name').notNullable();
     table.text('sort_name').notNullable();
-    table.text('type').notNullable();
-    table.text('disambiguation').notNullable();
+    table.text('type');
+    table.text('disambiguation');
 
     table.timestamps(true, true);
   });
