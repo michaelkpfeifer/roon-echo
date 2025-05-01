@@ -10,8 +10,10 @@ import { v4 as uuidv4, v7 as uuidv7 } from 'uuid';
 import * as browser from './browser.js';
 import {
   getAlbumWithArtistsAndTracks,
+  getCandidates,
   getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
+  insertCandidates,
   insertRoonAlbumWithTracks,
 } from './repository.js';
 import Result from './result.js';
@@ -332,6 +334,145 @@ const enrichList = async (browseInstance, roonAlbums) => {
   return enrichedAlbums;
 };
 
+const buildCandidateSearch = (albumName, artistName) => {
+  const queryString = [
+    `artist:${encodeURIComponent(artistName)}`,
+    `${encodeURIComponent(' AND ')}`,
+    `release:${encodeURIComponent(albumName)}`,
+  ].join('');
+
+  return `${mbReleaseEndpoint}?query=${queryString}&fmt=json`;
+};
+
+const runCandidateSearch = async (albumName, artistName) => {
+  const response = await fetch(buildCandidateSearch(albumName, artistName), {
+    method: 'GET',
+    headers: {
+      'User-Agent': mbUserAgent,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error: Failed to fetch ${buildMbSearch} (${response.status}).`,
+    );
+  }
+
+  const responsePayload = await response.json();
+
+  return responsePayload;
+};
+
+const augmentAlbumByCandidates = (initialAlbum, candidatesResult) => {
+  if (Result.isOk(candidatesResult)) {
+    return {
+      ...initialAlbum,
+      status: 'candidatesLoaded',
+      candidates: Result.unwrap(candidatesResult),
+    };
+  } else {
+    return initialAlbum;
+  }
+};
+
+const processAlbum = async (socket, album) => {
+  /* eslint-disable no-console */
+  console.log(
+    'albumData.js: processAlbum(): album:',
+    JSON.stringify(album, null, 4),
+  );
+  /* eslint-enable no-console */
+
+  switch (album.status) {
+    case 'roonAlbumLoaded': {
+      const candidates = await runCandidateSearch(
+        album.roonAlbum.albumName,
+        album.roonAlbum.artistName,
+      );
+
+      insertCandidates(album, candidates);
+
+      const candidatesResult = await getCandidates(album);
+      const albumWithCandidates = augmentAlbumByCandidates(
+        album,
+        candidatesResult,
+      );
+
+      /* eslint-disable no-console */
+      console.log(
+        'albumData.js: processAlbum: albumWithCandidates',
+        albumWithCandidates,
+      );
+      /* eslint-enable no-console */
+
+      socket.emit('albumUpdate', albumWithCandidates);
+
+      return { nextOperation: 'noOp', newAlbum: albumWithCandidates };
+    }
+
+    case 'candidatesLoaded':
+      return { nextOperation: 'noOp', newAlbum: album };
+
+    default:
+      throw new Error(`Error: Unknown album state ${album.status}.`);
+  }
+};
+
+const createAlbumQueue = ({ socket, process, delay = 5000 }) => {
+  const queue = [];
+  let running = false;
+
+  let enqueue = null;
+  let enqueueFront = null;
+  let run = null;
+
+  enqueue = (album) => {
+    queue.push(album);
+    run();
+  };
+
+  enqueueFront = (album) => {
+    queue.unshift(album);
+    run();
+  };
+
+  run = async () => {
+    if (running || queue.length === 0) {
+      return;
+    }
+
+    running = true;
+
+    while (queue.length > 0) {
+      const album = queue.shift();
+
+      const { nextOperation, newAlbum } = await process(socket, album);
+      switch (nextOperation) {
+        case 'enqueue':
+          enqueue(newAlbum);
+          break;
+
+        case 'enqueueFront':
+          enqueueFront(newAlbum);
+          break;
+
+        case 'noOp':
+          break;
+
+        default:
+          throw new Error(`Error: Unknown nextOperation ${nextOperation}.`);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    running = false;
+  };
+
+  return { enqueue, enqueueFront };
+};
+
 const augmentAlbumByRoonTrackData = (album, roonAlbumData) => ({
   ...album,
   status: 'roonTracksAdded',
@@ -475,25 +616,51 @@ const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
   id,
   roonAlbum,
   roonTracks,
+  candidates: [],
 });
 
 const isRoonAlbumUnprocessable = (roonAlbum) =>
   roonAlbum.title === '' || roonAlbum.subtitle === 'Unknown Artist';
 
-const buildStableAlbumData = async (browseInstance, roonApiAlbums) => {
+const augmentAlbum = async (initialAlbum) => {
+  const candidatesResult = await getCandidates(initialAlbum);
+
+  const albumWithCandidates = augmentAlbumByCandidates(
+    initialAlbum,
+    candidatesResult,
+  );
+
+  return albumWithCandidates;
+};
+
+const buildStableAlbumData = async (socket, browseInstance, roonApiAlbums) => {
   const processableRoonAlbums = roonApiAlbums.items.filter(
     (roonApiAlbum) => !isRoonAlbumUnprocessable(roonApiAlbum),
   );
 
-  const initialAlbumStructures = [];
-  for (const processableRoonAlbum of processableRoonAlbums) {
+  const initialAlbums = [];
+  for (const album of processableRoonAlbums) {
     const initialAlbumStructure = buildInitialAlbumStructure(
-      await prepareRoonAlbum(browseInstance, processableRoonAlbum),
+      await prepareRoonAlbum(browseInstance, album),
     );
-    initialAlbumStructures.push(initialAlbumStructure);
+    initialAlbums.push(initialAlbumStructure);
   }
 
-  return initialAlbumStructures;
+  const augmentedAlbums = [];
+  for (const album of initialAlbums) {
+    const augmentedAlbum = await augmentAlbum(album);
+    augmentedAlbums.push(augmentedAlbum);
+  }
+
+  const { enqueue } = createAlbumQueue({
+    socket,
+    process: processAlbum,
+    delay: 2000,
+  });
+
+  augmentedAlbums.forEach((album) => enqueue(album));
+
+  socket.emit('albumsV2', initialAlbums);
 };
 
 export {

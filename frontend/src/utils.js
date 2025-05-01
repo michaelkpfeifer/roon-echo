@@ -16,6 +16,13 @@ const setAlbumsV2 = (currentAppState, albums) => ({
   albumsV2: albums,
 });
 
+const mergeAlbum = (currentAppState, album) => ({
+  ...currentAppState,
+  albumsV2: currentAppState.albumsV2.map((currentAlbum) =>
+    currentAlbum.id === album.id ? album : currentAlbum,
+  ),
+});
+
 const setBrowseData = (currentAppState, browseData) => ({
   ...currentAppState,
   browseData,
@@ -32,6 +39,7 @@ const formatMbTrackLength = (milliseconds) => {
 export {
   findSelectedZone,
   formatMbTrackLength,
+  mergeAlbum,
   setAlbums,
   setAlbumsV2,
   setBrowseData,

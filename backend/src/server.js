@@ -354,12 +354,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  (async () => {
-    socket.emit(
-      'albumsV2',
-      await buildStableAlbumData(browseInstance, roonAlbums),
-    );
-  })();
+  buildStableAlbumData(socket, browseInstance, roonAlbums);
 
   transport.get_zones((error, body) => {
     if (error) {

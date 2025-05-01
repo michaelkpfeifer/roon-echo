@@ -36,11 +36,7 @@ function AlbumCardV2({ album }) {
 
 AlbumCardV2.propTypes = {
   album: PropTypes.shape({
-    status: PropTypes.oneOf([
-      'mbAlbumLoaded',
-      'roonAlbumLoaded',
-      'roonTracksAdded',
-    ]),
+    status: PropTypes.oneOf(['candidatesLoaded', 'roonAlbumLoaded']),
     roonAlbum: PropTypes.shape({
       albumName: PropTypes.string.isRequired,
       artistName: PropTypes.string.isRequired,

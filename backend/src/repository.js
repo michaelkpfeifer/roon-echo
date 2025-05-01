@@ -151,6 +151,59 @@ const insertAlbumWithArtistsAndTracks = async ({
     /* eslint-enable no-restricted-syntax */
   });
 
+const getCandidates = async (album) => {
+  const candidates = await knex('albums')
+    .where({
+      roon_album_id: album.id,
+      type: 'candidate',
+    })
+    .select('mb_album_id', 'score', 'track_count');
+
+  if (candidates.length === 0) {
+    return Result.Err('getCandidates: noCandidatesFound');
+  }
+
+  return Result.Ok(camelCaseKeys(candidates));
+};
+
+const insertCandidates = async (album, candidates) =>
+  knex.transaction(async (trx) => {
+    for (const candidate of candidates.releases) {
+      await trx('albums')
+        .insert({
+          mb_album_id: candidate.id,
+          roon_album_id: album.id,
+          type: 'candidate',
+          score: candidate.score,
+          track_count: candidate['track-count'],
+          mb_release_date: candidate.date,
+        })
+        .onConflict('mb_album_id')
+        .merge();
+
+      for (const artist of candidate['artist-credit']) {
+        await trx('artists')
+          .insert({
+            mb_artist_id: artist.artist.id,
+            name: artist.name,
+            sort_name: artist.artist['sort-name'],
+            type: artist.artist.type,
+            disambiguation: artist.artist.disambiguation,
+          })
+          .onConflict('mb_artist_id')
+          .merge();
+
+        await trx('albums_artists')
+          .insert({
+            mb_album_id: candidate.id,
+            mb_artist_id: artist.artist.id,
+          })
+          .onConflict(['mb_album_id', 'mb_artist_id'])
+          .ignore();
+      }
+    }
+  });
+
 const insertPlayedTrackInHistory = async (track) => {
   knex.transaction(async (trx) => {
     await trx('history').insert(track);
@@ -160,8 +213,10 @@ const insertPlayedTrackInHistory = async (track) => {
 export {
   dbInit,
   getAlbumWithArtistsAndTracks,
+  getCandidates,
   getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
+  insertCandidates,
   insertPlayedTrackInHistory,
   insertRoonAlbumWithTracks,
 };

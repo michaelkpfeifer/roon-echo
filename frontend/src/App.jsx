@@ -14,7 +14,7 @@ import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setAlbumsV2, setBrowseData } from './utils';
+import { mergeAlbum, setAlbums, setAlbumsV2, setBrowseData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -136,6 +136,14 @@ function App() {
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => setAlbumsV2(currentAppState, albums));
+    });
+
+    socket.on('albumUpdate', (album) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing albumsUpdate message: album:', album);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => mergeAlbum(currentAppState, album));
     });
   }, [config]);
 
