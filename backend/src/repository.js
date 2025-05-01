@@ -157,7 +157,8 @@ const getCandidates = async (album) => {
       roon_album_id: album.id,
       type: 'candidate',
     })
-    .select('mb_album_id', 'score', 'track_count');
+    .select('mb_album_id', 'score', 'candidate_priority', 'track_count')
+    .orderBy('candidate_priority');
 
   if (candidates.length === 0) {
     return Result.Err('getCandidates: noCandidatesFound');
@@ -168,13 +169,17 @@ const getCandidates = async (album) => {
 
 const insertCandidates = async (album, candidates) =>
   knex.transaction(async (trx) => {
-    for (const candidate of candidates.releases) {
+    for (const [
+      candidatePriority,
+      candidate,
+    ] of candidates.releases.entries()) {
       await trx('albums')
         .insert({
           mb_album_id: candidate.id,
           roon_album_id: album.id,
           type: 'candidate',
           score: candidate.score,
+          candidate_priority: candidatePriority,
           track_count: candidate['track-count'],
           mb_release_date: candidate.date,
         })

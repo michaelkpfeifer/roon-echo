@@ -14,6 +14,7 @@ export function up(knex) {
       .onUpdate('CASCADE');
     table.text('type').notNullable();
     table.integer('score');
+    table.integer('candidate_priority');
     table.integer('track_count');
     table.text('mb_release_date');
 
