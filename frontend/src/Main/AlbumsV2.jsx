@@ -14,9 +14,9 @@ function AlbumsV2() {
         {fp
           .orderBy(
             [
-              'sortKeys.albumArtists',
+              'sortKeys.artistNames',
               'sortKeys.releaseDate',
-              'sortKeys.albumTitle',
+              'sortKeys.albumName',
             ],
             ['asc', 'asc', 'asc'],
             appState.albumsV2,

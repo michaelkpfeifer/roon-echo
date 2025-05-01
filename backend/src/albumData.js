@@ -612,8 +612,13 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
 };
 
 const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
-  status: 'roonAlbumLoaded',
   id,
+  status: 'roonAlbumLoaded',
+  sortKeys: {
+    artistNames: roonAlbum.artistName,
+    releaseDate: null,
+    albumName: roonAlbum.albumName,
+  },
   roonAlbum,
   roonTracks,
   candidates: [],
