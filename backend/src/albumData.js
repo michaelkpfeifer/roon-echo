@@ -10,11 +10,15 @@ import { v4 as uuidv4, v7 as uuidv7 } from 'uuid';
 import * as browser from './browser.js';
 import {
   getAlbumWithArtistsAndTracks,
+  demoteCandidateToNoMatch,
   getCandidates,
+  getReleaseWithArtistsAndTracks,
   getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
   insertCandidates,
+  insertReleaseWithArtistsAndTracks,
   insertRoonAlbumWithTracks,
+  promoteReleaseToMatch,
 } from './repository.js';
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
@@ -355,7 +359,30 @@ const runCandidateSearch = async (albumName, artistName) => {
 
   if (!response.ok) {
     throw new Error(
-      `Error: Failed to fetch ${buildMbSearch} (${response.status}).`,
+      `Error: Failed to fetch ${buildCandidateSearch(albumName, artistName)} (${response.status}).`,
+    );
+  }
+
+  const responsePayload = await response.json();
+
+  return responsePayload;
+};
+
+const buildFetchRelease = (releaseId) =>
+  `${mbReleaseEndpoint}/${releaseId}?inc=artists+recordings&fmt=json`;
+
+const runFetchRelease = async (mbReleaseId) => {
+  const response = await fetch(buildFetchRelease(mbReleaseId), {
+    method: 'GET',
+    headers: {
+      'User-Agent': mbUserAgent,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error: Failed to fetch ${buildFetchRelease(mbReleaseId)} (${response.status}).`,
     );
   }
 
@@ -408,14 +435,89 @@ const processAlbum = async (socket, album) => {
 
       socket.emit('albumUpdate', albumWithCandidates);
 
-      return { nextOperation: 'noOp', newAlbum: albumWithCandidates };
+      return { nextOperation: 'enqueueFront', newAlbum: albumWithCandidates };
     }
 
-    case 'candidatesLoaded':
-      return { nextOperation: 'noOp', newAlbum: album };
+    case 'candidatesLoaded': {
+      const candidateIds = album.candidates.map(
+        (candidate) => candidate.mbAlbumId,
+      );
+      const releaseIds = album.releases.map(
+        (release) => release.release.mbAlbumId,
+      );
+      const nextCandidateId = candidateIds.find(
+        (candidateId) => !releaseIds.includes(candidateId),
+      );
 
-    default:
+      const mbRelease = await runFetchRelease(nextCandidateId);
+
+      /* eslint-disable no-console */
+      console.log(
+        'albumData.js: processAlbum: mbRelease',
+        JSON.stringify(mbRelease, null, 4),
+      );
+      /* eslint-enable no-console */
+
+      const release = {
+        album: {
+          mbAlbumId: nextCandidateId,
+          type: 'release',
+        },
+        artists: mbRelease['artist-credit'],
+        tracks: mbRelease.media,
+      };
+
+      await insertReleaseWithArtistsAndTracks(release);
+
+      const releaseReadBack = Result.unwrap(
+        await getReleaseWithArtistsAndTracks(nextCandidateId),
+      );
+
+      const mbAndRoonTracksMatch = compareMbAndRoonTracks(
+        mbRelease.media
+          .flatMap((medium) => medium.tracks)
+          .map((track) => track.title),
+        album.roonTracks.map((track) => track.trackName),
+      );
+
+      /* eslint-disable no-console */
+      console.log(
+        'albumData.js: processAlbum: mbAndRoonTracksMatch',
+        mbAndRoonTracksMatch,
+      );
+      /* eslint-enable no-console */
+
+      const newAlbum = {
+        ...album,
+        candidates: album.candidates.filter(
+          (currentCandidate) => currentCandidate.mbAlbumId !== nextCandidateId,
+        ),
+        releases: [...album.releases, releaseReadBack],
+      };
+
+      if (mbAndRoonTracksMatch === true) {
+        promoteReleaseToMatch(nextCandidateId);
+
+        socket.emit('albumUpdate', { ...newAlbum, status: 'albumMatched' });
+
+        return { nextOperation: 'noOp', newAlbum };
+      } else {
+        demoteCandidateToNoMatch(nextCandidateId);
+        if (newAlbum.candidates.length === 0) {
+          socket.emit('albumUpdate', {
+            ...newAlbum,
+            status: 'noAlbumMatchFound',
+          });
+          return { nextOperation: 'noOp', newAlbum };
+        } else {
+          return { nextOperation: 'enqueueFront', newAlbum };
+        }
+      }
+    }
+
+    default: {
       throw new Error(`Error: Unknown album state ${album.status}.`);
+    }
   }
 };
 
@@ -622,6 +724,7 @@ const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
   roonAlbum,
   roonTracks,
   candidates: [],
+  releases: [],
 });
 
 const isRoonAlbumUnprocessable = (roonAlbum) =>
