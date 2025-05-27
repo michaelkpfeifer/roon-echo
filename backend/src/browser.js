@@ -128,7 +128,7 @@ const loadAlbums = async (browseInstance) => {
   const albumsLoadData = await loadAsync(browseInstance, {
     hierarchy: 'browse',
     offset: 0,
-    count: Math.min(64, albumsBrowseData.list.count),
+    count: Math.min(10, albumsBrowseData.list.count),
   });
   return albumsLoadData;
 };

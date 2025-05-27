@@ -13,13 +13,13 @@ const dbInit = async () => {
   // removed once we reach a state where we want to keep the data we
   // have already processed.
 
-  await knex('roon_tracks').del();
-  await knex('roon_albums').del();
-  await knex('tracks').del();
-  await knex('albums').del();
-  await knex('artists').del();
-  await knex('albums_artists').del();
-  await knex('history').del();
+  // await knex('roon_tracks').del();
+  // await knex('roon_albums').del();
+  // await knex('tracks').del();
+  // await knex('albums').del();
+  // await knex('artists').del();
+  // await knex('albums_artists').del();
+  // await knex('history').del();
 };
 
 const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
@@ -28,7 +28,7 @@ const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
       album_name: roonAlbumName,
       artist_name: roonArtistName,
     })
-    .select('id', 'album_name', 'artist_name')
+    .select('id', 'status', 'album_name', 'artist_name')
     .first()
     .then(async (roonAlbum) => {
       if (!roonAlbum) {
@@ -232,17 +232,24 @@ const insertAlbumWithArtistsAndTracks = async ({
     /* eslint-enable no-restricted-syntax */
   });
 
-
-const demoteCandidateToNoMatch = async (candidateId) => {
+const demoteCandidateToNoMatch = async (candidateId, roonAlbumId) => {
   knex.transaction(async (trx) => {
+    await trx('roon_albums')
+      .where({ id: roonAlbumId })
+      .update({ status: 'noAlbumMatchFound' });
+
     await trx('albums')
       .where({ mb_album_id: candidateId })
-      .update({ type: 'nomatch' });
+      .update({ type: 'noMatch' });
   });
 };
 
-const promoteReleaseToMatch = async (releaseId) => {
+const promoteReleaseToMatch = async (releaseId, roonAlbumId) => {
   knex.transaction(async (trx) => {
+    await trx('roon_albums')
+      .where({ id: roonAlbumId })
+      .update({ status: 'albumMatched' });
+
     await trx('albums')
       .where({ mb_album_id: releaseId })
       .update({ type: 'match' });
@@ -284,6 +291,10 @@ const insertCandidates = async (album, candidates) =>
         .onConflict('mb_album_id')
         .merge();
 
+      await trx('roon_albums')
+        .where({ id: album.id })
+        .update({ status: 'candidatesLoaded' });
+
       for (const artist of candidate['artist-credit']) {
         await trx('artists')
           .insert({
@@ -307,6 +318,41 @@ const insertCandidates = async (album, candidates) =>
     }
   });
 
+const getReleasesByRoonAlbumId = async (roonAlbumId) => {
+  const releases = await knex('albums').where({ roon_album_id: roonAlbumId });
+
+  if (releases.length === 0) {
+    return [];
+  }
+
+  const mbAlbumIds = releases.map((release) => release.mb_album_id);
+
+  const tracks = await knex('tracks').whereIn('mb_album_id', mbAlbumIds);
+
+  const artists = await knex('albums_artists')
+    .join('artists', 'albums_artists.mb_artist_id', 'artists.mb_artist_id')
+    .whereIn('albums_artists.mb_album_id', mbAlbumIds)
+    .select(
+      'albums_artists.mb_album_id',
+      'artists.mb_artist_id',
+      'artists.name',
+      'artists.sort_name',
+      'artists.type',
+      'artists.disambiguation',
+    );
+
+  for (const release of releases) {
+    release.tracks = tracks.filter(
+      (t) => t.mb_album_id === release.mb_album_id,
+    );
+    release.artists = artists
+      .filter((a) => a.mb_album_id === release.mb_album_id)
+      .map(({ mb_album_id, ...artist }) => artist);
+  }
+
+  return camelCaseKeys(releases);
+};
+
 const insertPlayedTrackInHistory = async (track) => {
   knex.transaction(async (trx) => {
     await trx('history').insert(track);
@@ -315,10 +361,11 @@ const insertPlayedTrackInHistory = async (track) => {
 
 export {
   dbInit,
-  getAlbumWithArtistsAndTracks,
   demoteCandidateToNoMatch,
+  getAlbumWithArtistsAndTracks,
   getCandidates,
   getReleaseWithArtistsAndTracks,
+  getReleasesByRoonAlbumId,
   getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
   insertCandidates,

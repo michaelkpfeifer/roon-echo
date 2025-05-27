@@ -9,10 +9,11 @@ import { v4 as uuidv4, v7 as uuidv7 } from 'uuid';
 
 import * as browser from './browser.js';
 import {
-  getAlbumWithArtistsAndTracks,
   demoteCandidateToNoMatch,
+  getAlbumWithArtistsAndTracks,
   getCandidates,
   getReleaseWithArtistsAndTracks,
+  getReleasesByRoonAlbumId,
   getRoonAlbumWithTracks,
   insertAlbumWithArtistsAndTracks,
   insertCandidates,
@@ -496,13 +497,14 @@ const processAlbum = async (socket, album) => {
       };
 
       if (mbAndRoonTracksMatch === true) {
-        promoteReleaseToMatch(nextCandidateId);
+        promoteReleaseToMatch(nextCandidateId, album.id);
 
         socket.emit('albumUpdate', { ...newAlbum, status: 'albumMatched' });
 
         return { nextOperation: 'noOp', newAlbum };
       } else {
-        demoteCandidateToNoMatch(nextCandidateId);
+        demoteCandidateToNoMatch(nextCandidateId, album.id);
+
         if (newAlbum.candidates.length === 0) {
           socket.emit('albumUpdate', {
             ...newAlbum,
@@ -672,8 +674,10 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
 
   if (Result.isOk(roonAlbumWithTracks)) {
     const { roonAlbum, roonTracks } = Result.unwrap(roonAlbumWithTracks);
+
     return {
       id: roonAlbum.id,
+      status: roonAlbum.status,
       roonAlbum: {
         albumName: roonAlbum.albumName,
         artistName: roonAlbum.artistName,
@@ -689,6 +693,7 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
 
     const roonAlbum = {
       id: uuidv7(),
+      status: 'roonAlbumLoaded',
       albumName: roonApiAlbum.title,
       artistName: roonApiAlbum.subtitle,
     };
@@ -713,9 +718,9 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
   }
 };
 
-const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
+const buildInitialAlbumStructure = ({ id, status, roonAlbum, roonTracks }) => ({
   id,
-  status: 'roonAlbumLoaded',
+  status,
   sortKeys: {
     artistNames: roonAlbum.artistName,
     releaseDate: null,
@@ -725,20 +730,52 @@ const buildInitialAlbumStructure = ({ id, roonAlbum, roonTracks }) => ({
   roonTracks,
   candidates: [],
   releases: [],
+  mbAlbum: {},
+  mbArtists: [],
+  mbTracks: [],
 });
 
 const isRoonAlbumUnprocessable = (roonAlbum) =>
   roonAlbum.title === '' || roonAlbum.subtitle === 'Unknown Artist';
 
 const augmentAlbum = async (initialAlbum) => {
-  const candidatesResult = await getCandidates(initialAlbum);
+  /* eslint-disable no-console */
+  console.log('albumData.js: augmentAlbum(): initialAlbum:', initialAlbum);
+  /* eslint-enable no-console */
 
-  const albumWithCandidates = augmentAlbumByCandidates(
-    initialAlbum,
-    candidatesResult,
+  if (initialAlbum.status === 'roonAlbumLoaded') {
+    return initialAlbum;
+  }
+
+  const allReleases = await getReleasesByRoonAlbumId(initialAlbum.id);
+  const candidates = fp.sortBy(
+    'candidatePriority',
+    allReleases.filter((release) => release.type === 'candidate'),
+  );
+  const releases = fp.sortBy(
+    'candidatePriority',
+    allReleases.filter((release) => release.type === 'noMatch'),
   );
 
-  return albumWithCandidates;
+  initialAlbum.candidates = candidates;
+  initialAlbum.releases = releases;
+
+  if (initialAlbum.status === 'albumMatched') {
+    const match = allReleases.find((release) => release.type === 'match');
+
+    initialAlbum.mbArtists = match.artists;
+    initialAlbum.mbTracks = match.tracks;
+    initialAlbum.mbAlbum = fp.omit(['artists', 'tracks'], match);
+    initialAlbum.sortKeys = {
+      artists: initialAlbum.mbArtists
+        .map((mbArtist) => mbArtist.sortName)
+        .join('; '),
+      releaseDate: initialAlbum.mbAlbum.mbReleaseDate,
+      title: initialAlbum.roonAlbum.albumName,
+    };
+  }
+
+  return initialAlbum;
 };
 
 const buildStableAlbumData = async (socket, browseInstance, roonApiAlbums) => {
@@ -763,12 +800,17 @@ const buildStableAlbumData = async (socket, browseInstance, roonApiAlbums) => {
   const { enqueue } = createAlbumQueue({
     socket,
     process: processAlbum,
-    delay: 2000,
+    delay: 250,
   });
 
-  augmentedAlbums.forEach((album) => enqueue(album));
+  socket.emit('albumsV2', augmentedAlbums);
 
-  socket.emit('albumsV2', initialAlbums);
+  augmentedAlbums
+    .filter(
+      (album) =>
+        album.status !== 'albumMatched' && album.status !== 'noAlbumMatchFound',
+    )
+    .forEach((album) => enqueue(album));
 };
 
 export {

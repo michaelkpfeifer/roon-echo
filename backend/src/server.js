@@ -393,25 +393,6 @@ io.on('connection', async (socket) => {
     socket.emit('browseData', browseData);
   });
 
-  // TODO. The following block of code should not be needed
-  // anymore. The current plan is to send the list of albums to the
-  // frontend at connection time.  Maybe there will be an option to
-  // reload the state. Maybe not.
-
-  socket.on('albums', async () => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing albums message');
-    /* eslint-enable no-console */
-
-    const enrichedAlbums = await enrichList(browseInstance, roonAlbums.items);
-
-    /* eslint-disable no-console */
-    console.log('enrichedAlbums.length:', enrichedAlbums.length);
-    /* eslint-enable no-console */
-
-    socket.emit('allAlbums', enrichedAlbums);
-  });
-
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
