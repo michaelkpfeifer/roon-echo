@@ -23,7 +23,6 @@
     "node-roon-api-browse": "github:roonlabs/node-roon-api-browse",
     "node-roon-api-status": "github:roonlabs/node-roon-api-status",
     "node-roon-api-transport": "github:roonlabs/node-roon-api-transport",
-    "p-queue": "^8.0.1",
     "socket.io": "^4.8.0",
     "uuid": "^11.1.0"
   },
