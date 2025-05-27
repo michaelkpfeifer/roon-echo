@@ -9,7 +9,7 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
-import { buildStableAlbumData, enrichList } from './albumData.js';
+import { buildStableAlbumData } from './albumData.js';
 import * as browser from './browser.js';
 import {
   logChanged,
