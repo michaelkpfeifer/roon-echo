@@ -11,14 +11,9 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
-const setAlbumsV2 = (currentAppState, albums) => ({
-  ...currentAppState,
-  albumsV2: albums,
-});
-
 const mergeAlbum = (currentAppState, album) => ({
   ...currentAppState,
-  albumsV2: currentAppState.albumsV2.map((currentAlbum) =>
+  albums: currentAppState.albums.map((currentAlbum) =>
     currentAlbum.id === album.id ? album : currentAlbum,
   ),
 });
@@ -41,6 +36,5 @@ export {
   formatMbTrackLength,
   mergeAlbum,
   setAlbums,
-  setAlbumsV2,
   setBrowseData,
 };

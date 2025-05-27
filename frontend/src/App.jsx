@@ -7,14 +7,13 @@ import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
-import AlbumsV2 from './Main/AlbumsV2';
 import Artists from './Main/Artists';
 import Browse from './Main/Browse';
 import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { mergeAlbum, setAlbums, setAlbumsV2, setBrowseData } from './utils';
+import { mergeAlbum, setAlbums, setBrowseData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -130,12 +129,12 @@ function App() {
       setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
     });
 
-    socket.on('albumsV2', (albums) => {
+    socket.on('albums', (albums) => {
       /* eslint-disable no-console */
-      console.log('App.jsx: processing albumsV2 message: albums:', albums);
+      console.log('App.jsx: processing albums message: albums:', albums);
       /* eslint-enable no-console */
 
-      setAppState((currentAppState) => setAlbumsV2(currentAppState, albums));
+      setAppState((currentAppState) => setAlbums(currentAppState, albums));
     });
 
     socket.on('albumUpdate', (album) => {
@@ -189,7 +188,6 @@ function App() {
                 <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
-                <Route path="/albums-v2" element={<AlbumsV2 />} />
               </Routes>
             </div>
           </div>

@@ -28,12 +28,6 @@ function Sidebar() {
             <Link to="/tracks">Tracks</Link>
           </div>
         </div>
-
-        <div className="link-group">
-          <div>
-            <Link to="/albums-v2">AlbumsV2</Link>
-          </div>
-        </div>
       </nav>
     </div>
   );

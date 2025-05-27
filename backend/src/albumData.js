@@ -419,7 +419,7 @@ const buildStableAlbumData = async (socket, browseInstance, roonApiAlbums) => {
     delay: 250,
   });
 
-  socket.emit('albumsV2', augmentedAlbums);
+  socket.emit('albums', augmentedAlbums);
 
   augmentedAlbums
     .filter(
