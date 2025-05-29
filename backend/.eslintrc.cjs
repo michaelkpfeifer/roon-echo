@@ -37,5 +37,6 @@ module.exports = {
     ],
     'unused-imports/no-unused-imports': 'warn',
     'unused-imports/no-unused-vars': ['warn', { args: 'none' }],
+    'no-else-return': 'off',
   },
 };
