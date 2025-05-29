@@ -394,8 +394,10 @@ const augmentAlbum = async (initialAlbum) => {
   return initialAlbum;
 };
 
-const buildStableAlbumData = async (socket, browseInstance, roonApiAlbums) => {
-  const processableRoonAlbums = roonApiAlbums.items.filter(
+const buildStableAlbumData = async (socket, browseInstance) => {
+  const roonAlbums = camelCaseKeys(await browser.loadAlbums(browseInstance));
+
+  const processableRoonAlbums = roonAlbums.items.filter(
     (roonApiAlbum) => !isRoonAlbumUnprocessable(roonApiAlbum),
   );
 

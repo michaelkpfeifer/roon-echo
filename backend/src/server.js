@@ -60,7 +60,6 @@ let browseInstance;
 
 let scheduledTracks = [];
 let playingTracks = [];
-let roonAlbums;
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */
@@ -310,8 +309,6 @@ const roon = new RoonApi({
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
     browseInstance = new RoonApiBrowse(core);
-
-    roonAlbums = camelCaseKeys(await browser.loadAlbums(browseInstance));
   },
 
   core_unpaired: (/* core */) => {},
@@ -354,7 +351,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  buildStableAlbumData(socket, browseInstance, roonAlbums);
+  buildStableAlbumData(socket, browseInstance);
 
   transport.get_zones((error, body) => {
     if (error) {
