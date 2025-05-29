@@ -21,8 +21,7 @@ function App() {
   });
 
   const [appState, setAppState] = useState({
-    albums: [],
-    albumsV2: {},
+    albums: {},
     isZonesModalOpen: false,
     browseData: {},
     tmpSelectedZoneId: null,

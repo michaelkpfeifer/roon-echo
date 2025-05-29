@@ -2,7 +2,7 @@ import fp from 'lodash/fp';
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import AlbumCardV2 from './AlbumCardV2';
+import AlbumCard from './AlbumCard';
 
 function Albums() {
   const { appState } = useContext(AppContext);
@@ -23,7 +23,7 @@ function Albums() {
           )
           .map((album) => (
             <div key={album.roonAlbum.itemKey}>
-              <AlbumCardV2 album={album} />
+              <AlbumCard album={album} />
             </div>
           ))}
       </div>
