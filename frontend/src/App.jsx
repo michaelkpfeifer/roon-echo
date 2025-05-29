@@ -13,7 +13,7 @@ import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { setAlbums, setBrowseData } from './utils';
+import { mergeAlbum, setAlbums, setBrowseData } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -21,7 +21,7 @@ function App() {
   });
 
   const [appState, setAppState] = useState({
-    albums: [],
+    albums: {},
     isZonesModalOpen: false,
     browseData: {},
     tmpSelectedZoneId: null,
@@ -126,6 +126,22 @@ function App() {
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
+    });
+
+    socket.on('albums', (albums) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing albums message: albums:', albums);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => setAlbums(currentAppState, albums));
+    });
+
+    socket.on('albumUpdate', (album) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing albumsUpdate message: album:', album);
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => mergeAlbum(currentAppState, album));
     });
   }, [config]);
 

@@ -11,6 +11,13 @@ const setAlbums = (currentAppState, albums) => ({
   albums,
 });
 
+const mergeAlbum = (currentAppState, album) => ({
+  ...currentAppState,
+  albums: currentAppState.albums.map((currentAlbum) =>
+    currentAlbum.id === album.id ? album : currentAlbum,
+  ),
+});
+
 const setBrowseData = (currentAppState, browseData) => ({
   ...currentAppState,
   browseData,
@@ -24,4 +31,10 @@ const formatMbTrackLength = (milliseconds) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export { findSelectedZone, formatMbTrackLength, setAlbums, setBrowseData };
+export {
+  findSelectedZone,
+  formatMbTrackLength,
+  mergeAlbum,
+  setAlbums,
+  setBrowseData,
+};

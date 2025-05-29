@@ -1,3 +1,4 @@
+import fp from 'lodash/fp';
 import PropTypes from 'prop-types';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
@@ -15,21 +16,21 @@ function AlbumCard({ album }) {
       {album.roonAlbum.imageKey ? (
         <img
           src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={album.roonAlbum.title}
+          alt={album.roonAlbum.albumName}
           className="album-card__image"
         />
       ) : (
         <img
           src={noAlbumArt}
-          alt={album.roonAlbum.title}
+          alt={album.roonAlbum.albumName}
           className="album-card__image"
         />
       )}
       <div className="album-card__title">
-        <b>{album.roonAlbum.title}</b>
+        <b>{album.roonAlbum.albumName}</b>
       </div>
-      <div className="album-card__subtitle">{album.roonAlbum.subtitle}</div>
-      {album.mbAlbum ? (
+      <div className="album-card__subtitle">{album.roonAlbum.artistName}</div>
+      {!fp.isEmpty(album.mbAlbum) ? (
         <Link to={`/albums/${album.mbAlbum.mbAlbumId}`}>View Details</Link>
       ) : null}
     </div>
@@ -38,22 +39,26 @@ function AlbumCard({ album }) {
 
 AlbumCard.propTypes = {
   album: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     status: PropTypes.oneOf([
-      'unknownArtistOrTitle',
-      'mbDataLoaded',
-      'roonTracksAdded',
-    ]).isRequired,
-    roonAlbum: PropTypes.shape({
+      'albumMatched',
+      'candidatesLoaded',
+      'noAlbumMatchFound',
+      'roonAlbumLoaded',
+    ]),
+    sortKeys: PropTypes.shape({
+      artists: PropTypes.string.isRequired,
+      releaseDate: PropTypes.string,
       title: PropTypes.string.isRequired,
-      subtitle: PropTypes.string.isRequired,
-      imageKey: PropTypes.string,
+    }),
+    roonAlbum: PropTypes.shape({
+      albumName: PropTypes.string.isRequired,
+      artistName: PropTypes.string.isRequired,
       itemKey: PropTypes.string.isRequired,
+      imageKey: PropTypes.string,
     }),
     mbAlbum: PropTypes.shape({
       mbAlbumId: PropTypes.string.isRequired,
-      artistName: PropTypes.string.isRequired,
-      albumName: PropTypes.string.isRequired,
-      releaseDate: PropTypes.string,
     }),
   }).isRequired,
 };

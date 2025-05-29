@@ -3,8 +3,8 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('albums', (table) => {
-    table.text('mb_album_id').notNullable().primary();
+  return knex.schema.createTable('roon_tracks', (table) => {
+    table.text('id').primary();
     table
       .integer('roon_album_id')
       .notNullable()
@@ -12,11 +12,9 @@ export function up(knex) {
       .inTable('roon_albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
-    table.text('type').notNullable();
-    table.integer('score');
-    table.integer('candidate_priority');
-    table.integer('track_count');
-    table.text('mb_release_date');
+    table.text('track_name').notNullable();
+    table.text('number').notNullable();
+    table.integer('position').notNullable();
 
     table.timestamps(true, true);
   });
@@ -27,5 +25,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('albums');
+  return knex.schema.dropTable('roon_tracks');
 }
