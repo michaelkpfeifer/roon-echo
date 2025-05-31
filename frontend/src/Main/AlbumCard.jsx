@@ -47,9 +47,9 @@ AlbumCard.propTypes = {
       'roonAlbumLoaded',
     ]),
     sortKeys: PropTypes.shape({
-      artists: PropTypes.string.isRequired,
+      artistNames: PropTypes.string.isRequired,
       releaseDate: PropTypes.string,
-      title: PropTypes.string.isRequired,
+      albumName: PropTypes.string.isRequired,
     }),
     roonAlbum: PropTypes.shape({
       albumName: PropTypes.string.isRequired,

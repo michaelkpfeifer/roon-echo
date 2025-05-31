@@ -273,7 +273,9 @@ const createAlbumQueue = ({ socket, process, delay = 5000 }) => {
           throw new Error(`Error: Unknown nextOperation ${nextOperation}.`);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((resolve) => {
+        setTimeout(resolve, delay);
+      });
     }
 
     running = false;
@@ -373,25 +375,29 @@ const augmentAlbum = async (initialAlbum) => {
     allReleases.filter((release) => release.type === 'noMatch'),
   );
 
-  initialAlbum.candidates = candidates;
-  initialAlbum.releases = releases;
+  const withCandidatesAndReleases = {
+    ...initialAlbum,
+    candidates,
+    releases,
+  };
 
   if (initialAlbum.status === 'albumMatched') {
     const match = allReleases.find((release) => release.type === 'match');
 
-    initialAlbum.mbArtists = match.artists;
-    initialAlbum.mbTracks = match.tracks;
-    initialAlbum.mbAlbum = fp.omit(['artists', 'tracks'], match);
-    initialAlbum.sortKeys = {
-      artists: initialAlbum.mbArtists
-        .map((mbArtist) => mbArtist.sortName)
-        .join('; '),
-      releaseDate: initialAlbum.mbAlbum.mbReleaseDate,
-      title: initialAlbum.roonAlbum.albumName,
+    return {
+      ...withCandidatesAndReleases,
+      mbArtists: match.artists,
+      mbTracks: match.tracks,
+      mbAlbum: fp.omit(['artists', 'tracks'], match),
+      sortKeys: {
+        artistNames: match.artists.map((artist) => artist.sortName).join('; '),
+        releaseDate: match.mbReleaseDate,
+        albumName: withCandidatesAndReleases.roonAlbum.albumName,
+      },
     };
+  } else {
+    return withCandidatesAndReleases;
   }
-
-  return initialAlbum;
 };
 
 const buildStableAlbumData = async (socket, browseInstance) => {
@@ -431,4 +437,4 @@ const buildStableAlbumData = async (socket, browseInstance) => {
     .forEach((album) => enqueue(album));
 };
 
-export { buildStableAlbumData };
+export { buildStableAlbumData, compareMbAndRoonTracks };
