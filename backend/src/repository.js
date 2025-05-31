@@ -228,6 +228,7 @@ const insertCandidates = async (album, candidates) =>
 
 const getReleasesByRoonAlbumId = async (roonAlbumId) => {
   const releases = await knex('albums').where({ roon_album_id: roonAlbumId });
+  const camelCaseReleases = camelCaseKeys(releases);
 
   if (releases.length === 0) {
     return [];
@@ -236,6 +237,7 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
   const mbAlbumIds = releases.map((release) => release.mb_album_id);
 
   const tracks = await knex('tracks').whereIn('mb_album_id', mbAlbumIds);
+  const camelCaseTracks = camelCaseKeys(tracks);
 
   const artists = await knex('albums_artists')
     .join('artists', 'albums_artists.mb_artist_id', 'artists.mb_artist_id')
@@ -248,17 +250,18 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
       'artists.type',
       'artists.disambiguation',
     );
+  const camelCaseArtists = camelCaseKeys(artists);
 
-  for (const release of releases) {
-    release.tracks = tracks.filter(
-      (t) => t.mb_album_id === release.mb_album_id,
+  for (const release of camelCaseReleases) {
+    release.tracks = camelCaseTracks.filter(
+      (t) => t.mbAlbumId === release.mbAlbumId,
     );
-    release.artists = artists
-      .filter((a) => a.mb_album_id === release.mb_album_id)
-      .map(({ mb_album_id, ...artist }) => artist);
+    release.artists = camelCaseArtists
+      .filter((a) => a.mbAlbumId === release.mbAlbumId)
+      .map(({ mbAlbumId, ...artist }) => artist);
   }
 
-  return camelCaseKeys(releases);
+  return camelCaseReleases;
 };
 
 const insertPlayedTrackInHistory = async (track) => {
