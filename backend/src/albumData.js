@@ -441,4 +441,4 @@ const buildStableAlbumData = async (socket, browseInstance) => {
     .forEach((album) => enqueue(album));
 };
 
-export { buildStableAlbumData, compareMbAndRoonTracks };
+export { buildInitialAlbumStructure, buildStableAlbumData };
