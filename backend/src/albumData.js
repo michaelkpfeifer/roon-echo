@@ -124,6 +124,10 @@ const processAlbum = async (socket, album) => {
         album.roonAlbum.artistName,
       );
 
+      if (candidates.releases.length === 0) {
+        return { nextOperation: 'noOp', album };
+      }
+
       insertCandidates(album, candidates);
 
       const candidatesResult = await getCandidates(album);
