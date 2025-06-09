@@ -109,6 +109,22 @@ const augmentAlbumByCandidates = (initialAlbum, candidatesResult) => {
   }
 };
 
+const buildNewAlbumFromAlbum = ({ album, release }) => {
+  const newCandidates = album.candidates.filter(
+    (candidate) => candidate.mbAlbumId !== release.release.mbAlbumId,
+  );
+  if (newCandidates.length !== album.candidates.length - 1) {
+    throw new Error(`Error: Release does not match candidate.`);
+  }
+  const newReleases = [...album.releases, release];
+
+  return {
+    ...album,
+    candidates: newCandidates,
+    releases: newReleases,
+  };
+};
+
 const processAlbum = async (socket, album) => {
   /* eslint-disable no-console */
   console.log(
@@ -197,13 +213,10 @@ const processAlbum = async (socket, album) => {
       );
       /* eslint-enable no-console */
 
-      const newAlbum = {
-        ...album,
-        candidates: album.candidates.filter(
-          (currentCandidate) => currentCandidate.mbAlbumId !== nextCandidateId,
-        ),
-        releases: [...album.releases, releaseReadBack],
-      };
+      const newAlbum = buildNewAlbumFromAlbum({
+        album,
+        release: releaseReadBack,
+      });
 
       if (mbAndRoonTracksMatch === true) {
         promoteReleaseToMatch(nextCandidateId, album.id);
@@ -261,6 +274,7 @@ const createAlbumQueue = ({ socket, process, delay = 5000 }) => {
       const album = queue.shift();
 
       const { nextOperation, newAlbum } = await process(socket, album);
+
       switch (nextOperation) {
         case 'enqueue':
           enqueue(newAlbum);
@@ -441,4 +455,8 @@ const buildStableAlbumData = async (socket, browseInstance) => {
     .forEach((album) => enqueue(album));
 };
 
-export { buildInitialAlbumStructure, buildStableAlbumData };
+export {
+  buildInitialAlbumStructure,
+  buildNewAlbumFromAlbum,
+  buildStableAlbumData,
+};
