@@ -221,7 +221,13 @@ const processAlbum = async (socket, album) => {
       if (mbAndRoonTracksMatch === true) {
         promoteReleaseToMatch(nextCandidateId, album.id);
 
-        socket.emit('albumUpdate', { ...newAlbum, status: 'albumMatched' });
+        socket.emit('albumUpdate', {
+          ...newAlbum,
+          mbAlbum: releaseReadBack.release,
+          mbArtists: releaseReadBack.mbArtists,
+          mbTracks: releaseReadBack.mbTracks,
+          status: 'albumMatched',
+        });
 
         return { nextOperation: 'noOp', newAlbum };
       } else {
