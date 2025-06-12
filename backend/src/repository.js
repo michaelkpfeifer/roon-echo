@@ -64,7 +64,7 @@ const getReleaseWithArtistsAndTracks = async (releaseId) => {
     .where({
       mb_album_id: releaseId,
     })
-    .select('mb_album_id', 'score', 'track_count')
+    .select('mb_album_id', 'mb_release_date', 'score', 'track_count')
     .first()
     .then(async (release) => {
       if (!release) {

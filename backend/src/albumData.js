@@ -226,6 +226,13 @@ const processAlbum = async (socket, album) => {
           mbAlbum: releaseReadBack.release,
           mbArtists: releaseReadBack.mbArtists,
           mbTracks: releaseReadBack.mbTracks,
+          sortKeys: {
+            ...album.sortKeys,
+            artistNames: releaseReadBack.mbArtists
+              .map((artist) => artist.sortName)
+              .join(', '),
+            releaseDate: releaseReadBack.release.mbReleaseDate,
+          },
           status: 'albumMatched',
         });
 
