@@ -15,9 +15,8 @@ function Album() {
     (a) => a.mbAlbum && a.mbAlbum.mbAlbumId === mbAlbumId,
   );
 
-  const { mbAlbum, mbArtists, roonAlbum } = album;
-  const { imageKey } = roonAlbum;
-  const { roonAlbumName: albumName } = mbAlbum;
+  const { mbArtists, roonAlbum } = album;
+  const { albumName, imageKey } = roonAlbum;
   const artistNames = mbArtists.map((artist) => artist.name).join(', ');
 
   return (
