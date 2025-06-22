@@ -9,7 +9,7 @@ export function up(knex) {
 
     table
       .foreign('mb_album_id')
-      .references('albums.mb_album_id')
+      .references('mb_albums.mb_album_id')
       .onDelete('CASCADE');
     table
       .foreign('mb_artist_id')

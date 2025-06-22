@@ -60,7 +60,7 @@ const insertRoonAlbumWithTracks = async ({ roonAlbum, roonTracks }) => {
 };
 
 const getReleaseWithArtistsAndTracks = async (releaseId) => {
-  const releaseWithArtistsAndTracks = await knex('albums')
+  const releaseWithArtistsAndTracks = await knex('mb_albums')
     .where({
       mb_album_id: releaseId,
     })
@@ -100,7 +100,7 @@ const insertReleaseWithArtistsAndTracks = async ({
   tracks,
 }) => {
   knex.transaction(async (trx) => {
-    await trx('albums').where({ mb_album_id: album.mbAlbumId }).update({
+    await trx('mb_albums').where({ mb_album_id: album.mbAlbumId }).update({
       type: album.type,
     });
 
@@ -146,7 +146,7 @@ const demoteCandidateToNoMatch = async (candidateId, roonAlbumId) => {
       .where({ id: roonAlbumId })
       .update({ status: 'noAlbumMatchFound' });
 
-    await trx('albums')
+    await trx('mb_albums')
       .where({ mb_album_id: candidateId })
       .update({ type: 'noMatch' });
   });
@@ -158,14 +158,14 @@ const promoteReleaseToMatch = async (releaseId, roonAlbumId) => {
       .where({ id: roonAlbumId })
       .update({ status: 'albumMatched' });
 
-    await trx('albums')
+    await trx('mb_albums')
       .where({ mb_album_id: releaseId })
       .update({ type: 'match' });
   });
 };
 
 const getCandidates = async (album) => {
-  const candidates = await knex('albums')
+  const candidates = await knex('mb_albums')
     .where({
       roon_album_id: album.id,
       type: 'candidate',
@@ -186,7 +186,7 @@ const insertCandidates = async (album, candidates) =>
       candidatePriority,
       candidate,
     ] of candidates.releases.entries()) {
-      await trx('albums')
+      await trx('mb_albums')
         .insert({
           mb_album_id: candidate.id,
           roon_album_id: album.id,
@@ -227,7 +227,9 @@ const insertCandidates = async (album, candidates) =>
   });
 
 const getReleasesByRoonAlbumId = async (roonAlbumId) => {
-  const releases = await knex('albums').where({ roon_album_id: roonAlbumId });
+  const releases = await knex('mb_albums').where({
+    roon_album_id: roonAlbumId,
+  });
   const camelCaseReleases = camelCaseKeys(releases);
 
   if (releases.length === 0) {

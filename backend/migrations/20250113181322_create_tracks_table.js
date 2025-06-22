@@ -9,7 +9,7 @@ export function up(knex) {
       .text('mb_album_id')
       .notNullable()
       .references('mb_album_id')
-      .inTable('albums')
+      .inTable('mb_albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
     table.text('name').notNullable();
