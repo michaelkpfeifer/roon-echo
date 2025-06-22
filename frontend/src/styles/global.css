@@ -16,11 +16,18 @@ body {
     height: 100vh;
 }
 
+.header {
+    height: 60px;
+    box-sizing: border-box;
+    border: 1px solid black;
+}
+
 .container {
     display: flex;
-    flex: 4;
+    flex: 1;
     flex-direction: row;
     box-sizing: border-box;
+    overflow: auto;
 }
 
 .left {
@@ -35,8 +42,8 @@ body {
     border: 1px solid black;
 }
 
-.bottom {
-    flex: 1;
+.footer {
+    height: 120px;
     box-sizing: border-box;
     border: 1px solid black;
 }

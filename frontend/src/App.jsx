@@ -175,6 +175,7 @@ function App() {
     <AppContext.Provider value={contextValue}>
       <Router>
         <div className="page">
+          <div className="header"></div>
           <div className="container">
             <div className="left">
               <Sidebar />
@@ -190,7 +191,7 @@ function App() {
               </Routes>
             </div>
           </div>
-          <div className="bottom">
+          <div className="footer">
             <NowPlaying roonState={roonState} appState={appState} />
           </div>
         </div>
