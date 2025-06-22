@@ -75,7 +75,7 @@ const getReleaseWithArtistsAndTracks = async (releaseId) => {
         .where({ mb_album_id: release.mb_album_id })
         .pluck('mb_artist_id');
 
-      const mbArtists = await knex('artists')
+      const mbArtists = await knex('mb_artists')
         .whereIn('mb_artist_id', mbArtistIds)
         .select('mb_artist_id', 'name', 'sort_name');
 
@@ -105,7 +105,7 @@ const insertReleaseWithArtistsAndTracks = async ({
     });
 
     for (const artist of artists) {
-      await trx('artists')
+      await trx('mb_artists')
         .insert({
           mb_artist_id: artist.artist.id,
           name: artist.name,
@@ -204,7 +204,7 @@ const insertCandidates = async (album, candidates) =>
         .update({ status: 'candidatesLoaded' });
 
       for (const artist of candidate['artist-credit']) {
-        await trx('artists')
+        await trx('mb_artists')
           .insert({
             mb_artist_id: artist.artist.id,
             name: artist.name,
@@ -242,15 +242,19 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
   const camelCaseTracks = camelCaseKeys(tracks);
 
   const artists = await knex('albums_artists')
-    .join('artists', 'albums_artists.mb_artist_id', 'artists.mb_artist_id')
+    .join(
+      'mb_artists',
+      'albums_artists.mb_artist_id',
+      'mb_artists.mb_artist_id',
+    )
     .whereIn('albums_artists.mb_album_id', mbAlbumIds)
     .select(
       'albums_artists.mb_album_id',
-      'artists.mb_artist_id',
-      'artists.name',
-      'artists.sort_name',
-      'artists.type',
-      'artists.disambiguation',
+      'mb_artists.mb_artist_id',
+      'mb_artists.name',
+      'mb_artists.sort_name',
+      'mb_artists.type',
+      'mb_artists.disambiguation',
     );
   const camelCaseArtists = camelCaseKeys(artists);
 

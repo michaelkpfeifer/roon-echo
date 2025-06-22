@@ -13,7 +13,7 @@ export function up(knex) {
       .onDelete('CASCADE');
     table
       .foreign('mb_artist_id')
-      .references('artists.mb_artist_id')
+      .references('mb_artists.mb_artist_id')
       .onDelete('CASCADE');
 
     table.primary(['mb_album_id', 'mb_artist_id'], 'albums_artists_on_mb_artist_id_mb_album_id',);
