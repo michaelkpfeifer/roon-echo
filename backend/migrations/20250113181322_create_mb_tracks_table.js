@@ -3,13 +3,13 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('tracks', (table) => {
+  return knex.schema.createTable('mb_tracks', (table) => {
     table.text('mb_track_id').notNullable().primary();
     table
       .text('mb_album_id')
       .notNullable()
       .references('mb_album_id')
-      .inTable('albums')
+      .inTable('mb_albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');
     table.text('name').notNullable();
@@ -26,5 +26,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('tracks');
+  return knex.schema.dropTable('mb_tracks');
 }

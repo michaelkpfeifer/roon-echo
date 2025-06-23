@@ -60,7 +60,7 @@ const insertRoonAlbumWithTracks = async ({ roonAlbum, roonTracks }) => {
 };
 
 const getReleaseWithArtistsAndTracks = async (releaseId) => {
-  const releaseWithArtistsAndTracks = await knex('albums')
+  const releaseWithArtistsAndTracks = await knex('mb_albums')
     .where({
       mb_album_id: releaseId,
     })
@@ -71,15 +71,15 @@ const getReleaseWithArtistsAndTracks = async (releaseId) => {
         return Result.Err('getReleaseWithArtistsAndTracks: releaseNotFound');
       }
 
-      const mbArtistIds = await knex('albums_artists')
+      const mbArtistIds = await knex('mb_albums_mb_artists')
         .where({ mb_album_id: release.mb_album_id })
         .pluck('mb_artist_id');
 
-      const mbArtists = await knex('artists')
+      const mbArtists = await knex('mb_artists')
         .whereIn('mb_artist_id', mbArtistIds)
         .select('mb_artist_id', 'name', 'sort_name');
 
-      const mbTracks = await knex('tracks')
+      const mbTracks = await knex('mb_tracks')
         .where({ mb_album_id: release.mb_album_id })
         .select('mb_track_id', 'name', 'number', 'position', 'length')
         .orderBy('position', 'asc');
@@ -100,12 +100,12 @@ const insertReleaseWithArtistsAndTracks = async ({
   tracks,
 }) => {
   knex.transaction(async (trx) => {
-    await trx('albums').where({ mb_album_id: album.mbAlbumId }).update({
+    await trx('mb_albums').where({ mb_album_id: album.mbAlbumId }).update({
       type: album.type,
     });
 
     for (const artist of artists) {
-      await trx('artists')
+      await trx('mb_artists')
         .insert({
           mb_artist_id: artist.artist.id,
           name: artist.name,
@@ -116,7 +116,7 @@ const insertReleaseWithArtistsAndTracks = async ({
         .onConflict('mb_artist_id')
         .merge();
 
-      await trx('albums_artists')
+      await trx('mb_albums_mb_artists')
         .insert({
           mb_album_id: album.mbAlbumId,
           mb_artist_id: artist.artist.id,
@@ -125,7 +125,7 @@ const insertReleaseWithArtistsAndTracks = async ({
         .ignore();
     }
 
-    await trx('tracks').insert(
+    await trx('mb_tracks').insert(
       tracks
         .flatMap((medium) => medium.tracks)
         .map((track) => ({
@@ -146,7 +146,7 @@ const demoteCandidateToNoMatch = async (candidateId, roonAlbumId) => {
       .where({ id: roonAlbumId })
       .update({ status: 'noAlbumMatchFound' });
 
-    await trx('albums')
+    await trx('mb_albums')
       .where({ mb_album_id: candidateId })
       .update({ type: 'noMatch' });
   });
@@ -158,14 +158,14 @@ const promoteReleaseToMatch = async (releaseId, roonAlbumId) => {
       .where({ id: roonAlbumId })
       .update({ status: 'albumMatched' });
 
-    await trx('albums')
+    await trx('mb_albums')
       .where({ mb_album_id: releaseId })
       .update({ type: 'match' });
   });
 };
 
 const getCandidates = async (album) => {
-  const candidates = await knex('albums')
+  const candidates = await knex('mb_albums')
     .where({
       roon_album_id: album.id,
       type: 'candidate',
@@ -186,7 +186,7 @@ const insertCandidates = async (album, candidates) =>
       candidatePriority,
       candidate,
     ] of candidates.releases.entries()) {
-      await trx('albums')
+      await trx('mb_albums')
         .insert({
           mb_album_id: candidate.id,
           roon_album_id: album.id,
@@ -204,7 +204,7 @@ const insertCandidates = async (album, candidates) =>
         .update({ status: 'candidatesLoaded' });
 
       for (const artist of candidate['artist-credit']) {
-        await trx('artists')
+        await trx('mb_artists')
           .insert({
             mb_artist_id: artist.artist.id,
             name: artist.name,
@@ -215,7 +215,7 @@ const insertCandidates = async (album, candidates) =>
           .onConflict('mb_artist_id')
           .merge();
 
-        await trx('albums_artists')
+        await trx('mb_albums_mb_artists')
           .insert({
             mb_album_id: candidate.id,
             mb_artist_id: artist.artist.id,
@@ -227,7 +227,9 @@ const insertCandidates = async (album, candidates) =>
   });
 
 const getReleasesByRoonAlbumId = async (roonAlbumId) => {
-  const releases = await knex('albums').where({ roon_album_id: roonAlbumId });
+  const releases = await knex('mb_albums').where({
+    roon_album_id: roonAlbumId,
+  });
   const camelCaseReleases = camelCaseKeys(releases);
 
   if (releases.length === 0) {
@@ -236,19 +238,23 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
 
   const mbAlbumIds = releases.map((release) => release.mb_album_id);
 
-  const tracks = await knex('tracks').whereIn('mb_album_id', mbAlbumIds);
+  const tracks = await knex('mb_tracks').whereIn('mb_album_id', mbAlbumIds);
   const camelCaseTracks = camelCaseKeys(tracks);
 
-  const artists = await knex('albums_artists')
-    .join('artists', 'albums_artists.mb_artist_id', 'artists.mb_artist_id')
+  const artists = await knex('mb_albums_mb_artists')
+    .join(
+      'mb_artists',
+      'albums_artists.mb_artist_id',
+      'mb_artists.mb_artist_id',
+    )
     .whereIn('albums_artists.mb_album_id', mbAlbumIds)
     .select(
       'albums_artists.mb_album_id',
-      'artists.mb_artist_id',
-      'artists.name',
-      'artists.sort_name',
-      'artists.type',
-      'artists.disambiguation',
+      'mb_artists.mb_artist_id',
+      'mb_artists.name',
+      'mb_artists.sort_name',
+      'mb_artists.type',
+      'mb_artists.disambiguation',
     );
   const camelCaseArtists = camelCaseKeys(artists);
 

@@ -3,23 +3,23 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('albums_artists', (table) => {
+  return knex.schema.createTable('mb_albums_mb_artists', (table) => {
     table.text('mb_album_id').notNullable();
     table.text('mb_artist_id').notNullable();
 
     table
       .foreign('mb_album_id')
-      .references('albums.mb_album_id')
+      .references('mb_albums.mb_album_id')
       .onDelete('CASCADE');
     table
       .foreign('mb_artist_id')
-      .references('artists.mb_artist_id')
+      .references('mb_artists.mb_artist_id')
       .onDelete('CASCADE');
 
-    table.primary(['mb_album_id', 'mb_artist_id'], 'albums_artists_on_mb_artist_id_mb_album_id',);
+    table.primary(['mb_album_id', 'mb_artist_id'], 'mb_albums_mb_artists_on_mb_artist_id_mb_album_id',);
 
-    table.index('mb_artist_id', 'albums_artists_on_mb_artist_id');
-    table.index('mb_album_id', 'albums_artists_on_mb_album_id');
+    table.index('mb_artist_id', 'mb_albums_mb_artists_on_mb_artist_id');
+    table.index('mb_album_id', 'mb_albums_mb_artists_on_mb_album_id');
 
     table.timestamps(true, true);
   });
@@ -30,5 +30,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('albums_artists');
+  return knex.schema.dropTable('mb_albums_mb_artists');
 }

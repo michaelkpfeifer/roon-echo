@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('albums', (table) => {
+  return knex.schema.createTable('mb_albums', (table) => {
     table.text('mb_album_id').notNullable().primary();
     table
       .integer('roon_album_id')
@@ -27,5 +27,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('albums');
+  return knex.schema.dropTable('mb_albums');
 }
