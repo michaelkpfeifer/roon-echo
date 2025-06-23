@@ -71,7 +71,7 @@ const getReleaseWithArtistsAndTracks = async (releaseId) => {
         return Result.Err('getReleaseWithArtistsAndTracks: releaseNotFound');
       }
 
-      const mbArtistIds = await knex('albums_artists')
+      const mbArtistIds = await knex('mb_albums_mb_artists')
         .where({ mb_album_id: release.mb_album_id })
         .pluck('mb_artist_id');
 
@@ -116,7 +116,7 @@ const insertReleaseWithArtistsAndTracks = async ({
         .onConflict('mb_artist_id')
         .merge();
 
-      await trx('albums_artists')
+      await trx('mb_albums_mb_artists')
         .insert({
           mb_album_id: album.mbAlbumId,
           mb_artist_id: artist.artist.id,
@@ -215,7 +215,7 @@ const insertCandidates = async (album, candidates) =>
           .onConflict('mb_artist_id')
           .merge();
 
-        await trx('albums_artists')
+        await trx('mb_albums_mb_artists')
           .insert({
             mb_album_id: candidate.id,
             mb_artist_id: artist.artist.id,
@@ -241,7 +241,7 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
   const tracks = await knex('mb_tracks').whereIn('mb_album_id', mbAlbumIds);
   const camelCaseTracks = camelCaseKeys(tracks);
 
-  const artists = await knex('albums_artists')
+  const artists = await knex('mb_albums_mb_artists')
     .join(
       'mb_artists',
       'albums_artists.mb_artist_id',
