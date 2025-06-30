@@ -25,7 +25,7 @@ import {
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
-import { extractQueueItems } from './queues.js';
+import { extractQueueItems } from './queues.ts';
 import { dbInit, insertPlayedTrackInHistory } from './repository.js';
 import {
   appendToScheduledTracks,

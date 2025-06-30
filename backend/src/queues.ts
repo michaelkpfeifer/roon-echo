@@ -1,13 +1,13 @@
 import fp from 'lodash/fp.js';
 
-const extractQueueItems = (queue) => {
+const extractQueueItems = (queue: any) => {
   if (fp.has(['items'], queue)) {
     return queue.items;
   }
 
   if (fp.has(['changes'], queue)) {
     const insertOperation = queue.changes.find(
-      (change) => change.operation === 'insert',
+      (change: any) => change.operation === 'insert',
     );
 
     if (insertOperation) {

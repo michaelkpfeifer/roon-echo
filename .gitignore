@@ -3,6 +3,7 @@
 /backend/config.json
 /backend/coverage/
 /backend/db/
+/backend/dist/
 /backend/node_modules/
 
 /frontend/dist/
