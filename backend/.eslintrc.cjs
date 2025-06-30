@@ -11,6 +11,13 @@ module.exports = {
     process: true,
   },
   plugins: ['import', 'unused-imports'],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.ts'],
+      },
+    },
+  },
   rules: {
     'import/extensions': [
       'error',
@@ -41,4 +48,36 @@ module.exports = {
     'no-await-in-loop': 'off',
     'no-restricted-syntax': 'off',
   },
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint'],
+      extends: [
+        'airbnb',
+        'prettier',
+        'plugin:@typescript-eslint/recommended',
+      ],
+      settings: {
+        'import/resolver': {
+          typescript: {},
+          node: {
+            extensions: ['.js', '.ts'],
+          },
+        },
+      },
+      rules: {
+        'import/extensions': [
+          'error',
+          'ignorePackages',
+          {
+            js: 'always',
+            ts: 'never',
+          },
+        ],
+        'unused-imports/no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
+      },
+    },
+  ],
 };
