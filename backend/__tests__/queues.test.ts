@@ -1,4 +1,4 @@
-import { extractQueueItems } from '../src/queues.js';
+import { extractQueueItems } from '../src/queues.ts';
 
 describe('extractQueueItems', () => {
   const items = [
