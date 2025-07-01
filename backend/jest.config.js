@@ -1,5 +1,6 @@
 export default {
-  transform: {},
+  preset: 'ts-jest',
+  testEnvironment: 'node',  transform: {},
   coveragePathIgnorePatterns: [
     '/__factories__/',
     '/__fixtures__/',
