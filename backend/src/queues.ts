@@ -1,17 +1,26 @@
 import fp from 'lodash/fp.js';
+import type { RoonQueue } from './types/internal/roonQueue';
+import { hasArray } from './typeGuards.js';
+import type { RawRoonQueueItem } from './types/external/rawRoonQueueItem.js';
+import { transformToRoonQueueItem } from './transform/transformToRoonQueueItem.js';
 
-const extractQueueItems = (queue: any) => {
-  if (fp.has(['items'], queue)) {
-    return queue.items;
+function isRawRoonQueueWithItems(obj: unknown): obj is { items: RawRoonQueueItem[] } {
+  return hasArray('items')(obj);
+}
+
+function isRawRoonQueueWithChanges(obj: unknown): obj is { changes: any[] } {
+  return hasArray('changes')(obj);
+}
+
+const extractQueueItems = (queue: unknown): RoonQueue => {
+  if (isRawRoonQueueWithItems(queue)) {
+    return queue.items.map(transformToRoonQueueItem);
   }
 
-  if (fp.has(['changes'], queue)) {
-    const insertOperation = queue.changes.find(
-      (change: any) => change.operation === 'insert',
-    );
-
-    if (insertOperation) {
-      return insertOperation.items;
+  if (isRawRoonQueueWithChanges(queue)) {
+    const insertOp = fp.find({ operation: 'insert' }, queue.changes);
+    if (insertOp && 'items' in insertOp && Array.isArray(insertOp.items)) {
+      return insertOp.items.map(transformToRoonQueueItem);
     }
 
     return [];

@@ -2,7 +2,7 @@ import knexInit from 'knex';
 
 import Result from './result.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
-import knexConfig from '../knexfile.js';
+import knexConfig from './knexfile.js';
 
 const knex = knexInit(knexConfig.development);
 
