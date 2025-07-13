@@ -29,6 +29,4 @@ const extractQueueItems = (queue: unknown): RoonQueue => {
   throw new Error('Error: Cannot extract items from queue');
 };
 
-/* eslint-disable import/prefer-default-export */
 export { extractQueueItems };
-/* eslint-disable import/prefer-default-export */

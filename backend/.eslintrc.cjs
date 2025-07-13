@@ -47,6 +47,7 @@ module.exports = {
     'no-else-return': 'off',
     'no-await-in-loop': 'off',
     'no-restricted-syntax': 'off',
+    'import/prefer-default-export': 'off',
   },
   overrides: [
     {
@@ -77,6 +78,7 @@ module.exports = {
         ],
         'unused-imports/no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': ['warn', { args: 'none' }],
+        'import/prefer-default-export': 'off',
       },
     },
   ],
