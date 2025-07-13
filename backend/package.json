@@ -9,10 +9,10 @@
   "scripts": {
     "lint": "yarn eslint src __tests__ __factories__ --ext .js,.ts",
     "type-check": "tsc --noEmit",
-    "test": "yarn type-check && node --experimental-vm-modules node_modules/.bin/jest",
-    "dev": "nodemon --exec \"node --loader ts-node/esm\" index.js",
-    "debug": "nodemon --inspect --exec \"node --loader ts-node/esm\" index.js",
-    "debug-break": "nodemon --inspect-brk --exec \"node --loader ts-node/esm\" index.js"
+    "test": "yarn type-check && node --no-warnings --experimental-vm-modules --import ./register.js node_modules/.bin/jest",
+    "dev": "nodemon --exec \"node --import ./register.js\" index.js",
+    "debug": "nodemon --inspect --exec \"node --import ./register.js\" index.js",
+    "debug-break": "nodemon --inspect-brk --exec \"node --import ./register.js\" index.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.2",
