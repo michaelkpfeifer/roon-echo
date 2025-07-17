@@ -12,9 +12,7 @@ const isRawRoonQueueWithItems = (
 const isRawRoonQueueWithChanges = (obj: unknown): obj is { changes: any[] } =>
   hasArray('changes')(obj);
 
-const parseQueue = (queue: unknown) => {
-  return RawRoonQueueSchema.parse(queue);
-};
+const parseQueue = (queue: unknown) => RawRoonQueueSchema.parse(queue);
 
 const extractQueueItems = (queue: unknown): RoonQueue => {
   /* eslint-disable no-console */
