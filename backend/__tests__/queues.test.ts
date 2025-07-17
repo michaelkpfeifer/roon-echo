@@ -3,12 +3,6 @@ import { ZodError } from 'zod';
 import { extractQueueItems } from '../src/queues';
 
 describe('extractQueueItems', () => {
-  test('one equals one', () => {
-    const one = 1;
-
-    expect(one).toEqual(one);
-  });
-
   const items = [
     {
       queueItemId: 846769,
