@@ -3,8 +3,11 @@ import type { RoonQueue } from './types/internal/roonQueue';
 import { hasArray } from './typeGuards.js';
 import type { RawRoonQueueItem } from './types/external/rawRoonQueueItem.js';
 import { transformToRoonQueueItem } from './transform/transformToRoonQueueItem.js';
+import { RawRoonQueueSchema } from './schemas/rawRoonQueue.js';
 
-function isRawRoonQueueWithItems(obj: unknown): obj is { items: RawRoonQueueItem[] } {
+function isRawRoonQueueWithItems(
+  obj: unknown,
+): obj is { items: RawRoonQueueItem[] } {
   return hasArray('items')(obj);
 }
 
@@ -12,13 +15,23 @@ function isRawRoonQueueWithChanges(obj: unknown): obj is { changes: any[] } {
   return hasArray('changes')(obj);
 }
 
+const parseQueue = (queue: unknown) => {
+  return RawRoonQueueSchema.parse(queue);
+};
+
 const extractQueueItems = (queue: unknown): RoonQueue => {
-  if (isRawRoonQueueWithItems(queue)) {
-    return queue.items.map(transformToRoonQueueItem);
+  /* eslint-disable no-console */
+  console.log('queues.ts: extractQueueItems(): queue:', queue);
+  /* eslint-enable no-console */
+
+  const parsed = parseQueue(queue);
+
+  if (isRawRoonQueueWithItems(parsed)) {
+    return parsed.items.map(transformToRoonQueueItem);
   }
 
-  if (isRawRoonQueueWithChanges(queue)) {
-    const insertOp = fp.find({ operation: 'insert' }, queue.changes);
+  if (isRawRoonQueueWithChanges(parsed)) {
+    const insertOp = fp.find({ operation: 'insert' }, parsed.changes);
     if (insertOp && 'items' in insertOp && Array.isArray(insertOp.items)) {
       return insertOp.items.map(transformToRoonQueueItem);
     }
