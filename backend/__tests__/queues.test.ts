@@ -1,12 +1,8 @@
+import { ZodError } from 'zod';
+
 import { extractQueueItems } from '../src/queues';
 
 describe('extractQueueItems', () => {
-  test('one equals one', () => {
-    const one = 1;
-
-    expect(one).toEqual(one)
-  });
-
   const items = [
     {
       queueItemId: 846769,
@@ -95,8 +91,6 @@ describe('extractQueueItems', () => {
       somethingElse: items,
     };
 
-    expect(() => extractQueueItems(queue)).toThrow(
-      'Error: Cannot extract items from queue',
-    );
+    expect(() => extractQueueItems(queue)).toThrow(ZodError);
   });
 });
