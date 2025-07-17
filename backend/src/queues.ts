@@ -5,15 +5,12 @@ import type { RawRoonQueueItem } from './types/external/rawRoonQueueItem.js';
 import { transformToRoonQueueItem } from './transform/transformToRoonQueueItem.js';
 import { RawRoonQueueSchema } from './schemas/rawRoonQueue.js';
 
-function isRawRoonQueueWithItems(
+const isRawRoonQueueWithItems = (
   obj: unknown,
-): obj is { items: RawRoonQueueItem[] } {
-  return hasArray('items')(obj);
-}
+): obj is { items: RawRoonQueueItem[] } => hasArray('items')(obj);
 
-function isRawRoonQueueWithChanges(obj: unknown): obj is { changes: any[] } {
-  return hasArray('changes')(obj);
-}
+const isRawRoonQueueWithChanges = (obj: unknown): obj is { changes: any[] } =>
+  hasArray('changes')(obj);
 
 const parseQueue = (queue: unknown) => {
   return RawRoonQueueSchema.parse(queue);
