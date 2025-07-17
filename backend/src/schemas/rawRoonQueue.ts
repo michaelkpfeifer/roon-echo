@@ -28,12 +28,3 @@ const RawRoonQueueSchema = z.union([
 ]);
 
 export { RawRoonQueueSchema };
-
-// const RawRoonQueueChangesSchema = z.object({
-//   changes: z.array(z.union([RemoveChangeSchema, InsertChangeSchema])),
-// });
-
-// export const RawRoonQueueSchema = z.union([
-//   RawRoonQueueChangesSchema,                     // { changes: [...] }
-//   z.array(RawRoonQueueItemSchema),               // [ RawRoonQueueItem, ... ]
-// ]);
