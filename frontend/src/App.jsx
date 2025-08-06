@@ -8,12 +8,11 @@ import { loadConfig, saveConfig } from './config';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
-import Browse from './Main/Browse';
 import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { mergeAlbum, setAlbums, setBrowseData } from './utils';
+import { mergeAlbum, setAlbums } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -103,20 +102,6 @@ function App() {
       );
     });
 
-    socket.on('browseData', (browseData) => {
-      /* eslint-disable no-console */
-      console.log(
-        'App.jsx: processing browseData message: browseData:',
-        browseData,
-      );
-      /* eslint-enable no-console */
-
-      setAppState((currentAppState) =>
-        setBrowseData(currentAppState, browseData),
-      );
-      window.scrollTo(0, 0);
-    });
-
     socket.on('allAlbums', (allAlbums) => {
       /* eslint-disable no-console */
       console.log(
@@ -183,7 +168,6 @@ function App() {
             <div className="right">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/browse" element={<Browse />} />
                 <Route path="/albums" element={<Albums />} />
                 <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />

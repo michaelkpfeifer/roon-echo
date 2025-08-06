@@ -13,12 +13,6 @@ function Sidebar() {
 
         <div className="link-group">
           <div>
-            <Link to="/browse">Browse</Link>
-          </div>
-        </div>
-
-        <div className="link-group">
-          <div>
             <Link to="/albums">Albums</Link>
           </div>
           <div>

@@ -18,11 +18,6 @@ const mergeAlbum = (currentAppState, album) => ({
   ),
 });
 
-const setBrowseData = (currentAppState, browseData) => ({
-  ...currentAppState,
-  browseData,
-});
-
 const formatMbTrackLength = (milliseconds) => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -36,5 +31,4 @@ export {
   formatMbTrackLength,
   mergeAlbum,
   setAlbums,
-  setBrowseData,
 };

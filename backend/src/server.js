@@ -375,21 +375,6 @@ io.on('connection', async (socket) => {
     subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
   });
 
-  socket.on('browse', async (dataRef) => {
-    let browseOptions;
-    if (dataRef === undefined) {
-      browseOptions = { hierarchy: 'browse', pop_all: true, item_key: null };
-    } else {
-      browseOptions = { hierarchy: 'browse', item_key: dataRef.itemKey };
-    }
-    await browser.browseAsync(browseInstance, browseOptions);
-    const browseData = await browser.loadAsync(browseInstance, {
-      hierarchy: 'browse',
-    });
-
-    socket.emit('browseData', browseData);
-  });
-
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
