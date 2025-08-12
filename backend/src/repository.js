@@ -244,12 +244,12 @@ const getReleasesByRoonAlbumId = async (roonAlbumId) => {
   const artists = await knex('mb_albums_mb_artists')
     .join(
       'mb_artists',
-      'albums_artists.mb_artist_id',
+      'mb_albums_mb_artists.mb_artist_id',
       'mb_artists.mb_artist_id',
     )
-    .whereIn('albums_artists.mb_album_id', mbAlbumIds)
+    .whereIn('mb_albums_mb_artists.mb_album_id', mbAlbumIds)
     .select(
-      'albums_artists.mb_album_id',
+      'mb_albums_mb_artists.mb_album_id',
       'mb_artists.mb_artist_id',
       'mb_artists.name',
       'mb_artists.sort_name',
