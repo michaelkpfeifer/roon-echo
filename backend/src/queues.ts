@@ -1,7 +1,7 @@
 import fp from 'lodash/fp.js';
-import type { RoonQueue } from './types/internal/roonQueue';
+import type { RoonQueue } from '@shared/internal/roonQueue';
 import { hasArray } from './typeGuards.js';
-import type { RawRoonQueueItem } from './types/external/rawRoonQueueItem.js';
+import type { RawRoonQueueItem } from '@shared/external/rawRoonQueueItem.js';
 import { transformToRoonQueueItem } from './transform/transformToRoonQueueItem.js';
 import { RawRoonQueueSchema } from './schemas/rawRoonQueue.js';
 
