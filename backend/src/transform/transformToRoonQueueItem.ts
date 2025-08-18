@@ -1,5 +1,5 @@
-import { RawRoonQueueItem } from '../types/external/rawRoonQueueItem';
-import { RoonQueueItem } from '../types/internal/roonQueueItem';
+import { RawRoonQueueItem } from '@shared/external/rawRoonQueueItem';
+import { RoonQueueItem } from '@shared/internal/roonQueueItem';
 
 const transformToRoonQueueItem = (raw: RawRoonQueueItem): RoonQueueItem => ({
   queueItemId: raw.queueItemId,

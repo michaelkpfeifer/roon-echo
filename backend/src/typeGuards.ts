@@ -1,7 +1,7 @@
 import fp from 'lodash/fp.js';
 
-import type { RawOneLine, RawTwoLine, RawThreeLine } from './types/external/rawNLine.js';
-import type { RawRoonQueueItem } from './types/external/rawRoonQueueItem.js';
+import type { RawOneLine, RawTwoLine, RawThreeLine } from '@shared/external/rawNLine';
+import type { RawRoonQueueItem } from '@shared/external/rawRoonQueueItem';
 
 const hasNumber = (prop: string) => (obj: unknown) =>
   fp.isObject(obj) && fp.isNumber(fp.get(prop, obj))
