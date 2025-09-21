@@ -18,6 +18,13 @@ const mergeAlbum = (currentAppState, album) => ({
   ),
 });
 
+const mergeQueues = (currentAppState, zoneId, queueItems) => {
+  return {
+    ...currentAppState,
+    queues: { ...currentAppState.queues, [zoneId]: queueItems },
+  };
+};
+
 const formatMbTrackLength = (milliseconds) => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -30,5 +37,6 @@ export {
   findSelectedZone,
   formatMbTrackLength,
   mergeAlbum,
+  mergeQueues,
   setAlbums,
 };

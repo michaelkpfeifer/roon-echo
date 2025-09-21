@@ -12,7 +12,7 @@ import Home from './Main/Home';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
-import { mergeAlbum, setAlbums } from './utils';
+import { mergeAlbum, mergeQueues, setAlbums } from './utils';
 
 function App() {
   const [roonState, setRoonState] = useState({
@@ -21,8 +21,8 @@ function App() {
 
   const [appState, setAppState] = useState({
     albums: {},
+    queues: {},
     isZonesModalOpen: false,
-    browseData: {},
     tmpSelectedZoneId: null,
   });
 
@@ -123,10 +123,35 @@ function App() {
 
     socket.on('albumUpdate', (album) => {
       /* eslint-disable no-console */
-      console.log('App.jsx: processing albumsUpdate message: album:', album);
+      console.log('App.jsx: processing albumUpdate message: album:', album);
       /* eslint-enable no-console */
 
       setAppState((currentAppState) => mergeAlbum(currentAppState, album));
+    });
+
+    socket.on('queueChanged', ({ zoneId, queueItems }) => {
+      /* eslint-disable no-console */
+      console.log('App.jsx: processing queueChanged message: zoneid:', zoneId);
+      /* eslint-enable no-console */
+      /* eslint-disable no-console */
+      console.log(
+        'App.jsx: processing queueChanged message: queueItems:',
+        queueItems,
+      );
+      /* eslint-enable no-console */
+
+      setAppState((currentAppState) => {
+        const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
+
+        /* eslint-disable no-console */
+        console.log(
+          'App.jsx: processing queueChanged message: mergedQueues:',
+          mergedQueues,
+        );
+        /* eslint-enable no-console */
+
+        return mergedQueues;
+      });
     });
   }, [config]);
 

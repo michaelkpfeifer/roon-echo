@@ -71,7 +71,15 @@ const subscribeToQueueChanges = (zoneIds) => {
       const queue = camelCaseKeys(snakeCaseQueue);
       const queueItems = extractQueueItems(queue);
 
+      io.emit('queueChanged', { zoneId, queueItems });
+
       /* eslint-disable no-console */
+      console.log('server.js: subscribeToQueueChanges: response:', response);
+      console.log('server.js: subscribeToQueueChanges: queue:', queue);
+      console.log(
+        'server.js: subscribeToQueueChanges: queueItems:',
+        queueItems,
+      );
       console.log(
         'server.js: subscribeToQueueChanges: playingTracks:',
         playingTracks,
