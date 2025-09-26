@@ -22,6 +22,12 @@ function Sidebar() {
             <Link to="/tracks">Tracks</Link>
           </div>
         </div>
+
+        <div className="link-group">
+          <div>
+            <Link to="/queues">Queues</Link>
+          </div>{' '}
+        </div>
       </nav>
     </div>
   );

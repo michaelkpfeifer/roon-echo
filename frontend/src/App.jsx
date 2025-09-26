@@ -9,6 +9,7 @@ import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import Home from './Main/Home';
+import Queues from './Main/Queues';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
@@ -185,7 +186,7 @@ function App() {
     <AppContext.Provider value={contextValue}>
       <Router>
         <div className="page">
-          <div className="header"></div>
+          <div className="header" />
           <div className="container">
             <div className="left">
               <Sidebar />
@@ -197,6 +198,7 @@ function App() {
                 <Route path="/albums/:mbAlbumId" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
+                <Route path="/queues" element={<Queues />} />
               </Routes>
             </div>
           </div>
