@@ -1,9 +1,10 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import { lookupZoneName } from '../utils';
 
 function Queues() {
-  const { appState } = useContext(AppContext);
+  const { appState, roonState } = useContext(AppContext);
 
   /* eslint-disable no-console */
   console.log('Queues.jsx: Queues(): appstate.queues', appState.queues);
@@ -16,7 +17,7 @@ function Queues() {
         {Object.entries(appState.queues).map(([zoneId, queue]) => {
           return (
             <>
-              <h2>{zoneId}</h2>
+              <h2>{lookupZoneName(roonState.zones, zoneId)}</h2>
               <table>
                 {queue.map(({ queueItemId, length, imageKey, threeLine }) => {
                   return (
