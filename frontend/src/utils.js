@@ -6,6 +6,9 @@ const findSelectedZone = (roonZones, selectedZoneId) => {
   return roonZones[selectedZoneId] || null;
 };
 
+const lookupZoneName = (roonZones, zoneId) =>
+  roonZones[zoneId].displayName || '-';
+
 const setAlbums = (currentAppState, albums) => ({
   ...currentAppState,
   albums,
@@ -18,6 +21,13 @@ const mergeAlbum = (currentAppState, album) => ({
   ),
 });
 
+const mergeQueues = (currentAppState, zoneId, queueItems) => {
+  return {
+    ...currentAppState,
+    queues: { ...currentAppState.queues, [zoneId]: queueItems },
+  };
+};
+
 const formatMbTrackLength = (milliseconds) => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -29,6 +39,8 @@ const formatMbTrackLength = (milliseconds) => {
 export {
   findSelectedZone,
   formatMbTrackLength,
+  lookupZoneName,
   mergeAlbum,
+  mergeQueues,
   setAlbums,
 };
