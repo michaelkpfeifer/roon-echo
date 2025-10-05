@@ -27,19 +27,21 @@ body {
     flex: 1;
     flex-direction: row;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .left {
     width: 12vw;
     box-sizing: border-box;
     border: 1px solid black;
+    overflow: auto;
 }
 
 .right {
     width: 88vw;
     box-sizing: border-box;
     border: 1px solid black;
+    overflow: auto;
 }
 
 .footer {
