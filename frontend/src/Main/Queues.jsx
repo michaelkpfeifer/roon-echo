@@ -14,27 +14,23 @@ function Queues() {
     <>
       <h1>Queues</h1>
       <div className="queues-container">
-        {Object.entries(appState.queues).map(([zoneId, queue]) => {
-          return (
-            <>
-              <h2>{lookupZoneName(roonState.zones, zoneId)}</h2>
-              <table>
-                {queue.map(({ queueItemId, length, imageKey, threeLine }) => {
-                  return (
-                    <tr>
-                      <td>{queueItemId}</td>
-                      <td>{length}</td>
-                      <td>{imageKey}</td>
-                      <td>{threeLine.line1}</td>
-                      <td>{threeLine.line2}</td>
-                      <td>{threeLine.line3}</td>
-                    </tr>
-                  );
-                })}
-              </table>
-            </>
-          );
-        })}
+        {Object.entries(appState.queues).map(([zoneId, queue]) => (
+          <>
+            <h2>{lookupZoneName(roonState.zones, zoneId)}</h2>
+            <table>
+              {queue.map(({ queueItemId, length, imageKey, threeLine }) => (
+                <tr key={queueItemId}>
+                  <td>{queueItemId}</td>
+                  <td>{length}</td>
+                  <td>{imageKey}</td>
+                  <td>{threeLine.line1}</td>
+                  <td>{threeLine.line2}</td>
+                  <td>{threeLine.line3}</td>
+                </tr>
+              ))}
+            </table>
+          </>
+        ))}
       </div>
     </>
   );
