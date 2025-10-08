@@ -18,16 +18,18 @@ function Queues() {
           <>
             <h2>{lookupZoneName(roonState.zones, zoneId)}</h2>
             <table>
-              {queue.map(({ queueItemId, length, imageKey, threeLine }) => (
-                <tr key={queueItemId}>
-                  <td>{queueItemId}</td>
-                  <td>{length}</td>
-                  <td>{imageKey}</td>
-                  <td>{threeLine.line1}</td>
-                  <td>{threeLine.line2}</td>
-                  <td>{threeLine.line3}</td>
-                </tr>
-              ))}
+              <tbody>
+                {queue.map(({ queueItemId, length, imageKey, threeLine }) => (
+                  <tr key={queueItemId}>
+                    <td>{queueItemId}</td>
+                    <td>{length}</td>
+                    <td>{imageKey}</td>
+                    <td>{threeLine.line1}</td>
+                    <td>{threeLine.line2}</td>
+                    <td>{threeLine.line3}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </>
         ))}
