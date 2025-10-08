@@ -58,7 +58,7 @@ AlbumCard.propTypes = {
       imageKey: PropTypes.string,
     }),
     mbAlbum: PropTypes.shape({
-      mbAlbumId: PropTypes.string.isRequired,
+      mbAlbumId: PropTypes.string,
     }),
   }).isRequired,
 };
