@@ -15,7 +15,7 @@ function Queues() {
       <h1>Queues</h1>
       <div className="queues-container">
         {Object.entries(appState.queues).map(([zoneId, queue]) => (
-          <>
+          <div key={zoneId}>
             <h2>{lookupZoneName(roonState.zones, zoneId)}</h2>
             <table>
               <tbody>
@@ -31,7 +31,7 @@ function Queues() {
                 ))}
               </tbody>
             </table>
-          </>
+          </div>
         ))}
       </div>
     </>
