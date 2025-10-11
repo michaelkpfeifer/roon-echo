@@ -4,6 +4,7 @@ import App from './App';
 
 import './styles/global.css';
 import './styles/global/albums.css';
+import './styles/global/album-card.css';
 import './styles/global/album.css';
 import './styles/global/sidebar.css';
 
