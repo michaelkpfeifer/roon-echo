@@ -18,12 +18,12 @@
 }
 
 .album-card__title {
-    font-size: 16px;
+    font-size: 0.875rem;
     font-weight: bold;
     margin-bottom: 8px;
 }
 
 .album-card__subtitle {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #555;
 }
