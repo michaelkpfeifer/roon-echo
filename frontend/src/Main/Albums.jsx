@@ -9,7 +9,7 @@ function Albums() {
 
   return (
     <>
-      <h1>Albums</h1>
+      <h1 className="heading-display">Albums</h1>
       <div className="albums-container">
         {fp
           .orderBy(

@@ -17,7 +17,7 @@ function Artists() {
 
   return (
     <>
-      <h1>Artists</h1>
+      <h1 className="heading-display">Artists</h1>
       <div className="artists-container">
         {artists.map((artist) => (
           <div key={artist.mbArtistId}>
