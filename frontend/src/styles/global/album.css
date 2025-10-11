@@ -1,6 +1,6 @@
 .album-heading {
     display: flex;
-    padding: 36px;
+    padding-bottom: 32px;
 }
 
 .album-heading__image {
@@ -13,13 +13,13 @@
 .album-heading__artists {
     font-size: 18px;
     font-weight: bold;
-    padding-left: 36px;
+    padding-left: 32px;
 }
 
 .album-heading__name {
     font-size: 36px;
     font-weight: bold;
-    padding-left: 36px;
+    padding-left: 32px;
 }
 
 .album-track-row {
