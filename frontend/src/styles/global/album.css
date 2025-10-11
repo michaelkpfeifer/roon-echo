@@ -28,11 +28,12 @@
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #ddd;
+    background-color: var(--bg-primary);
     transition: background-color 0.2s;
 }
 
 .album-track-row:hover {
-    background-color: #f9f9f9;
+    background-color: var(--bg-primary-hover);
 }
 
 .album-track-row__length {
