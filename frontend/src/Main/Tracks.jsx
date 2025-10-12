@@ -25,7 +25,7 @@ function Tracks() {
 
   return (
     <>
-      <h1>Tracks</h1>
+      <h1 className="heading-display">Tracks</h1>
       <div className="tracks-container">
         {tracks.map((track) => (
           <div key={track.mbTrackId}>

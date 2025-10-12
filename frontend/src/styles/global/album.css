@@ -1,25 +1,25 @@
 .album-heading {
     display: flex;
-    padding: 36px;
+    padding-bottom: 32px;
 }
 
 .album-heading__image {
-    width: 150px;
-    height: 150px;
+    width: 250px;
+    height: 250px;
     object-fit: cover;
     border-radius: 4px;
 }
 
 .album-heading__artists {
-    font-size: 18px;
+    font-size: 1.5rem;
     font-weight: bold;
-    padding-left: 36px;
+    padding-left: 32px;
 }
 
 .album-heading__name {
-    font-size: 36px;
+    font-size: 2.5rem;
     font-weight: bold;
-    padding-left: 36px;
+    padding-left: 32px;
 }
 
 .album-track-row {
@@ -27,12 +27,14 @@
     grid-template-columns: 40px 1fr 80px 80px;
     align-items: center;
     padding: 8px 16px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #eee;
+    background-color: var(--bg-primary);
     transition: background-color 0.2s;
+    font-size: 1rem;
 }
 
 .album-track-row:hover {
-    background-color: #f9f9f9;
+    background-color: var(--bg-primary-hover);
 }
 
 .album-track-row__length {
@@ -41,8 +43,7 @@
 }
 
 .album-track-row__name {
-    font-size: 16px;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 .album-track-row__track-add-next {

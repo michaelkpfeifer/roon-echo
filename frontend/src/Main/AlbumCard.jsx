@@ -26,10 +26,12 @@ function AlbumCard({ album }) {
           className="album-card__image"
         />
       )}
-      <div className="album-card__title">
+      <div className="album-card__album-name">
         <b>{album.roonAlbum.albumName}</b>
       </div>
-      <div className="album-card__subtitle">{album.roonAlbum.artistName}</div>
+      <div className="album-card__artist-name">
+        {album.roonAlbum.artistName}
+      </div>
       {!fp.isEmpty(album.mbAlbum) ? (
         <Link to={`/albums/${album.mbAlbum.mbAlbumId}`}>View Details</Link>
       ) : null}

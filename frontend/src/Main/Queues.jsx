@@ -12,7 +12,7 @@ function Queues() {
 
   return (
     <>
-      <h1>Queues</h1>
+      <h1 className="heading-display">Queues</h1>
       <div className="queues-container">
         {Object.entries(appState.queues).map(([zoneId, queue]) => (
           <div key={zoneId}>
