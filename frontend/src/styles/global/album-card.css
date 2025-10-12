@@ -17,13 +17,13 @@
     box-sizing: border-box;
 }
 
-.album-card__title {
+.album-card__album-name {
     font-size: 0.875rem;
-    font-weight: bold;
+    font-weight: 400;
     margin-bottom: 8px;
 }
 
-.album-card__subtitle {
+.album-card__artist-name {
     font-size: 0.875rem;
     color: #555;
 }
