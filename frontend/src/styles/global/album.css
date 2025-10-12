@@ -30,6 +30,7 @@
     border-bottom: 1px solid #eee;
     background-color: var(--bg-primary);
     transition: background-color 0.2s;
+    font-size: 1rem;
 }
 
 .album-track-row:hover {
@@ -42,8 +43,7 @@
 }
 
 .album-track-row__name {
-    font-size: 1rem;
-    font-weight: bold;
+    font-weight: 500;
 }
 
 .album-track-row__track-add-next {
