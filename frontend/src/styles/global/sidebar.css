@@ -1,3 +1,9 @@
-.link-group {
-    padding: 10px;
+.sidebar-link-group {
+    padding: 8px;
+}
+
+.sidebar-link {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
 }
