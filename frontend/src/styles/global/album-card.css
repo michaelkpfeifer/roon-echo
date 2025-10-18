@@ -1,8 +1,8 @@
 .album-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
     padding: 16px;
     background-color: var(--bg-primary);
     transition: transform 0.2s;
@@ -26,4 +26,9 @@
 .album-card__artist-name {
     font-size: 0.875rem;
     color: #555;
+}
+
+.album-card__status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
 }
