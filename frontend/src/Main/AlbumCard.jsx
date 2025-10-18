@@ -29,6 +29,29 @@ const albumStatusIcon = (status) => {
   return Icon;
 };
 
+const imageLinkTarget = (album) => {
+  let linkTarget;
+
+  switch (album.status) {
+    case 'albumMatched':
+      linkTarget = `/albums/${album.mbAlbum.mbAlbumId}`;
+      break;
+    case 'noAlbumMatchFound':
+      linkTarget = '';
+      break;
+    case 'roonAlbumLoaded':
+      linkTarget = '';
+      break;
+    case 'candidatesLoaded':
+      linkTarget = '';
+      break;
+    default:
+      throw new Error(`Error: Unknown album status: ${album.status}`);
+  }
+
+  return linkTarget;
+};
+
 function AlbumData({ status, albumName, artistName }) {
   const Icon = albumStatusIcon(status);
 
@@ -51,11 +74,13 @@ function AlbumCard({ album }) {
   return (
     <div className="album-card">
       {album.roonAlbum.imageKey ? (
-        <img
-          src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={album.roonAlbum.albumName}
-          className="album-card__image"
-        />
+        <Link to={imageLinkTarget(album)}>
+          <img
+            src={`${coreUrl}/api/image/${album.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
+            alt={album.roonAlbum.albumName}
+            className="album-card__image"
+          />
+        </Link>
       ) : (
         <img
           src={noAlbumArt}
@@ -68,9 +93,6 @@ function AlbumCard({ album }) {
         albumName={album.roonAlbum.albumName}
         artistName={album.roonAlbum.artistName}
       />
-      {!fp.isEmpty(album.mbAlbum) ? (
-        <Link to={`/albums/${album.mbAlbum.mbAlbumId}`}>View Details</Link>
-      ) : null}
     </div>
   );
 }
