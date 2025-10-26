@@ -5,7 +5,8 @@
 export async function up(knex) {
   await knex.raw(`
     CREATE TABLE roon_albums (
-      roon_album_id TEXT,
+      roon_album_id TEXT NOT NULL
+        CHECK (length(roon_album_id) = 36),
       status TEXT NOT NULL,
       album_name TEXT NOT NULL,
       artist_name TEXT NOT NULL,

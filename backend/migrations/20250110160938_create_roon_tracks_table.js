@@ -5,8 +5,10 @@
 export function up(knex) {
   return knex.raw(`
     CREATE TABLE roon_tracks (
-      id TEXT,
-      roon_album_id INTEGER NOT NULL,
+      id TEXT NOT NULL
+        CHECK (length(id) = 36),
+      roon_album_id TEXT NOT NULL
+        CHECK (length(roon_album_id) = 36),
       track_name TEXT NOT NULL,
       number TEXT NOT NULL,
       position INTEGER NOT NULL,

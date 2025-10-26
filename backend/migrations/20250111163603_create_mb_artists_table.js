@@ -5,7 +5,8 @@
 export function up(knex) {
   return knex.raw(`
     CREATE TABLE mb_artists (
-      mb_artist_id TEXT NOT NULL,
+      mb_artist_id TEXT NOT NULL
+        CHECK (length(mb_artist_id) = 36),
       name TEXT NOT NULL,
       sort_name TEXT NOT NULL,
       type TEXT,

@@ -6,7 +6,8 @@ export function up(knex) {
   return knex.raw(`
     CREATE TABLE history (
       id INTEGER NOT NULL primary key autoincrement,
-      mb_track_id TEXT NOT NULL,
+      mb_track_id TEXT NOT NULL
+        CHECK (length(mb_track_id) = 36),
       track_name TEXT NOT NULL,
       album_name TEXT NOT NULL,
       artist_names TEXT NOT NULL,

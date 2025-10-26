@@ -5,8 +5,10 @@
 export function up(knex) {
   return knex.raw(`
     CREATE TABLE mb_albums (
-      mb_album_id TEXT NOT NULL,
-      roon_album_id INTEGER NOT NULL,
+      mb_album_id TEXT NOT NULL
+        CHECK (length(roon_album_id) = 36),
+      roon_album_id INTEGER NOT NULL
+        CHECK (length(roon_album_id) = 36),
       type TEXT NOT NULL,
       score INTEGER,
       candidate_priority INTEGER,

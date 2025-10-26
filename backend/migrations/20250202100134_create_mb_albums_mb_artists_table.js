@@ -5,8 +5,10 @@
 export async function up(knex) {
   await knex.raw(`
     CREATE TABLE mb_albums_mb_artists (
-      mb_album_id TEXT NOT NULL,
-      mb_artist_id TEXT NOT NULL,
+      mb_album_id TEXT NOT NULL
+        CHECK (length(mb_album_id) = 36),
+      mb_artist_id TEXT NOT NULL
+        CHECK (length(mb_artist_id) = 36),
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(mb_album_id) REFERENCES mb_albums(mb_album_id)
