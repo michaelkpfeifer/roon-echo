@@ -4,7 +4,7 @@
  */
 export function up(knex) {
   return knex.schema.createTable('roon_albums', (table) => {
-    table.text('id').primary();
+    table.text('roon_album_id').primary();
     table.text('status').notNullable();
     table.text('album_name').notNullable();
     table.text('artist_name').notNullable();

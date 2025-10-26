@@ -28,7 +28,7 @@ const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
       album_name: roonAlbumName,
       artist_name: roonArtistName,
     })
-    .select('id', 'status', 'album_name', 'artist_name')
+    .select('roon_album_id', 'status', 'album_name', 'artist_name')
     .first()
     .then(async (roonAlbum) => {
       if (!roonAlbum) {
@@ -37,7 +37,7 @@ const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
 
       const roonTracks = await knex('roon_tracks')
         .where({
-          roon_album_id: roonAlbum.id,
+          roon_album_id: roonAlbum.roon_album_id,
         })
         .select('track_name', 'number', 'position')
         .orderBy('position', 'asc');
@@ -54,7 +54,9 @@ const getRoonAlbumWithTracks = async ({ roonAlbumName, roonArtistName }) => {
 
 const insertRoonAlbumWithTracks = async ({ roonAlbum, roonTracks }) => {
   knex.transaction(async (trx) => {
-    await trx('roon_albums').insert(snakeCaseKeys(roonAlbum)).returning('id');
+    await trx('roon_albums')
+      .insert(snakeCaseKeys(roonAlbum))
+      .returning('roon_album_id');
     await trx('roon_tracks').insert(snakeCaseKeys(roonTracks));
   });
 };
@@ -143,7 +145,7 @@ const insertReleaseWithArtistsAndTracks = async ({
 const demoteCandidateToNoMatch = async (candidateId, roonAlbumId) => {
   knex.transaction(async (trx) => {
     await trx('roon_albums')
-      .where({ id: roonAlbumId })
+      .where({ roon_album_id: roonAlbumId })
       .update({ status: 'noAlbumMatchFound' });
 
     await trx('mb_albums')
@@ -155,7 +157,7 @@ const demoteCandidateToNoMatch = async (candidateId, roonAlbumId) => {
 const promoteReleaseToMatch = async (releaseId, roonAlbumId) => {
   knex.transaction(async (trx) => {
     await trx('roon_albums')
-      .where({ id: roonAlbumId })
+      .where({ roon_album_id: roonAlbumId })
       .update({ status: 'albumMatched' });
 
     await trx('mb_albums')
@@ -167,7 +169,7 @@ const promoteReleaseToMatch = async (releaseId, roonAlbumId) => {
 const getCandidates = async (album) => {
   const candidates = await knex('mb_albums')
     .where({
-      roon_album_id: album.id,
+      roon_album_id: album.roonAlbumId,
       type: 'candidate',
     })
     .select('mb_album_id', 'score', 'candidate_priority', 'track_count')
@@ -189,7 +191,7 @@ const insertCandidates = async (album, candidates) =>
       await trx('mb_albums')
         .insert({
           mb_album_id: candidate.id,
-          roon_album_id: album.id,
+          roon_album_id: album.roonAlbumId,
           type: 'candidate',
           score: candidate.score,
           candidate_priority: candidatePriority,
@@ -200,7 +202,7 @@ const insertCandidates = async (album, candidates) =>
         .merge();
 
       await trx('roon_albums')
-        .where({ id: album.id })
+        .where({ roon_album_id: album.roonAlbumId })
         .update({ status: 'candidatesLoaded' });
 
       for (const artist of candidate['artist-credit']) {

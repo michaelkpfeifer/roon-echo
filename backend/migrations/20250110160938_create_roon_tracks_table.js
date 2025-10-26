@@ -8,7 +8,7 @@ export function up(knex) {
     table
       .integer('roon_album_id')
       .notNullable()
-      .references('id')
+      .references('roon_album_id')
       .inTable('roon_albums')
       .onDelete('CASCADE')
       .onUpdate('CASCADE');

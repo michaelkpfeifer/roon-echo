@@ -99,7 +99,7 @@ function AlbumCard({ album }) {
 
 AlbumCard.propTypes = {
   album: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    roonAlbumId: PropTypes.string.isRequired,
     status: PropTypes.oneOf([
       'albumMatched',
       'candidatesLoaded',

@@ -11,20 +11,20 @@ import {
 
 describe('buildInitialAlbumStructure', () => {
   test('builds the fundamental album structure', () => {
-    const id = 'UUID album 12345';
+    const roonAlbumId = 'UUID album 12345';
     const status = 'roonAlbumLoaded';
     const roonAlbum = buildRoonAlbum();
     const roonTracks = buildRoonTracks(2);
 
     const album = buildInitialAlbumStructure({
-      id,
+      roonAlbumId,
       status,
       roonAlbum,
       roonTracks,
     });
 
     expect(album).toEqual({
-      id,
+      roonAlbumId,
       status,
       sortKeys: {
         artistNames: roonAlbum.artistName,

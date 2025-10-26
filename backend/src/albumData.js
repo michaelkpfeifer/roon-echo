@@ -219,7 +219,7 @@ const processAlbum = async (socket, album) => {
       });
 
       if (mbAndRoonTracksMatch === true) {
-        promoteReleaseToMatch(nextCandidateId, album.id);
+        promoteReleaseToMatch(nextCandidateId, album.roonAlbumId);
 
         socket.emit('albumUpdate', {
           ...newAlbum,
@@ -238,7 +238,7 @@ const processAlbum = async (socket, album) => {
 
         return { nextOperation: 'noOp', newAlbum };
       } else {
-        demoteCandidateToNoMatch(nextCandidateId, album.id);
+        demoteCandidateToNoMatch(nextCandidateId, album.roonAlbumId);
 
         if (newAlbum.candidates.length === 0) {
           socket.emit('albumUpdate', {
@@ -325,7 +325,7 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
     const { roonAlbum, roonTracks } = Result.unwrap(roonAlbumWithTracks);
 
     return {
-      id: roonAlbum.id,
+      roonAlbumId: roonAlbum.roonAlbumId,
       status: roonAlbum.status,
       roonAlbum: {
         albumName: roonAlbum.albumName,
@@ -341,7 +341,7 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
     );
 
     const roonAlbum = {
-      id: uuidv7(),
+      roonAlbumId: uuidv7(),
       status: 'roonAlbumLoaded',
       albumName: roonApiAlbum.title,
       artistName: roonApiAlbum.subtitle,
@@ -354,7 +354,7 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
 
         return {
           id: uuidv7(),
-          roonAlbumId: roonAlbum.id,
+          roonAlbumId: roonAlbum.roonAlbumId,
           trackName,
           number,
           position: position + 1,
@@ -367,8 +367,13 @@ const prepareRoonAlbum = async (browseInstance, roonApiAlbum) => {
   }
 };
 
-const buildInitialAlbumStructure = ({ id, status, roonAlbum, roonTracks }) => ({
-  id,
+const buildInitialAlbumStructure = ({
+  roonAlbumId,
+  status,
+  roonAlbum,
+  roonTracks,
+}) => ({
+  roonAlbumId,
   status,
   sortKeys: {
     artistNames: roonAlbum.artistName,
@@ -396,7 +401,7 @@ const augmentAlbum = async (initialAlbum) => {
     return initialAlbum;
   }
 
-  const allReleases = await getReleasesByRoonAlbumId(initialAlbum.id);
+  const allReleases = await getReleasesByRoonAlbumId(initialAlbum.roonAlbumId);
   const candidates = fp.sortBy(
     'candidatePriority',
     allReleases.filter((release) => release.type === 'candidate'),

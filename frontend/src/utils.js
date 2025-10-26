@@ -17,7 +17,7 @@ const setAlbums = (currentAppState, albums) => ({
 const mergeAlbum = (currentAppState, album) => ({
   ...currentAppState,
   albums: currentAppState.albums.map((currentAlbum) =>
-    currentAlbum.id === album.id ? album : currentAlbum,
+    currentAlbum.roonAlbumId === album.roonAlbumId ? album : currentAlbum,
   ),
 });
 
