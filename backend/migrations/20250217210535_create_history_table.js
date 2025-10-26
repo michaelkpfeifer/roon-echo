@@ -3,24 +3,23 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('history', (table) => {
-    table.increments('id');
-    table
-      .text('mb_track_id')
-      .notNullable()
-      .references('mb_track_id')
-      .inTable('mb_tracks')
-      .onDelete('CASCADE')
-      .onUpdate('CASCADE');
-    table.text('track_name').notNullable();
-    table.text('album_name').notNullable();
-    table.text('artist_names').notNullable();
-    table.text('played_at').notNullable();
-    table.float('fraction_played').notNullable();
-    table.boolean('is_played').notNullable();
-
-    table.timestamps(true, true);
-  });
+  return knex.raw(`
+    CREATE TABLE history (
+      id INTEGER NOT NULL primary key autoincrement,
+      mb_track_id TEXT NOT NULL,
+      track_name TEXT NOT NULL,
+      album_name TEXT NOT NULL,
+      artist_names TEXT NOT NULL,
+      played_at TEXT NOT NULL,
+      fraction_played FLOAT NOT NULL,
+      is_played BOOLEAN NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(mb_track_id) REFERENCES mb_tracks(mb_track_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+    );
+  `);
 }
 
 /**

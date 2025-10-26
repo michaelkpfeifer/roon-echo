@@ -3,15 +3,18 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('mb_artists', (table) => {
-    table.text('mb_artist_id').notNullable().primary();
-    table.text('name').notNullable();
-    table.text('sort_name').notNullable();
-    table.text('type');
-    table.text('disambiguation');
-
-    table.timestamps(true, true);
-  });
+  return knex.raw(`
+    CREATE TABLE mb_artists (
+      mb_artist_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      sort_name TEXT NOT NULL,
+      type TEXT,
+      disambiguation TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (mb_artist_id)
+    );
+  `);
 }
 
 /**

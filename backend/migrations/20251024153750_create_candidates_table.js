@@ -4,7 +4,7 @@
  */
 export function up(knex) {
   return knex.raw(`
-      CREATE TABLE candidates (
+    CREATE TABLE candidates (
       mb_album_id CHAR(36) NOT NULL,
       roon_album_id CHAR(36) NOT NULL,
       type TEXT NOT NULL,
@@ -12,11 +12,11 @@ export function up(knex) {
       candidate_priority INTEGER,
       track_count INTEGER,
       mb_release_date DATETIME,
-      created_at DATETIME NOT NULL default CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL default CURRENT_TIMESTAMP,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE,
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
       PRIMARY KEY (roon_album_id, mb_album_id)
     );
   `);

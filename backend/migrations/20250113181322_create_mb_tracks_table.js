@@ -3,22 +3,22 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('mb_tracks', (table) => {
-    table.text('mb_track_id').notNullable().primary();
-    table
-      .text('mb_album_id')
-      .notNullable()
-      .references('mb_album_id')
-      .inTable('mb_albums')
-      .onDelete('CASCADE')
-      .onUpdate('CASCADE');
-    table.text('name').notNullable();
-    table.text('number').notNullable();
-    table.integer('position').notNullable();
-    table.integer('length');
-
-    table.timestamps(true, true);
-  });
+  return knex.raw(`
+    CREATE TABLE mb_tracks (
+      mb_track_id TEXT NOT NULL,
+      mb_album_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      number TEXT NOT NULL,
+      position INTEGER NOT NULL,
+      length INTEGER,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(mb_album_id) REFERENCES mb_albums(mb_album_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      PRIMARY KEY (mb_track_id)
+    );
+  `);
 }
 
 /**

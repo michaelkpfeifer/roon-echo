@@ -3,23 +3,23 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('mb_albums', (table) => {
-    table.text('mb_album_id').notNullable().primary();
-    table
-      .integer('roon_album_id')
-      .notNullable()
-      .references('roon_album_id')
-      .inTable('roon_albums')
-      .onDelete('CASCADE')
-      .onUpdate('CASCADE');
-    table.text('type').notNullable();
-    table.integer('score');
-    table.integer('candidate_priority');
-    table.integer('track_count');
-    table.text('mb_release_date');
-
-    table.timestamps(true, true);
-  });
+  return knex.raw(`
+    CREATE TABLE mb_albums (
+      mb_album_id TEXT NOT NULL,
+      roon_album_id INTEGER NOT NULL,
+      type TEXT NOT NULL,
+      score INTEGER,
+      candidate_priority INTEGER,
+      track_count INTEGER,
+      mb_release_date TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+      PRIMARY KEY (mb_album_id)
+    );
+  `);
 }
 
 /**
