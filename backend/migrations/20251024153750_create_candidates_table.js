@@ -14,6 +14,8 @@ export function up(knex) {
       candidate_priority INTEGER,
       track_count INTEGER,
       mb_release_date DATETIME,
+      mb_artists TEXT NOT NULL,
+      mb_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
