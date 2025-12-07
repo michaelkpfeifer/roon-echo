@@ -7,7 +7,7 @@ export function up(knex) {
     CREATE TABLE mb_albums (
       mb_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
-      roon_album_id INTEGER NOT NULL
+      roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
       type TEXT NOT NULL,
       score INTEGER,
