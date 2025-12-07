@@ -36,8 +36,9 @@ import {
   updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
+import { db } from '../db.js';
 
-dbInit();
+dbInit(db);
 
 const app = express();
 const server = http.createServer(app);
