@@ -7,6 +7,14 @@ export default {
     useNullAsDefault: true,
   },
 
+  test: {
+    client: 'better-sqlite3',
+    connection: {
+      filename: './db/mb.test.sqlite3',
+    },
+    useNullAsDefault: true,
+  },
+
   staging: {
     client: 'better-sqlite3',
     connection: {
