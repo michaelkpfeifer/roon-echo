@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit",
     "dev": "nodemon --exec tsx index.js",
     "test": "yarn type-check && node --no-warnings --experimental-vm-modules node_modules/.bin/jest",
+    "test:coverage": "yarn type-check && node --no-warnings --experimental-vm-modules node_modules/.bin/jest --coverage",
     "debug": "nodemon --inspect --exec tsx index.js",
     "debug-break": "nodemon --inspect-brk --exec tsx index.js"
   },
