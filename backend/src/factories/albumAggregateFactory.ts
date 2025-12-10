@@ -1,9 +1,7 @@
 import { AlbumAggregate } from '@shared/internal/albumAggregate.js';
 
-function buildEmptyAlbumAggregate(): AlbumAggregate {
-  return {
-    stage: 'empty',
-  };
-}
+const buildEmptyAlbumAggregate = (): AlbumAggregate => ({
+  stage: 'empty',
+});
 
 export { buildEmptyAlbumAggregate };
