@@ -2,7 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "allowJs": true
+    "allowJs": true,
+    "noUnusedLocals": false
   },
   "include": ["src", "__tests__"]
 }
