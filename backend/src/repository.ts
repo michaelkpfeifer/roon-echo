@@ -10,8 +10,6 @@ import type { Knex } from 'knex';
 const knex = knexInit(knexConfig.development);
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {
-  await db.raw('PRAGMA journal_mode = WAL;');
-
   // await knex('roon_tracks').del();
   // await knex('mb_tracks').del();
   // await knex('mb_albums').del();
