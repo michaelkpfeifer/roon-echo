@@ -190,6 +190,8 @@ const buildStableAlbumData = async (
     JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
   );
   /* eslint-enable no-console */
+
+  socket.emit('albums', albumAggregatesWithRoonTracks);
 };
 
 export { buildStableAlbumData, isRoonAlbumUnprocessable };

@@ -23,7 +23,7 @@ function Albums() {
           )
           .map((album) => (
             <div key={album.roonAlbum.itemKey}>
-              <AlbumCard album={album} />
+              <AlbumCard albumAggregate={album} />
             </div>
           ))}
       </div>
