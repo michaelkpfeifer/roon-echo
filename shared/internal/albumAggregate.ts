@@ -1,5 +1,6 @@
 import { RoonAlbum } from './roonAlbum.js';
 import { RoonTrack } from './roonTrack.js';
+import { MbCandidate } from './mbCandidate.js';
 
 type AlbumAggregate =
   | {
@@ -7,14 +8,21 @@ type AlbumAggregate =
     }
   | {
       stage: 'withRoonAlbum';
-      id: string,
+      id: string;
       roonAlbum: RoonAlbum;
     }
   | {
       stage: 'withRoonTracks';
-      id: string,
+      id: string;
       roonAlbum: RoonAlbum;
       roonTracks: RoonTrack[];
+    }
+  | {
+      stage: 'withMbCandidates';
+      id: string;
+      roonAlbum: RoonAlbum;
+      roonTracks: RoonTrack[];
+      mbCandidates: MbCandidate[];
     };
 
 export { AlbumAggregate };
