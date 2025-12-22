@@ -90,16 +90,17 @@ type DatabaseSchema = {
     timestamp: string | null;
   };
 
-  candidates: {
+  mb_candidates: {
     mb_album_id: string;
     roon_album_id: string;
     type: string;
     score: number | null;
-    candidate_priority: number | null;
+    priority: number | null;
     track_count: number | null;
-    mb_release_date: string | null;
-    mb_artists: string;
-    mb_tracks: string;
+    release_date: string | null;
+    mb_candidte_album_name: string;
+    mb_candidate_artists: string;
+    mb_candidate_tracks: string;
     created_at: string;
     updated_at: string;
   };

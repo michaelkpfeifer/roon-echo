@@ -4,18 +4,19 @@
  */
 export function up(knex) {
   return knex.raw(`
-    CREATE TABLE candidates (
+    CREATE TABLE mb_candidates (
       mb_album_id TEXT NOT NULL
         CHECK (length(mb_album_id) = 36),
       roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
       type TEXT NOT NULL,
       score INTEGER,
-      candidate_priority INTEGER,
+      priority INTEGER,
       track_count INTEGER,
-      mb_release_date DATETIME,
-      mb_artists TEXT NOT NULL,
-      mb_tracks TEXT NOT NULL,
+      release_date DATETIME,
+      mb_candidte_album_name TEXT NOT NULL,
+      mb_candidate_artists TEXT NOT NULL,
+      mb_candidate_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
@@ -31,5 +32,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('candidates');
+  return knex.schema.dropTable('mb_candidates');
 }
