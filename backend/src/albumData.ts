@@ -4,6 +4,8 @@ import { RawRoonTrack } from '@shared/external/rawRoonTrack';
 import { AlbumAggregate } from '@shared/internal/albumAggregate';
 import { RoonAlbum } from '@shared/internal/roonAlbum';
 import { RoonTrack } from '@shared/internal/roonTrack';
+import Bottleneck from 'bottleneck';
+import dotenv from 'dotenv';
 import { Socket } from 'socket.io';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -12,6 +14,7 @@ import {
   fetchRoonTracks,
   insertRoonAlbum,
   insertRoonTracks,
+  upsertMbCandidate,
 } from './repository';
 import { camelCaseKeys } from './utils.js';
 import { db } from '../db.js';
@@ -29,6 +32,82 @@ import {
   transformToRoonAlbum,
   transformToRoonTrack,
 } from './transforms/roonAlbum';
+
+dotenv.config();
+const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
+if (!mbReleaseEndpoint) {
+  throw new Error(
+    `Error: Failed to read MB_RELEASE_ENDPOINT from environment.`,
+  );
+}
+
+const mbUserAgent = process.env.MB_USER_AGENT;
+if (!mbUserAgent) {
+  throw new Error(`Error: Failed to read MB_USER_AGENT from environment.`);
+}
+
+const buildCandidateSearch = (
+  albumName: string,
+  artistName: string,
+): string => {
+  const url = new URL(mbReleaseEndpoint);
+
+  const query = `artist:"${artistName}" AND release:"${albumName}"`;
+
+  url.searchParams.set('query', query);
+  url.searchParams.set('fmt', 'json');
+
+  return url.toString();
+};
+
+const runCandidateSearch = async (albumName: string, artistName: string) => {
+  const response = await fetch(buildCandidateSearch(albumName, artistName), {
+    method: 'GET',
+    headers: {
+      'User-Agent': mbUserAgent,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error: Failed to fetch ${buildCandidateSearch(albumName, artistName)} (${response.status}).`,
+    );
+  }
+
+  const responsePayload = await response.json();
+
+  return responsePayload;
+};
+
+const buildFetchRelease = (releaseId: string): string => {
+  const url = new URL(`${mbReleaseEndpoint}/${releaseId}`);
+
+  url.searchParams.set('inc', 'artists+recordings+labels');
+  url.searchParams.set('fmt', 'json');
+
+  return url.toString();
+};
+
+const runFetchRelease = async (mbReleaseId: string) => {
+  const response = await fetch(buildFetchRelease(mbReleaseId), {
+    method: 'GET',
+    headers: {
+      'User-Agent': mbUserAgent,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error: Failed to fetch ${buildFetchRelease(mbReleaseId)} (${response.status}).`,
+    );
+  }
+
+  const responsePayload = await response.json();
+
+  return responsePayload;
+};
 
 const isRoonAlbumUnprocessable = (unparsedRawRoonAlbum: unknown) => {
   if (
@@ -150,6 +229,34 @@ const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   return albumAggregateWithRoonAlbum;
 };
 
+const mbApiRateLimiter = new Bottleneck({
+  minTime: 1100,
+  maxConcurrent: 1,
+});
+
+async function processAlbum(album: AlbumAggregate) {
+  const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
+    runCandidateSearch(album.roonAlbum.albumName, album.roonAlbum.artistName),
+  );
+
+  /* eslint-disable no-console */
+  console.log('albumData.ts: processAlbum(): searchResults:', searchResults);
+  /* eslint-enable no-console */
+
+  for (const candidate of searchResults.releases.slice(0, 3)) {
+    const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
+      runFetchRelease(candidate.id),
+    );
+
+    /* eslint-disable no-console */
+    console.log('albumData.ts: processAlbum(): fullRelease:', fullRelease);
+    /* eslint-enable no-console */
+
+    // const internalCandidate = mapToInternalCandidate(fullRelease, album.id);
+    // await upsertMbCandidate(db, internalCandidate);
+  }
+}
+
 const buildStableAlbumData = async (
   socket: Socket,
   browseInstance: RoonApiBrowse,
@@ -192,6 +299,10 @@ const buildStableAlbumData = async (
   /* eslint-enable no-console */
 
   socket.emit('albums', albumAggregatesWithRoonTracks);
+
+  for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
+    processAlbum(albumAggregateWithRoonTracks);
+  }
 };
 
 export { buildStableAlbumData, isRoonAlbumUnprocessable };
