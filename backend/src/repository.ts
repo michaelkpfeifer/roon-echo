@@ -1,4 +1,5 @@
 import { RawRoonAlbum } from '@shared/external/rawRoonAlbum';
+import { MbCandidate } from '@shared/internal/mbCandidate';
 import { RoonAlbum } from '@shared/internal/roonAlbum';
 import { RoonTrack } from '@shared/internal/roonTrack';
 import type { Knex } from 'knex';
@@ -65,6 +66,30 @@ const fetchRoonTracks = async (
   return Result.Ok(camelCaseKeys(roonTracks));
 };
 
+const fetchMbCandidates = async (
+  db: Knex<DatabaseSchema>,
+  roonAlbum: RoonAlbum,
+): Promise<MbCandidate[]> => {
+  const roonAlbumId = roonAlbum.roonAlbumId;
+
+  const rows = await db<DatabaseSchema['mb_candidates']>('mb_candidates')
+    .where({ roon_album_id: roonAlbumId })
+    .orderBy('candidate_priority', 'asc');
+
+  return rows.map((row) => ({
+    mbAlbumId: row.mb_album_id,
+    roonAlbumId: row.roon_album_id,
+    type: row.type,
+    score: row.score,
+    priority: row.priority,
+    trackCount: row.track_count,
+    releaseDate: row.release_date,
+    mbCandidateAlbumName: row.mb_candidate_album_name,
+    mbCandidateArtists: JSON.parse(row.mb_candidate_artists),
+    mbCandidateTracks: JSON.parse(row.mb_candidate_tracks),
+  }));
+};
+
 const insertRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
@@ -95,11 +120,34 @@ const insertRoonTracks = async (
   });
 };
 
+const upsertMbCandidate = async (
+  db: Knex<DatabaseSchema>,
+  mBcandidate: MbCandidate,
+) => {
+  await db<DatabaseSchema['mb_candidates']>('mb_candidates')
+    .insert({
+      mb_album_id: mBcandidate.mbAlbumId,
+      roon_album_id: mBcandidate.roonAlbumId,
+      type: mBcandidate.type,
+      score: mBcandidate.score,
+      priority: mBcandidate.priority,
+      track_count: mBcandidate.trackCount,
+      release_date: mBcandidate.releaseDate,
+      mb_candidate_album_name: mBcandidate.mbCandidateAlbumName,
+      mb_candidate_artists: JSON.stringify(mBcandidate.mbCandidateArtists),
+      mb_candidate_tracks: JSON.stringify(mBcandidate.mbCandidateTracks),
+    })
+    .onConflict(['mb_album_id', 'roon_album_id'])
+    .merge();
+};
+
 export {
   dbInit,
+  fetchMbCandidates,
   fetchRoonAlbumId,
   fetchRoonTracks,
   insertPlayedTrackInHistory,
   insertRoonAlbum,
   insertRoonTracks,
+  upsertMbCandidate,
 };

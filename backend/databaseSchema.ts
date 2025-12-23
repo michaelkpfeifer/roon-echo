@@ -98,7 +98,7 @@ type DatabaseSchema = {
     priority: number | null;
     track_count: number | null;
     release_date: string | null;
-    mb_candidte_album_name: string;
+    mb_candidate_album_name: string;
     mb_candidate_artists: string;
     mb_candidate_tracks: string;
     created_at: string;
