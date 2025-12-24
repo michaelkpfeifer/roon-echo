@@ -120,19 +120,18 @@ const insertRoonTracks = async (
 
 const upsertMbCandidate = async (
   db: Knex<DatabaseSchema>,
-  mBcandidate: MbCandidate,
+  mbCandidate: MbCandidate,
 ) => {
   await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .insert({
-      mb_album_id: mBcandidate.mbAlbumId,
-      roon_album_id: mBcandidate.roonAlbumId,
-      type: mBcandidate.type,
-      score: mBcandidate.score,
-      track_count: mBcandidate.trackCount,
-      release_date: mBcandidate.releaseDate,
-      mb_candidate_album_name: mBcandidate.mbCandidateAlbumName,
-      mb_candidate_artists: JSON.stringify(mBcandidate.mbCandidateArtists),
-      mb_candidate_tracks: JSON.stringify(mBcandidate.mbCandidateTracks),
+      mb_album_id: mbCandidate.mbAlbumId,
+      roon_album_id: mbCandidate.roonAlbumId,
+      score: mbCandidate.score,
+      track_count: mbCandidate.trackCount,
+      release_date: mbCandidate.releaseDate,
+      mb_candidate_album_name: mbCandidate.mbCandidateAlbumName,
+      mb_candidate_artists: JSON.stringify(mbCandidate.mbCandidateArtists),
+      mb_candidate_tracks: JSON.stringify(mbCandidate.mbCandidateTracks),
     })
     .onConflict(['mb_album_id', 'roon_album_id'])
     .merge();
