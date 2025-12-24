@@ -3,7 +3,7 @@ import { z } from 'zod';
 const RawMbFetchReleaseResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
-  date: z.string(),
+  date: z.string().optional(),
   'artist-credit': z.array(
     z.object({
       joinphrase: z.string(),

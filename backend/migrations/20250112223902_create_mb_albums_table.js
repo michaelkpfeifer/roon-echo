@@ -11,7 +11,7 @@ export function up(knex) {
         CHECK (length(roon_album_id) = 36),
       score INTEGER,
       track_count INTEGER,
-      mb_release_date TEXT,
+      release_date TEXT,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)

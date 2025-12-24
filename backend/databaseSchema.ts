@@ -44,7 +44,7 @@ type DatabaseSchema = {
     roon_album_id: string;
     score: number | null;
     track_count: number | null;
-    mb_release_date: string | null;
+    release_date: string | null;
     created_at: string;
     updated_at: string;
   };
