@@ -5,7 +5,6 @@ type MbCandidate = {
   mbAlbumId: string;
   roonAlbumId: string;
   score: number | null;
-  priority: number | null;
   trackCount: number | null;
   releaseDate: string | null;
   mbCandidateAlbumName: string;

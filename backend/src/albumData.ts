@@ -30,6 +30,7 @@ import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResp
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
 import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
 import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
+import { transformToMbCandidate } from './transforms/mbCandidate';
 import {
   transformToRoonAlbum,
   transformToRoonTrack,
@@ -251,23 +252,28 @@ async function processAlbum(album: AlbumAggregate) {
   );
   /* eslint-enable no-console */
 
-  for (const mbCandidate of rawMbCandidateSearchResponse.releases) {
+  for (const rawMbCandidate of rawMbCandidateSearchResponse.releases) {
     const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
-      runMbFetchRelease(mbCandidate.id),
+      runMbFetchRelease(rawMbCandidate.id),
     );
 
     const rawMbFetchReleaseResponse =
       RawMbFetchReleaseResponseSchema.parse(fullRelease);
 
+    const mbCandidate = transformToMbCandidate(
+      album.roonAlbum.roonAlbumId,
+      rawMbCandidate,
+      rawMbFetchReleaseResponse,
+    );
+
     /* eslint-disable no-console */
     console.log(
-      'albumData.ts: processAlbum(): rawMbFetchReleaseRepsonse:',
-      JSON.stringify(rawMbFetchReleaseResponse, null, 4),
+      'albumData.ts: processAlbum(): mbCandidate:',
+      JSON.stringify(mbCandidate, null, 4),
     );
     /* eslint-enable no-console */
 
-    // const internalCandidate = mapToInternalCandidate(fullRelease, album.id);
-    // await upsertMbCandidate(db, internalCandidate);
+    // await upsertMbCandidate(db, mbCandidate);
   }
 }
 

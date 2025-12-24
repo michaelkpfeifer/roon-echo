@@ -79,7 +79,6 @@ const fetchMbCandidates = async (
   return rows.map((row) => ({
     mbAlbumId: row.mb_album_id,
     roonAlbumId: row.roon_album_id,
-    type: row.type,
     score: row.score,
     trackCount: row.track_count,
     releaseDate: row.release_date,
