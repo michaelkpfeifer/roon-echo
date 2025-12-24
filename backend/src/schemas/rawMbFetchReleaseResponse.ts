@@ -10,7 +10,6 @@ const RawMbFetchReleaseResponseSchema = z.object({
         disambiguation: z.string(),
         'sort-name': z.string(),
         name: z.string(),
-        type: z.string(),
       }),
     }),
   ),

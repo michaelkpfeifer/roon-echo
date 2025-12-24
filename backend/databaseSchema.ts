@@ -33,7 +33,6 @@ type DatabaseSchema = {
     mb_artist_id: string;
     name: string;
     sort_name: string;
-    type: string | null;
     disambiguation: string | null;
     created_at: string;
     updated_at: string;
@@ -42,7 +41,6 @@ type DatabaseSchema = {
   mb_albums: {
     mb_album_id: string;
     roon_album_id: string;
-    type: string;
     score: number | null;
     track_count: number | null;
     mb_release_date: string | null;
@@ -92,7 +90,6 @@ type DatabaseSchema = {
   mb_candidates: {
     mb_album_id: string;
     roon_album_id: string;
-    type: string;
     score: number | null;
     track_count: number | null;
     release_date: string | null;

@@ -9,7 +9,6 @@ export function up(knex) {
         CHECK (length(roon_album_id) = 36),
       roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
-      type TEXT NOT NULL,
       score INTEGER,
       track_count INTEGER,
       mb_release_date TEXT,

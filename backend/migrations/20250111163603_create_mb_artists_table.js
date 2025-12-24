@@ -9,7 +9,6 @@ export function up(knex) {
         CHECK (length(mb_artist_id) = 36),
       name TEXT NOT NULL,
       sort_name TEXT NOT NULL,
-      type TEXT,
       disambiguation TEXT,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
