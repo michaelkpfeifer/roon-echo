@@ -25,6 +25,8 @@ import {
   buildAlbumAggregateWithRoonTracks,
 } from './factories/albumAggregateFactory';
 import Result from './result.js';
+import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
+import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
 import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
 import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
@@ -46,7 +48,7 @@ if (!mbUserAgent) {
   throw new Error(`Error: Failed to read MB_USER_AGENT from environment.`);
 }
 
-const buildCandidateSearch = (
+const buildMbCandidateSearch = (
   albumName: string,
   artistName: string,
 ): string => {
@@ -60,8 +62,8 @@ const buildCandidateSearch = (
   return url.toString();
 };
 
-const runCandidateSearch = async (albumName: string, artistName: string) => {
-  const response = await fetch(buildCandidateSearch(albumName, artistName), {
+const runMbCandidateSearch = async (albumName: string, artistName: string) => {
+  const response = await fetch(buildMbCandidateSearch(albumName, artistName), {
     method: 'GET',
     headers: {
       'User-Agent': mbUserAgent,
@@ -71,7 +73,7 @@ const runCandidateSearch = async (albumName: string, artistName: string) => {
 
   if (!response.ok) {
     throw new Error(
-      `Error: Failed to fetch ${buildCandidateSearch(albumName, artistName)} (${response.status}).`,
+      `Error: Failed to fetch ${buildMbCandidateSearch(albumName, artistName)} (${response.status}).`,
     );
   }
 
@@ -80,7 +82,7 @@ const runCandidateSearch = async (albumName: string, artistName: string) => {
   return responsePayload;
 };
 
-const buildFetchRelease = (releaseId: string): string => {
+const buildMbFetchRelease = (releaseId: string): string => {
   const url = new URL(`${mbReleaseEndpoint}/${releaseId}`);
 
   url.searchParams.set('inc', 'artists+recordings+labels');
@@ -89,8 +91,8 @@ const buildFetchRelease = (releaseId: string): string => {
   return url.toString();
 };
 
-const runFetchRelease = async (mbReleaseId: string) => {
-  const response = await fetch(buildFetchRelease(mbReleaseId), {
+const runMbFetchRelease = async (mbReleaseId: string) => {
+  const response = await fetch(buildMbFetchRelease(mbReleaseId), {
     method: 'GET',
     headers: {
       'User-Agent': mbUserAgent,
@@ -100,7 +102,7 @@ const runFetchRelease = async (mbReleaseId: string) => {
 
   if (!response.ok) {
     throw new Error(
-      `Error: Failed to fetch ${buildFetchRelease(mbReleaseId)} (${response.status}).`,
+      `Error: Failed to fetch ${buildMbFetchRelease(mbReleaseId)} (${response.status}).`,
     );
   }
 
@@ -236,20 +238,32 @@ const mbApiRateLimiter = new Bottleneck({
 
 async function processAlbum(album: AlbumAggregate) {
   const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
-    runCandidateSearch(album.roonAlbum.albumName, album.roonAlbum.artistName),
+    runMbCandidateSearch(album.roonAlbum.albumName, album.roonAlbum.artistName),
   );
 
+  const rawMbCandidateSearchResponse =
+    RawMbCandidateSearchResponseSchema.parse(searchResults);
+
   /* eslint-disable no-console */
-  console.log('albumData.ts: processAlbum(): searchResults:', searchResults);
+  console.log(
+    'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
+    JSON.stringify(rawMbCandidateSearchResponse, null, 4),
+  );
   /* eslint-enable no-console */
 
-  for (const candidate of searchResults.releases.slice(0, 3)) {
+  for (const mbCandidate of rawMbCandidateSearchResponse.releases) {
     const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
-      runFetchRelease(candidate.id),
+      runMbFetchRelease(mbCandidate.id),
     );
 
+    const rawMbFetchReleaseResponse =
+      RawMbFetchReleaseResponseSchema.parse(fullRelease);
+
     /* eslint-disable no-console */
-    console.log('albumData.ts: processAlbum(): fullRelease:', fullRelease);
+    console.log(
+      'albumData.ts: processAlbum(): rawMbFetchReleaseRepsonse:',
+      JSON.stringify(rawMbFetchReleaseResponse, null, 4),
+    );
     /* eslint-enable no-console */
 
     // const internalCandidate = mapToInternalCandidate(fullRelease, album.id);
