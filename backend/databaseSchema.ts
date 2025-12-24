@@ -44,7 +44,6 @@ type DatabaseSchema = {
     roon_album_id: string;
     type: string;
     score: number | null;
-    candidate_priority: number | null;
     track_count: number | null;
     mb_release_date: string | null;
     created_at: string;
@@ -95,7 +94,6 @@ type DatabaseSchema = {
     roon_album_id: string;
     type: string;
     score: number | null;
-    priority: number | null;
     track_count: number | null;
     release_date: string | null;
     mb_candidate_album_name: string;

@@ -74,14 +74,13 @@ const fetchMbCandidates = async (
 
   const rows = await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .where({ roon_album_id: roonAlbumId })
-    .orderBy('candidate_priority', 'asc');
+    .orderBy('score', 'desc');
 
   return rows.map((row) => ({
     mbAlbumId: row.mb_album_id,
     roonAlbumId: row.roon_album_id,
     type: row.type,
     score: row.score,
-    priority: row.priority,
     trackCount: row.track_count,
     releaseDate: row.release_date,
     mbCandidateAlbumName: row.mb_candidate_album_name,
@@ -130,7 +129,6 @@ const upsertMbCandidate = async (
       roon_album_id: mBcandidate.roonAlbumId,
       type: mBcandidate.type,
       score: mBcandidate.score,
-      priority: mBcandidate.priority,
       track_count: mBcandidate.trackCount,
       release_date: mBcandidate.releaseDate,
       mb_candidate_album_name: mBcandidate.mbCandidateAlbumName,
