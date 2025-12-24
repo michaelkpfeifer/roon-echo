@@ -9,8 +9,9 @@ import { camelCaseKeys } from './utils.js';
 import type { DatabaseSchema } from '../databaseSchema';
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {
-  // await db('roon_tracks').del();
-  // await db('roon_albums').del();
+  await db('mb_candidates').del();
+  await db('roon_tracks').del();
+  await db('roon_albums').del();
 };
 
 const insertPlayedTrackInHistory = () => {};

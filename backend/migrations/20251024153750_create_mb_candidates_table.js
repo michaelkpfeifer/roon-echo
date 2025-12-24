@@ -12,7 +12,7 @@ export function up(knex) {
       score INTEGER,
       track_count INTEGER,
       release_date DATETIME,
-      mb_candidte_album_name TEXT NOT NULL,
+      mb_candidate_album_name TEXT NOT NULL,
       mb_candidate_artists TEXT NOT NULL,
       mb_candidate_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

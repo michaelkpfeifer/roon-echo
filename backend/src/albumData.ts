@@ -246,10 +246,10 @@ async function processAlbum(album: AlbumAggregate) {
     RawMbCandidateSearchResponseSchema.parse(searchResults);
 
   /* eslint-disable no-console */
-  console.log(
-    'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
-    JSON.stringify(rawMbCandidateSearchResponse, null, 4),
-  );
+  // console.log(
+  //   'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
+  //   JSON.stringify(rawMbCandidateSearchResponse, null, 4),
+  // );
   /* eslint-enable no-console */
 
   for (const rawMbCandidate of rawMbCandidateSearchResponse.releases) {
@@ -267,13 +267,13 @@ async function processAlbum(album: AlbumAggregate) {
     );
 
     /* eslint-disable no-console */
-    console.log(
-      'albumData.ts: processAlbum(): mbCandidate:',
-      JSON.stringify(mbCandidate, null, 4),
-    );
+    // console.log(
+    //   'albumData.ts: processAlbum(): mbCandidate:',
+    //   JSON.stringify(mbCandidate, null, 4),
+    // );
     /* eslint-enable no-console */
 
-    // await upsertMbCandidate(db, mbCandidate);
+    await upsertMbCandidate(db, mbCandidate);
   }
 }
 
@@ -312,10 +312,10 @@ const buildStableAlbumData = async (
   }
 
   /* eslint-disable no-console */
-  console.log(
-    'albumData.ts: buildStableAlbumData(): albumAggregatesWithRoonTracks:',
-    JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
-  );
+  // console.log(
+  //   'albumData.ts: buildStableAlbumData(): albumAggregatesWithRoonTracks:',
+  //   JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
+  // );
   /* eslint-enable no-console */
 
   socket.emit('albums', albumAggregatesWithRoonTracks);
