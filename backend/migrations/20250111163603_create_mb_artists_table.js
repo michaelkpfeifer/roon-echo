@@ -7,6 +7,7 @@ export function up(knex) {
     CREATE TABLE mb_artists (
       mb_artist_id TEXT NOT NULL
         CHECK (length(mb_artist_id) = 36),
+      joinphrase TEXT NOT NULL,
       name TEXT NOT NULL,
       sort_name TEXT NOT NULL,
       disambiguation TEXT,

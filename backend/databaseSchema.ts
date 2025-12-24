@@ -31,6 +31,7 @@ type DatabaseSchema = {
 
   mb_artists: {
     mb_artist_id: string;
+    joinphrase: string;
     name: string;
     sort_name: string;
     disambiguation: string | null;
