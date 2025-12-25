@@ -35,7 +35,29 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return Result.Ok(roonAlbums[0]);
+  return Result.Ok(camelCaseKeys(roonAlbums[0]));
+};
+
+const updateCandidatesFetchedAtTimestamp = async (
+  db: Knex<DatabaseSchema>,
+  roonAlbum: RoonAlbum,
+): Promise<void> => {
+  await db<DatabaseSchema['roon_albums']>('roon_albums')
+    .where({ roon_album_id: roonAlbum.roonAlbumId })
+    .update({
+      candidates_fetched_at: roonAlbum.candidatesFetchedAt,
+    });
+};
+
+const updateCandidatesMatchedAtTimestamp = async (
+  db: Knex<DatabaseSchema>,
+  roonAlbum: RoonAlbum,
+): Promise<void> => {
+  await db<DatabaseSchema['roon_albums']>('roon_albums')
+    .where({ roon_album_id: roonAlbum.roonAlbumId })
+    .update({
+      candidates_fetched_at: roonAlbum.candidatesMatchedAt,
+    });
 };
 
 const fetchRoonTracks = async (
@@ -146,5 +168,7 @@ export {
   insertPlayedTrackInHistory,
   insertRoonAlbum,
   insertRoonTracks,
+  updateCandidatesFetchedAtTimestamp,
+  updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 };

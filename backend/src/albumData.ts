@@ -16,6 +16,7 @@ import {
   fetchRoonTracks,
   insertRoonAlbum,
   insertRoonTracks,
+  updateCandidatesFetchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
 import { camelCaseKeys } from './utils.js';
@@ -159,7 +160,8 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
           candidatesFetchedAt: null,
           candidatesMatchedAt: null,
         }
-      : fp.pick(['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'])(
+      : fp.pick(
+          ['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'],
           Result.unwrap(roonAlbumResult),
         );
 
@@ -242,48 +244,58 @@ const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
 };
 
 const mbApiRateLimiter = new Bottleneck({
-  minTime: 1100,
+  minTime: 100,
   maxConcurrent: 1,
 });
 
 async function processAlbum(album: AlbumAggregate) {
-  const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
-    runMbCandidateSearch(album.roonAlbum.albumName, album.roonAlbum.artistName),
-  );
-
-  const rawMbCandidateSearchResponse =
-    RawMbCandidateSearchResponseSchema.parse(searchResults);
-
-  /* eslint-disable no-console */
-  // console.log(
-  //   'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
-  //   JSON.stringify(rawMbCandidateSearchResponse, null, 4),
-  // );
-  /* eslint-enable no-console */
-
-  for (const rawMbCandidate of rawMbCandidateSearchResponse.releases) {
-    const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
-      runMbFetchRelease(rawMbCandidate.id),
+  if (!album.roonAlbum.candidatesFetchedAt) {
+    const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
+      runMbCandidateSearch(
+        album.roonAlbum.albumName,
+        album.roonAlbum.artistName,
+      ),
     );
 
-    const rawMbFetchReleaseResponse =
-      RawMbFetchReleaseResponseSchema.parse(fullRelease);
-
-    const mbCandidate = transformToMbCandidate(
-      album.roonAlbum.roonAlbumId,
-      rawMbCandidate,
-      rawMbFetchReleaseResponse,
-    );
+    const rawMbCandidateSearchResponse =
+      RawMbCandidateSearchResponseSchema.parse(searchResults);
 
     /* eslint-disable no-console */
     // console.log(
-    //   'albumData.ts: processAlbum(): mbCandidate:',
-    //   JSON.stringify(mbCandidate, null, 4),
+    //   'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
+    //   JSON.stringify(rawMbCandidateSearchResponse, null, 4),
     // );
     /* eslint-enable no-console */
 
-    await upsertMbCandidate(db, mbCandidate);
+    for (const rawMbCandidate of rawMbCandidateSearchResponse.releases) {
+      const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
+        runMbFetchRelease(rawMbCandidate.id),
+      );
+
+      const rawMbFetchReleaseResponse =
+        RawMbFetchReleaseResponseSchema.parse(fullRelease);
+
+      const mbCandidate = transformToMbCandidate(
+        album.roonAlbum.roonAlbumId,
+        rawMbCandidate,
+        rawMbFetchReleaseResponse,
+      );
+
+      /* eslint-disable no-console */
+      // console.log(
+      //   'albumData.ts: processAlbum(): mbCandidate:',
+      //   JSON.stringify(mbCandidate, null, 4),
+      // );
+      /* eslint-enable no-console */
+
+      await upsertMbCandidate(db, mbCandidate);
+    }
+    album.roonAlbum.candidatesFetchedAt = new Date().toISOString();
+    updateCandidatesFetchedAtTimestamp(db, album.roonAlbum);
   }
+
+  const candidates = await fetchMbCandidates(db, album.roonAlbum);
+  console.log('>>>> candidates:', candidates);
 }
 
 const buildStableAlbumData = async (
@@ -320,6 +332,8 @@ const buildStableAlbumData = async (
     albumAggregatesWithRoonTracks.push(albumAggregateWithRoonTracks);
   }
 
+  socket.emit('albums', albumAggregatesWithRoonTracks);
+
   /* eslint-disable no-console */
   // console.log(
   //   'albumData.ts: buildStableAlbumData(): albumAggregatesWithRoonTracks:',
@@ -327,11 +341,16 @@ const buildStableAlbumData = async (
   // );
   /* eslint-enable no-console */
 
-  socket.emit('albums', albumAggregatesWithRoonTracks);
-
   for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
-    processAlbum(albumAggregateWithRoonTracks);
+    await processAlbum(albumAggregateWithRoonTracks);
   }
+
+  /* eslint-disable no-console */
+  // console.log(
+  //   'albumData.ts: buildStableAlbumData(): albumAggregatesWithRoonTracks:',
+  //   JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
+  // );
+  /* eslint-enable no-console */
 };
 
 export { buildStableAlbumData, isRoonAlbumUnprocessable };
