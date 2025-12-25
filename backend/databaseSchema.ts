@@ -15,6 +15,8 @@ type DatabaseSchema = {
     roon_album_id: string;
     album_name: string;
     artist_name: string;
+    candidates_fetched_at: string;
+    candidates_matched_at: string;
     created_at: string;
     updated_at: string;
   };

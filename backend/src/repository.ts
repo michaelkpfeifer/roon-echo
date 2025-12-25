@@ -16,26 +16,26 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
 
 const insertPlayedTrackInHistory = () => {};
 
-const fetchRoonAlbumId = async (
+const fetchRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   rawRoonAlbum: RawRoonAlbum,
 ) => {
-  const roonAlbumIds = await db<DatabaseSchema['roon_albums']>('roon_albums')
-    .where({
-      album_name: rawRoonAlbum.title,
-      artist_name: rawRoonAlbum.subtitle,
-    })
-    .pluck('roon_album_id');
+  const roonAlbums = await db<DatabaseSchema['roon_albums']>(
+    'roon_albums',
+  ).where({
+    album_name: rawRoonAlbum.title,
+    artist_name: rawRoonAlbum.subtitle,
+  });
 
-  if (roonAlbumIds.length === 0) {
+  if (roonAlbums.length === 0) {
     return Result.Err({
-      fetchRoonAlbumId: 'Error: roonAlbumNotFound',
+      fetchRoonAlbum: 'Error: roonAlbumNotFound',
       album_name: rawRoonAlbum.title,
       artist_name: rawRoonAlbum.subtitle,
     });
   }
 
-  return Result.Ok(roonAlbumIds[0]);
+  return Result.Ok(roonAlbums[0]);
 };
 
 const fetchRoonTracks = async (
@@ -141,7 +141,7 @@ const upsertMbCandidate = async (
 export {
   dbInit,
   fetchMbCandidates,
-  fetchRoonAlbumId,
+  fetchRoonAlbum,
   fetchRoonTracks,
   insertPlayedTrackInHistory,
   insertRoonAlbum,

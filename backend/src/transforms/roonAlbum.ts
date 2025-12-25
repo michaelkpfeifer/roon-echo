@@ -5,13 +5,19 @@ import type { RoonTrack } from '@shared/internal/roonTrack';
 
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,
-  roonAlbumId: string,
+  persistedAttributes: {
+    roonAlbumId: string;
+    candidatesFetchedAt: string;
+    candidatesMatchedAt: string;
+  },
 ): RoonAlbum => ({
-  roonAlbumId,
+  roonAlbumId: persistedAttributes.roonAlbumId,
   albumName: raw.title,
   artistName: raw.subtitle,
   imageKey: raw.imageKey,
   itemKey: raw.itemKey,
+  candidatesFetchedAt: persistedAttributes.candidatesFetchedAt,
+  candidatesMatchedAt: persistedAttributes.candidatesMatchedAt,
 });
 
 const transformToRoonTrack = (

@@ -9,6 +9,8 @@ export async function up(knex) {
         CHECK (length(roon_album_id) = 36),
       album_name TEXT NOT NULL,
       artist_name TEXT NOT NULL,
+      candidates_fetched_at DATETIME,
+      candidates_matched_at DATETIME,
       created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (roon_album_id)

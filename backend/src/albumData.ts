@@ -6,11 +6,13 @@ import { RoonAlbum } from '@shared/internal/roonAlbum';
 import { RoonTrack } from '@shared/internal/roonTrack';
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
+import fp from 'lodash/fp.js';
 import { Socket } from 'socket.io';
 import { v7 as uuidv7 } from 'uuid';
 
 import {
-  fetchRoonAlbumId,
+  fetchMbCandidates,
+  fetchRoonAlbum,
   fetchRoonTracks,
   insertRoonAlbum,
   insertRoonTracks,
@@ -149,14 +151,21 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
 
   const roonAlbums: RoonAlbum[] = [];
   for (const rawRoonAlbum of rawRoonAlbums) {
-    const roonAlbumIdResult = await fetchRoonAlbumId(db, rawRoonAlbum);
+    const roonAlbumResult = await fetchRoonAlbum(db, rawRoonAlbum);
 
-    const roonAlbumId = Result.isErr(roonAlbumIdResult)
-      ? uuidv7()
-      : Result.unwrap(roonAlbumIdResult);
+    const persistedAttributes = Result.isErr(roonAlbumResult)
+      ? {
+          roonAlbumId: uuidv7(),
+          candidatesFetchedAt: null,
+          candidatesMatchedAt: null,
+        }
+      : fp.pick(['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'])(
+          Result.unwrap(roonAlbumResult),
+        );
 
-    const roonAlbum = transformToRoonAlbum(rawRoonAlbum, roonAlbumId);
-    if (Result.isErr(roonAlbumIdResult)) {
+    const roonAlbum = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
+
+    if (Result.isErr(roonAlbumResult)) {
       await insertRoonAlbum(db, roonAlbum);
     }
 
