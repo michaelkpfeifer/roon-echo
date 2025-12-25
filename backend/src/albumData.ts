@@ -28,6 +28,7 @@ import {
   buildAlbumAggregateWithRoonTracks,
 } from './factories/albumAggregateFactory';
 import Result from './result.js';
+import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
@@ -248,6 +249,37 @@ const mbApiRateLimiter = new Bottleneck({
   maxConcurrent: 1,
 });
 
+const readPersistedAlbumAggregateData = async (
+  albumAggregateWithRoonTracks: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' }
+  >,
+) => {
+  const roonAlbum = albumAggregateWithRoonTracks.roonAlbum;
+  if (roonAlbum.candidatesFetchedAt) {
+    const candidates = await fetchMbCandidates(db, roonAlbum);
+    if (roonAlbum.candidatesMatchedAt) {
+    } else {
+      const roonTrackTitles = albumAggregateWithRoonTracks.roonTracks.map(
+        (track) => track.trackName,
+      );
+
+      for (const candidate of candidates) {
+        const mbTrackTitles = candidate.mbCandidateTracks.map(
+          (track) => track.name,
+        );
+
+        const comparisonResult = compareMbAndRoonTracks(
+          mbTrackTitles,
+          roonTrackTitles,
+        );
+      }
+    }
+  }
+
+  return roonAlbum;
+};
+
 async function processAlbum(album: AlbumAggregate) {
   if (!album.roonAlbum.candidatesFetchedAt) {
     const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
@@ -293,9 +325,6 @@ async function processAlbum(album: AlbumAggregate) {
     album.roonAlbum.candidatesFetchedAt = new Date().toISOString();
     updateCandidatesFetchedAtTimestamp(db, album.roonAlbum);
   }
-
-  const candidates = await fetchMbCandidates(db, album.roonAlbum);
-  console.log('>>>> candidates:', candidates);
 }
 
 const buildStableAlbumData = async (
@@ -330,6 +359,17 @@ const buildStableAlbumData = async (
     );
 
     albumAggregatesWithRoonTracks.push(albumAggregateWithRoonTracks);
+  }
+
+  const albumAggregatesWithPersistedData: (
+    | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
+    | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
+    | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
+  )[] = [];
+  for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
+    const albumAggregateWithPersistedData = readPersistedAlbumAggregateData(
+      albumAggregateWithRoonTracks,
+    );
   }
 
   socket.emit('albums', albumAggregatesWithRoonTracks);

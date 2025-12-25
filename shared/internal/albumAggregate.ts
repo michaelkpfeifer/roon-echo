@@ -18,7 +18,14 @@ type AlbumAggregate =
       roonTracks: RoonTrack[];
     }
   | {
-      stage: 'withMbCandidates';
+      stage: 'withMbMatch';
+      id: string;
+      roonAlbum: RoonAlbum;
+      roonTracks: RoonTrack[];
+      mbCandidates: MbCandidate[];
+    }
+  | {
+      stage: 'withoutMbMatch';
       id: string;
       roonAlbum: RoonAlbum;
       roonTracks: RoonTrack[];
