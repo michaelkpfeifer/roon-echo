@@ -20,10 +20,13 @@ const RawMbFetchReleaseResponseSchema = z.object({
       'track-count': z.number(),
       tracks: z.array(
         z.object({
-          length: z.number(),
+          length: z.nullable(z.number()),
           title: z.string(),
           position: z.number(),
           number: z.string(),
+          recording: z.object({
+            length: z.nullable(z.number()),
+          }),
         }),
       ),
     }),

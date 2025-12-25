@@ -23,7 +23,7 @@ const transformToMbCandidate = (
         name: track.title,
         number: track.number,
         position: track.position,
-        length: track.length || null,
+        length: track.length || track.recording.length || null,
       })),
     );
 
