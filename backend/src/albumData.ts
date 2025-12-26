@@ -304,6 +304,14 @@ async function processAlbum(album: AlbumAggregate) {
         runMbFetchRelease(rawMbCandidate.id),
       );
 
+      if (
+        fullRelease.media
+          .map((medium) => medium.tracks)
+          .some((tracks) => tracks === undefined)
+      ) {
+        continue;
+      }
+
       const rawMbFetchReleaseResponse =
         RawMbFetchReleaseResponseSchema.parse(fullRelease);
 
