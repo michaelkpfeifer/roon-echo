@@ -225,8 +225,54 @@ const normalizeCandidate = async (
   });
 };
 
+const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
+  const albumRow = await db<DatabaseSchema['mb_albums']>('mb_albums')
+    .where({ roon_album_id: roonAlbumId })
+    .first();
+
+  if (!albumRow) {
+    return Result.Err({
+      fetchMbAlbum: 'Error: mbAlbumNotFound',
+      roon_album_id: roonAlbumId,
+    });
+  }
+
+  const tracks = await db<DatabaseSchema['mb_tracks']>('mb_tracks')
+    .where({
+      mb_album_id: albumRow.mb_album_id,
+      roon_album_id: roonAlbumId,
+    })
+    .orderBy('position', 'asc');
+
+  const artists = await db<DatabaseSchema['mb_artists']>('mb_artists')
+    .join(
+      'mb_albums_mb_artists',
+      'mb_artists.mb_artist_id',
+      'mb_albums_mb_artists.mb_artist_id',
+    )
+    .where({
+      'mb_albums_mb_artists.mb_album_id': albumRow.mb_album_id,
+      'mb_albums_mb_artists.roon_album_id': roonAlbumId,
+    })
+    .select(
+      'mb_artists.*',
+      'mb_albums_mb_artists.position',
+      'mb_albums_mb_artists.joinphrase',
+    )
+    .orderBy('mb_albums_mb_artists.position', 'asc');
+
+  return Result.Ok(
+    camelCaseKeys({
+      ...albumRow,
+      tracks,
+      artists,
+    }),
+  );
+};
+
 export {
   dbInit,
+  fetchMbAlbum,
   fetchMbCandidates,
   fetchRoonAlbum,
   fetchRoonTracks,

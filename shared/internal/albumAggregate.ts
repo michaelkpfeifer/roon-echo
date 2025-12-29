@@ -1,3 +1,4 @@
+import { MbAlbum } from './mbAlbum';
 import { RoonAlbum } from './roonAlbum.js';
 import { RoonTrack } from './roonTrack.js';
 import { MbCandidate } from './mbCandidate.js';
@@ -23,6 +24,7 @@ type AlbumAggregate =
       roonAlbum: RoonAlbum;
       roonTracks: RoonTrack[];
       mbCandidates: MbCandidate[];
+      mbAlbum: MbAlbum;
     }
   | {
       stage: 'withoutMbMatch';

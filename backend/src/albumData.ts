@@ -2,6 +2,7 @@ import { RawRoonAlbum } from '@shared/external/rawRoonAlbum';
 import { RawRoonLoadAlbumsResponse } from '@shared/external/rawRoonLoadAlbumsResponse';
 import { RawRoonTrack } from '@shared/external/rawRoonTrack';
 import { AlbumAggregate } from '@shared/internal/albumAggregate';
+import { MbAlbum } from '@shared/internal/mbAlbum';
 import { RoonAlbum } from '@shared/internal/roonAlbum';
 import { RoonTrack } from '@shared/internal/roonTrack';
 import Bottleneck from 'bottleneck';
@@ -11,6 +12,7 @@ import { Socket } from 'socket.io';
 import { v7 as uuidv7 } from 'uuid';
 
 import {
+  fetchMbAlbum,
   fetchMbCandidates,
   fetchRoonAlbum,
   fetchRoonTracks,
