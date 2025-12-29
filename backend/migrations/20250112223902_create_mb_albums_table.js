@@ -6,9 +6,10 @@ export function up(knex) {
   return knex.raw(`
     CREATE TABLE mb_albums (
       mb_album_id TEXT NOT NULL
-        CHECK (length(roon_album_id) = 36),
+        CHECK (length(mb_album_id) = 36),
       roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
+      album_name TEXT NOT NULL,
       score INTEGER,
       track_count INTEGER,
       release_date TEXT,
@@ -17,7 +18,7 @@ export function up(knex) {
       FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (mb_album_id)
+      PRIMARY KEY (mb_album_id, roon_album_id)
     );
   `);
 }

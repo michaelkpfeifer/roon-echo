@@ -16,7 +16,9 @@ import {
   fetchRoonTracks,
   insertRoonAlbum,
   insertRoonTracks,
+  normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
+  updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
 import { camelCaseKeys } from './utils.js';
@@ -256,28 +258,10 @@ const readPersistedAlbumAggregateData = async (
   >,
 ) => {
   const roonAlbum = albumAggregateWithRoonTracks.roonAlbum;
-  if (roonAlbum.candidatesFetchedAt) {
-    const candidates = await fetchMbCandidates(db, roonAlbum);
-    if (roonAlbum.candidatesMatchedAt) {
-    } else {
-      const roonTrackTitles = albumAggregateWithRoonTracks.roonTracks.map(
-        (track) => track.trackName,
-      );
-
-      for (const candidate of candidates) {
-        const mbTrackTitles = candidate.mbCandidateTracks.map(
-          (track) => track.name,
-        );
-
-        const comparisonResult = compareMbAndRoonTracks(
-          mbTrackTitles,
-          roonTrackTitles,
-        );
-      }
-    }
+  if (!roonAlbum.candidatesMatchedAt) {
+    return albumAggregateWithRoonTracks;
   }
-
-  return roonAlbum;
+  const candidates = await fetchMbCandidates(db, roonAlbum);
 };
 
 async function processAlbum(album: AlbumAggregate) {
@@ -291,13 +275,6 @@ async function processAlbum(album: AlbumAggregate) {
 
     const rawMbCandidateSearchResponse =
       RawMbCandidateSearchResponseSchema.parse(searchResults);
-
-    /* eslint-disable no-console */
-    // console.log(
-    //   'albumData.ts: processAlbum(): rawMbCandidateSearchResponse:',
-    //   JSON.stringify(rawMbCandidateSearchResponse, null, 4),
-    // );
-    /* eslint-enable no-console */
 
     for (const rawMbCandidate of rawMbCandidateSearchResponse.releases) {
       const fullRelease = await mbApiRateLimiter.schedule({ priority: 1 }, () =>
@@ -321,17 +298,30 @@ async function processAlbum(album: AlbumAggregate) {
         rawMbFetchReleaseResponse,
       );
 
-      /* eslint-disable no-console */
-      // console.log(
-      //   'albumData.ts: processAlbum(): mbCandidate:',
-      //   JSON.stringify(mbCandidate, null, 4),
-      // );
-      /* eslint-enable no-console */
-
       await upsertMbCandidate(db, mbCandidate);
     }
+
     album.roonAlbum.candidatesFetchedAt = new Date().toISOString();
-    updateCandidatesFetchedAtTimestamp(db, album.roonAlbum);
+    await updateCandidatesFetchedAtTimestamp(db, album.roonAlbum);
+
+    const candidates = await fetchMbCandidates(db, album.roonAlbum);
+
+    const roonTrackTitles = album.roonTracks.map((track) => track.trackName);
+
+    for (const candidate of candidates) {
+      const mbTrackTitles = candidate.mbCandidateTracks.map(
+        (track) => track.name,
+      );
+
+      if (compareMbAndRoonTracks(mbTrackTitles, roonTrackTitles)) {
+        normalizeCandidate(db, candidate);
+
+        break;
+      }
+    }
+
+    album.roonAlbum.candidatesMatchedAt = new Date().toISOString();
+    await updateCandidatesMatchedAtTimestamp(db, album.roonAlbum);
   }
 }
 
@@ -375,9 +365,10 @@ const buildStableAlbumData = async (
     | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
   )[] = [];
   for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
-    const albumAggregateWithPersistedData = readPersistedAlbumAggregateData(
-      albumAggregateWithRoonTracks,
-    );
+    const albumAggregateWithPersistedData =
+      await readPersistedAlbumAggregateData(albumAggregateWithRoonTracks);
+
+    albumAggregatesWithPersistedData.push(albumAggregateWithPersistedData);
   }
 
   socket.emit('albums', albumAggregatesWithRoonTracks);

@@ -1,6 +1,6 @@
 const pool = {
   afterCreate: (conn, cb) => {
-    conn.pragma('busy_timeout = 100');
+    conn.pragma('busy_timeout = 250');
     conn.pragma('journal_mode = WAL');
     cb();
   },

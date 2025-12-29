@@ -9,6 +9,10 @@ import { camelCaseKeys } from './utils.js';
 import type { DatabaseSchema } from '../databaseSchema';
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {
+  await db('mb_albums_mb_artists').del();
+  await db('mb_artists').del();
+  await db('mb_tracks').del();
+  await db('mb_albums').del();
   await db('mb_candidates').del();
   await db('roon_tracks').del();
   await db('roon_albums').del();
@@ -56,7 +60,7 @@ const updateCandidatesMatchedAtTimestamp = async (
   await db<DatabaseSchema['roon_albums']>('roon_albums')
     .where({ roon_album_id: roonAlbum.roonAlbumId })
     .update({
-      candidates_fetched_at: roonAlbum.candidatesMatchedAt,
+      candidates_matched_at: roonAlbum.candidatesMatchedAt,
     });
 };
 
@@ -160,6 +164,67 @@ const upsertMbCandidate = async (
     .merge();
 };
 
+const normalizeCandidate = async (
+  db: Knex<DatabaseSchema>,
+  mbCandidate: MbCandidate,
+) => {
+  return db.transaction(async (trx) => {
+    await trx('mb_albums')
+      .insert({
+        mb_album_id: mbCandidate.mbAlbumId,
+        roon_album_id: mbCandidate.roonAlbumId,
+        album_name: mbCandidate.mbCandidateAlbumName,
+        score: mbCandidate.score,
+        track_count: mbCandidate.trackCount,
+        release_date: mbCandidate.releaseDate,
+      })
+      .onConflict(['mb_album_id', 'roon_album_id'])
+      .merge();
+
+    const tracksToInsert = mbCandidate.mbCandidateTracks.map((track) => ({
+      mb_track_id: track.mbTrackId,
+      mb_album_id: mbCandidate.mbAlbumId,
+      roon_album_id: mbCandidate.roonAlbumId,
+      name: track.name,
+      number: track.number,
+      position: track.position,
+      length: track.length,
+    }));
+
+    await trx('mb_tracks')
+      .insert(tracksToInsert)
+      .onConflict(['mb_track_id', 'roon_album_id'])
+      .merge();
+
+    let position = 1;
+
+    for (const artist of mbCandidate.mbCandidateArtists) {
+      await trx('mb_artists')
+        .insert({
+          mb_artist_id: artist.mbArtistId,
+          name: artist.name,
+          sort_name: artist.sortName,
+          disambiguation: artist.disambiguation,
+        })
+        .onConflict('mb_artist_id')
+        .ignore();
+
+      await trx('mb_albums_mb_artists')
+        .insert({
+          mb_album_id: mbCandidate.mbAlbumId,
+          roon_album_id: mbCandidate.roonAlbumId,
+          mb_artist_id: artist.mbArtistId,
+          position: position,
+          joinphrase: artist.joinphrase || '',
+        })
+        .onConflict(['mb_album_id', 'roon_album_id', 'mb_artist_id'])
+        .merge();
+
+      position++;
+    }
+  });
+};
+
 export {
   dbInit,
   fetchMbCandidates,
@@ -168,6 +233,7 @@ export {
   insertPlayedTrackInHistory,
   insertRoonAlbum,
   insertRoonTracks,
+  normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,

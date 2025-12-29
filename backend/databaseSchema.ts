@@ -33,7 +33,6 @@ type DatabaseSchema = {
 
   mb_artists: {
     mb_artist_id: string;
-    joinphrase: string;
     name: string;
     sort_name: string;
     disambiguation: string | null;
@@ -44,6 +43,7 @@ type DatabaseSchema = {
   mb_albums: {
     mb_album_id: string;
     roon_album_id: string;
+    album_name: string;
     score: number | null;
     track_count: number | null;
     release_date: string | null;
@@ -54,6 +54,7 @@ type DatabaseSchema = {
   mb_tracks: {
     mb_track_id: string;
     mb_album_id: string;
+    roon_album_id: string;
     name: string;
     number: string;
     position: number;
@@ -65,6 +66,9 @@ type DatabaseSchema = {
   mb_albums_mb_artists: {
     mb_album_id: string;
     mb_artist_id: string;
+    roon_album_id: string;
+    position: number;
+    joinphrase: string;
     created_at: string;
     updated_at: string;
   };
@@ -72,6 +76,7 @@ type DatabaseSchema = {
   history: {
     id: number;
     mb_track_id: string;
+    roon_album_id: string;
     track_name: string;
     album_name: string;
     artist_names: string;

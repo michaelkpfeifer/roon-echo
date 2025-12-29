@@ -8,6 +8,8 @@ export function up(knex) {
       id INTEGER NOT NULL primary key autoincrement,
       mb_track_id TEXT NOT NULL
         CHECK (length(mb_track_id) = 36),
+      roon_album_id TEXT NOT NULL
+        CHECK (length(roon_album_id) = 36),
       track_name TEXT NOT NULL,
       album_name TEXT NOT NULL,
       artist_names TEXT NOT NULL,
@@ -16,7 +18,7 @@ export function up(knex) {
       is_played BOOLEAN NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(mb_track_id) REFERENCES mb_tracks(mb_track_id)
+      FOREIGN KEY(mb_track_id, roon_album_id) REFERENCES mb_tracks(mb_track_id, roon_album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
     );

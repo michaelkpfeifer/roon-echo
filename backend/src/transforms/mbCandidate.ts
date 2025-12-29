@@ -20,6 +20,7 @@ const transformToMbCandidate = (
   const mbCandidateTracks: MbCandidateTrack[] =
     rawMbFetchReleaseResponse.media.flatMap((medium: any) =>
       medium.tracks.map((track: any) => ({
+        mbTrackId: track.id,
         name: track.title,
         number: track.number,
         position: track.position,
