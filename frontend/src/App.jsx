@@ -103,17 +103,6 @@ function App() {
       );
     });
 
-    socket.on('allAlbums', (allAlbums) => {
-      /* eslint-disable no-console */
-      console.log(
-        'App.jsx: processing allAlbums message: allAlbums:',
-        allAlbums,
-      );
-      /* eslint-enable no-console */
-
-      setAppState((currentAppState) => setAlbums(currentAppState, allAlbums));
-    });
-
     socket.on('albums', (albums) => {
       /* eslint-disable no-console */
       console.log('App.jsx: processing albums message: albums:', albums);

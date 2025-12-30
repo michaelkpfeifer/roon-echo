@@ -3,13 +3,15 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-  return knex.schema.createTable('roon_messages', (table) => {
-    table.increments('id').primary();
-    table.text('message_type').notNullable();
-    table.text('sub_type');
-    table.timestamp('timestamp').defaultTo(knex.fn.now());
-    table.text('message');
-  })
+  return knex.raw(`
+    CREATE TABLE roon_messages (
+      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      message TEXT,
+      message_type TEXT NOT NULL,
+      sub_type TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 };
 
 /**

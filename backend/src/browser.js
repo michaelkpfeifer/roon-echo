@@ -39,9 +39,12 @@ const loadLibrary = async (browseInstance, libraryBrowseData) => {
 
     return libraryLoadData;
   } catch (err) {
-    process.stderr.write('Error: Failed to load top level hierarchy.\n');
+    process.stderr.write(
+      'Error: Failed to load top level hierarchy:',
+      err,
+      '\n',
+    );
     exit(1);
-    return null;
   }
 };
 
@@ -61,9 +64,12 @@ const browseLibrary = async (browseInstance, libraryItem) => {
 
     return loadLibrary(browseInstance, libraryBrowseData);
   } catch (err) {
-    process.stderr.write('Error: Failed to browse library hierarchy.\n');
+    process.stderr.write(
+      'Error: Failed to browse library hierarchy:',
+      err,
+      '.\n',
+    );
     exit(1);
-    return null;
   }
 };
 
@@ -87,9 +93,12 @@ const loadTopLevel = async (browseInstance, topLevelBrowseData) => {
       topLevelLoadData.items.find((item) => item.title === 'Library'),
     );
   } catch (err) {
-    process.stderr.write('Error: Failed to load top level hierarchy.\n');
+    process.stderr.write(
+      'Error: Failed to load top level hierarchy:',
+      err,
+      '.\n',
+    );
     exit(1);
-    return null;
   }
 };
 
@@ -110,9 +119,12 @@ const browseTopLevel = async (browseInstance) => {
 
     return loadTopLevel(browseInstance, topLevelBrowseData);
   } catch (err) {
-    process.stderr.write('Error: Failed to browse top level hierarchy.\n');
+    process.stderr.write(
+      'Error: Failed to browse top level hierarchy:',
+      err,
+      '\n',
+    );
     exit(1);
-    return null;
   }
 };
 
@@ -128,7 +140,7 @@ const loadAlbums = async (browseInstance) => {
   const albumsLoadData = await loadAsync(browseInstance, {
     hierarchy: 'browse',
     offset: 0,
-    count: Math.min(10, albumsBrowseData.list.count),
+    count: Math.min(32, albumsBrowseData.list.count),
   });
   return albumsLoadData;
 };
@@ -152,9 +164,8 @@ const loadAlbum = async (browseInstance, itemKey) => {
 
     return albumLoadData;
   } catch (err) {
-    process.stderr.write('Error: Failed to load track by item key.\n');
+    process.stderr.write('Error: Failed to load track by item key:', err, '\n');
     exit(1);
-    return null;
   }
 };
 
@@ -177,9 +188,8 @@ const loadTrack = async (browseInstance, itemKey) => {
 
     return trackLoadData;
   } catch (err) {
-    process.stderr.write('Error: Failed to load track by item key.\n');
+    process.stderr.write('Error: Failed to load track by item key:', err, '\n');
     exit(1);
-    return null;
   }
 };
 

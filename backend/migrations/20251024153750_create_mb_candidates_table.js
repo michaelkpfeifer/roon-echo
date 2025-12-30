@@ -1,26 +1,26 @@
 /**
- * @Pam { import("knex").Knex } knex
+ * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 export function up(knex) {
   return knex.raw(`
-    CREATE TABLE mb_tracks (
-      mb_track_id TEXT NOT NULL
-        CHECK (length(mb_track_id) = 36),
+    CREATE TABLE mb_candidates (
       mb_album_id TEXT NOT NULL
         CHECK (length(mb_album_id) = 36),
       roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
-      name TEXT NOT NULL,
-      number TEXT NOT NULL,
-      position INTEGER NOT NULL,
-      length INTEGER,
+      score INTEGER,
+      track_count INTEGER,
+      release_date DATETIME,
+      mb_candidate_album_name TEXT NOT NULL,
+      mb_candidate_artists TEXT NOT NULL,
+      mb_candidate_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(mb_album_id, roon_album_id) REFERENCES mb_albums(mb_album_id, roon_album_id)
+      FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (mb_track_id, roon_album_id)
+      PRIMARY KEY (roon_album_id, mb_album_id)
     );
   `);
 }
@@ -30,5 +30,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('mb_tracks');
+  return knex.schema.dropTable('mb_candidates');
 }
