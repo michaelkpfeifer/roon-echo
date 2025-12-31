@@ -192,38 +192,38 @@ const getRoonTracks = async (
   >,
 ) => {
   const roonAlbum = albumAggregateWithRoonAlbum.roonAlbum;
-  const roonTracksResult = await fetchRoonTracks(db, roonAlbum);
+  const persistedRoonTracks: RoonTrack[] = await fetchRoonTracks(db, roonAlbum);
 
-  if (Result.isErr(roonTracksResult)) {
-    const response: any = camelCaseKeys(
-      await browser.loadAlbum(browseInstance, roonAlbum.itemKey),
-    );
-
-    const rawRoonLoadAlbumResponse =
-      RawRoonLoadAlbumResponseSchema.parse(response);
-
-    const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items.map(
-      (unparsedRawRoonTrack: unknown) =>
-        RawRoonTrackSchema.parse(unparsedRawRoonTrack),
-    );
-
-    const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
-      const roonTrackId = uuidv7();
-
-      return transformToRoonTrack(
-        rawRoonTrack,
-        roonAlbum.roonAlbumId,
-        roonTrackId,
-        index,
-      );
-    });
-
-    await insertRoonTracks(db, roonTracks);
-
-    return Result.unwrap(await fetchRoonTracks(db, roonAlbum));
-  } else {
-    return Result.unwrap(roonTracksResult);
+  if (persistedRoonTracks.length > 0) {
+    return persistedRoonTracks;
   }
+
+  const response: unknown = camelCaseKeys(
+    await browser.loadAlbum(browseInstance, roonAlbum.itemKey),
+  );
+
+  const rawRoonLoadAlbumResponse =
+    RawRoonLoadAlbumResponseSchema.parse(response);
+
+  const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items.map(
+    (unparsedRawRoonTrack: unknown) =>
+      RawRoonTrackSchema.parse(unparsedRawRoonTrack),
+  );
+
+  const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
+    const roonTrackId = uuidv7();
+
+    return transformToRoonTrack(
+      rawRoonTrack,
+      roonAlbum.roonAlbumId,
+      roonTrackId,
+      index,
+    );
+  });
+
+  await insertRoonTracks(db, roonTracks);
+
+  return await fetchRoonTracks(db, roonAlbum);
 };
 
 const createAlbumAggregateWithRoonTracks = (
