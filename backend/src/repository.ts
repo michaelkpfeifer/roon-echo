@@ -81,16 +81,7 @@ const fetchRoonTracks = async (
       roon_album_id: roonAlbumId,
     });
 
-  if (roonTracks.length === 0) {
-    // @ts-expect-error
-    return Result.Err({
-      fetchRoonTracks: 'Error: noRoonTracksFound',
-      roon_album_id: roonAlbumId,
-    });
-  }
-
-  // @ts-expect-error
-  return Result.Ok(camelCaseKeys(roonTracks));
+  return camelCaseKeys(roonTracks);
 };
 
 const fetchMbCandidates = async (
