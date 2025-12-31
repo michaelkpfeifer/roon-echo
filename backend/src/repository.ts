@@ -118,13 +118,11 @@ const fetchMbCandidates = async (
 const insertRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
-) => {
-  db.transaction(async (trx) => {
-    await trx('roon_albums').insert({
-      roon_album_id: roonAlbum.roonAlbumId,
-      album_name: roonAlbum.albumName,
-      artist_name: roonAlbum.artistName,
-    });
+): Promise<void> => {
+  await db<DatabaseSchema['roon_albums']>('roon_albums').insert({
+    roon_album_id: roonAlbum.roonAlbumId,
+    album_name: roonAlbum.albumName,
+    artist_name: roonAlbum.artistName,
   });
 };
 
