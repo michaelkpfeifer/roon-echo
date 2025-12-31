@@ -35,6 +35,7 @@ import {
 import Result from './result.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
+import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
 import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
@@ -282,7 +283,16 @@ const readPersistedAlbumAggregateData = async (
   }
 };
 
-async function processAlbum(socket, album: AlbumAggregate) {
+async function processAlbum(
+  socket: Socket,
+  album:
+    | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
+    | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
+    | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>,
+): Promise<
+  | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
+  | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
+> {
   if (album.stage !== 'withRoonTracks') {
     return album;
   }
@@ -304,8 +314,8 @@ async function processAlbum(socket, album: AlbumAggregate) {
       );
 
       if (
-        fullRelease.media
-          .map((medium) => medium.tracks)
+        RawMbFetchReleaseResponseMediaSchema.parse(fullRelease)
+          .media.map((medium) => medium.tracks)
           .some((tracks) => tracks === undefined)
       ) {
         continue;
