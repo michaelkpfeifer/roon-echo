@@ -283,6 +283,12 @@ const readPersistedAlbumAggregateData = async (
   }
 };
 
+const skipMbCandidate = (fullRelease: unknown) => {
+  return RawMbFetchReleaseResponseMediaSchema.parse(fullRelease)
+    .media.map((medium) => medium.tracks)
+    .some((tracks) => tracks === undefined);
+};
+
 async function processAlbum(
   socket: Socket,
   album:
@@ -313,11 +319,7 @@ async function processAlbum(
         runMbFetchRelease(rawMbCandidate.id),
       );
 
-      if (
-        RawMbFetchReleaseResponseMediaSchema.parse(fullRelease)
-          .media.map((medium) => medium.tracks)
-          .some((tracks) => tracks === undefined)
-      ) {
+      if (skipMbCandidate(fullRelease)) {
         continue;
       }
 
@@ -448,4 +450,4 @@ const buildStableAlbumData = async (
   /* eslint-enable no-console */
 };
 
-export { buildStableAlbumData, isRoonAlbumUnprocessable };
+export { buildStableAlbumData, isRoonAlbumUnprocessable, skipMbCandidate };
