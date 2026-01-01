@@ -1,11 +1,11 @@
-import { RawRoonAlbum } from '@shared/external/rawRoonAlbum';
-import { MbCandidate } from '@shared/internal/mbCandidate';
-import { RoonAlbum } from '@shared/internal/roonAlbum';
-import { RoonTrack } from '@shared/internal/roonTrack';
 import type { Knex } from 'knex';
 
 import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
+import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
+import { MbCandidate } from '../../shared/internal/mbCandidate';
+import { RoonAlbum } from '../../shared/internal/roonAlbum';
+import { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {

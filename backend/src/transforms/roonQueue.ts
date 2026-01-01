@@ -1,9 +1,7 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { RawRoonQueueItem } from '@shared/external/rawRoonQueueItem';
-import { RoonQueueItem } from '@shared/internal/roonQueueItem';
-import { RawRoonQueue } from '@shared/external/rawRoonQueue';
-import { RoonQueue } from '@shared/internal/roonQueue';
-/* eslint-enable import/no-extraneous-dependencies */
+import { RawRoonQueue } from '../../../shared/external/rawRoonQueue';
+import { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem';
+import { RoonQueue } from '../../../shared/internal/roonQueue';
+import { RoonQueueItem } from '../../../shared/internal/roonQueueItem';
 
 const transformToRoonQueueItem = (raw: RawRoonQueueItem): RoonQueueItem => ({
   queueItemId: raw.queueItemId,
@@ -16,6 +14,5 @@ const transformToRoonQueueItem = (raw: RawRoonQueueItem): RoonQueueItem => ({
 
 const transformToRoonQueue = (rawQueue: RawRoonQueue): RoonQueue =>
   rawQueue.map(transformToRoonQueueItem);
-
 
 export { transformToRoonQueue, transformToRoonQueueItem };

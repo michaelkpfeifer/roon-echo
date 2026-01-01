@@ -1,8 +1,8 @@
-import { AlbumAggregate } from '@shared/internal/albumAggregate.js';
-import { MbAlbum } from '@shared/internal/mbAlbum';
-import { MbCandidate } from '@shared/internal/mbCandidate';
-import { RoonAlbum } from '@shared/internal/roonAlbum';
-import { RoonTrack } from '@shared/internal/roonTrack';
+import { AlbumAggregate } from '../../../shared/internal/albumAggregate.js';
+import { MbAlbum } from '../../../shared/internal/mbAlbum';
+import { MbCandidate } from '../../../shared/internal/mbCandidate';
+import { RoonAlbum } from '../../../shared/internal/roonAlbum';
+import { RoonTrack } from '../../../shared/internal/roonTrack';
 
 const buildEmptyAlbumAggregate = (): Extract<
   AlbumAggregate,
