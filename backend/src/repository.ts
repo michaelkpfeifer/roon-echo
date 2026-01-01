@@ -123,7 +123,7 @@ const insertRoonTracks = async (
 ) => {
   db.transaction(async (trx) => {
     for (const roonTrack of roonTracks) {
-      await trx('roon_tracks').insert({
+      await trx<DatabaseSchema['roon_tracks']>('roon_tracks').insert({
         roon_track_id: roonTrack.roonTrackId,
         roon_album_id: roonTrack.roonAlbumId,
         track_name: roonTrack.trackName,
@@ -158,7 +158,7 @@ const normalizeCandidate = async (
   mbCandidate: MbCandidate,
 ) => {
   return db.transaction(async (trx) => {
-    await trx('mb_albums')
+    await trx<DatabaseSchema['mb_albums']>('mb_albums')
       .insert({
         mb_album_id: mbCandidate.mbAlbumId,
         roon_album_id: mbCandidate.roonAlbumId,
@@ -180,7 +180,7 @@ const normalizeCandidate = async (
       length: track.length,
     }));
 
-    await trx('mb_tracks')
+    await trx<DatabaseSchema['mb_tracks']>('mb_tracks')
       .insert(tracksToInsert)
       .onConflict(['mb_track_id', 'roon_album_id'])
       .merge();
@@ -188,7 +188,7 @@ const normalizeCandidate = async (
     let position = 1;
 
     for (const artist of mbCandidate.mbCandidateArtists) {
-      await trx('mb_artists')
+      await trx<DatabaseSchema['mb_artists']>('mb_artists')
         .insert({
           mb_artist_id: artist.mbArtistId,
           name: artist.name,
@@ -198,7 +198,7 @@ const normalizeCandidate = async (
         .onConflict('mb_artist_id')
         .ignore();
 
-      await trx('mb_albums_mb_artists')
+      await trx<DatabaseSchema['mb_albums_mb_artists']>('mb_albums_mb_artists')
         .insert({
           mb_album_id: mbCandidate.mbAlbumId,
           roon_album_id: mbCandidate.roonAlbumId,
