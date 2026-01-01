@@ -1,9 +1,15 @@
 import { z } from 'zod';
 
+const DateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .nullish() // Handles missing key or explicit null
+  .catch(null); // Converts invalid strings OR undefined into null
+
 const RawMbFetchReleaseResponseSchema = z.object({
   id: z.string(),
   title: z.string(),
-  date: z.string().optional(),
+  date: DateSchema,
   'artist-credit': z.array(
     z.object({
       joinphrase: z.string(),
