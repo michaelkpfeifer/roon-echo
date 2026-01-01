@@ -1,9 +1,3 @@
-import { RawRoonAlbum } from '@shared/external/rawRoonAlbum';
-import { RawRoonLoadAlbumsResponse } from '@shared/external/rawRoonLoadAlbumsResponse';
-import { RawRoonTrack } from '@shared/external/rawRoonTrack';
-import { AlbumAggregate } from '@shared/internal/albumAggregate';
-import { RoonAlbum } from '@shared/internal/roonAlbum';
-import { RoonTrack } from '@shared/internal/roonTrack';
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
 import fp from 'lodash/fp.js';
@@ -45,6 +39,12 @@ import {
   transformToRoonAlbum,
   transformToRoonTrack,
 } from './transforms/roonAlbum';
+import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
+import { RawRoonLoadAlbumsResponse } from '../../shared/external/rawRoonLoadAlbumsResponse';
+import { RawRoonTrack } from '../../shared/external/rawRoonTrack';
+import { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import { RoonAlbum } from '../../shared/internal/roonAlbum';
+import { RoonTrack } from '../../shared/internal/roonTrack';
 
 dotenv.config();
 const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
@@ -344,7 +344,7 @@ async function processAlbum(
 
     for (const candidate of candidates) {
       const mbTrackTitles = candidate.mbCandidateTracks.map(
-        (track) => track.name,
+        (track: any) => track.name,
       );
 
       if (compareMbAndRoonTracks(mbTrackTitles, roonTrackTitles)) {

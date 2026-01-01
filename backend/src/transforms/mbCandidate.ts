@@ -1,6 +1,6 @@
-import type { MbCandidate } from '@shared/internal/mbCandidate';
-import type { MbCandidateArtist } from '@shared/internal/mbCandidateArtist';
-import type { MbCandidateTrack } from '@shared/internal/mbCandidateTrack';
+import type { MbCandidate } from '../../../shared/internal/mbCandidate';
+import type { MbCandidateArtist } from '../../../shared/internal/mbCandidateArtist';
+import type { MbCandidateTrack } from '../../../shared/internal/mbCandidateTrack';
 
 const transformToMbCandidate = (
   roonAlbumId: string,

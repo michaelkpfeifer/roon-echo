@@ -1,4 +1,3 @@
-import type { RawRoonAlbum } from '@shared/external/rawRoonAlbum';
 import { transformToRoonAlbum } from '../../src/transforms/roonAlbum';
 
 describe('transformToRoonAlbum', () => {
