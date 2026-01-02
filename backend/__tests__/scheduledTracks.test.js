@@ -1,3 +1,5 @@
+import { describe, test, expect } from 'vitest';
+
 import {
   qiBurial01Wiim,
   qiBurial02Wiim,

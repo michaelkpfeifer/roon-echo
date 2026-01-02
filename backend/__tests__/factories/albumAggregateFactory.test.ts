@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { buildEmptyAlbumAggregate } from '../../src/factories/albumAggregateFactory.js';
 
 describe('buildEmptyAlbumAggregate', () => {

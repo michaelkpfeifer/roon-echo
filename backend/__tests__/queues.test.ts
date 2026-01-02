@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import { ZodError } from 'zod';
 
 import { extractQueueItems } from '../src/queues';

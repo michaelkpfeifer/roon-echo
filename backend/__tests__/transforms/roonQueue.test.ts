@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import type { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem';
 import {
   transformToRoonQueueItem,
