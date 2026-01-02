@@ -10,8 +10,8 @@
     "lint": "yarn eslint src __tests__ __factories__ --ext .js,.ts",
     "type-check": "tsc --noEmit",
     "dev": "nodemon --exec tsx index.js",
-    "test": "yarn type-check && node --no-warnings --experimental-vm-modules node_modules/.bin/jest",
-    "test:coverage": "yarn type-check && node --no-warnings --experimental-vm-modules node_modules/.bin/jest --coverage",
+    "test": "yarn type-check && vitest",
+    "test:coverage": "yarn type-check && vitest run --coverage",
     "debug": "nodemon --inspect --exec tsx index.js",
     "debug-break": "nodemon --inspect-brk --exec tsx index.js"
   },
@@ -41,6 +41,7 @@
     "@types/node": "^24.0.12",
     "@typescript-eslint/eslint-plugin": "^7",
     "@typescript-eslint/parser": "^7",
+    "@vitest/coverage-v8": "4.0.16",
     "eslint": "^9",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -51,14 +52,13 @@
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "globals": "^16.5.0",
-    "jest": "^29.7.0",
     "nodemon": "^3.1.10",
     "prettier": "^3.3.3",
-    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.49.0",
+    "vitest": "^4.0.16"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

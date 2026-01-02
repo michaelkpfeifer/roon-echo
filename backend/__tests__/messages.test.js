@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest';
+
 import {
   zonesChangedMessage1,
   zonesSeekChangedMessage1,

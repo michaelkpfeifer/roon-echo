@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { isRoonAlbumUnprocessable, skipMbCandidate } from '../src/albumData.js';
 
 describe('isRoonAlbumUnprocessable', () => {
