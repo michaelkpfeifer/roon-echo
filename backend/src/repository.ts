@@ -252,9 +252,9 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
 
   return Result.Ok(
     camelCaseKeys({
-      ...albumRow,
-      tracks,
-      artists,
+      mbAlbum: albumRow,
+      mbArtists: artists,
+      mbTracks: tracks,
     }),
   );
 };
