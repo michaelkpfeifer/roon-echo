@@ -6,6 +6,7 @@
 /backend/dist/
 /backend/node_modules/
 
+/frontend/coverage/
 /frontend/dist/
 /frontend/node_modules/
 
