@@ -1,6 +1,8 @@
 import { AlbumAggregate } from '../../../shared/internal/albumAggregate.js';
 import { MbAlbum } from '../../../shared/internal/mbAlbum';
+import { MbArtist } from '../../../shared/internal/mbArtist';
 import { MbCandidate } from '../../../shared/internal/mbCandidate';
+import { MbTrack } from '../../../shared/internal/mbTrack';
 import { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import { RoonTrack } from '../../../shared/internal/roonTrack';
 
@@ -39,12 +41,14 @@ const buildAlbumAggregateWithMbMatch = (
     { stage: 'withRoonTracks' }
   >,
   mbCandidates: MbCandidate[],
-  mbAlbum: MbAlbum,
+  mbAlbumData: { mbAlbum: MbAlbum; mbArtists: MbArtist[]; mbTracks: MbTrack[] },
 ): Extract<AlbumAggregate, { stage: 'withMbMatch' }> => ({
   ...albumAggregateWithRoonTracks,
   stage: 'withMbMatch',
   mbCandidates,
-  mbAlbum,
+  mbAlbum: mbAlbumData.mbAlbum,
+  mbArtists: mbAlbumData.mbArtists,
+  mbTracks: mbAlbumData.mbTracks,
 });
 
 const buildAlbumAggregateWithoutMbMatch = (

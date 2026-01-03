@@ -267,13 +267,13 @@ const readPersistedAlbumAggregateData = async (
   }
 
   const mbCandidates = await fetchMbCandidates(db, roonAlbum);
-  const mbAlbum = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
+  const mbAlbumResult = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
 
-  if (Result.isOk(mbAlbum)) {
+  if (Result.isOk(mbAlbumResult)) {
     return buildAlbumAggregateWithMbMatch(
       albumAggregateWithRoonTracks,
       mbCandidates,
-      Result.unwrap(mbAlbum),
+      Result.unwrap(mbAlbumResult),
     );
   } else {
     return buildAlbumAggregateWithoutMbMatch(
@@ -361,14 +361,14 @@ async function processAlbum(
   }
 
   const mbCandidates = await fetchMbCandidates(db, album.roonAlbum);
-  const mbAlbum = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
+  const mbAlbumResult = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
 
   let albumAggregate;
-  if (Result.isOk(mbAlbum)) {
+  if (Result.isOk(mbAlbumResult)) {
     albumAggregate = buildAlbumAggregateWithMbMatch(
       album,
       mbCandidates,
-      Result.unwrap(mbAlbum),
+      Result.unwrap(mbAlbumResult),
     );
   } else {
     albumAggregate = buildAlbumAggregateWithoutMbMatch(album, mbCandidates);
