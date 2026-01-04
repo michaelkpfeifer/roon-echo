@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+import { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory';
 import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory';
+import { buildRoonTracks } from '../../__factories__/roonTrackFactory';
 import {
-  buildEmptyAlbumAggregate,
   buildAlbumAggregateWithRoonAlbum,
+  buildAlbumAggregateWithRoonTracks,
+  buildEmptyAlbumAggregate,
 } from '../../src/factories/albumAggregateFactory.js';
 
 describe('buildEmptyAlbumAggregate', () => {
@@ -27,7 +30,10 @@ describe('buildEmptyAlbumAggregate', () => {
 
 describe('buildAlbumAggregateWithRoonAlbum', () => {
   it('creates an aggregate with stage set to "withRoonAlbum"', () => {
-    const emptyAlbumAggregate = buildAlbumAggregate('empty', {});
+    const emptyAlbumAggregate = buildAlbumAggregate('empty', {}) as Extract<
+      AlbumAggregate,
+      { stage: 'empty' }
+    >;
     const roonAlbum = buildRoonAlbum();
 
     const result = buildAlbumAggregateWithRoonAlbum(
@@ -38,5 +44,23 @@ describe('buildAlbumAggregateWithRoonAlbum', () => {
     expect(result.stage).toBe('withRoonAlbum');
     expect(result.id).toBe(roonAlbum.roonAlbumId);
     expect(result.roonAlbum).toBe(roonAlbum);
+  });
+});
+
+describe('buildAlbumAggregateWithRoonTracks', () => {
+  it('creates an aggregate with stage set to "withRoonTracks"', () => {
+    const albumAggregateWithRoonAlbum = buildAlbumAggregate(
+      'withRoonAlbum',
+      {},
+    ) as Extract<AlbumAggregate, { stage: 'withRoonAlbum' }>;
+    const roonTracks = buildRoonTracks(4);
+
+    const result = buildAlbumAggregateWithRoonTracks(
+      albumAggregateWithRoonAlbum,
+      roonTracks,
+    );
+
+    expect(result.stage).toBe('withRoonTracks');
+    expect(result.roonTracks).toBe(roonTracks);
   });
 });
