@@ -1,9 +1,23 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildEmptyAlbumAggregate } from '../../src/factories/albumAggregateFactory.js';
+import { AlbumAggregate } from '../../../shared/internal/albumAggregate';
+import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory';
+import { buildMbAlbum } from '../../__factories__/mbAlbumFactory';
+import { buildMbArtists } from '../../__factories__/mbArtistFactory';
+import { buildMbCandidates } from '../../__factories__/mbCandidateFactory';
+import { buildMbTracks } from '../../__factories__/mbTrackFactory';
+import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory';
+import { buildRoonTracks } from '../../__factories__/roonTrackFactory';
+import {
+  buildAlbumAggregateWithMbMatch,
+  buildAlbumAggregateWithRoonAlbum,
+  buildAlbumAggregateWithRoonTracks,
+  buildAlbumAggregateWithoutMbMatch,
+  buildEmptyAlbumAggregate,
+} from '../../src/factories/albumAggregateFactory.js';
 
 describe('buildEmptyAlbumAggregate', () => {
-  it('returns an empty album aggregate with stage set to empty', () => {
+  it('returns an empty album aggregate with stage set to "empty"', () => {
     const result = buildEmptyAlbumAggregate();
 
     expect(result).toEqual({
@@ -17,5 +31,85 @@ describe('buildEmptyAlbumAggregate', () => {
 
     expect(first).not.toBe(second);
     expect(first).toEqual(second);
+  });
+});
+
+describe('buildAlbumAggregateWithRoonAlbum', () => {
+  it('creates an aggregate with stage set to "withRoonAlbum"', () => {
+    const emptyAlbumAggregate = buildAlbumAggregate('empty', {}) as Extract<
+      AlbumAggregate,
+      { stage: 'empty' }
+    >;
+    const roonAlbum = buildRoonAlbum();
+
+    const result = buildAlbumAggregateWithRoonAlbum(
+      emptyAlbumAggregate,
+      roonAlbum,
+    );
+
+    expect(result.stage).toBe('withRoonAlbum');
+    expect(result.id).toBe(roonAlbum.roonAlbumId);
+    expect(result.roonAlbum).toBe(roonAlbum);
+  });
+});
+
+describe('buildAlbumAggregateWithRoonTracks', () => {
+  it('creates an aggregate with stage set to "withRoonTracks"', () => {
+    const albumAggregateWithRoonAlbum = buildAlbumAggregate(
+      'withRoonAlbum',
+      {},
+    ) as Extract<AlbumAggregate, { stage: 'withRoonAlbum' }>;
+    const roonTracks = buildRoonTracks(4);
+
+    const result = buildAlbumAggregateWithRoonTracks(
+      albumAggregateWithRoonAlbum,
+      roonTracks,
+    );
+
+    expect(result.stage).toBe('withRoonTracks');
+    expect(result.roonTracks).toBe(roonTracks);
+  });
+});
+
+describe('buildAlbumAggregateWithMbMatch', () => {
+  it('creates an aggregate with stage set to "withMbMatch"', () => {
+    const albumAggregateWithRoonTracks = buildAlbumAggregate(
+      'withRoonTracks',
+      {},
+    ) as Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
+    const mbCandidates = buildMbCandidates(2);
+    const mbAlbum = buildMbAlbum();
+    const mbTracks = buildMbTracks(4);
+    const mbArtists = buildMbArtists(2);
+
+    const result = buildAlbumAggregateWithMbMatch(
+      albumAggregateWithRoonTracks,
+      mbCandidates,
+      { mbAlbum, mbTracks, mbArtists },
+    );
+
+    expect(result.stage).toBe('withMbMatch');
+    expect(result.mbCandidates).toBe(mbCandidates);
+    expect(result.mbAlbum).toBe(mbAlbum);
+    expect(result.mbTracks).toBe(mbTracks);
+    expect(result.mbArtists).toBe(mbArtists);
+  });
+});
+
+describe('buildAlbumAggregateWithoutMbMatch', () => {
+  it('creates an aggregate with stage set to "withoutMbMatch"', () => {
+    const albumAggregateWithRoonTracks = buildAlbumAggregate(
+      'withRoonTracks',
+      {},
+    ) as Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
+    const mbCandidates = buildMbCandidates(2);
+
+    const result = buildAlbumAggregateWithoutMbMatch(
+      albumAggregateWithRoonTracks,
+      mbCandidates,
+    );
+
+    expect(result.stage).toBe('withoutMbMatch');
+    expect(result.mbCandidates).toBe(mbCandidates);
   });
 });
