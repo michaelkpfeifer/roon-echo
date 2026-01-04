@@ -2,10 +2,14 @@ import { describe, expect, it } from 'vitest';
 
 import { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory';
+import { buildMbAlbum } from '../../__factories__/mbAlbumFactory';
+import { buildMbArtists } from '../../__factories__/mbArtistFactory';
 import { buildMbCandidates } from '../../__factories__/mbCandidateFactory';
+import { buildMbTracks } from '../../__factories__/mbTrackFactory';
 import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory';
 import { buildRoonTracks } from '../../__factories__/roonTrackFactory';
 import {
+  buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithRoonAlbum,
   buildAlbumAggregateWithRoonTracks,
   buildAlbumAggregateWithoutMbMatch,
@@ -68,7 +72,28 @@ describe('buildAlbumAggregateWithRoonTracks', () => {
 });
 
 describe('buildAlbumAggregateWithMbMatch', () => {
-  it('creates an aggregate with stage set to "withMbMatch"', () => {});
+  it('creates an aggregate with stage set to "withMbMatch"', () => {
+    const albumAggregateWithRoonTracks = buildAlbumAggregate(
+      'withRoonTracks',
+      {},
+    ) as Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
+    const mbCandidates = buildMbCandidates(2);
+    const mbAlbum = buildMbAlbum();
+    const mbTracks = buildMbTracks(4);
+    const mbArtists = buildMbArtists(2);
+
+    const result = buildAlbumAggregateWithMbMatch(
+      albumAggregateWithRoonTracks,
+      mbCandidates,
+      { mbAlbum, mbTracks, mbArtists },
+    );
+
+    expect(result.stage).toBe('withMbMatch');
+    expect(result.mbCandidates).toBe(mbCandidates);
+    expect(result.mbAlbum).toBe(mbAlbum);
+    expect(result.mbTracks).toBe(mbTracks);
+    expect(result.mbArtists).toBe(mbArtists);
+  });
 });
 
 describe('buildAlbumAggregateWithoutMbMatch', () => {
