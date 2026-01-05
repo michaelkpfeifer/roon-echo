@@ -1,0 +1,53 @@
+.queue-container {
+    margin-top: 16px;
+}
+
+.queue-heading {
+    padding-bottom: 32px;
+}
+
+.queue-heading__name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.queue-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.queue-item__image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.queue-item__image {
+}
+
+.queue-item__image-display {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.queue-item__queue-item-id {
+}
+
+.queue-item__line-1 {
+}
+
+.queue-item__line-2 {
+}
+
+.queue-item__line-3 {
+}
+
+.queue-item__length {
+}
