@@ -30,6 +30,8 @@
   "devDependencies": {
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
+    "@vitest/coverage-v8": "4.0.16",
+    "@vitest/ui": "4.0.16",
     "eslint": "^9",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.25.2",
