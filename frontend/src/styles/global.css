@@ -5,6 +5,8 @@
     --bg-primary: white;
     --bg-primary-hover: #f9f9f9;
     --bg-secondary: #f9f9f9;
+    --queue-text-primary: #111111;
+    --queue-text-secondary: #666666;
 }
 
 body {

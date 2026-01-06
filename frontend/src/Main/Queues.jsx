@@ -27,12 +27,20 @@ function Queues() {
                         alt={threeLine.line1}
                       />
                     </div>
+                    <div className="queue-item__track">
+                      <div className="queue-item__line-1">
+                        {threeLine.line1}
+                      </div>
+                      <div className="queue-item__line-2">
+                        {threeLine.line2}
+                      </div>
+                      <div className="queue-item__line-3">
+                        {threeLine.line3}
+                      </div>
+                    </div>
                     <div className="queue-item__queue-item-id">
                       {queueItemId}
                     </div>
-                    <div className="queue-item__line-1">{threeLine.line1}</div>
-                    <div className="queue-item__line-2">{threeLine.line2}</div>
-                    <div className="queue-item__line-3">{threeLine.line3}</div>
                     <div className="queue-item__length">{length}</div>
                   </div>
                 ),
