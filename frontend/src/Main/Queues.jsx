@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { lookupZoneName } from '../utils';
+import { formatRoonTrackLength, lookupZoneName } from '../utils';
 
 function Queues() {
   const { appState, config, coreUrlRef, roonState } = useContext(AppContext);
@@ -41,7 +41,9 @@ function Queues() {
                     <div className="queue-item__queue-item-id">
                       {queueItemId}
                     </div>
-                    <div className="queue-item__length">{length}</div>
+                    <div className="queue-item__length">
+                      {formatRoonTrackLength(length)}
+                    </div>
                   </div>
                 ),
               )}

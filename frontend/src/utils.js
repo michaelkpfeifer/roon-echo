@@ -28,17 +28,25 @@ const mergeQueues = (currentAppState, zoneId, queueItems) => {
   };
 };
 
-const formatMbTrackLength = (milliseconds) => {
-  const totalSeconds = Math.floor(milliseconds / 1000);
+const formatMbTrackLength = (durationInMilliseconds) => {
+  const totalSeconds = Math.floor(durationInMilliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
 
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const formatRoonTrackLength = (durationInSeconds) => {
+  const minutes = Math.floor(durationInSeconds / 60);
+  const seconds = durationInSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
 export {
   findSelectedZone,
   formatMbTrackLength,
+  formatRoonTrackLength,
   lookupZoneName,
   mergeAlbum,
   mergeQueues,
