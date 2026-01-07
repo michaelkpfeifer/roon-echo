@@ -8,13 +8,13 @@ const albumStageIcon = (stage) => {
   let Icon;
   switch (stage) {
     case 'withMbMatch':
-      Icon = Check;
+      Icon = <Check className="album-card__stage-icon" />;
       break;
     case 'withoutMbMatch':
-      Icon = CopyCheck;
+      Icon = <CopyCheck className="album-card__stage-icon" />;
       break;
     case 'withRoonTracks':
-      Icon = Ban;
+      Icon = <Ban className="album-card__stage-icon" />;
       break;
     default:
       throw new Error(`Error: Unexpected albumAggregate stage: ${stage}`);
@@ -51,7 +51,7 @@ function AlbumData({ stage, albumName, artistName }) {
   return (
     <>
       <div className="album-card__album-name">
-        <Icon className="album-card__stage-icon" />
+        {Icon}
         &nbsp;
         <b>{albumName}</b>
       </div>
