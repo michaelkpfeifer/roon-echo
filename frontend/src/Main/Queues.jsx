@@ -4,8 +4,7 @@ import AppContext from '../AppContext';
 import { formatRoonTrackLength, lookupZoneName } from '../utils';
 
 function Queues() {
-  const { appState, config, coreUrlRef, roonState } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { appState, config, coreUrl, roonState } = useContext(AppContext);
 
   return (
     <>

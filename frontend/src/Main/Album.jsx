@@ -6,8 +6,7 @@ import noAlbumArt from '../images/no-album-art.svg';
 import { formatMbTrackLength } from '../utils';
 
 function Album() {
-  const { appState, config, coreUrlRef, socketRef } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { appState, config, coreUrl, socketRef } = useContext(AppContext);
 
   const { mbAlbumId } = useParams();
 
