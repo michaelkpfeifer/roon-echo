@@ -61,8 +61,7 @@ function AlbumData({ stage, albumName, artistName }) {
 }
 
 function AlbumCard({ albumAggregate }) {
-  const { coreUrlRef } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { coreUrl } = useContext(AppContext);
 
   return (
     <div className="album-card">

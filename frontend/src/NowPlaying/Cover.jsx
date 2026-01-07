@@ -4,8 +4,7 @@ import AppContext from '../AppContext';
 import { findSelectedZone } from '../utils';
 
 function Cover() {
-  const { config, coreUrlRef, roonState } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { config, coreUrl, roonState } = useContext(AppContext);
 
   const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 

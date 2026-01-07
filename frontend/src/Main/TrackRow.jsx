@@ -6,8 +6,7 @@ import noAlbumArt from '../images/no-album-art.svg';
 import { formatMbTrackLength } from '../utils';
 
 function TrackRow({ track }) {
-  const { config, coreUrlRef, socketRef } = useContext(AppContext);
-  const coreUrl = coreUrlRef.current;
+  const { config, coreUrl, socketRef } = useContext(AppContext);
 
   return (
     <div className="track-row">

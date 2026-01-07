@@ -31,20 +31,15 @@ function App() {
     () => loadConfig() || { selectedZoneId: null },
   );
 
+  const [coreUrl, setCoreUrl] = useState(null);
+
   useEffect(() => saveConfig(config), [config]);
 
   const socketRef = useRef(null);
-  const coreUrlRef = useRef('');
 
   useEffect(() => {
     socketRef.current = io('http://192.168.2.102:4000');
     const socket = socketRef.current;
-
-    socket.on('coreUrl', (coreUrl) => {
-      // console.log('App.jsx, processing coreUrl message: coreUrl:', coreUrl);
-
-      coreUrlRef.current = coreUrl;
-    });
 
     socket.on('initialState', (initialState) => {
       /* eslint-disable no-console */
@@ -57,6 +52,17 @@ function App() {
         ...currentAppState,
         tmpSelectedZoneId: loadConfig().selectedZoneId || null,
       }));
+    });
+
+    socket.on('coreUrl', (roonCoreUrl) => {
+      /* eslint-disable no-console */
+      // console.log(
+      //   'App.jsx, processing coreUrl message: roonCoreUrl:',
+      //   roonCoreUrl,
+      // );
+      /* eslint-enable no-console */
+
+      setCoreUrl(roonCoreUrl);
     });
 
     socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
@@ -160,15 +166,15 @@ function App() {
   const contextValue = useMemo(
     () => ({
       appState,
-      setAppState,
-      roonState,
-      setRoonState,
       config,
+      coreUrl,
+      roonState,
+      setAppState,
       setConfig,
-      coreUrlRef,
+      setRoonState,
       socketRef,
     }),
-    [config, appState, coreUrlRef, roonState, socketRef],
+    [config, appState, coreUrl, roonState, socketRef],
   );
 
   return (
