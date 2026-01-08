@@ -145,6 +145,7 @@ const subscribeToQueueChanges = (zoneIds) => {
           const playedTime = getPlayedTime(track.playedSegments);
           return snakeCaseKeys({
             mbTrackId: track.mbTrackId,
+            roonAlbumId: track.roonAlbumId,
             trackName: track.mbTrackName,
             albumName: track.mbAlbumName,
             artistNames: track.mbArtistNames,
@@ -153,7 +154,7 @@ const subscribeToQueueChanges = (zoneIds) => {
             isPlayed: 2 * playedTime >= track.mbLength,
           });
         })
-        .forEach((track) => insertPlayedTrackInHistory(track));
+        .forEach((track) => insertPlayedTrackInHistory(db, track));
 
       return null;
     });
@@ -388,6 +389,7 @@ io.on('connection', async (socket) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
     console.log('server.js: io.on(): mbTrackData:', mbTrackData);
+    console.log('server.js: io.on(): roonAlbumId:', roonAlbumId);
     /* eslint-enable no-console */
 
     scheduledTracks = appendToScheduledTracks({

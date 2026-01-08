@@ -57,6 +57,7 @@ function Album() {
                     mbArtistNames: artistNames,
                     mbTrackId: track.mbTrackId,
                     mbLength: track.length,
+                    roonAlbumId: album.roonAlbum.roonAlbumId,
                   },
                 });
               }}
