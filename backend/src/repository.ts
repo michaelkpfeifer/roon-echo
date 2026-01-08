@@ -18,8 +18,6 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
   // await db('roon_albums').del();
 };
 
-const insertPlayedTrackInHistory = () => {};
-
 const fetchRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   rawRoonAlbum: RawRoonAlbum,
@@ -257,6 +255,10 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
       mbTracks: tracks,
     }),
   );
+};
+
+const insertPlayedTrackInHistory = async (db: Knex<DatabaseSchema>, track) => {
+  await db<DatabaseSchema['history']>('history').insert(track);
 };
 
 export {
