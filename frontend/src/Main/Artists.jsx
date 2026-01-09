@@ -10,7 +10,7 @@ function Artists() {
   const artists = fp.sortBy('sortName', [
     ...new Set(
       appState.albums
-        .filter((album) => album.status === 'mbDataLoaded')
+        .filter((album) => album.stage === 'withMbMatch')
         .flatMap((album) => album.mbArtists),
     ),
   ]);
