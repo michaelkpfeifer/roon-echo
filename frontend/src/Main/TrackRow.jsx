@@ -51,7 +51,7 @@ TrackRow.propTypes = {
     number: PropTypes.string.isRequired,
     position: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
-    length: PropTypes.number.isRequired,
+    length: PropTypes.number,
     roonAlbumImageKey: PropTypes.string.isRequired,
     roonAlbumItemKey: PropTypes.string.isRequired,
     mbTrackId: PropTypes.string.isRequired,

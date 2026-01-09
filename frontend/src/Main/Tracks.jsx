@@ -10,7 +10,7 @@ function Tracks() {
   const tracks = fp
     .sortBy(
       (album) => album.mbArtists[0].sortName,
-      appState.albums.filter((album) => album.status === 'mbDataLoaded'),
+      appState.albums.filter((album) => album.stage === 'withMbMatch'),
     )
     .map((album) =>
       album.mbTracks.map((track) => ({
