@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import noAlbumArt from '../images/no-album-art.svg';
 import { formatMbTrackLength } from '../utils';
 
 function TrackRow({ track }) {
@@ -11,15 +10,11 @@ function TrackRow({ track }) {
   return (
     <div className="track-row">
       <div className="track-row__number">{track.number}</div>
-      {track.roonAlbumImageKey ? (
-        <img
-          src={`${coreUrl}/api/image/${track.roonAlbumImageKey}?scale=fit&width=75&height=75`}
-          alt={track.name}
-          className="track-row__image"
-        />
-      ) : (
-        <img src={noAlbumArt} alt={track.name} />
-      )}
+      <img
+        src={`${coreUrl}/api/image/${track.roonAlbumImageKey}?scale=fit&width=75&height=75`}
+        alt={track.name}
+        className="track-row__image"
+      />
       <div className="track-row__name">{track.name}</div>
       <div className="track-row__length">
         {formatMbTrackLength(track.length)}
