@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext';
-import noAlbumArt from '../images/no-album-art.svg';
 import { formatMbTrackLength } from '../utils';
 
 function Album() {
@@ -21,15 +20,11 @@ function Album() {
   return (
     <>
       <div className="album-heading">
-        {imageKey ? (
-          <img
-            src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
-            alt={albumName}
-            className="album-heading__image"
-          />
-        ) : (
-          <img src={noAlbumArt} alt={albumName} />
-        )}
+        <img
+          src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+          alt={albumName}
+          className="album-heading__image"
+        />
         <div>
           <div className="album-heading__artists">{artistNames}</div>
           <div className="album-heading__name">{albumName}</div>
