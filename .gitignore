@@ -12,3 +12,10 @@
 
 yarn-error.log
 yarn-debug.log*
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.yarn/cache
+.yarn/unplugged
