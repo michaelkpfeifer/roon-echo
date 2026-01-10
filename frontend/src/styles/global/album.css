@@ -22,6 +22,27 @@
     padding-left: 32px;
 }
 
+.album-actions {
+  margin-top: 2rem;
+  padding-left: 32px;
+}
+
+.album-actions__play-next {
+  padding: 6px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.album-actions__play-next:hover {
+}
+
+.album-actions__play-next:active {
+}
+
+.album-actions__play-next:focus-visible {
+}
+
 .album-track-row {
     display: grid;
     grid-template-columns: 40px 1fr 80px 80px;

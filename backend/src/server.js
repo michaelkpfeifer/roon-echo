@@ -389,7 +389,6 @@ io.on('connection', async (socket) => {
     /* eslint-disable no-console */
     console.log('server.js: processing trackAddNext message');
     console.log('server.js: io.on(): mbTrackData:', mbTrackData);
-    console.log('server.js: io.on(): roonAlbumId:', roonAlbumId);
     /* eslint-enable no-console */
 
     scheduledTracks = appendToScheduledTracks({
