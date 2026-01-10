@@ -49,7 +49,11 @@ function Album() {
           <div className="album-heading__artists">{artistNames}</div>
           <div className="album-heading__name">{albumName}</div>
           <div className="album-actions">
-            <button type="button" onClick={() => enqueueAlbumNext(album)}>
+            <button
+              type="button"
+              className="album-actions__play-next"
+              onClick={() => enqueueAlbumNext(album)}
+            >
               Play Next
             </button>
           </div>
