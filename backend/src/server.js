@@ -1,5 +1,6 @@
 import http from 'http';
 
+import Bottleneck from 'bottleneck';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -336,6 +337,11 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
+const roonApiRateLimiter = new Bottleneck({
+  minTime: 100,
+  maxConcurrent: 1,
+});
+
 io.on('connection', async (socket) => {
   /* eslint-disable no-console */
   console.log('server.js: io.on(): Connected: socket.id:', socket.id);
@@ -386,33 +392,35 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing trackAddNext message');
-    console.log('server.js: io.on(): mbTrackData:', mbTrackData);
-    /* eslint-enable no-console */
+    roonApiRateLimiter.schedule(async () => {
+      /* eslint-disable no-console */
+      console.log('server.js: processing trackAddNext message');
+      console.log('server.js: io.on(): mbTrackData:', mbTrackData);
+      /* eslint-enable no-console */
 
-    scheduledTracks = appendToScheduledTracks({
-      scheduledTracks,
-      mbTrackData,
-      scheduledAt: Date.now(),
-      zoneId,
-    });
+      scheduledTracks = appendToScheduledTracks({
+        scheduledTracks,
+        mbTrackData,
+        scheduledAt: Date.now(),
+        zoneId,
+      });
 
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-    /* eslint-enable no-console */
+      /* eslint-disable no-console */
+      console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
+      /* eslint-enable no-console */
 
-    browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-      const trackKey = albumItems.items[position].item_key;
-      browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
-        const trackAddNextItem = trackActions.items.find(
-          (item) => item.title === 'Add Next',
-        );
+      await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
+        const trackKey = albumItems.items[position].item_key;
+        browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
+          const trackAddNextItem = trackActions.items.find(
+            (item) => item.title === 'Add Next',
+          );
 
-        browseInstance.browse({
-          hierarchy: 'browse',
-          item_key: trackAddNextItem.item_key,
-          zone_or_output_id: zoneId,
+          browseInstance.browse({
+            hierarchy: 'browse',
+            item_key: trackAddNextItem.item_key,
+            zone_or_output_id: zoneId,
+          });
         });
       });
     });
