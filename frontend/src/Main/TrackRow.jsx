@@ -35,6 +35,7 @@ function TrackRow({ track }) {
                 mbArtistNames: track.mbArtistNames,
                 mbTrackId: track.mbTrackId,
                 mbLength: track.length,
+                roonAlbumId: track.roonAlbumId,
               },
             });
           }}
