@@ -34,7 +34,13 @@ function Album() {
   };
 
   const enqueueAlbumNext = (album) => {
-    album.mbTracks.forEach((track) => enqueueTrackNext(track));
+    socketRef.current.emit('albumAddNext', {
+      roonAlbum: album.roonAlbum,
+      mbAlbum: album.mbAlbum,
+      mbTracks: album.mbTracks,
+      mbArtists: album.mbArtists,
+      zoneId: config.selectedZoneId,
+    });
   };
 
   return (
