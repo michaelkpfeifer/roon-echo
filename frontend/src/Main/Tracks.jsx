@@ -19,6 +19,7 @@ function Tracks() {
         mbAlbumName: album.mbAlbum.albumName,
         roonAlbumImageKey: album.roonAlbum.imageKey,
         roonAlbumItemKey: album.roonAlbum.itemKey,
+        roonAlbumId: album.roonAlbum.roonAlbumId,
       })),
     )
     .flat();
