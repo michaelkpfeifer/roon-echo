@@ -17,6 +17,32 @@ function Album() {
   const { albumName, imageKey } = roonAlbum;
   const artistNames = mbArtists.map((artist) => artist.name).join(', ');
 
+  const enqueueTrackNext = (track) => {
+    socketRef.current.emit('trackAddNext', {
+      albumKey: album.roonAlbum.itemKey,
+      position: track.position,
+      zoneId: config.selectedZoneId,
+      mbTrackData: {
+        mbTrackName: track.name,
+        mbAlbumName: albumName,
+        mbArtistNames: artistNames,
+        mbTrackId: track.mbTrackId,
+        mbLength: track.length,
+        roonAlbumId: album.roonAlbum.roonAlbumId,
+      },
+    });
+  };
+
+  const enqueueAlbumNext = (album) => {
+    socketRef.current.emit('albumAddNext', {
+      roonAlbum: album.roonAlbum,
+      mbAlbum: album.mbAlbum,
+      mbTracks: album.mbTracks,
+      mbArtists: album.mbArtists,
+      zoneId: config.selectedZoneId,
+    });
+  };
+
   return (
     <>
       <div className="album-heading">
@@ -28,6 +54,15 @@ function Album() {
         <div>
           <div className="album-heading__artists">{artistNames}</div>
           <div className="album-heading__name">{albumName}</div>
+          <div className="album-actions">
+            <button
+              type="button"
+              className="album-actions__play-next"
+              onClick={() => enqueueAlbumNext(album)}
+            >
+              Play Next
+            </button>
+          </div>
         </div>
       </div>
 
@@ -42,19 +77,7 @@ function Album() {
             <button
               type="button"
               onClick={() => {
-                socketRef.current.emit('trackAddNext', {
-                  albumKey: album.roonAlbum.itemKey,
-                  position: track.position,
-                  zoneId: config.selectedZoneId,
-                  mbTrackData: {
-                    mbTrackName: track.name,
-                    mbAlbumName: albumName,
-                    mbArtistNames: artistNames,
-                    mbTrackId: track.mbTrackId,
-                    mbLength: track.length,
-                    roonAlbumId: album.roonAlbum.roonAlbumId,
-                  },
-                });
+                enqueueTrackNext(track);
               }}
             >
               Play Next

@@ -1,5 +1,6 @@
 import http from 'http';
 
+import Bottleneck from 'bottleneck';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -336,6 +337,11 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
+const roonApiRateLimiter = new Bottleneck({
+  minTime: 100,
+  maxConcurrent: 1,
+});
+
 io.on('connection', async (socket) => {
   /* eslint-disable no-console */
   console.log('server.js: io.on(): Connected: socket.id:', socket.id);
@@ -386,37 +392,91 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing trackAddNext message');
-    console.log('server.js: io.on(): mbTrackData:', mbTrackData);
-    /* eslint-enable no-console */
+    roonApiRateLimiter.schedule(async () => {
+      /* eslint-disable no-console */
+      console.log('server.js: processing trackAddNext message');
+      console.log('server.js: io.on(): mbTrackData:', mbTrackData);
+      /* eslint-enable no-console */
 
-    scheduledTracks = appendToScheduledTracks({
-      scheduledTracks,
-      mbTrackData,
-      scheduledAt: Date.now(),
-      zoneId,
-    });
+      scheduledTracks = appendToScheduledTracks({
+        scheduledTracks,
+        mbTrackData,
+        scheduledAt: Date.now(),
+        zoneId,
+      });
 
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-    /* eslint-enable no-console */
+      /* eslint-disable no-console */
+      console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
+      /* eslint-enable no-console */
 
-    browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-      const trackKey = albumItems.items[position].item_key;
-      browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
-        const trackAddNextItem = trackActions.items.find(
-          (item) => item.title === 'Add Next',
-        );
+      await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
+        const trackKey = albumItems.items[position].item_key;
+        browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
+          const trackAddNextItem = trackActions.items.find(
+            (item) => item.title === 'Add Next',
+          );
 
-        browseInstance.browse({
-          hierarchy: 'browse',
-          item_key: trackAddNextItem.item_key,
-          zone_or_output_id: zoneId,
+          browseInstance.browse({
+            hierarchy: 'browse',
+            item_key: trackAddNextItem.item_key,
+            zone_or_output_id: zoneId,
+          });
         });
       });
     });
   });
+
+  socket.on(
+    'albumAddNext',
+    ({ roonAlbum, mbAlbum, mbArtists, mbTracks, zoneId }) =>
+      roonApiRateLimiter.schedule(async () => {
+        /* eslint-disable no-console */
+        console.log('server.js: processing albumAddNext message');
+        console.log('server.js: io.on(): roonAlbum:', roonAlbum);
+        console.log('server.js: io.on(): mbAlbum:', mbAlbum);
+        console.log('server.js: io.on(): mbTracks:', mbTracks);
+        console.log('server.js: io.on(): mbArtists:', mbArtists);
+        /* eslint-enable no-console */
+
+        browser
+          .loadAlbum(browseInstance, roonAlbum.itemKey)
+          .then((albumItems) => {
+            const playAlbumKey = albumItems.items[0].item_key;
+
+            browser
+              .loadTrack(browseInstance, playAlbumKey)
+              .then(async (albumPlayActions) => {
+                const addNextAction = albumPlayActions.items.find(
+                  (item) => item.title == 'Add Next',
+                );
+
+                await browseInstance.browse({
+                  hierarchy: 'browse',
+                  item_key: addNextAction.item_key,
+                  zone_or_output_id: zoneId,
+                });
+              });
+
+            scheduledTracks = mbTracks.reduce((acc, mbTrack) => {
+              return appendToScheduledTracks({
+                scheduledTracks: acc,
+                mbTrackData: {
+                  mbTrackName: mbTrack.name,
+                  mbAlbumName: mbAlbum.albumName,
+                  mbArtistNames: mbArtists
+                    .map((artist) => artist.name)
+                    .join(', '),
+                  mbTrackId: mbTrack.mbTrackId,
+                  mbLength: mbTrack.length,
+                  roonAlbumId: roonAlbum.roonAlbumId,
+                },
+                scheduledAt: Date.now(),
+                zoneId,
+              });
+            }, scheduledTracks);
+          });
+      }),
+  );
 
   socket.on('pause', ({ zoneId }) => {
     /* eslint-disable no-console */
