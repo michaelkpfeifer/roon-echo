@@ -19,13 +19,11 @@ function Queues() {
               {appState.queues[config.selectedZoneId].map(
                 ({ queueItemId, length, imageKey, threeLine }) => (
                   <div className="queue-item" key={queueItemId}>
-                    <div className="queue-item__image">
-                      <img
-                        className="queue-item__image-display"
-                        src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
-                        alt={threeLine.line1}
-                      />
-                    </div>
+                    <img
+                      className="queue-item__image"
+                      src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+                      alt={threeLine.line1}
+                    />
                     <div className="queue-item__track">
                       <div className="queue-item__line-1">
                         {threeLine.line1}
