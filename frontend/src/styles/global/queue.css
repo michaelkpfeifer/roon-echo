@@ -14,7 +14,7 @@
 .queue-item {
     display: grid;
     grid-template-columns: 80px 1fr 128px 128px;
-    align-items: top;
+    align-items: center;
     gap: 16px;
     padding: 12px;
     background-color: var(--bg-primary);

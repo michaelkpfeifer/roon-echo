@@ -14,12 +14,12 @@ function TrackRow({ track }) {
         src={`${coreUrl}/api/image/${track.roonAlbumImageKey}?scale=fit&width=75&height=75`}
         alt={track.name}
       />
+      <div className="track-row__number">{track.number}</div>
       <div className="track-row__track">
         <div className="track-row__name">{track.name}</div>
         <div className="track-row__artist">{track.mbArtistNames}</div>
         <div className="track-row__album">{track.mbAlbumName}</div>
       </div>
-      <div className="track-row__number">{track.number}</div>
       <div className="track-row__length">
         {formatMbTrackLength(track.length)}
       </div>
