@@ -29,25 +29,25 @@
 
 .track-row__name {
     font-weight: 600;
-    color: var(--queue-text-primary);
+    color: var(--track-list-text-primary);
     font-size: 1rem;
     line-height: 1.2;
 }
 
 .track-row__artist {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 0.85rem;
     line-height: 1.2;
 }
 
 .track-row__album {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 0.85rem;
     line-height: 1.2;
 }
 
 .track-row__length {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 1rem;
     justify-self: end;
     text-align: right;
@@ -55,7 +55,7 @@
 }
 
 .track-row__number {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 1rem;
     justify-self: end;
     text-align: right;

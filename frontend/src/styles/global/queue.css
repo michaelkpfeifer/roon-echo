@@ -42,25 +42,25 @@
 
 .queue-item__line-1 {
     font-weight: 600;
-    color: var(--queue-text-primary);
+    color: var(--track-list-text-primary);
     font-size: 1rem;
     line-height: 1.2;
 }
 
 .queue-item__line-2 {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 0.85rem;
     line-height: 1.2;
 }
 
 .queue-item__line-3 {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 0.85rem;
     line-height: 1.2;
 }
 
 .queue-item__queue-item-id {
-    color: var(--queue-text-secondary);
+    color: var(--track-list-track-secondary);
     font-size: 1rem;
     justify-self: end;
     text-align: right;
@@ -68,7 +68,7 @@
 }
 
 .queue-item__length {
-    color: var(--queue-text-primary);
+    color: var(--track-list-track-secondary);
     font-size: 1rem;
     justify-self: end;
     text-align: right;
