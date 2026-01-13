@@ -5,8 +5,8 @@
     --bg-primary: white;
     --bg-primary-hover: #f9f9f9;
     --bg-secondary: #f9f9f9;
-    --queue-text-primary: #111111;
-    --queue-text-secondary: #666666;
+    --track-list-text-primary: #111111;
+    --track-list-track-secondary: #666666;
 }
 
 body {
@@ -168,62 +168,4 @@ body {
     gap: 16px;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     margin-top: 16px;
-}
-
-
-.track-row {
-    display: grid;
-    grid-template-columns: 40px 80px 1fr 80px 1fr 1fr 80px;
-    align-items: center;
-    padding: 8px 16px;
-    border-bottom: 1px solid #ddd;
-    background-color: var(--bg-primary);
-    transition: background-color 0.2s;
-}
-
-.track-row:hover {
-    background-color: var(--bg-primary-hover);
-}
-
-.track-row__number {
-    font-size: 16px;
-}
-
-.track-row__image {
-    width: 75px;
-    height: 75px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-.track-row__name {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.track-row__length {
-    text-align: right;
-    padding: 0 16px;
-}
-
-.track-row__artist {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 8px;
-}
-
-.track-row__album {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 8px;
-}
-
-.track-row__artist {
-    font-size: 14px;
-    color: #555;
-}
-
-.track-row__track-add-next {
 }
