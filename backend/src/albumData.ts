@@ -1,15 +1,12 @@
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
-import fp from 'lodash/fp.js';
 import { Socket } from 'socket.io';
 import { v7 as uuidv7 } from 'uuid';
 
 import {
   fetchMbAlbum,
   fetchMbCandidates,
-  fetchRoonAlbum,
   fetchRoonTracks,
-  insertRoonAlbum,
   insertRoonTracks,
   normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
@@ -27,20 +24,15 @@ import {
   buildEmptyAlbumAggregate,
 } from './factories/albumAggregateFactory';
 import Result from './result.js';
+import { getRoonAlbums } from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
-import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
 import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
 import { transformToMbCandidate } from './transforms/mbCandidate';
-import {
-  transformToRoonAlbum,
-  transformToRoonTrack,
-} from './transforms/roonAlbum';
-import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
-import { RawRoonLoadAlbumsResponse } from '../../shared/external/rawRoonLoadAlbumsResponse';
+import { transformToRoonTrack } from './transforms/roonAlbum';
 import { RawRoonTrack } from '../../shared/external/rawRoonTrack';
 import { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
@@ -120,68 +112,6 @@ const runMbFetchRelease = async (mbReleaseId: string) => {
   const responsePayload = await response.json();
 
   return responsePayload;
-};
-
-const isRoonAlbumUnprocessable = (unparsedRawRoonAlbum: unknown) => {
-  if (
-    !(
-      typeof unparsedRawRoonAlbum === 'object' &&
-      unparsedRawRoonAlbum !== null &&
-      'title' in unparsedRawRoonAlbum &&
-      typeof unparsedRawRoonAlbum.title == 'string' &&
-      'subtitle' in unparsedRawRoonAlbum &&
-      typeof unparsedRawRoonAlbum.subtitle == 'string'
-    )
-  ) {
-    return true;
-  }
-
-  return (
-    unparsedRawRoonAlbum.title === '' ||
-    unparsedRawRoonAlbum.subtitle === 'Unknown Artist'
-  );
-};
-
-const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
-  const response: any = camelCaseKeys(await browser.loadAlbums(browseInstance));
-
-  const unparsedRawRoonLoadAlbumsResponse: unknown = {
-    ...response,
-    items: response.items.filter(
-      (item: any) => !isRoonAlbumUnprocessable(item),
-    ),
-  };
-
-  const rawRoonLoadAlbumsResponse: RawRoonLoadAlbumsResponse =
-    RawRoonLoadAlbumsResponseSchema.parse(unparsedRawRoonLoadAlbumsResponse);
-
-  const rawRoonAlbums: RawRoonAlbum[] = rawRoonLoadAlbumsResponse.items;
-
-  const roonAlbums: RoonAlbum[] = [];
-  for (const rawRoonAlbum of rawRoonAlbums) {
-    const roonAlbumResult = await fetchRoonAlbum(db, rawRoonAlbum);
-
-    const persistedAttributes = Result.isErr(roonAlbumResult)
-      ? {
-          roonAlbumId: uuidv7(),
-          candidatesFetchedAt: null,
-          candidatesMatchedAt: null,
-        }
-      : fp.pick(
-          ['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'],
-          Result.unwrap(roonAlbumResult),
-        );
-
-    const roonAlbum = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
-
-    if (Result.isErr(roonAlbumResult)) {
-      await insertRoonAlbum(db, roonAlbum);
-    }
-
-    roonAlbums.push(roonAlbum);
-  }
-
-  return roonAlbums;
 };
 
 const getRoonTracks = async (
