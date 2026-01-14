@@ -10,43 +10,13 @@ import { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import { db } from '../db.js';
 import Result from './result.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum';
-import { RawRoonLoadAlbumsResponse } from '../../shared/external/rawRoonLoadAlbumsResponse';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
 
-const isRoonAlbumUnprocessable = (unparsedRawRoonAlbum: unknown) => {
-  if (
-    !(
-      typeof unparsedRawRoonAlbum === 'object' &&
-      unparsedRawRoonAlbum !== null &&
-      'title' in unparsedRawRoonAlbum &&
-      typeof unparsedRawRoonAlbum.title == 'string' &&
-      'subtitle' in unparsedRawRoonAlbum &&
-      typeof unparsedRawRoonAlbum.subtitle == 'string'
-    )
-  ) {
-    return true;
-  }
-
-  return (
-    unparsedRawRoonAlbum.title === '' ||
-    unparsedRawRoonAlbum.subtitle === 'Unknown Artist'
-  );
-};
-
 const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
-  const response: any = camelCaseKeys(await browser.loadAlbums(browseInstance));
+  const response = camelCaseKeys(await browser.loadAlbums(browseInstance));
+  const validatedResponse = RawRoonLoadAlbumsResponseSchema.parse(response);
 
-  const unparsedRawRoonLoadAlbumsResponse: unknown = {
-    ...response,
-    items: response.items.filter(
-      (item: any) => !isRoonAlbumUnprocessable(item),
-    ),
-  };
-
-  const rawRoonLoadAlbumsResponse: RawRoonLoadAlbumsResponse =
-    RawRoonLoadAlbumsResponseSchema.parse(unparsedRawRoonLoadAlbumsResponse);
-
-  const rawRoonAlbums: RawRoonAlbum[] = rawRoonLoadAlbumsResponse.items;
+  const rawRoonAlbums: RawRoonAlbum[] = validatedResponse.items;
 
   const roonAlbums: RoonAlbum[] = [];
   for (const rawRoonAlbum of rawRoonAlbums) {
