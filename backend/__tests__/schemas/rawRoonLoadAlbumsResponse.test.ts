@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { RawRoonLoadAlbumsResponseSchema } from '../../src/schemas/rawRoonLoadAlbumsResponse';
 
@@ -59,5 +59,23 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const result = RawRoonLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(0);
+  });
+
+  it('should log a warning when an album is filtered', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const invalidAlbum = {
+      title: 'Greatest Hits',
+      subtitle: 'Unknown Artist',
+      imageKey: 'someImageKey',
+      itemKey: 'someItemKey',
+      hint: 'list',
+    };
+
+    const data = { ...mockBaseResponse, items: [invalidAlbum] };
+    RawRoonLoadAlbumsResponseSchema.parse(data);
+
+    expect(spy).toHaveBeenCalled();
+
+    spy.mockRestore();
   });
 });
