@@ -5,11 +5,27 @@ import { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum';
 
 const RawRoonLoadAlbumsResponseSchema = z.object({
   items: z.array(z.unknown()).transform((items) => {
-    return items.filter((item) => {
-      const validation = RawRoonAlbumSchema.safeParse(item);
-      return validation.success;
-    });
-  }) as z.ZodType<RawRoonAlbum[]>,
+    return items.reduce((acc: RawRoonAlbum[], item) => {
+      const result = RawRoonAlbumSchema.safeParse(item);
+
+      if (result.success) {
+        acc.push(result.data);
+      } else {
+        /* eslint-disable no-console */
+        console.warn(
+          `[Validation Failed] schema: RawRoonLoadAlbumsResponseSchema, data: ${JSON.stringify(item)}`,
+        );
+        /* eslint-enable no-console */
+        result.error.issues.forEach((issue) => {
+          /* eslint-disable no-console */
+          console.warn(`  - Path: ${issue.path.join('.')}`);
+          console.warn(`  - Reason: ${issue.message}`);
+          /* eslint-enable no-console */
+        });
+      }
+      return acc;
+    }, []);
+  }),
   offset: z.number(),
   list: z.object({
     level: z.number(),
