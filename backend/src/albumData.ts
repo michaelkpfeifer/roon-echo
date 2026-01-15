@@ -380,4 +380,4 @@ const buildStableAlbumData = async (
   /* eslint-enable no-console */
 };
 
-export { buildStableAlbumData, isRoonAlbumUnprocessable, skipMbCandidate };
+export { buildStableAlbumData, skipMbCandidate };
