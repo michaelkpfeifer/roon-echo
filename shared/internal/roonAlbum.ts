@@ -4,8 +4,8 @@ type RoonAlbum = {
   artistName: string;
   imageKey: string;
   itemKey: string;
-  candidatesFetchedAt?: string;
-  candidatesMatchedAt?: string;
+  candidatesFetchedAt: string | null;
+  candidatesMatchedAt: string | null;
 };
 
 export { RoonAlbum };

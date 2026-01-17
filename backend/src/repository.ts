@@ -1,9 +1,10 @@
 import type { Knex } from 'knex';
-import { err, ok } from 'neverthrow';
+import { Result, err, ok } from 'neverthrow';
 
 import { camelCaseKeys } from './utils.js';
 import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
 import { MbCandidate } from '../../shared/internal/mbCandidate';
+import { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
 import { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
@@ -21,7 +22,16 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
 const fetchRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   rawRoonAlbum: RawRoonAlbum,
-) => {
+): Promise<
+  Result<
+    PersistedRoonAlbum,
+    {
+      error: string;
+      albumName: string;
+      artistName: string;
+    }
+  >
+> => {
   const roonAlbums = await db<DatabaseSchema['roon_albums']>(
     'roon_albums',
   ).where({
@@ -31,9 +41,9 @@ const fetchRoonAlbum = async (
 
   if (roonAlbums.length === 0) {
     return err({
-      fetchRoonAlbum: 'Error: roonAlbumNotFound',
-      album_name: rawRoonAlbum.title,
-      artist_name: rawRoonAlbum.subtitle,
+      error: 'repository.ts: fetchRoonAlbum(): Error: roonAlbumNotFound',
+      albumName: rawRoonAlbum.title,
+      artistName: rawRoonAlbum.subtitle,
     });
   }
 
