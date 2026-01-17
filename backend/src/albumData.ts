@@ -26,7 +26,6 @@ import {
   buildAlbumAggregateWithoutMbMatch,
   buildEmptyAlbumAggregate,
 } from './factories/albumAggregateFactory';
-import Result from './result.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
@@ -161,7 +160,7 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
   for (const rawRoonAlbum of rawRoonAlbums) {
     const roonAlbumResult = await fetchRoonAlbum(db, rawRoonAlbum);
 
-    const persistedAttributes = Result.isErr(roonAlbumResult)
+    const persistedAttributes = roonAlbumResult.isErr()
       ? {
           roonAlbumId: uuidv7(),
           candidatesFetchedAt: null,
@@ -169,12 +168,12 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
         }
       : fp.pick(
           ['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'],
-          Result.unwrap(roonAlbumResult),
+          roonAlbumResult._unsafeUnwrap(),
         );
 
     const roonAlbum = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
 
-    if (Result.isErr(roonAlbumResult)) {
+    if (roonAlbumResult.isErr()) {
       await insertRoonAlbum(db, roonAlbum);
     }
 
@@ -269,11 +268,11 @@ const readPersistedAlbumAggregateData = async (
   const mbCandidates = await fetchMbCandidates(db, roonAlbum);
   const mbAlbumResult = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
 
-  if (Result.isOk(mbAlbumResult)) {
+  if (mbAlbumResult.isOk()) {
     return buildAlbumAggregateWithMbMatch(
       albumAggregateWithRoonTracks,
       mbCandidates,
-      Result.unwrap(mbAlbumResult),
+      mbAlbumResult._unsafeUnwrap(),
     );
   } else {
     return buildAlbumAggregateWithoutMbMatch(
@@ -364,11 +363,11 @@ async function processAlbum(
   const mbAlbumResult = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
 
   let albumAggregate;
-  if (Result.isOk(mbAlbumResult)) {
+  if (mbAlbumResult.isOk()) {
     albumAggregate = buildAlbumAggregateWithMbMatch(
       album,
       mbCandidates,
-      Result.unwrap(mbAlbumResult),
+      mbAlbumResult._unsafeUnwrap(),
     );
   } else {
     albumAggregate = buildAlbumAggregateWithoutMbMatch(album, mbCandidates);
