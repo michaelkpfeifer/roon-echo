@@ -28,6 +28,7 @@ import {
 } from './messages.js';
 import { extractQueueItems } from './queues.js';
 import { dbInit, insertPlayedTrackInHistory } from './repository.js';
+import { initializeRoonData } from './roonData.js';
 import {
   appendToScheduledTracks,
   getPlayedTime,

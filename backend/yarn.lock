@@ -860,6 +860,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/rollup-linux-x64-gnu@npm:^4.24.0":
+  version: 4.55.1
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.55.1"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-linux-x64-musl@npm:4.54.0":
   version: 4.54.0
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.54.0"
@@ -5251,6 +5258,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"neverthrow@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "neverthrow@npm:8.2.0"
+  dependencies:
+    "@rollup/rollup-linux-x64-gnu": "npm:^4.24.0"
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-gnu":
+      optional: true
+  checksum: 10c0/7058a31bcc4b608021dbc217287105c133480265eca742ec11b0211ff81bdf1bb16098687bf16b20d0212578ccaf47f7df8733cea10f10c315bd4538b4cc1f04
+  languageName: node
+  linkType: hard
+
 "node-abi@npm:^3.3.0":
   version: 3.71.0
   resolution: "node-abi@npm:3.71.0"
@@ -6127,6 +6146,7 @@ __metadata:
     globals: "npm:^16.5.0"
     knex: "npm:^3.1.0"
     lodash: "npm:^4.17.21"
+    neverthrow: "npm:^8.2.0"
     node-roon-api: "github:roonlabs/node-roon-api"
     node-roon-api-browse: "github:roonlabs/node-roon-api-browse"
     node-roon-api-status: "github:roonlabs/node-roon-api-status"

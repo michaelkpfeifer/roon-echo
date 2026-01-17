@@ -1,6 +1,6 @@
 import type { Knex } from 'knex';
+import { err, ok } from 'neverthrow';
 
-import Result from './result.js';
 import { camelCaseKeys } from './utils.js';
 import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
 import { MbCandidate } from '../../shared/internal/mbCandidate';
@@ -30,14 +30,14 @@ const fetchRoonAlbum = async (
   });
 
   if (roonAlbums.length === 0) {
-    return Result.Err({
+    return err({
       fetchRoonAlbum: 'Error: roonAlbumNotFound',
       album_name: rawRoonAlbum.title,
       artist_name: rawRoonAlbum.subtitle,
     });
   }
 
-  return Result.Ok(camelCaseKeys(roonAlbums[0]));
+  return ok(camelCaseKeys(roonAlbums[0]));
 };
 
 const updateCandidatesFetchedAtTimestamp = async (
@@ -218,7 +218,7 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
     .first();
 
   if (!albumRow) {
-    return Result.Err({
+    return err({
       fetchMbAlbum: 'Error: mbAlbumNotFound',
       roon_album_id: roonAlbumId,
     });
@@ -248,7 +248,7 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
     )
     .orderBy('mb_albums_mb_artists.position', 'asc');
 
-  return Result.Ok(
+  return ok(
     camelCaseKeys({
       mbAlbum: albumRow,
       mbArtists: artists,

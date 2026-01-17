@@ -8,7 +8,6 @@ import { camelCaseKeys } from './utils.js';
 import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
 import { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import { db } from '../db.js';
-import Result from './result.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
 
@@ -22,7 +21,7 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
   for (const rawRoonAlbum of rawRoonAlbums) {
     const roonAlbumResult = await fetchRoonAlbum(db, rawRoonAlbum);
 
-    const persistedAttributes = Result.isErr(roonAlbumResult)
+    const persistedAttributes = roonAlbumResult.isErr()
       ? {
           roonAlbumId: uuidv7(),
           candidatesFetchedAt: null,
@@ -30,12 +29,12 @@ const getRoonAlbums = async (browseInstance: RoonApiBrowse) => {
         }
       : fp.pick(
           ['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'],
-          Result.unwrap(roonAlbumResult),
+          roonAlbumResult._unsafeUnwrap(),
         );
 
     const roonAlbum = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
 
-    if (Result.isErr(roonAlbumResult)) {
+    if (roonAlbumResult.isErr()) {
       await insertRoonAlbum(db, roonAlbum);
     }
 

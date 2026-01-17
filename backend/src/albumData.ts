@@ -23,7 +23,6 @@ import {
   buildAlbumAggregateWithoutMbMatch,
   buildEmptyAlbumAggregate,
 } from './factories/albumAggregateFactory';
-import Result from './result.js';
 import { getRoonAlbums } from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
@@ -199,11 +198,11 @@ const readPersistedAlbumAggregateData = async (
   const mbCandidates = await fetchMbCandidates(db, roonAlbum);
   const mbAlbumResult = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
 
-  if (Result.isOk(mbAlbumResult)) {
+  if (mbAlbumResult.isOk()) {
     return buildAlbumAggregateWithMbMatch(
       albumAggregateWithRoonTracks,
       mbCandidates,
-      Result.unwrap(mbAlbumResult),
+      mbAlbumResult._unsafeUnwrap(),
     );
   } else {
     return buildAlbumAggregateWithoutMbMatch(
@@ -294,11 +293,11 @@ async function processAlbum(
   const mbAlbumResult = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
 
   let albumAggregate;
-  if (Result.isOk(mbAlbumResult)) {
+  if (mbAlbumResult.isOk()) {
     albumAggregate = buildAlbumAggregateWithMbMatch(
       album,
       mbCandidates,
-      Result.unwrap(mbAlbumResult),
+      mbAlbumResult._unsafeUnwrap(),
     );
   } else {
     albumAggregate = buildAlbumAggregateWithoutMbMatch(album, mbCandidates);
