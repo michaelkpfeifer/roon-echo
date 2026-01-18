@@ -76,4 +76,4 @@ const initializeRoonData = async (browseInstance: RoonApiBrowse) => {
   // return albumAggregates;
 };
 
-export { getRoonAlbums, initializeRoonData };
+export { getRoonAlbums, initializeRoonData, mergePersistedRoonAlbum };
