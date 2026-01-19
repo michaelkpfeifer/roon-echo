@@ -44,9 +44,6 @@ const getRoonAlbums = async (
   browseInstance: RoonApiBrowse,
 ) => {
   const response = camelCaseKeys(await browser.loadAlbums(browseInstance));
-
-  console.log('>>>>>>> response:', response);
-
   const validatedResponse = RawRoonLoadAlbumsResponseSchema.parse(response);
 
   const rawRoonAlbums: RawRoonAlbum[] = validatedResponse.items;

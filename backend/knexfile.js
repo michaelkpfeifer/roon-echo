@@ -18,11 +18,9 @@ export default {
 
   test: {
     client: 'better-sqlite3',
-    connection: {
-      filename: './db/mb.test.sqlite3',
-    },
+    connection: ':memory:',
     useNullAsDefault: true,
-    pool,
+    pool: { ...pool, min: 1, max: 1 }
   },
 
   staging: {
