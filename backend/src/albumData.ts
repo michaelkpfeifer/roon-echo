@@ -1,8 +1,18 @@
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
+import type { Knex } from 'knex';
 import { Socket } from 'socket.io';
 import { v7 as uuidv7 } from 'uuid';
 
+import type { DatabaseSchema } from '../databaseSchema';
+import * as browser from './browser.js';
+import {
+  buildAlbumAggregateWithMbMatch,
+  buildAlbumAggregateWithRoonAlbum,
+  buildAlbumAggregateWithRoonTracks,
+  buildAlbumAggregateWithoutMbMatch,
+  buildEmptyAlbumAggregate,
+} from './factories/albumAggregateFactory';
 import {
   fetchMbAlbum,
   fetchMbCandidates,
@@ -13,16 +23,6 @@ import {
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
-import { camelCaseKeys } from './utils.js';
-import { db } from '../db.js';
-import * as browser from './browser.js';
-import {
-  buildAlbumAggregateWithMbMatch,
-  buildAlbumAggregateWithRoonAlbum,
-  buildAlbumAggregateWithRoonTracks,
-  buildAlbumAggregateWithoutMbMatch,
-  buildEmptyAlbumAggregate,
-} from './factories/albumAggregateFactory';
 import { getRoonAlbums } from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
@@ -32,6 +32,7 @@ import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumRespon
 import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
 import { transformToMbCandidate } from './transforms/mbCandidate';
 import { transformToRoonTrack } from './transforms/roonAlbum';
+import { camelCaseKeys } from './utils.js';
 import { RawRoonTrack } from '../../shared/external/rawRoonTrack';
 import { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
@@ -114,6 +115,7 @@ const runMbFetchRelease = async (mbReleaseId: string) => {
 };
 
 const getRoonTracks = async (
+  db: Knex<DatabaseSchema>,
   browseInstance: RoonApiBrowse,
   albumAggregateWithRoonAlbum: Extract<
     AlbumAggregate,
@@ -185,6 +187,7 @@ const mbApiRateLimiter = new Bottleneck({
 });
 
 const readPersistedAlbumAggregateData = async (
+  db: Knex<DatabaseSchema>,
   albumAggregateWithRoonTracks: Extract<
     AlbumAggregate,
     { stage: 'withRoonTracks' }
@@ -219,6 +222,7 @@ const skipMbCandidate = (fullRelease: unknown) => {
 };
 
 async function processAlbum(
+  db: Knex<DatabaseSchema>,
   socket: Socket,
   album:
     | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
@@ -309,10 +313,11 @@ async function processAlbum(
 }
 
 const buildStableAlbumData = async (
+  db: Knex<DatabaseSchema>,
   socket: Socket,
   browseInstance: RoonApiBrowse,
 ) => {
-  const roonAlbums = await getRoonAlbums(browseInstance);
+  const roonAlbums = await getRoonAlbums(db, browseInstance);
 
   const albumAggregatesWithRoonAlbum: Extract<
     AlbumAggregate,
@@ -331,6 +336,7 @@ const buildStableAlbumData = async (
   >[] = [];
   for (const albumAggregateWithRoonAlbum of albumAggregatesWithRoonAlbum) {
     const roonTracks: RoonTrack[] = await getRoonTracks(
+      db,
       browseInstance,
       albumAggregateWithRoonAlbum,
     );
@@ -349,7 +355,7 @@ const buildStableAlbumData = async (
   )[] = [];
   for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
     const albumAggregateWithPersistedData =
-      await readPersistedAlbumAggregateData(albumAggregateWithRoonTracks);
+      await readPersistedAlbumAggregateData(db, albumAggregateWithRoonTracks);
 
     albumAggregatesWithPersistedData.push(albumAggregateWithPersistedData);
   }
@@ -362,6 +368,7 @@ const buildStableAlbumData = async (
   )[] = [];
   for (const albumAggregateWithPersistedData of albumAggregatesWithPersistedData) {
     const albumAggregateAfterMusicBrainzUpdates = await processAlbum(
+      db,
       socket,
       albumAggregateWithPersistedData,
     );

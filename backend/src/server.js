@@ -362,7 +362,7 @@ const roonApiRateLimiter = new Bottleneck({
 console.log('server.js: main(): browseInstance:', browseInstance);
 /* eslint-enable no-console */
 
-let albumAggregates = await initializeRoonData(browseInstance);
+let albumAggregates = await initializeRoonData(db, browseInstance);
 
 /* eslint-disable no-console */
 console.log('server.js: main(): albumAggregates:', albumAggregates);
@@ -393,7 +393,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  buildStableAlbumData(socket, browseInstance);
+  buildStableAlbumData(db, socket, browseInstance);
 
   transport.get_zones((error, body) => {
     if (error) {
