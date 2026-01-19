@@ -2,10 +2,8 @@ import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import { Socket } from 'socket.io';
-import { v7 as uuidv7 } from 'uuid';
 
 import type { DatabaseSchema } from '../databaseSchema';
-import * as browser from './browser.js';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithRoonAlbum,
@@ -16,24 +14,17 @@ import {
 import {
   fetchMbAlbum,
   fetchMbCandidates,
-  fetchRoonTracks,
-  insertRoonTracks,
   normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
-import { getRoonAlbums } from './roonData.js';
+import { getRoonAlbums, getRoonTracks } from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
-import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
-import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
 import { transformToMbCandidate } from './transforms/mbCandidate';
-import { transformToRoonTrack } from './transforms/roonAlbum';
-import { camelCaseKeys } from './utils.js';
-import { RawRoonTrack } from '../../shared/external/rawRoonTrack';
 import { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import { RoonAlbum } from '../../shared/internal/roonAlbum';
 import { RoonTrack } from '../../shared/internal/roonTrack';
@@ -112,49 +103,6 @@ const runMbFetchRelease = async (mbReleaseId: string) => {
   const responsePayload = await response.json();
 
   return responsePayload;
-};
-
-const getRoonTracks = async (
-  db: Knex<DatabaseSchema>,
-  browseInstance: RoonApiBrowse,
-  albumAggregateWithRoonAlbum: Extract<
-    AlbumAggregate,
-    { stage: 'withRoonAlbum' }
-  >,
-) => {
-  const roonAlbum = albumAggregateWithRoonAlbum.roonAlbum;
-  const persistedRoonTracks: RoonTrack[] = await fetchRoonTracks(db, roonAlbum);
-
-  if (persistedRoonTracks.length > 0) {
-    return persistedRoonTracks;
-  }
-
-  const response: unknown = camelCaseKeys(
-    await browser.loadAlbum(browseInstance, roonAlbum.itemKey),
-  );
-
-  const rawRoonLoadAlbumResponse =
-    RawRoonLoadAlbumResponseSchema.parse(response);
-
-  const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items.map(
-    (unparsedRawRoonTrack: unknown) =>
-      RawRoonTrackSchema.parse(unparsedRawRoonTrack),
-  );
-
-  const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
-    const roonTrackId = uuidv7();
-
-    return transformToRoonTrack(
-      rawRoonTrack,
-      roonAlbum.roonAlbumId,
-      roonTrackId,
-      index,
-    );
-  });
-
-  await insertRoonTracks(db, roonTracks);
-
-  return await fetchRoonTracks(db, roonAlbum);
 };
 
 const createAlbumAggregateWithRoonTracks = (
