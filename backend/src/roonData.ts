@@ -137,16 +137,17 @@ const initializeRoonData = async (
   db: Knex<DatabaseSchema>,
   browseInstance: RoonApiBrowse,
 ) => {
-  const albumAggregates: (
+  let albumAggregates: (
     | Extract<AlbumAggregate, { state: 'withRoonAlbum' }>[]
     | Extract<AlbumAggregate, { state: 'withRoonTracks' }>
-  )[] = [];
+  )[];
 
   const roonAlbums = await getRoonAlbums(db, browseInstance);
+  albumAggregates = roonAlbums.map((roonAlbum) =>
+    createAlbumAggregateWithRoonAlbum(roonAlbum),
+  );
 
-  return roonAlbums;
-
-  // return albumAggregates;
+  return albumAggregates;
 };
 
 export {
