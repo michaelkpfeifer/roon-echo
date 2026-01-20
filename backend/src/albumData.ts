@@ -1,15 +1,13 @@
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
 import type { Knex } from 'knex';
-import { Socket } from 'socket.io';
+import type { Socket } from 'socket.io';
 
 import type { DatabaseSchema } from '../databaseSchema';
 import {
   buildAlbumAggregateWithMbMatch,
-  buildAlbumAggregateWithRoonAlbum,
-  buildAlbumAggregateWithRoonTracks,
   buildAlbumAggregateWithoutMbMatch,
-  buildEmptyAlbumAggregate,
+  buildAlbumAggregateWithRoonTracks,
 } from './factories/albumAggregateFactory';
 import {
   fetchMbAlbum,
@@ -19,15 +17,18 @@ import {
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
-import { getRoonAlbums, getRoonTracks } from './roonData.js';
+import {
+  getRoonAlbums,
+  getRoonTracks,
+  createAlbumAggregateWithRoonAlbum,
+} from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { transformToMbCandidate } from './transforms/mbCandidate';
-import { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import { RoonAlbum } from '../../shared/internal/roonAlbum';
-import { RoonTrack } from '../../shared/internal/roonTrack';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import type { RoonTrack } from '../../shared/internal/roonTrack';
 
 dotenv.config();
 const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
@@ -118,15 +119,6 @@ const createAlbumAggregateWithRoonTracks = (
   );
 
   return albumAggregateWithRoonTracks;
-};
-
-const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
-  const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
-    buildEmptyAlbumAggregate(),
-    roonAlbum,
-  );
-
-  return albumAggregateWithRoonAlbum;
 };
 
 const mbApiRateLimiter = new Bottleneck({

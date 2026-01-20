@@ -1,9 +1,13 @@
 import type { Knex } from 'knex';
 import fp from 'lodash/fp.js';
-import { Result } from 'neverthrow';
+import type { Result } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import * as browser from './browser.js';
+import {
+  buildAlbumAggregateWithRoonAlbum,
+  buildEmptyAlbumAggregate,
+} from './factories/albumAggregateFactory';
 import {
   fetchRoonAlbum,
   fetchRoonTracks,
@@ -11,18 +15,27 @@ import {
   insertRoonTracks,
 } from './repository';
 import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
-import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
-import { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
-import { RoonAlbum } from '../../shared/internal/roonAlbum';
-import { RoonTrack } from '../../shared/internal/roonTrack';
+import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
+import type { RoonAlbum } from '../../shared/internal/roonAlbum';
+import type { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
 import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
 import { transformToRoonAlbum } from './transforms/roonAlbum';
 import { transformToRoonTrack } from './transforms/roonAlbum';
 import { camelCaseKeys } from './utils.js';
-import { RawRoonTrack } from '../../shared/external/rawRoonTrack';
+import type { RawRoonTrack } from '../../shared/external/rawRoonTrack';
+
+const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
+  const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
+    buildEmptyAlbumAggregate(),
+    roonAlbum,
+  );
+
+  return albumAggregateWithRoonAlbum;
+};
 
 const mergePersistedRoonAlbum = (
   rawRoonAlbum: RawRoonAlbum,
@@ -137,6 +150,7 @@ const initializeRoonData = async (
 };
 
 export {
+  createAlbumAggregateWithRoonAlbum,
   getRoonAlbums,
   getRoonTracks,
   initializeRoonData,
