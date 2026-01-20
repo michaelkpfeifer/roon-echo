@@ -9,10 +9,15 @@ import {
   createPersistedRoonAlbum,
 } from '../__factories__/persistedRoonAlbumFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
+import { buildRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import type { DatabaseSchema } from '../databaseSchema';
 import knexConfig from '../knexfile';
 import * as browser from '../src/browser.js';
-import { getRoonAlbums, mergePersistedRoonAlbum } from '../src/roonData.js';
+import {
+  createAlbumAggregateWithRoonAlbum,
+  getRoonAlbums,
+  mergePersistedRoonAlbum,
+} from '../src/roonData.js';
 
 describe('mergePersistedRoonAlbum', () => {
   it('returns a merged Roon album if data is present in the database', () => {
@@ -149,5 +154,20 @@ describe('getRoonAlbums', () => {
 
     const dbRows = await testDb('roon_albums').select();
     expect(dbRows).toHaveLength(1);
+  });
+});
+
+describe('createAlbumAggregateWithRoonAlbum', () => {
+  it('returns an album aggregate in stage "withRoonAlbum"', () => {
+    const roonAlbum = buildRoonAlbum();
+
+    const albumAggregate = createAlbumAggregateWithRoonAlbum(roonAlbum);
+
+    expect(albumAggregate.stage).toEqual('withRoonAlbum');
+    expect(albumAggregate.id).toEqual(roonAlbum.roonAlbumId);
+    expect(albumAggregate.roonAlbum.albumName).toEqual(roonAlbum.albumName);
+    expect(albumAggregate.roonAlbum.artistName).toEqual(roonAlbum.artistName);
+    expect(albumAggregate.roonAlbum.imageKey).toEqual(roonAlbum.imageKey);
+    expect(albumAggregate.roonAlbum.itemKey).toEqual(roonAlbum.itemKey);
   });
 });
