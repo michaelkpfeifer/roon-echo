@@ -112,10 +112,7 @@ const getRoonTracks = async (
   const rawRoonLoadAlbumResponse =
     RawRoonLoadAlbumResponseSchema.parse(response);
 
-  const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items.map(
-    (unparsedRawRoonTrack: unknown) =>
-      RawRoonTrackSchema.parse(unparsedRawRoonTrack),
-  );
+  const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items;
 
   const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
     const roonTrackId = uuidv7();
