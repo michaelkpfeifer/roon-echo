@@ -22,7 +22,6 @@ import type { RoonAlbum } from '../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
-import { RawRoonTrackSchema } from './schemas/rawRoonTrack';
 import { transformToRoonAlbum } from './transforms/roonAlbum';
 import { transformToRoonTrack } from './transforms/roonAlbum';
 import { camelCaseKeys } from './utils.js';
