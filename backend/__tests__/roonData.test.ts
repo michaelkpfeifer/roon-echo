@@ -10,12 +10,14 @@ import {
 } from '../__factories__/persistedRoonAlbumFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { buildRoonAlbum } from '../__factories__/roonAlbumFactory.js';
+import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema';
 import knexConfig from '../knexfile';
 import * as browser from '../src/browser.js';
 import {
   createAlbumAggregateWithRoonAlbum,
   getRoonAlbums,
+  getRoonTracks,
   mergePersistedRoonAlbum,
 } from '../src/roonData.js';
 
@@ -169,5 +171,137 @@ describe('createAlbumAggregateWithRoonAlbum', () => {
     expect(albumAggregate.roonAlbum.artistName).toEqual(roonAlbum.artistName);
     expect(albumAggregate.roonAlbum.imageKey).toEqual(roonAlbum.imageKey);
     expect(albumAggregate.roonAlbum.itemKey).toEqual(roonAlbum.itemKey);
+  });
+});
+
+describe('getRoonTracks', () => {
+  const response = {
+    items: [
+      {
+        title: 'Play Album',
+        subtitle: null,
+        imageKey: null,
+        itemKey: '128:0',
+        hint: 'action_list',
+      },
+      {
+        title: "1. I'm Holding You",
+        subtitle: 'Ween',
+        imageKey: null,
+        itemKey: '128:1',
+        hint: 'action_list',
+      },
+      {
+        title: '2. Japanese Cowboy',
+        subtitle: 'Ween',
+        imageKey: null,
+        itemKey: '128:2',
+        hint: 'action_list',
+      },
+    ],
+    offset: 0,
+    list: {
+      level: 3,
+      title: '12 Golden Country Greats',
+      subtitle: 'Ween',
+      imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
+      count: 3,
+      displayOffset: null,
+    },
+  };
+
+  let testDb: Knex<DatabaseSchema>;
+  let mockBrowseInstance: RoonApiBrowse;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+
+    mockBrowseInstance = {} as RoonApiBrowse;
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('should handle albums whose tracks are not in the database', async () => {
+    const roonAlbumId = uuidv7();
+    const roonAlbum = buildRoonAlbum({
+      roonAlbumId: roonAlbumId,
+      albumName: '12 Golden Country Greats',
+      artistName: 'Ween',
+    });
+    const albumAggregateWithRoonAlbum =
+      createAlbumAggregateWithRoonAlbum(roonAlbum);
+    await createPersistedRoonAlbum(testDb, {
+      roonAlbumId: roonAlbumId,
+      albumName: '12 Golden Country Greats',
+      artistName: 'Ween',
+    });
+
+    vi.spyOn(browser, 'loadAlbum').mockResolvedValue(response);
+
+    const result = await getRoonTracks(
+      testDb,
+      mockBrowseInstance,
+      albumAggregateWithRoonAlbum,
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result[0].roonAlbumId).toBe(roonAlbumId);
+    expect(result[0].trackName).toBe("I'm Holding You");
+    expect(result[1].roonAlbumId).toBe(roonAlbumId);
+    expect(result[1].trackName).toBe('Japanese Cowboy');
+
+    const dbRows = await testDb('roon_tracks').select();
+    expect(dbRows).toHaveLength(2);
+  });
+
+  it('should reuse persisted data', async () => {
+    const roonAlbumId = uuidv7();
+    const roonAlbum = buildRoonAlbum({
+      roonAlbumId: roonAlbumId,
+      albumName: '12 Golden Country Greats',
+      artistName: 'Ween',
+    });
+    const albumAggregateWithRoonAlbum =
+      createAlbumAggregateWithRoonAlbum(roonAlbum);
+    await createPersistedRoonAlbum(testDb, {
+      roonAlbumId: roonAlbumId,
+      albumName: '12 Golden Country Greats',
+      artistName: 'Ween',
+    });
+    const roonTrackId1 = uuidv7();
+    await createRoonTrack(testDb, {
+      roonTrackId: roonTrackId1,
+      roonAlbumId: roonAlbumId,
+      trackName: "I'm Holding You",
+      number: '1',
+      position: 1,
+    });
+    const roonTrackId2 = uuidv7();
+    await createRoonTrack(testDb, {
+      roonTrackId: roonTrackId2,
+      roonAlbumId: roonAlbumId,
+      trackName: 'Japanese Cowboy',
+      number: '1',
+      position: 1,
+    });
+
+    const result = await getRoonTracks(
+      testDb,
+      mockBrowseInstance,
+      albumAggregateWithRoonAlbum,
+    );
+
+    expect(result).toHaveLength(2);
+    expect(result[0].roonAlbumId).toBe(roonAlbumId);
+    expect(result[0].trackName).toBe("I'm Holding You");
+    expect(result[1].roonAlbumId).toBe(roonAlbumId);
+    expect(result[1].trackName).toBe('Japanese Cowboy');
   });
 });
