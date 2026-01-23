@@ -10,12 +10,16 @@ import {
 } from '../__factories__/persistedRoonAlbumFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { buildRoonAlbum } from '../__factories__/roonAlbumFactory.js';
-import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
+import {
+  buildRoonTrack,
+  createRoonTrack,
+} from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema';
 import knexConfig from '../knexfile';
 import * as browser from '../src/browser.js';
 import {
   createAlbumAggregateWithRoonAlbum,
+  createAlbumAggregateWithRoonTracks,
   getRoonAlbums,
   getRoonTracks,
   mergePersistedRoonAlbum,
@@ -303,5 +307,39 @@ describe('getRoonTracks', () => {
     expect(result[0].trackName).toBe("I'm Holding You");
     expect(result[1].roonAlbumId).toBe(roonAlbumId);
     expect(result[1].trackName).toBe('Japanese Cowboy');
+  });
+});
+
+describe('createAlbumAggregateWithRoonTracks', () => {
+  it('returns an album aggregate in stage "withRoonAlbum"', () => {
+    const roonAlbum = buildRoonAlbum();
+    const albumAggregateWithRoonAlbum =
+      createAlbumAggregateWithRoonAlbum(roonAlbum);
+    const roonTrackId1 = uuidv7();
+    const roonTrackId2 = uuidv7();
+    const roonTracks = [
+      buildRoonTrack({
+        roonTrackId: roonTrackId1,
+        trackName: "I'm Holding You",
+      }),
+      buildRoonTrack({
+        roonTrackId: roonTrackId2,
+        trackName: 'Japanese Cowboy',
+      }),
+    ];
+    const albumAggregate = createAlbumAggregateWithRoonTracks(
+      albumAggregateWithRoonAlbum,
+      roonTracks,
+    );
+
+    expect(albumAggregate.stage).toEqual('withRoonTracks');
+    expect(albumAggregate.id).toEqual(roonAlbum.roonAlbumId);
+    expect(albumAggregate.roonTracks).toHaveLength(2);
+    expect(albumAggregate.roonTracks[0].roonTrackId).toEqual(
+      roonTracks[0].roonTrackId,
+    );
+    expect(albumAggregate.roonTracks[1].roonTrackId).toEqual(
+      roonTracks[1].roonTrackId,
+    );
   });
 });

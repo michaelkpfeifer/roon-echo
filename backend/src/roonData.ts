@@ -6,6 +6,7 @@ import { v7 as uuidv7 } from 'uuid';
 import * as browser from './browser.js';
 import {
   buildAlbumAggregateWithRoonAlbum,
+  buildAlbumAggregateWithRoonTracks,
   buildEmptyAlbumAggregate,
 } from './factories/albumAggregateFactory';
 import {
@@ -34,6 +35,21 @@ const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   );
 
   return albumAggregateWithRoonAlbum;
+};
+
+const createAlbumAggregateWithRoonTracks = (
+  albumAggregateWithRoonAlbum: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonAlbum' }
+  >,
+  roonTracks: RoonTrack[],
+) => {
+  const albumAggregateWithRoonTracks = buildAlbumAggregateWithRoonTracks(
+    albumAggregateWithRoonAlbum,
+    roonTracks,
+  );
+
+  return albumAggregateWithRoonTracks;
 };
 
 const mergePersistedRoonAlbum = (
@@ -147,6 +163,7 @@ const initializeRoonData = async (
 
 export {
   createAlbumAggregateWithRoonAlbum,
+  createAlbumAggregateWithRoonTracks,
   getRoonAlbums,
   getRoonTracks,
   initializeRoonData,
