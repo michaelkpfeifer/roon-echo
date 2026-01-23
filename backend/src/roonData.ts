@@ -151,14 +151,47 @@ const initializeRoonData = async (
 ) => {
   const roonAlbums = await getRoonAlbums(db, browseInstance);
 
-  const albumAggregates: (
-    | Extract<AlbumAggregate, { stage: 'withRoonAlbum' }>
-    | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
-  )[] = roonAlbums.map((roonAlbum) =>
+  const albumAggregatesWithRoonAlbum: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonAlbum' }
+  >[] = roonAlbums.map((roonAlbum) =>
     createAlbumAggregateWithRoonAlbum(roonAlbum),
   );
 
-  return albumAggregates;
+  /* eslint-disable no-console */
+  console.log(
+    'albumAggregatesWithRoonAlbum:',
+    JSON.stringify(albumAggregatesWithRoonAlbum, null, 4),
+  );
+  /* eslint-enable no-console */
+
+  const albumAggregatesWithRoonTracks: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' }
+  >[] = [];
+
+  for (const albumAggregateWithRoonAlbum of albumAggregatesWithRoonAlbum) {
+    const roonTracks: RoonTrack[] = await getRoonTracks(
+      db,
+      browseInstance,
+      albumAggregateWithRoonAlbum,
+    );
+    const albumAggregateWithRoonTracks = createAlbumAggregateWithRoonTracks(
+      albumAggregateWithRoonAlbum,
+      roonTracks,
+    );
+
+    albumAggregatesWithRoonTracks.push(albumAggregateWithRoonTracks);
+  }
+
+  /* eslint-disable no-console */
+  console.log(
+    'albumAggregatesWithRoonTracks:',
+    JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
+  );
+  /* eslint-enable no-console */
+
+  return albumAggregatesWithRoonTracks;
 };
 
 export {
