@@ -1,11 +1,11 @@
-type RoonAlbum = {
+type PersistedRoonAlbum = {
   roonAlbumId: string;
   albumName: string;
   artistName: string;
-  imageKey: string;
-  itemKey: string;
   candidatesFetchedAt: string | null;
   candidatesMatchedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export { RoonAlbum };
+export { PersistedRoonAlbum };

@@ -5,7 +5,6 @@ const RawRoonTrackSchema = z.object({
   subtitle: z.string(),
   imageKey: z.null(),
   itemKey: z.string(),
-  hint: z.literal('action_list'),
 });
 
 export { RawRoonTrackSchema };

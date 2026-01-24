@@ -28,6 +28,7 @@ import {
 } from './messages.js';
 import { extractQueueItems } from './queues.js';
 import { dbInit, insertPlayedTrackInHistory } from './repository.js';
+import { initializeRoonData } from './roonData.js';
 import {
   appendToScheduledTracks,
   getPlayedTime,
@@ -62,6 +63,12 @@ let browseInstance;
 
 let scheduledTracks = [];
 let playingTracks = [];
+let coreReadyPromise;
+let resolveCoreReady;
+
+coreReadyPromise = new Promise((resolve) => {
+  resolveCoreReady = resolve;
+});
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */
@@ -320,9 +327,15 @@ const roon = new RoonApi({
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
     browseInstance = new RoonApiBrowse(core);
+
+    resolveCoreReady();
   },
 
-  core_unpaired: (/* core */) => {},
+  core_unpaired: async () => {
+    coreReadyPromise = new Promise((resolve) => {
+      resolveCoreReady = resolve;
+    });
+  },
   /* eslint-enable camelcase */
 });
 
@@ -337,10 +350,23 @@ roon.init_services({
 
 serviceStatus.set_status('All is good', false);
 
+roon.start_discovery();
+await coreReadyPromise;
+
 const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
   maxConcurrent: 1,
 });
+
+/* eslint-disable no-console */
+console.log('server.js: main(): browseInstance:', browseInstance);
+/* eslint-enable no-console */
+
+let albumAggregates = await initializeRoonData(db, browseInstance);
+
+/* eslint-disable no-console */
+console.log('server.js: main(): albumAggregates:', albumAggregates);
+/* eslint-enable no-console */
 
 io.on('connection', async (socket) => {
   /* eslint-disable no-console */
@@ -367,7 +393,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  buildStableAlbumData(socket, browseInstance);
+  buildStableAlbumData(db, socket, albumAggregates);
 
   transport.get_zones((error, body) => {
     if (error) {

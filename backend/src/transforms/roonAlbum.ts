@@ -7,8 +7,8 @@ const transformToRoonAlbum = (
   raw: RawRoonAlbum,
   persistedAttributes: {
     roonAlbumId: string;
-    candidatesFetchedAt: string;
-    candidatesMatchedAt: string;
+    candidatesFetchedAt: string | null;
+    candidatesMatchedAt: string | null;
   },
 ): RoonAlbum => ({
   roonAlbumId: persistedAttributes.roonAlbumId,
