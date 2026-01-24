@@ -22,6 +22,7 @@ import {
   createAlbumAggregateWithRoonTracks,
   getRoonAlbums,
   getRoonTracks,
+  initializeRoonData,
   mergePersistedRoonAlbum,
 } from '../src/roonData.js';
 
@@ -341,5 +342,94 @@ describe('createAlbumAggregateWithRoonTracks', () => {
     expect(albumAggregate.roonTracks[1].roonTrackId).toEqual(
       roonTracks[1].roonTrackId,
     );
+  });
+});
+
+describe('initializeRoonData', () => {
+  const loadAlbumsResponse = {
+    items: [
+      {
+        title: '12 Golden Country Greats',
+        subtitle: 'Ween',
+        image_key: 'img123',
+        item_key: '12345:99',
+        hint: 'list',
+      },
+    ],
+    offset: 0,
+    list: {
+      level: 1,
+      title: 'Albums',
+      subtitle: null,
+      imageKey: null,
+      count: 1,
+      displayOffset: null,
+    },
+  };
+
+  const loadAlbumResponse = {
+    items: [
+      {
+        title: 'Play Album',
+        subtitle: null,
+        imageKey: null,
+        itemKey: '128:0',
+        hint: 'action_list',
+      },
+      {
+        title: "1. I'm Holding You",
+        subtitle: 'Ween',
+        imageKey: null,
+        itemKey: '128:1',
+        hint: 'action_list',
+      },
+      {
+        title: '2. Japanese Cowboy',
+        subtitle: 'Ween',
+        imageKey: null,
+        itemKey: '128:2',
+        hint: 'action_list',
+      },
+    ],
+    offset: 0,
+    list: {
+      level: 3,
+      title: '12 Golden Country Greats',
+      subtitle: 'Ween',
+      imageKey: '0290033b354e02d0090b8d4ab7b5aa53',
+      count: 3,
+      displayOffset: null,
+    },
+  };
+
+  let testDb: Knex<DatabaseSchema>;
+  let mockBrowseInstance: RoonApiBrowse;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+
+    mockBrowseInstance = {} as RoonApiBrowse;
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns a list of album aggregates in stage "withRoonTracks"', async () => {
+    vi.spyOn(browser, 'loadAlbums').mockResolvedValue(loadAlbumsResponse);
+    vi.spyOn(browser, 'loadAlbum').mockResolvedValue(loadAlbumResponse);
+
+    const result = await initializeRoonData(testDb, mockBrowseInstance);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].stage).toBe('withRoonTracks');
+    expect(result[0].roonAlbum.albumName).toBe('12 Golden Country Greats');
+    expect(result[0].roonTracks[0].trackName).toBe("I'm Holding You");
+    expect(result[0].roonTracks[1].trackName).toBe('Japanese Cowboy');
   });
 });
