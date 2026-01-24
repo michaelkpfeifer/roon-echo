@@ -393,7 +393,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  buildStableAlbumData(db, socket, browseInstance);
+  buildStableAlbumData(db, socket, albumAggregates);
 
   transport.get_zones((error, body) => {
     if (error) {

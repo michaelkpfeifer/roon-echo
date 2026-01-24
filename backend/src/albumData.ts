@@ -7,7 +7,6 @@ import type { DatabaseSchema } from '../databaseSchema';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithoutMbMatch,
-  buildAlbumAggregateWithRoonTracks,
 } from './factories/albumAggregateFactory';
 import {
   fetchMbAlbum,
@@ -17,18 +16,12 @@ import {
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
 } from './repository';
-import {
-  getRoonAlbums,
-  getRoonTracks,
-  createAlbumAggregateWithRoonAlbum,
-} from './roonData.js';
 import { compareMbAndRoonTracks } from './roonMbMatches';
 import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { transformToMbCandidate } from './transforms/mbCandidate';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import type { RoonTrack } from '../../shared/internal/roonTrack';
 
 dotenv.config();
 const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
@@ -104,21 +97,6 @@ const runMbFetchRelease = async (mbReleaseId: string) => {
   const responsePayload = await response.json();
 
   return responsePayload;
-};
-
-const createAlbumAggregateWithRoonTracks = (
-  albumAggregateWithRoonAlbum: Extract<
-    AlbumAggregate,
-    { stage: 'withRoonAlbum' }
-  >,
-  roonTracks: RoonTrack[],
-) => {
-  const albumAggregateWithRoonTracks = buildAlbumAggregateWithRoonTracks(
-    albumAggregateWithRoonAlbum,
-    roonTracks,
-  );
-
-  return albumAggregateWithRoonTracks;
 };
 
 const mbApiRateLimiter = new Bottleneck({
@@ -255,47 +233,16 @@ async function processAlbum(
 const buildStableAlbumData = async (
   db: Knex<DatabaseSchema>,
   socket: Socket,
-  browseInstance: RoonApiBrowse,
+  albumAggregates: Extract<AlbumAggregate, { stage: 'withRoonTracks' }>[],
 ) => {
-  const roonAlbums = await getRoonAlbums(db, browseInstance);
-
-  const albumAggregatesWithRoonAlbum: Extract<
-    AlbumAggregate,
-    { stage: 'withRoonAlbum' }
-  >[] = [];
-  for (const roonAlbum of roonAlbums) {
-    const albumAggregateWithRoonAlbum =
-      createAlbumAggregateWithRoonAlbum(roonAlbum);
-
-    albumAggregatesWithRoonAlbum.push(albumAggregateWithRoonAlbum);
-  }
-
-  const albumAggregatesWithRoonTracks: Extract<
-    AlbumAggregate,
-    { stage: 'withRoonTracks' }
-  >[] = [];
-  for (const albumAggregateWithRoonAlbum of albumAggregatesWithRoonAlbum) {
-    const roonTracks: RoonTrack[] = await getRoonTracks(
-      db,
-      browseInstance,
-      albumAggregateWithRoonAlbum,
-    );
-    const albumAggregateWithRoonTracks = createAlbumAggregateWithRoonTracks(
-      albumAggregateWithRoonAlbum,
-      roonTracks,
-    );
-
-    albumAggregatesWithRoonTracks.push(albumAggregateWithRoonTracks);
-  }
-
   const albumAggregatesWithPersistedData: (
     | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
     | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
     | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
   )[] = [];
-  for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
+  for (const albumAggregate of albumAggregates) {
     const albumAggregateWithPersistedData =
-      await readPersistedAlbumAggregateData(db, albumAggregateWithRoonTracks);
+      await readPersistedAlbumAggregateData(db, albumAggregate);
 
     albumAggregatesWithPersistedData.push(albumAggregateWithPersistedData);
   }
