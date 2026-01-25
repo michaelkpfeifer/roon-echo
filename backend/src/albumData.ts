@@ -116,7 +116,7 @@ const readPersistedAlbumAggregateData = async (
     return albumAggregateWithRoonTracks;
   }
 
-  const mbCandidates = await fetchMbCandidates(db, roonAlbum);
+  const mbCandidates = await fetchMbCandidates(db, roonAlbum.roonAlbumId);
   const mbAlbumResult = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
 
   if (mbAlbumResult.isOk()) {
@@ -191,7 +191,7 @@ async function processAlbum(
   }
 
   if (!album.roonAlbum.candidatesMatchedAt) {
-    const candidates = await fetchMbCandidates(db, album.roonAlbum);
+    const candidates = await fetchMbCandidates(db, album.roonAlbum.roonAlbumId);
 
     const roonTrackTitles = album.roonTracks.map((track) => track.trackName);
 
@@ -211,7 +211,7 @@ async function processAlbum(
     await updateCandidatesMatchedAtTimestamp(db, album.roonAlbum);
   }
 
-  const mbCandidates = await fetchMbCandidates(db, album.roonAlbum);
+  const mbCandidates = await fetchMbCandidates(db, album.roonAlbum.roonAlbumId);
   const mbAlbumResult = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
 
   let albumAggregate;

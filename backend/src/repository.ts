@@ -1,12 +1,13 @@
 import type { Knex } from 'knex';
-import { Result, err, ok } from 'neverthrow';
+import type { Result } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 
 import { camelCaseKeys } from './utils.js';
-import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
-import { MbCandidate } from '../../shared/internal/mbCandidate';
-import { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
-import { RoonAlbum } from '../../shared/internal/roonAlbum';
-import { RoonTrack } from '../../shared/internal/roonTrack';
+import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
+import type { MbCandidate } from '../../shared/internal/mbCandidate';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
+import type { RoonAlbum } from '../../shared/internal/roonAlbum';
+import type { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {
@@ -94,10 +95,8 @@ const fetchRoonTracks = async (
 
 const fetchMbCandidates = async (
   db: Knex<DatabaseSchema>,
-  roonAlbum: RoonAlbum,
+  roonAlbumId: string,
 ): Promise<MbCandidate[]> => {
-  const roonAlbumId = roonAlbum.roonAlbumId;
-
   const rows = await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .where({ roon_album_id: roonAlbumId })
     .orderBy('score', 'desc');
