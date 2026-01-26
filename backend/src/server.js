@@ -10,7 +10,6 @@ import RoonApiStatus from 'node-roon-api-status';
 import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
-import { buildStableAlbumData } from './albumData.js';
 import * as browser from './browser.js';
 import {
   logChanged,
@@ -22,7 +21,10 @@ import {
   logSubscribed,
   logUnknown,
 } from './logging.js';
-import { getAlbumAggregatesWithPersistedData } from './mbData.js';
+import {
+  enrichAlbumAggregatesWithMusicBrainzData,
+  getAlbumAggregatesWithPersistedData,
+} from './mbData.js';
 import {
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
@@ -385,6 +387,12 @@ console.log(
 );
 /* eslint-enable no-console */
 
+enrichAlbumAggregatesWithMusicBrainzData(
+  db,
+  io,
+  albumAggregatesWithPersistedData,
+);
+
 io.on('connection', async (socket) => {
   /* eslint-disable no-console */
   console.log('server.js: io.on(): Connected: socket.id:', socket.id);
@@ -409,8 +417,7 @@ io.on('connection', async (socket) => {
   /* eslint-enable no-console */
 
   socket.emit('coreUrl', coreUrl);
-
-  buildStableAlbumData(db, socket, albumAggregatesWithRoonTracks);
+  socket.emit('albums', albumAggregatesWithPersistedData);
 
   transport.get_zones((error, body) => {
     if (error) {

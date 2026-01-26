@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { skipMbCandidate } from '../src/albumData.js';
+import { skipMbCandidate } from '../src/mbData.js';
 
 describe('skipMbCandidate', () => {
   it('returns false if all media of the release have tracks', () => {
