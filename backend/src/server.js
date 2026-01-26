@@ -22,6 +22,7 @@ import {
   logSubscribed,
   logUnknown,
 } from './logging.js';
+import { getAlbumAggregatesWithPersistedData } from './mbData.js';
 import {
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
@@ -362,10 +363,26 @@ const roonApiRateLimiter = new Bottleneck({
 console.log('server.js: main(): browseInstance:', browseInstance);
 /* eslint-enable no-console */
 
-let albumAggregates = await initializeRoonData(db, browseInstance);
+const albumAggregatesWithRoonTracks = await initializeRoonData(
+  db,
+  browseInstance,
+);
 
 /* eslint-disable no-console */
-console.log('server.js: main(): albumAggregates:', albumAggregates);
+console.log(
+  'server.js: main(): albumAggregatesWithRoonTracks:',
+  albumAggregatesWithRoonTracks,
+);
+/* eslint-enable no-console */
+
+const albumAggregatesWithPersistedData =
+  await getAlbumAggregatesWithPersistedData(db, albumAggregatesWithRoonTracks);
+
+/* eslint-disable no-console */
+console.log(
+  'server.js: main(): albumAggregatesWithPersistedData:',
+  albumAggregatesWithPersistedData,
+);
 /* eslint-enable no-console */
 
 io.on('connection', async (socket) => {
@@ -393,7 +410,7 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
 
-  buildStableAlbumData(db, socket, albumAggregates);
+  buildStableAlbumData(db, socket, albumAggregatesWithRoonTracks);
 
   transport.get_zones((error, body) => {
     if (error) {
