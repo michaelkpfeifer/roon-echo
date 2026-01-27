@@ -296,7 +296,10 @@ const getAlbumAggregatesWithPersistedData = async (
 };
 
 export {
+  buildMbCandidateSearch,
   enrichAlbumAggregatesWithMusicBrainzData,
   getAlbumAggregatesWithPersistedData,
+  mbUserAgent,
+  runMbCandidateSearch,
   skipMbCandidate,
 };
