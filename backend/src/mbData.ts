@@ -36,35 +36,6 @@ if (!mbUserAgent) {
   throw new Error(`Error: Failed to read MB_USER_AGENT from environment.`);
 }
 
-const buildMbFetchRelease = (releaseId: string): string => {
-  const url = new URL(`${mbReleaseEndpoint}/${releaseId}`);
-
-  url.searchParams.set('inc', 'artists+recordings+labels');
-  url.searchParams.set('fmt', 'json');
-
-  return url.toString();
-};
-
-const runMbFetchRelease = async (mbReleaseId: string) => {
-  const response = await fetch(buildMbFetchRelease(mbReleaseId), {
-    method: 'GET',
-    headers: {
-      'User-Agent': mbUserAgent,
-      Accept: 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Error: Failed to fetch ${buildMbFetchRelease(mbReleaseId)} (${response.status}).`,
-    );
-  }
-
-  const responsePayload = await response.json();
-
-  return responsePayload;
-};
-
 const buildMbCandidateSearch = (
   albumName: string,
   artistName: string,
@@ -99,16 +70,45 @@ const runMbCandidateSearch = async (albumName: string, artistName: string) => {
   return responsePayload;
 };
 
-const mbApiRateLimiter = new Bottleneck({
-  minTime: 200,
-  maxConcurrent: 1,
-});
+const buildMbFetchRelease = (releaseId: string): string => {
+  const url = new URL(`${mbReleaseEndpoint}/${releaseId}`);
+
+  url.searchParams.set('inc', 'artists+recordings+labels');
+  url.searchParams.set('fmt', 'json');
+
+  return url.toString();
+};
+
+const runMbFetchRelease = async (mbReleaseId: string) => {
+  const response = await fetch(buildMbFetchRelease(mbReleaseId), {
+    method: 'GET',
+    headers: {
+      'User-Agent': mbUserAgent,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error: Failed to fetch ${buildMbFetchRelease(mbReleaseId)} (${response.status}).`,
+    );
+  }
+
+  const responsePayload = await response.json();
+
+  return responsePayload;
+};
 
 const skipMbCandidate = (fullRelease: unknown) => {
   return RawMbFetchReleaseResponseMediaSchema.parse(fullRelease)
     .media.map((medium) => medium.tracks)
     .some((tracks) => tracks === undefined);
 };
+
+const mbApiRateLimiter = new Bottleneck({
+  minTime: 200,
+  maxConcurrent: 1,
+});
 
 const enrichAlbumAggregateWithMusicBrainzData = async (
   db: Knex<DatabaseSchema>,
