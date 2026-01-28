@@ -6,15 +6,14 @@ import { formatMbTrackLength } from '../utils';
 
 function Album() {
   const { appState, config, coreUrl, socketRef } = useContext(AppContext);
-
-  const { mbAlbumId } = useParams();
+  const { id } = useParams();
 
   const album = appState.albums.find(
-    (a) => a.mbAlbum && a.mbAlbum.mbAlbumId === mbAlbumId,
+    (currentAlbumAggregate) => currentAlbumAggregate.id === id,
   );
 
   const { mbArtists, roonAlbum } = album;
-  const { albumName, imageKey } = roonAlbum;
+  const { albumName, artistName, imageKey } = roonAlbum;
   const artistNames = mbArtists.map((artist) => artist.name).join(', ');
 
   const enqueueTrackNext = (track) => {
@@ -52,7 +51,7 @@ function Album() {
           className="album-heading__image"
         />
         <div>
-          <div className="album-heading__artists">{artistNames}</div>
+          <div className="album-heading__artists">{artistName}</div>
           <div className="album-heading__name">{albumName}</div>
           <div className="album-actions">
             <button
