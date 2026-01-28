@@ -1,8 +1,9 @@
 import Bottleneck from 'bottleneck';
 import dotenv from 'dotenv';
 import type { Knex } from 'knex';
-import type { Socket } from 'socket.io';
+import type { Server } from 'socket.io';
 
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { DatabaseSchema } from '../databaseSchema';
 import {
   buildAlbumAggregateWithMbMatch,
@@ -21,7 +22,6 @@ import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSear
 import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
 import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
 import { transformToMbCandidate } from './transforms/mbCandidate';
-import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 
 dotenv.config();
 const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;
@@ -99,66 +99,33 @@ const runMbFetchRelease = async (mbReleaseId: string) => {
   return responsePayload;
 };
 
-const mbApiRateLimiter = new Bottleneck({
-  minTime: 200,
-  maxConcurrent: 1,
-});
-
-const readPersistedAlbumAggregateData = async (
-  db: Knex<DatabaseSchema>,
-  albumAggregateWithRoonTracks: Extract<
-    AlbumAggregate,
-    { stage: 'withRoonTracks' }
-  >,
-) => {
-  const roonAlbum = albumAggregateWithRoonTracks.roonAlbum;
-  if (!roonAlbum.candidatesMatchedAt) {
-    return albumAggregateWithRoonTracks;
-  }
-
-  const mbCandidates = await fetchMbCandidates(db, roonAlbum);
-  const mbAlbumResult = await fetchMbAlbum(db, roonAlbum.roonAlbumId);
-
-  if (mbAlbumResult.isOk()) {
-    return buildAlbumAggregateWithMbMatch(
-      albumAggregateWithRoonTracks,
-      mbCandidates,
-      mbAlbumResult._unsafeUnwrap(),
-    );
-  } else {
-    return buildAlbumAggregateWithoutMbMatch(
-      albumAggregateWithRoonTracks,
-      mbCandidates,
-    );
-  }
-};
-
 const skipMbCandidate = (fullRelease: unknown) => {
   return RawMbFetchReleaseResponseMediaSchema.parse(fullRelease)
     .media.map((medium) => medium.tracks)
     .some((tracks) => tracks === undefined);
 };
 
-async function processAlbum(
+const mbApiRateLimiter = new Bottleneck({
+  minTime: 200,
+  maxConcurrent: 1,
+});
+
+const enrichAlbumAggregateWithMusicBrainzData = async (
   db: Knex<DatabaseSchema>,
-  socket: Socket,
-  album:
-    | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
-    | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
-    | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>,
+  io: Server,
+  albumAggregateWithPersistedData: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' }
+  >,
 ): Promise<
   | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
   | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
-> {
-  if (album.stage !== 'withRoonTracks') {
-    return album;
-  }
-
-  if (!album.roonAlbum.candidatesFetchedAt) {
+> => {
+  if (!albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt) {
     const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
       runMbCandidateSearch(
-        album.roonAlbum.albumName,
-        album.roonAlbum.artistName,
+        albumAggregateWithPersistedData.roonAlbum.albumName,
+        albumAggregateWithPersistedData.roonAlbum.artistName,
       ),
     );
 
@@ -178,7 +145,7 @@ async function processAlbum(
         RawMbFetchReleaseResponseSchema.parse(fullRelease);
 
       const mbCandidate = transformToMbCandidate(
-        album.roonAlbum.roonAlbumId,
+        albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
         rawMbCandidate,
         rawMbFetchReleaseResponse,
       );
@@ -186,14 +153,23 @@ async function processAlbum(
       await upsertMbCandidate(db, mbCandidate);
     }
 
-    album.roonAlbum.candidatesFetchedAt = new Date().toISOString();
-    await updateCandidatesFetchedAtTimestamp(db, album.roonAlbum);
+    albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt =
+      new Date().toISOString();
+    await updateCandidatesFetchedAtTimestamp(
+      db,
+      albumAggregateWithPersistedData.roonAlbum,
+    );
   }
 
-  if (!album.roonAlbum.candidatesMatchedAt) {
-    const candidates = await fetchMbCandidates(db, album.roonAlbum);
+  if (!albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt) {
+    const candidates = await fetchMbCandidates(
+      db,
+      albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+    );
 
-    const roonTrackTitles = album.roonTracks.map((track) => track.trackName);
+    const roonTrackTitles = albumAggregateWithPersistedData.roonTracks.map(
+      (track) => track.trackName,
+    );
 
     for (const candidate of candidates) {
       const mbTrackTitles = candidate.mbCandidateTracks.map(
@@ -207,70 +183,125 @@ async function processAlbum(
       }
     }
 
-    album.roonAlbum.candidatesMatchedAt = new Date().toISOString();
-    await updateCandidatesMatchedAtTimestamp(db, album.roonAlbum);
+    albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt =
+      new Date().toISOString();
+    await updateCandidatesMatchedAtTimestamp(
+      db,
+      albumAggregateWithPersistedData.roonAlbum,
+    );
   }
 
-  const mbCandidates = await fetchMbCandidates(db, album.roonAlbum);
-  const mbAlbumResult = await fetchMbAlbum(db, album.roonAlbum.roonAlbumId);
+  const mbCandidates = await fetchMbCandidates(
+    db,
+    albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+  );
+  const mbAlbumResult = await fetchMbAlbum(
+    db,
+    albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+  );
 
-  let albumAggregate;
   if (mbAlbumResult.isOk()) {
-    albumAggregate = buildAlbumAggregateWithMbMatch(
-      album,
+    const albumAggregateWithMbMatch = buildAlbumAggregateWithMbMatch(
+      albumAggregateWithPersistedData,
+      mbCandidates,
+      mbAlbumResult._unsafeUnwrap(),
+    );
+    io.emit('albumUpdate', albumAggregateWithMbMatch);
+    return albumAggregateWithMbMatch;
+  } else {
+    const albumAggregateWithoutMbMatch = buildAlbumAggregateWithoutMbMatch(
+      albumAggregateWithPersistedData,
+      mbCandidates,
+    );
+    io.emit('albumUpdate', albumAggregateWithoutMbMatch);
+    return albumAggregateWithoutMbMatch;
+  }
+};
+
+const enrichAlbumAggregatesWithMusicBrainzData = async (
+  db: Knex<DatabaseSchema>,
+  io: Server,
+  albumAggregatesWithPersistedData: (
+    | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
+    | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
+    | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
+  )[],
+) => {
+  for (const [
+    index,
+    albumAggregateWithPersistedData,
+  ] of albumAggregatesWithPersistedData.entries()) {
+    if (albumAggregateWithPersistedData.stage === 'withRoonTracks') {
+      const result = await enrichAlbumAggregateWithMusicBrainzData(
+        db,
+        io,
+        albumAggregateWithPersistedData,
+      );
+      albumAggregatesWithPersistedData[index] = result;
+    }
+  }
+};
+
+const getPersistedAlbumAggregateData = async (
+  db: Knex<DatabaseSchema>,
+  albumAggregateWithRoonTracks: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' }
+  >,
+) => {
+  const roonAlbumData = albumAggregateWithRoonTracks.roonAlbum;
+
+  if (!roonAlbumData.candidatesMatchedAt) {
+    return albumAggregateWithRoonTracks;
+  }
+
+  const mbCandidates = await fetchMbCandidates(db, roonAlbumData.roonAlbumId);
+  const mbAlbumResult = await fetchMbAlbum(db, roonAlbumData.roonAlbumId);
+
+  if (mbAlbumResult.isOk()) {
+    return buildAlbumAggregateWithMbMatch(
+      albumAggregateWithRoonTracks,
       mbCandidates,
       mbAlbumResult._unsafeUnwrap(),
     );
   } else {
-    albumAggregate = buildAlbumAggregateWithoutMbMatch(album, mbCandidates);
+    return buildAlbumAggregateWithoutMbMatch(
+      albumAggregateWithRoonTracks,
+      mbCandidates,
+    );
   }
+};
 
-  socket.emit('albumUpdate', albumAggregate);
-
-  return albumAggregate;
-}
-
-const buildStableAlbumData = async (
+const getAlbumAggregatesWithPersistedData = async (
   db: Knex<DatabaseSchema>,
-  socket: Socket,
-  albumAggregates: Extract<AlbumAggregate, { stage: 'withRoonTracks' }>[],
+  albumAggregatesWithRoonTracks: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' }
+  >[],
 ) => {
   const albumAggregatesWithPersistedData: (
     | Extract<AlbumAggregate, { stage: 'withRoonTracks' }>
     | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
     | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
   )[] = [];
-  for (const albumAggregate of albumAggregates) {
+
+  for (const albumAggregateWithRoonTracks of albumAggregatesWithRoonTracks) {
     const albumAggregateWithPersistedData =
-      await readPersistedAlbumAggregateData(db, albumAggregate);
+      await getPersistedAlbumAggregateData(db, albumAggregateWithRoonTracks);
 
     albumAggregatesWithPersistedData.push(albumAggregateWithPersistedData);
   }
 
-  socket.emit('albums', albumAggregatesWithPersistedData);
-
-  const albumAggregatesAfterMusicBrainzUpdates: (
-    | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
-    | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
-  )[] = [];
-  for (const albumAggregateWithPersistedData of albumAggregatesWithPersistedData) {
-    const albumAggregateAfterMusicBrainzUpdates = await processAlbum(
-      db,
-      socket,
-      albumAggregateWithPersistedData,
-    );
-
-    albumAggregatesAfterMusicBrainzUpdates.push(
-      albumAggregateAfterMusicBrainzUpdates,
-    );
-  }
-
-  /* eslint-disable no-console */
-  // console.log(
-  //   'albumData.ts: buildStableAlbumData(): albumAggregatesAfterMusicBrainzUpdates',
-  //   JSON.stringify(albumAggregatesAfterMusicBrainzUpdates, null, 4),
-  // );
-  /* eslint-enable no-console */
+  return albumAggregatesWithPersistedData;
 };
 
-export { buildStableAlbumData, skipMbCandidate };
+export {
+  buildMbCandidateSearch,
+  buildMbFetchRelease,
+  enrichAlbumAggregatesWithMusicBrainzData,
+  getAlbumAggregatesWithPersistedData,
+  mbUserAgent,
+  runMbCandidateSearch,
+  runMbFetchRelease,
+  skipMbCandidate,
+};
