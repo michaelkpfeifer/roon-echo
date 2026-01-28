@@ -297,9 +297,11 @@ const getAlbumAggregatesWithPersistedData = async (
 
 export {
   buildMbCandidateSearch,
+  buildMbFetchRelease,
   enrichAlbumAggregatesWithMusicBrainzData,
   getAlbumAggregatesWithPersistedData,
   mbUserAgent,
   runMbCandidateSearch,
+  runMbFetchRelease,
   skipMbCandidate,
 };
