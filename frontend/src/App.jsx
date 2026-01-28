@@ -190,7 +190,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/albums" element={<Albums />} />
-                <Route path="/albums/:mbAlbumId" element={<Album />} />
+                <Route path="/albums/:id" element={<Album />} />
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
                 <Route path="/queues" element={<Queues />} />

@@ -28,7 +28,7 @@ const imageLinkTarget = (albumAggregate) => {
 
   switch (albumAggregate.stage) {
     case 'withMbMatch':
-      linkTarget = `/albums/${albumAggregate.mbAlbum.mbAlbumId}`;
+      linkTarget = `/albums/${albumAggregate.id}`;
       break;
     case 'withoutMbMatch':
       linkTarget = '';
