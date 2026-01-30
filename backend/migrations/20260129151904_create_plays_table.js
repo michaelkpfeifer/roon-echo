@@ -2,8 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-export function up(knex) {
-  return knex.raw(`
+export async function up(knex) {
+  await knex.raw(`
     CREATE TABLE plays (
       id TEXT NOT NULL
         CHECK (length(id) = 36),
@@ -29,7 +29,16 @@ export function up(knex) {
         ON DELETE CASCADE
         ON UPDATE CASCADE,
       PRIMARY KEY (id)
-    )
+    );
+  `);
+
+  await knex.raw(`
+    CREATE INDEX plays_roon_album_artist_track_name
+      ON plays (roon_album_name, roon_artist_name, roon_track_name);
+  `);
+
+  await knex.raw(`
+    CREATE INDEX plays_roon_track_id ON plays (roon_queue_item_id);
   `);
 }
 
