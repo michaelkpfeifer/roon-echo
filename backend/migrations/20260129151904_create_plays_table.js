@@ -11,7 +11,6 @@ export async function up(knex) {
         CHECK (length(roon_track_id) = 36),
       roon_album_id TEXT NOT NULL
         CHECK (length(roon_album_id) = 36),
-      roon_queue_item_id INTEGER NOT NULL,
       roon_album_name TEXT NOT NULL,
       roon_artist_name TEXT NOT NULL,
       roon_track_name TEXT NOT NULL,
@@ -35,10 +34,6 @@ export async function up(knex) {
   await knex.raw(`
     CREATE INDEX plays_roon_album_artist_track_name
       ON plays (roon_album_name, roon_artist_name, roon_track_name);
-  `);
-
-  await knex.raw(`
-    CREATE INDEX plays_roon_track_id ON plays (roon_queue_item_id);
   `);
 }
 
