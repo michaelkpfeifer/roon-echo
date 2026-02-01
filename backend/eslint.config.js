@@ -46,6 +46,7 @@ export default tseslint.config(
       'no-await-in-loop': 'off',
       'no-restricted-syntax': 'off',
       'import/prefer-default-export': 'off',
+      'object-shorthand': ['warn', 'always'],
     },
     linterOptions: {
       reportUnusedDisableDirectives: false,
@@ -89,6 +90,7 @@ export default tseslint.config(
         'warn',
         { prefer: 'type-imports' },
       ],
+      'object-shorthand': ['warn', 'always'],
     },
   },
 
