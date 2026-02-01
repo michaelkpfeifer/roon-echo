@@ -64,6 +64,7 @@ export default tseslint.config(
       'no-await-in-loop': 'off',
       'no-restricted-syntax': 'off',
       'import/prefer-default-export': 'off',
+      'object-shorthand': ['warn', 'always'],
 
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
@@ -115,6 +116,7 @@ export default tseslint.config(
         'warn',
         { prefer: 'type-imports' },
       ],
+      'object-shorthand': ['warn', 'always'],
     },
   },
 
