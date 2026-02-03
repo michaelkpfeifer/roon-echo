@@ -7,6 +7,7 @@ import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
 import type { MbCandidate } from '../../shared/internal/mbCandidate';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum';
+import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
 import type { RoonTrack } from '../../shared/internal/roonTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 
@@ -91,6 +92,44 @@ const fetchRoonTracks = async (
     });
 
   return camelCaseKeys(roonTracks);
+};
+
+const findRoonTrackByNameAndAlbumName = async (
+  db: Knex<DatabaseSchema>,
+  roonAlbumName: string,
+  roonTrackName: string,
+): Promise<RoonExtendedTrack[]> => {
+  const rows = await db<DatabaseSchema['roon_albums']>('roon_albums')
+    .join(
+      'roon_tracks',
+      'roon_albums.roon_album_id',
+      'roon_tracks.roon_album_id',
+    )
+    .where({
+      'roon_albums.album_name': roonAlbumName,
+      'roon_tracks.track_name': roonTrackName,
+    })
+    .select([
+      'roon_tracks.roon_track_id',
+      'roon_albums.roon_album_id',
+      'roon_tracks.track_name',
+      'roon_tracks.number',
+      'roon_tracks.position',
+      'roon_albums.album_name',
+      'roon_albums.artist_name',
+    ]);
+
+  return rows.map((row): RoonExtendedTrack => {
+    return {
+      roonTrackId: row.roon_track_id,
+      roonAlbumId: row.roon_album_id,
+      trackName: row.track_name,
+      number: row.number,
+      position: row.position,
+      roonAlbumName: row.album_name,
+      roonArtistName: row.artist_name,
+    };
+  });
 };
 
 const fetchMbCandidates = async (
@@ -279,6 +318,7 @@ export {
   fetchMbCandidates,
   fetchRoonAlbum,
   fetchRoonTracks,
+  findRoonTrackByNameAndAlbumName,
   insertPlayedTrackInHistory,
   insertRoonAlbum,
   insertRoonTracks,
