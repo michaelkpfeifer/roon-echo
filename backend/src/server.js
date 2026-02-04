@@ -64,10 +64,14 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport;
 let browseInstance;
 
-let scheduledTracks = [];
-let playingTracks = [];
 let coreReadyPromise;
 let resolveCoreReady;
+
+let scheduledTracks = [];
+let playingTracks = [];
+let staticZoneData = {};
+
+let zonePlayingStates = new Map();
 
 coreReadyPromise = new Promise((resolve) => {
   resolveCoreReady = resolve;
@@ -354,7 +358,37 @@ roon.init_services({
 serviceStatus.set_status('All is good', false);
 
 roon.start_discovery();
+
 await coreReadyPromise;
+
+let zonesReadyPromise;
+let resolveZonesReady;
+
+zonesReadyPromise = new Promise((resolve) => {
+  resolveZonesReady = resolve;
+});
+
+transport.get_zones((error, body) => {
+  staticZoneData = Object.fromEntries(
+    camelCaseKeys(body.zones).map((zoneData) => {
+      return [
+        zoneData.zoneId,
+        {
+          zoneId: zoneData.zoneId,
+          displayName: zoneData.displayName,
+        },
+      ];
+    }),
+  );
+
+  resolveZonesReady();
+});
+
+await zonesReadyPromise;
+
+/* eslint-disable no-console */
+console.log('server.js: main(): staticZoneData:', staticZoneData);
+/* eslint-enable no-console */
 
 const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
