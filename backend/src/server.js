@@ -64,9 +64,6 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport;
 let browseInstance;
 
-let coreReadyPromise;
-let resolveCoreReady;
-
 let scheduledTracks = [];
 let playingTracks = [];
 let staticZoneData = {};
@@ -320,6 +317,9 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
     }
   }
 };
+
+let coreReadyPromise;
+let resolveCoreReady;
 
 const roon = new RoonApi({
   /* eslint-disable camelcase */
