@@ -67,12 +67,7 @@ let browseInstance;
 let scheduledTracks = [];
 let playingTracks = [];
 let staticZoneData = {};
-
 let zonePlayingStates = new Map();
-
-coreReadyPromise = new Promise((resolve) => {
-  resolveCoreReady = resolve;
-});
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */
@@ -320,6 +315,10 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
 
 let coreReadyPromise;
 let resolveCoreReady;
+
+coreReadyPromise = new Promise((resolve) => {
+  resolveCoreReady = resolve;
+});
 
 const roon = new RoonApi({
   /* eslint-disable camelcase */
