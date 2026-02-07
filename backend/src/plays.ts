@@ -6,7 +6,7 @@ import { findRoonTrackByNameAndAlbumName } from './repository.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
 import type { DatabaseSchema } from '../databaseSchema';
 
-const getSeekPosition = (zoneId, zonesSeekChangedMessage) => {
+const getSeekPosition = (zoneId: string, zonesSeekChangedMessage) => {
   const zoneData = zonesSeekChangedMessage.find(
     (currentZoneData) => currentZoneData.zoneId === zoneId,
   );
@@ -18,7 +18,7 @@ const getSeekPosition = (zoneId, zonesSeekChangedMessage) => {
   return zoneData.seekPosition;
 };
 
-const getQueueItemId = (zoneId, playingQueueItems) => {
+const getQueueItemId = (zoneId: string, playingQueueItems) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -26,7 +26,7 @@ const getQueueItemId = (zoneId, playingQueueItems) => {
   return playingQueueItems[zoneId].queueItemId || null;
 };
 
-const getRoonAlbumName = (zoneId, playingQueueItems) => {
+const getRoonAlbumName = (zoneId: string, playingQueueItems) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -34,7 +34,7 @@ const getRoonAlbumName = (zoneId, playingQueueItems) => {
   return playingQueueItems[zoneId].threeLine.line3;
 };
 
-const getRoonTrackName = (zoneId, playingQueueItems) => {
+const getRoonTrackName = (zoneId: string, playingQueueItems) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -43,10 +43,10 @@ const getRoonTrackName = (zoneId, playingQueueItems) => {
 };
 
 const getRoonExtendedTrack = async (
-  db,
-  roonAlbumName,
-  roonTrackName,
-): RoonExtendedTrack => {
+  db: Knex<DatabaseSchema>,
+  roonAlbumName: string,
+  roonTrackName: string,
+): Promise<RoonExtendedTrack | null> => {
   const persistedTrackswithAlbums = await findRoonTrackByNameAndAlbumName(
     db,
     roonAlbumName,
