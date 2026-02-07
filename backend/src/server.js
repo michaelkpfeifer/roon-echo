@@ -29,6 +29,7 @@ import {
   frontendZonesChangedMessage,
   frontendZonesSeekChangedMessage,
 } from './messages.js';
+import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
 import { dbInit, insertPlayedTrackInHistory } from './repository.js';
 import { initializeRoonData } from './roonData.js';
@@ -68,6 +69,7 @@ let scheduledTracks = [];
 let playingTracks = [];
 let staticZoneData = {};
 let zonePlayingStates = new Map();
+let playingQueueItems = {};
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */
@@ -78,6 +80,8 @@ const subscribeToQueueChanges = (zoneIds) => {
     transport.subscribe_queue(zoneId, 100, (response, snakeCaseQueue) => {
       const queue = camelCaseKeys(snakeCaseQueue);
       const queueItems = extractQueueItems(queue);
+
+      playingQueueItems[zoneId] = queueItems[0] || null;
 
       io.emit('queueChanged', { zoneId, queueItems });
 
@@ -193,7 +197,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
 
       logChanged(message);
 
-      Object.keys(message).forEach((subType) => {
+      Object.keys(message).forEach(async (subType) => {
         switch (subType) {
           case 'zonesSeekChanged': {
             /* eslint-disable no-console */
@@ -221,6 +225,13 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
               scheduledTracks,
               playingTracks,
               timestamp: toIso8601(new Date()),
+            });
+
+            zonePlayingStates = await updatePlays({
+              db,
+              zonePlayingStates,
+              zonesSeekChangedMessage: message[subType],
+              playingQueueItems,
             });
 
             logChangedZonesSeek(JSON.stringify(message[subType]));
@@ -387,6 +398,19 @@ await zonesReadyPromise;
 
 /* eslint-disable no-console */
 console.log('server.js: main(): staticZoneData:', staticZoneData);
+/* eslint-enable no-console */
+
+zonePlayingStates = Object.keys(staticZoneData).map((zoneId) => {
+  return {
+    zoneId,
+    previousQueueItemId: null,
+    previousPlayedSegments: [],
+    previousePlayId: null,
+  };
+});
+
+/* eslint-disable no-console */
+console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
 
 const roonApiRateLimiter = new Bottleneck({
