@@ -1,15 +1,15 @@
 type Play = {
   id: string;
-  roon_track_id: string;
-  roon_album_id: string;
-  roon_album_name: string;
-  roon_artist_name: string;
-  roon_track_name: string;
+  roonTrackId: string;
+  roonAlbumId: string;
+  roonAlbumName: string;
+  roonArtistName: string;
+  roonTrackName: string;
   number: string;
   position: number;
-  played_at: string;
-  fraction_played: number;
-  is_played: boolean;
+  playedAt: string;
+  fractionPlayed: number;
+  isPlayed: boolean;
 };
 
 export { Play };
