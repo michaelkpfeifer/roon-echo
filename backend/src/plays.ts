@@ -1,10 +1,36 @@
 import { exit } from 'node:process';
 
 import type { Knex } from 'knex';
+import fp from 'lodash/fp.js';
+import { v7 as uuidv7 } from 'uuid';
 
-import { findRoonTrackByNameAndAlbumName } from './repository.js';
+import { findRoonTrackByNameAndAlbumName, upsertPlay } from './repository.js';
+import type { Play } from '../../shared/internal/play';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
 import type { DatabaseSchema } from '../databaseSchema';
+import {
+  applySeekPositionToPlayedSegments,
+  getPlayedTime,
+} from './scheduledTracks';
+import { toIso8601 } from './utils';
+
+const buildPlay = (
+  id: string,
+  roonExtendedTrack: RoonExtendedTrack,
+  trackLength: number,
+  playedSegments: number[][],
+): Play => {
+  const playedTime = getPlayedTime(playedSegments);
+
+  return fp.omit(['trackName'], {
+    ...roonExtendedTrack,
+    roonTrackName: roonExtendedTrack.trackName,
+    id,
+    playedAt: toIso8601(new Date()),
+    fractionPlayed: playedTime / trackLength,
+    isPlayed: 2 * playedTime >= trackLength,
+  });
+};
 
 const getSeekPosition = (zoneId: string, zonesSeekChangedMessage) => {
   const zoneData = zonesSeekChangedMessage.find(
@@ -24,6 +50,14 @@ const getQueueItemId = (zoneId: string, playingQueueItems) => {
   }
 
   return playingQueueItems[zoneId].queueItemId || null;
+};
+
+const getTrackLength = (zoneId: string, playingQueueItems) => {
+  if (!playingQueueItems[zoneId]) {
+    return null;
+  }
+
+  return playingQueueItems[zoneId].length;
 };
 
 const getRoonAlbumName = (zoneId: string, playingQueueItems) => {
@@ -75,19 +109,6 @@ const updatePlays = async ({
 }: {
   db: Knex<DatabaseSchema>;
 }) => {
-  console.log(
-    'DEV: plays.ts: updatePlays(): zonePlayingStates:',
-    zonePlayingStates,
-  );
-  console.log(
-    'DEV: plays.ts: updatePlays(): zonesSeekChangedMessage:',
-    zonesSeekChangedMessage,
-  );
-  console.log(
-    'DEV: plays.ts: updatePlays(): playingQueueItems:',
-    playingQueueItems,
-  );
-
   const newZonePlayingStates = await Promise.all(
     zonePlayingStates.map(async (zonePlayingState) => {
       const {
@@ -98,20 +119,18 @@ const updatePlays = async ({
       } = zonePlayingState;
 
       const seekPosition = getSeekPosition(zoneId, zonesSeekChangedMessage);
-      const queueItemId = getQueueItemId(zoneId, playingQueueItems);
       const roonAlbumName = getRoonAlbumName(zoneId, playingQueueItems);
       const roonTrackName = getRoonTrackName(zoneId, playingQueueItems);
 
       if (
         seekPosition === null ||
-        queueItemId === null ||
         roonAlbumName === null ||
         roonTrackName === null
       ) {
         return zonePlayingState;
       }
 
-      const roonExtendedTrack = getRoonExtendedTrack(
+      const roonExtendedTrack = await getRoonExtendedTrack(
         db,
         roonAlbumName,
         roonTrackName,
@@ -121,13 +140,56 @@ const updatePlays = async ({
         return zonePlayingState;
       }
 
-      return zonePlayingState;
-    }),
-  );
+      const queueItemId = getQueueItemId(zoneId, playingQueueItems);
+      const trackLength = getTrackLength(zoneId, playingQueueItems);
 
-  console.log(
-    'DEV: plays.ts, updatePlays(): newZonePlayingStates:',
-    newZonePlayingStates,
+      if (!queueItemId) {
+        return zonePlayingState;
+      }
+
+      if (queueItemId === previousQueueItemId) {
+        const newPlayedSegments = applySeekPositionToPlayedSegments(
+          seekPosition,
+          previousPlayedSegments,
+        );
+
+        const play = buildPlay(
+          previousPlayId,
+          roonExtendedTrack,
+          trackLength,
+          newPlayedSegments,
+        );
+
+        upsertPlay(db, play);
+
+        return {
+          ...zonePlayingState,
+          previousPlayedSegments: newPlayedSegments,
+        };
+      } else {
+        const newPlayedSegments = applySeekPositionToPlayedSegments(
+          seekPosition,
+          [],
+        );
+
+        const newPlayId = uuidv7();
+        const play = buildPlay(
+          newPlayId,
+          roonExtendedTrack,
+          trackLength,
+          newPlayedSegments,
+        );
+
+        upsertPlay(db, play);
+
+        return {
+          ...zonePlayingState,
+          previousQueueItemId: queueItemId,
+          previousPlayedSegments: newPlayedSegments,
+          previousPlayId: newPlayId,
+        };
+      }
+    }),
   );
 
   return newZonePlayingStates;

@@ -2,10 +2,11 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
-import { camelCaseKeys } from './utils.js';
+import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
 import type { MbCandidate } from '../../shared/internal/mbCandidate';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
+import type { Play } from '../../shared/internal/play';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
 import type { RoonTrack } from '../../shared/internal/roonTrack';
@@ -305,6 +306,13 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
   );
 };
 
+const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
+  await db<DatabaseSchema['plays']>('plays')
+    .insert(snakeCaseKeys(play))
+    .onConflict(['id'])
+    .merge();
+};
+
 const insertPlayedTrackInHistory = async (
   db: Knex<DatabaseSchema>,
   track: any,
@@ -326,4 +334,5 @@ export {
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
+  upsertPlay,
 };
