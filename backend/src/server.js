@@ -475,28 +475,9 @@ io.on('connection', async (socket) => {
 
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
+  socket.emit('initialState', { zones: {} });
 
-  transport.get_zones((error, body) => {
-    if (error) {
-      /* eslint-disable no-console */
-      console.log('server.js: io.on(): Error getting zone data: error:', error);
-      /* eslint-enable no-console */
-
-      return;
-    }
-
-    const zones = camelCaseKeys(body.zones);
-
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
-    /* eslint-enable no-console */
-
-    const frontendRoonState = frontendZonesChangedMessage(zones);
-
-    socket.emit('initialState', frontendRoonState);
-
-    subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
-  });
+  subscribeToQueueChanges(Object.keys(staticZoneData));
 
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
     roonApiRateLimiter.schedule(async () => {
