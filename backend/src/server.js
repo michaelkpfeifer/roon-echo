@@ -1,4 +1,5 @@
 import http from 'http';
+import { exit } from 'node:process';
 
 import Bottleneck from 'bottleneck';
 import cors from 'cors';
@@ -469,15 +470,41 @@ io.on('connection', async (socket) => {
   //   transport.core.moo.transport,
   // );
   /* eslint-enable no-console */
+
   /* eslint-disable no-console */
   console.log('server.js: io.on(): coreUrl:', coreUrl);
   /* eslint-enable no-console */
 
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
-  socket.emit('initialState', { zones: {} });
 
-  subscribeToQueueChanges(Object.keys(staticZoneData));
+  transport.get_zones((error, body) => {
+    if (error) {
+      process.stderr.write(
+        `Error: Could not get zone data from Roon core: ${error}.`,
+      );
+      exit(3);
+    }
+
+    const zones = camelCaseKeys(body.zones);
+
+    /* eslint-disable no-console */
+    console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
+    /* eslint-enable no-console */
+
+    const frontendRoonState = frontendZonesChangedMessage(zones);
+
+    /* eslint-disable no-console */
+    console.log(
+      'server.js: io.on(): frontendRoonState',
+      JSON.stringify(frontendRoonState, null, 4),
+    );
+    /* eslint-enable no-console */
+
+    socket.emit('initialState', frontendRoonState);
+
+    subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
+  });
 
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
     roonApiRateLimiter.schedule(async () => {
