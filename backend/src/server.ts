@@ -238,7 +238,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             zonePlayingStates = await updatePlays({
               db,
               zonePlayingStates,
-              zonesSeekChangedMessage: message[subType],
+              zoneSeekPositions,
               playingQueueItems,
             });
 

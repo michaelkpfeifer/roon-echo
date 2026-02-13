@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { RawZonesSeekChangedMessageSchema } from '../schemas/rawZonesSeekChangedMessage';
+import type { RawZonesSeekChangedMessageSchema } from '../schemas/rawZonesSeekChangedMessage';
 
 type RawZonesSeekChangedMessage = z.infer<
   typeof RawZonesSeekChangedMessageSchema

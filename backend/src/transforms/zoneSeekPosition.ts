@@ -1,5 +1,5 @@
-import type { RawZonesSeekChangedMessage } from '../external/rawZonesSeekChangedMessage';
 import type { ZoneSeekPosition } from '../../../shared/internal/zoneSeekPosition';
+import type { RawZonesSeekChangedMessage } from '../external/rawZonesSeekChangedMessage';
 
 const transformToZoneSeekPositions = (
   rawZonesSeekChangedMessage: RawZonesSeekChangedMessage,
