@@ -13,6 +13,7 @@ import {
   getPlayedTime,
 } from './scheduledTracks';
 import { toIso8601 } from './utils';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
 const buildPlay = (
   id: string,
@@ -32,8 +33,11 @@ const buildPlay = (
   });
 };
 
-const getSeekPosition = (zoneId: string, zonesSeekChangedMessage) => {
-  const zoneData = zonesSeekChangedMessage.find(
+const getSeekPosition = (
+  zoneId: string,
+  zoneSeekPositions: ZoneSeekPosition[],
+) => {
+  const zoneData = zoneSeekPositions.find(
     (currentZoneData) => currentZoneData.zoneId === zoneId,
   );
 
@@ -104,10 +108,11 @@ const getRoonExtendedTrack = async (
 const updatePlays = async ({
   db,
   zonePlayingStates,
-  zonesSeekChangedMessage,
+  zoneSeekPositions,
   playingQueueItems,
 }: {
   db: Knex<DatabaseSchema>;
+  zoneSeekPositions: ZoneSeekPosition[];
 }) => {
   const newZonePlayingStates = await Promise.all(
     zonePlayingStates.map(async (zonePlayingState) => {
@@ -118,7 +123,7 @@ const updatePlays = async ({
         previousPlayId,
       } = zonePlayingState;
 
-      const seekPosition = getSeekPosition(zoneId, zonesSeekChangedMessage);
+      const seekPosition = getSeekPosition(zoneId, zoneSeekPositions);
       const roonAlbumName = getRoonAlbumName(zoneId, playingQueueItems);
       const roonTrackName = getRoonTrackName(zoneId, playingQueueItems);
 
