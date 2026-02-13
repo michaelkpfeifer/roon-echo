@@ -43,10 +43,11 @@ import {
   updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage';
+import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
+import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 import { db } from '../db.js';
-import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
 
 dbInit(db);
 
@@ -73,7 +74,7 @@ let scheduledTracks = [];
 let playingTracks = [];
 let staticZoneData = {};
 let zonePlayingStates = new Map();
-let playingQueueItems = {};
+const playingQueueItems: PlayingQueueItems = {};
 
 const subscribeToQueueChanges = (zoneIds) => {
   /* eslint-disable no-console */

@@ -13,6 +13,7 @@ import {
   getPlayedTime,
 } from './scheduledTracks';
 import { toIso8601 } from './utils';
+import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
 const buildPlay = (
@@ -48,7 +49,10 @@ const getSeekPosition = (
   return zoneData.seekPosition;
 };
 
-const getQueueItemId = (zoneId: string, playingQueueItems) => {
+const getQueueItemId = (
+  zoneId: string,
+  playingQueueItems: PlayingQueueItems,
+) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -56,7 +60,10 @@ const getQueueItemId = (zoneId: string, playingQueueItems) => {
   return playingQueueItems[zoneId].queueItemId || null;
 };
 
-const getTrackLength = (zoneId: string, playingQueueItems) => {
+const getTrackLength = (
+  zoneId: string,
+  playingQueueItems: PlayingQueueItems,
+) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -64,7 +71,10 @@ const getTrackLength = (zoneId: string, playingQueueItems) => {
   return playingQueueItems[zoneId].length;
 };
 
-const getRoonAlbumName = (zoneId: string, playingQueueItems) => {
+const getRoonAlbumName = (
+  zoneId: string,
+  playingQueueItems: PlayingQueueItems,
+) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -72,7 +82,10 @@ const getRoonAlbumName = (zoneId: string, playingQueueItems) => {
   return playingQueueItems[zoneId].threeLine.line3;
 };
 
-const getRoonTrackName = (zoneId: string, playingQueueItems) => {
+const getRoonTrackName = (
+  zoneId: string,
+  playingQueueItems: PlayingQueueItems,
+) => {
   if (!playingQueueItems[zoneId]) {
     return null;
   }
@@ -113,6 +126,7 @@ const updatePlays = async ({
 }: {
   db: Knex<DatabaseSchema>;
   zoneSeekPositions: ZoneSeekPosition[];
+  playingQueueItems: PlayingQueueItems;
 }) => {
   const newZonePlayingStates = await Promise.all(
     zonePlayingStates.map(async (zonePlayingState) => {
