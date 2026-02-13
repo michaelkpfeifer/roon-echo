@@ -42,8 +42,11 @@ import {
   setQueueItemIdsInScheduledTracks,
   updatePlayedSegmentsInScheduledTracks,
 } from './scheduledTracks.js';
+import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 import { db } from '../db.js';
+import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
 
 dbInit(db);
 
@@ -208,9 +211,13 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             // );
             /* eslint-enable no-console */
 
-            const frontendMessage = frontendZonesSeekChangedMessage(
-              message[subType],
-            );
+            const zoneSeekPositions: ZoneSeekPosition[] =
+              transformToZoneSeekPositions(
+                RawZonesSeekChangedMessageSchema.parse(message[subType]),
+              );
+
+            const frontendMessage =
+              frontendZonesSeekChangedMessage(zoneSeekPositions);
 
             /* eslint-disable no-console */
             // console.log(
