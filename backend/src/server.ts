@@ -34,14 +34,6 @@ import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
 import { dbInit, insertPlayedTrackInHistory } from './repository.js';
 import { initializeRoonData } from './roonData.js';
-import {
-  appendToScheduledTracks,
-  getPlayedTime,
-  partitionScheduledTracksForPlays,
-  setPlayingTracks,
-  setQueueItemIdsInScheduledTracks,
-  updatePlayedSegmentsInScheduledTracks,
-} from './scheduledTracks.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
@@ -71,8 +63,6 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport: any;
 let browseInstance: any;
 
-let scheduledTracks: any = [];
-let playingTracks: any = [];
 let staticZoneData = {};
 let zonePlayingStates: ZonePlayingState[] = [];
 const playingQueueItems: PlayingQueueItems = {};
@@ -90,10 +80,6 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
         const queue = camelCaseKeys(snakeCaseQueue);
         const queueItems = extractQueueItems(queue);
 
-        playingQueueItems[zoneId] = queueItems[0] || null;
-
-        io.emit('queueChanged', { zoneId, queueItems });
-
         /* eslint-disable no-console */
         console.log('server.js: subscribeToQueueChanges: response:', response);
         console.log('server.js: subscribeToQueueChanges: queue:', queue);
@@ -101,80 +87,11 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
           'server.js: subscribeToQueueChanges: queueItems:',
           queueItems,
         );
-        console.log(
-          'server.js: subscribeToQueueChanges: playingTracks:',
-          playingTracks,
-        );
         /* eslint-enable no-console */
 
-        playingTracks = setPlayingTracks({
-          zoneId,
-          queueItems,
-          playingTracks,
-        });
+        playingQueueItems[zoneId] = queueItems[0] || null;
 
-        /* eslint-disable no-console */
-        console.log(
-          'server.js: subscribeToQueueChanges: playingTracks:',
-          playingTracks,
-        );
-        /* eslint-enable no-console */
-
-        /* eslint-disable no-console */
-        console.log(
-          'server.js: subscribeToQueueChanges: scheduledTracks:',
-          scheduledTracks,
-        );
-        /* eslint-enable no-console */
-
-        scheduledTracks = setQueueItemIdsInScheduledTracks({
-          scheduledTracks,
-          zoneId,
-          queueItems,
-        });
-
-        /* eslint-disable no-console */
-        console.log(
-          'server.js: subscribeToQueueChanges: scheduledTracks:',
-          scheduledTracks,
-        );
-        /* eslint-enable no-console */
-
-        let potentiallyPlayedTracks;
-        [potentiallyPlayedTracks, scheduledTracks] =
-          partitionScheduledTracksForPlays({
-            scheduledTracks,
-            zoneId,
-            queueItems,
-          });
-
-        /* eslint-disable no-console */
-        console.log(
-          'server.js: subscribeToQueueChanges(): potentiallyPlayedTracks:',
-          potentiallyPlayedTracks,
-        );
-        console.log(
-          'server.js: subscribeToQueueChanges(): scheduledTracks:',
-          scheduledTracks,
-        );
-        /* eslint-enable no-console */
-
-        potentiallyPlayedTracks
-          .filter((track) => getPlayedTime(track.playedSegments) > 0)
-          .map((track) => {
-            const playedTime = getPlayedTime(track.playedSegments);
-            return snakeCaseKeys({
-              mbTrackId: track.mbTrackId,
-              roonAlbumId: track.roonAlbumId,
-              trackName: track.mbTrackName,
-              albumName: track.mbAlbumName,
-              artistNames: track.mbArtistNames,
-              playedAt: track.lastPlayed,
-              fractionPlayed: playedTime / track.mbLength,
-              isPlayed: 2 * playedTime >= track.mbLength,
-            });
-          })
-          .forEach((track) => insertPlayedTrackInHistory(db, track));
+        io.emit('queueChanged', { zoneId, queueItems });
 
         return null;
       },
@@ -233,13 +150,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             /* eslint-enable no-console */
 
             io.emit('zonesSeekChanged', frontendMessage);
-
-            scheduledTracks = updatePlayedSegmentsInScheduledTracks({
-              zonesSeekChangedMessage: message[subType],
-              scheduledTracks,
-              playingTracks,
-              timestamp: toIso8601(new Date()),
-            });
 
             zonePlayingStates = await updatePlays({
               db,
@@ -522,17 +432,6 @@ io.on('connection', async (socket) => {
       console.log('server.js: io.on(): mbTrackData:', mbTrackData);
       /* eslint-enable no-console */
 
-      scheduledTracks = appendToScheduledTracks({
-        scheduledTracks,
-        mbTrackData,
-        scheduledAt: Date.now(),
-        zoneId,
-      });
-
-      /* eslint-disable no-console */
-      console.log('server.js: io.on(): scheduledTracks:', scheduledTracks);
-      /* eslint-enable no-console */
-
       await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
         const trackKey = albumItems.items[position].item_key;
         browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
@@ -580,24 +479,6 @@ io.on('connection', async (socket) => {
                   zone_or_output_id: zoneId,
                 });
               });
-
-            scheduledTracks = mbTracks.reduce((acc: any, mbTrack: any) => {
-              return appendToScheduledTracks({
-                scheduledTracks: acc,
-                mbTrackData: {
-                  mbTrackName: mbTrack.name,
-                  mbAlbumName: mbAlbum.albumName,
-                  mbArtistNames: mbArtists
-                    .map((artist: any) => artist.name)
-                    .join(', '),
-                  mbTrackId: mbTrack.mbTrackId,
-                  mbLength: mbTrack.length,
-                  roonAlbumId: roonAlbum.roonAlbumId,
-                },
-                scheduledAt: Date.now(),
-                zoneId,
-              });
-            }, scheduledTracks);
           });
       }),
   );
