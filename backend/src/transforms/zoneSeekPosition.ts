@@ -3,6 +3,11 @@ import type { RawZonesSeekChangedMessage } from '../external/rawZonesSeekChanged
 
 const transformToZoneSeekPositions = (
   rawZonesSeekChangedMessage: RawZonesSeekChangedMessage,
-): ZoneSeekPosition[] => rawZonesSeekChangedMessage;
+): ZoneSeekPosition[] =>
+  rawZonesSeekChangedMessage.map((rawZoneSeekPosition) => ({
+    zoneId: rawZoneSeekPosition.zoneId,
+    queueTimeRemaining: rawZoneSeekPosition.queueTimeRemaining,
+    seekPosition: rawZoneSeekPosition.seekPosition ?? null,
+  }));
 
 export { transformToZoneSeekPositions };

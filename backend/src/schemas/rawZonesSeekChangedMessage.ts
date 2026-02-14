@@ -4,7 +4,7 @@ const RawZonesSeekChangedMessageSchema = z.array(
   z.object({
     zoneId: z.string(),
     queueTimeRemaining: z.number(),
-    seekPosition: z.number().nullable(),
+    seekPosition: z.number().nullable().optional(),
   }),
 );
 
