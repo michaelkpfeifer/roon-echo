@@ -14,6 +14,7 @@ import {
 } from './scheduledTracks';
 import { toIso8601 } from './utils';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
+import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
 const buildPlay = (
@@ -125,6 +126,7 @@ const updatePlays = async ({
   playingQueueItems,
 }: {
   db: Knex<DatabaseSchema>;
+  zonePlayingStates: ZonePlayingState[];
   zoneSeekPositions: ZoneSeekPosition[];
   playingQueueItems: PlayingQueueItems;
 }) => {
@@ -166,7 +168,21 @@ const updatePlays = async ({
         return zonePlayingState;
       }
 
+      if (trackLength === null) {
+        process.stderr.write(
+          'Error: Received unexpected null value for track length.',
+        );
+        exit(4);
+      }
+
       if (queueItemId === previousQueueItemId) {
+        if (previousPlayId === null) {
+          process.stderr.write(
+            'Error: Received unexpected null value for Play ID.',
+          );
+          exit(4);
+        }
+
         const newPlayedSegments = applySeekPositionToPlayedSegments(
           seekPosition,
           previousPlayedSegments,

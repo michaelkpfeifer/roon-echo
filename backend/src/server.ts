@@ -46,6 +46,7 @@ import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedM
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
 import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
+import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 import { db } from '../db.js';
 
@@ -73,7 +74,7 @@ let browseInstance: any;
 let scheduledTracks: any = [];
 let playingTracks: any = [];
 let staticZoneData = {};
-let zonePlayingStates = new Map();
+let zonePlayingStates: ZonePlayingState[] = [];
 const playingQueueItems: PlayingQueueItems = {};
 
 const subscribeToQueueChanges = (zoneIds: string[]) => {
@@ -418,7 +419,7 @@ zonePlayingStates = Object.keys(staticZoneData).map((zoneId) => {
     zoneId,
     previousQueueItemId: null,
     previousPlayedSegments: [],
-    previousePlayId: null,
+    previousPlayId: null,
   };
 });
 
@@ -430,10 +431,6 @@ const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
   maxConcurrent: 1,
 });
-
-/* eslint-disable no-console */
-console.log('server.js: main(): browseInstance:', browseInstance);
-/* eslint-enable no-console */
 
 const albumAggregatesWithRoonTracks = await initializeRoonData(
   db,
