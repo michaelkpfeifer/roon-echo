@@ -8,7 +8,7 @@ import {
 
 describe('mergePlayedSegments', () => {
   test('leaves an empty list of segments untouched', () => {
-    const segments = [];
+    const segments: number[][] = [];
 
     const newSegments = mergePlayedSegments(segments);
 
@@ -66,7 +66,7 @@ describe('mergePlayedSegments', () => {
 describe('applySeekPositionToPlayedSegments', () => {
   test('inserts first segment into an empty list of segments', () => {
     const seekPosition = 0;
-    const playedSegments = [];
+    const playedSegments: number[][] = [];
 
     const newPlayedSegments = applySeekPositionToPlayedSegments(
       seekPosition,
@@ -78,7 +78,7 @@ describe('applySeekPositionToPlayedSegments', () => {
 
   test('inserts first segment into an empty list of segments if track does not play from the beginning', () => {
     const seekPosition = 30;
-    const playedSegments = [];
+    const playedSegments: number[][] = [];
 
     const newPlayedSegments = applySeekPositionToPlayedSegments(
       seekPosition,
@@ -197,7 +197,7 @@ describe('applySeekPositionToPlayedSegments', () => {
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 25, 5, 6, 7, 8, 9,
       10, 11, 12, 13, 14, 15,
     ].reduce(
-      (playedSegments, seekPosition) =>
+      (playedSegments: number[][], seekPosition: number) =>
         applySeekPositionToPlayedSegments(seekPosition, playedSegments),
       [],
     );
@@ -211,7 +211,7 @@ describe('applySeekPositionToPlayedSegments', () => {
 
 describe('getPlayedTime', () => {
   test('returns 0 if there are no played segments', () => {
-    const playedSegments = [];
+    const playedSegments: number[][] = [];
 
     expect(getPlayedTime(playedSegments)).toEqual(0);
   });

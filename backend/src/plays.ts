@@ -13,10 +13,10 @@ import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems'
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
-const mergePlayedSegments = (playedSegments) => {
+const mergePlayedSegments = (playedSegments: number[][]) => {
   const sorted = playedSegments.sort((s1, s2) => s1[0] - s2[0]);
 
-  return sorted.reduce((acc, currentSegment) => {
+  return sorted.reduce((acc: number[][], currentSegment: number[]) => {
     if (acc.length === 0) {
       acc.push(currentSegment);
       return acc;
@@ -33,7 +33,10 @@ const mergePlayedSegments = (playedSegments) => {
   }, []);
 };
 
-const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
+const applySeekPositionToPlayedSegments = (
+  seekPosition: number,
+  playedSegments: number[][],
+) => {
   if (playedSegments.length === 0) {
     return [[seekPosition, seekPosition]];
   }
@@ -64,7 +67,7 @@ const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
   return [...playedSegments, [seekPosition, seekPosition]];
 };
 
-const getPlayedTime = (playedSegments) => {
+const getPlayedTime = (playedSegments: number[][]) => {
   if (playedSegments.length === 0) {
     return 0;
   }
