@@ -73,20 +73,6 @@ type DatabaseSchema = {
     updated_at: string;
   };
 
-  history: {
-    id: number;
-    mb_track_id: string;
-    roon_album_id: string;
-    track_name: string;
-    album_name: string;
-    artist_names: string;
-    played_at: string;
-    fraction_played: number;
-    is_played: boolean;
-    created_at: string;
-    updated_at: string;
-  };
-
   roon_messages: {
     id: number;
     message: string | null;
