@@ -67,117 +67,121 @@ dotenv.config();
 
 const coreUrlConfigured = process.env.CORE_URL;
 
-let transport;
-let browseInstance;
+let transport: any;
+let browseInstance: any;
 
-let scheduledTracks = [];
-let playingTracks = [];
+let scheduledTracks: any = [];
+let playingTracks: any = [];
 let staticZoneData = {};
 let zonePlayingStates = new Map();
 const playingQueueItems: PlayingQueueItems = {};
 
-const subscribeToQueueChanges = (zoneIds) => {
+const subscribeToQueueChanges = (zoneIds: string[]) => {
   /* eslint-disable no-console */
   console.log('server.js: subscribeToQueueChanges(): zoneIds:', zoneIds);
   /* eslint-enable no-console */
 
-  zoneIds.forEach((zoneId) => {
-    transport.subscribe_queue(zoneId, 100, (response, snakeCaseQueue) => {
-      const queue = camelCaseKeys(snakeCaseQueue);
-      const queueItems = extractQueueItems(queue);
+  zoneIds.forEach((zoneId: string) => {
+    transport.subscribe_queue(
+      zoneId,
+      100,
+      (response: any, snakeCaseQueue: any) => {
+        const queue = camelCaseKeys(snakeCaseQueue);
+        const queueItems = extractQueueItems(queue);
 
-      playingQueueItems[zoneId] = queueItems[0] || null;
+        playingQueueItems[zoneId] = queueItems[0] || null;
 
-      io.emit('queueChanged', { zoneId, queueItems });
+        io.emit('queueChanged', { zoneId, queueItems });
 
-      /* eslint-disable no-console */
-      console.log('server.js: subscribeToQueueChanges: response:', response);
-      console.log('server.js: subscribeToQueueChanges: queue:', queue);
-      console.log(
-        'server.js: subscribeToQueueChanges: queueItems:',
-        queueItems,
-      );
-      console.log(
-        'server.js: subscribeToQueueChanges: playingTracks:',
-        playingTracks,
-      );
-      /* eslint-enable no-console */
+        /* eslint-disable no-console */
+        console.log('server.js: subscribeToQueueChanges: response:', response);
+        console.log('server.js: subscribeToQueueChanges: queue:', queue);
+        console.log(
+          'server.js: subscribeToQueueChanges: queueItems:',
+          queueItems,
+        );
+        console.log(
+          'server.js: subscribeToQueueChanges: playingTracks:',
+          playingTracks,
+        );
+        /* eslint-enable no-console */
 
-      playingTracks = setPlayingTracks({
-        zoneId,
-        queueItems,
-        playingTracks,
-      });
+        playingTracks = setPlayingTracks({
+          zoneId,
+          queueItems,
+          playingTracks,
+        });
 
-      /* eslint-disable no-console */
-      console.log(
-        'server.js: subscribeToQueueChanges: playingTracks:',
-        playingTracks,
-      );
-      /* eslint-enable no-console */
+        /* eslint-disable no-console */
+        console.log(
+          'server.js: subscribeToQueueChanges: playingTracks:',
+          playingTracks,
+        );
+        /* eslint-enable no-console */
 
-      /* eslint-disable no-console */
-      console.log(
-        'server.js: subscribeToQueueChanges: scheduledTracks:',
-        scheduledTracks,
-      );
-      /* eslint-enable no-console */
+        /* eslint-disable no-console */
+        console.log(
+          'server.js: subscribeToQueueChanges: scheduledTracks:',
+          scheduledTracks,
+        );
+        /* eslint-enable no-console */
 
-      scheduledTracks = setQueueItemIdsInScheduledTracks({
-        scheduledTracks,
-        zoneId,
-        queueItems,
-      });
-
-      /* eslint-disable no-console */
-      console.log(
-        'server.js: subscribeToQueueChanges: scheduledTracks:',
-        scheduledTracks,
-      );
-      /* eslint-enable no-console */
-
-      let potentiallyPlayedTracks;
-      [potentiallyPlayedTracks, scheduledTracks] =
-        partitionScheduledTracksForPlays({
+        scheduledTracks = setQueueItemIdsInScheduledTracks({
           scheduledTracks,
           zoneId,
           queueItems,
         });
 
-      /* eslint-disable no-console */
-      console.log(
-        'server.js: subscribeToQueueChanges(): potentiallyPlayedTracks:',
-        potentiallyPlayedTracks,
-      );
-      console.log(
-        'server.js: subscribeToQueueChanges(): scheduledTracks:',
-        scheduledTracks,
-      );
-      /* eslint-enable no-console */
+        /* eslint-disable no-console */
+        console.log(
+          'server.js: subscribeToQueueChanges: scheduledTracks:',
+          scheduledTracks,
+        );
+        /* eslint-enable no-console */
 
-      potentiallyPlayedTracks
-        .filter((track) => getPlayedTime(track.playedSegments) > 0)
-        .map((track) => {
-          const playedTime = getPlayedTime(track.playedSegments);
-          return snakeCaseKeys({
-            mbTrackId: track.mbTrackId,
-            roonAlbumId: track.roonAlbumId,
-            trackName: track.mbTrackName,
-            albumName: track.mbAlbumName,
-            artistNames: track.mbArtistNames,
-            playedAt: track.lastPlayed,
-            fractionPlayed: playedTime / track.mbLength,
-            isPlayed: 2 * playedTime >= track.mbLength,
+        let potentiallyPlayedTracks;
+        [potentiallyPlayedTracks, scheduledTracks] =
+          partitionScheduledTracksForPlays({
+            scheduledTracks,
+            zoneId,
+            queueItems,
           });
-        })
-        .forEach((track) => insertPlayedTrackInHistory(db, track));
 
-      return null;
-    });
+        /* eslint-disable no-console */
+        console.log(
+          'server.js: subscribeToQueueChanges(): potentiallyPlayedTracks:',
+          potentiallyPlayedTracks,
+        );
+        console.log(
+          'server.js: subscribeToQueueChanges(): scheduledTracks:',
+          scheduledTracks,
+        );
+        /* eslint-enable no-console */
+
+        potentiallyPlayedTracks
+          .filter((track) => getPlayedTime(track.playedSegments) > 0)
+          .map((track) => {
+            const playedTime = getPlayedTime(track.playedSegments);
+            return snakeCaseKeys({
+              mbTrackId: track.mbTrackId,
+              roonAlbumId: track.roonAlbumId,
+              trackName: track.mbTrackName,
+              albumName: track.mbAlbumName,
+              artistNames: track.mbArtistNames,
+              playedAt: track.lastPlayed,
+              fractionPlayed: playedTime / track.mbLength,
+              isPlayed: 2 * playedTime >= track.mbLength,
+            });
+          })
+          .forEach((track) => insertPlayedTrackInHistory(db, track));
+
+        return null;
+      },
+    );
   });
 };
 
-const coreMessageHandler = (messageType, snakeCaseData) => {
+const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
   const message = camelCaseKeys(snakeCaseData);
 
   switch (messageType) {
@@ -283,7 +287,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
             /* eslint-enable no-console */
 
             subscribeToQueueChanges(
-              message[subType].map((zone) => zone.zoneId),
+              message[subType].map((zone: any) => zone.zoneId),
             );
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
@@ -334,7 +338,7 @@ const coreMessageHandler = (messageType, snakeCaseData) => {
 };
 
 let coreReadyPromise;
-let resolveCoreReady;
+let resolveCoreReady: any;
 
 coreReadyPromise = new Promise((resolve) => {
   resolveCoreReady = resolve;
@@ -349,7 +353,7 @@ const roon = new RoonApi({
   email: 'michael.k.pfeifer@googlemail.com',
   website: 'https://github.com/michaelkpfeifer',
 
-  core_paired: async (core) => {
+  core_paired: async (core: any) => {
     transport = core.services.RoonApiTransport;
     transport.subscribe_zones(coreMessageHandler);
     browseInstance = new RoonApiBrowse(core);
@@ -381,15 +385,15 @@ roon.start_discovery();
 await coreReadyPromise;
 
 let zonesReadyPromise;
-let resolveZonesReady;
+let resolveZonesReady: any;
 
 zonesReadyPromise = new Promise((resolve) => {
   resolveZonesReady = resolve;
 });
 
-transport.get_zones((error, body) => {
+transport.get_zones((error: any, body: any) => {
   staticZoneData = Object.fromEntries(
-    camelCaseKeys(body.zones).map((zoneData) => {
+    camelCaseKeys(body.zones).map((zoneData: any) => {
       return [
         zoneData.zoneId,
         {
@@ -486,7 +490,7 @@ io.on('connection', async (socket) => {
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
 
-  transport.get_zones((error, body) => {
+  transport.get_zones((error: any, body: any) => {
     if (error) {
       process.stderr.write(
         `Error: Could not get zone data from Roon core: ${error}.`,
@@ -511,7 +515,7 @@ io.on('connection', async (socket) => {
 
     socket.emit('initialState', frontendRoonState);
 
-    subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
+    subscribeToQueueChanges(zones.map((zone: any) => zone.zoneId));
   });
 
   socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
@@ -536,7 +540,7 @@ io.on('connection', async (socket) => {
         const trackKey = albumItems.items[position].item_key;
         browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
           const trackAddNextItem = trackActions.items.find(
-            (item) => item.title === 'Add Next',
+            (item: any) => item.title === 'Add Next',
           );
 
           browseInstance.browse({
@@ -570,7 +574,7 @@ io.on('connection', async (socket) => {
               .loadTrack(browseInstance, playAlbumKey)
               .then(async (albumPlayActions) => {
                 const addNextAction = albumPlayActions.items.find(
-                  (item) => item.title == 'Add Next',
+                  (item: any) => item.title == 'Add Next',
                 );
 
                 await browseInstance.browse({
@@ -580,14 +584,14 @@ io.on('connection', async (socket) => {
                 });
               });
 
-            scheduledTracks = mbTracks.reduce((acc, mbTrack) => {
+            scheduledTracks = mbTracks.reduce((acc: any, mbTrack: any) => {
               return appendToScheduledTracks({
                 scheduledTracks: acc,
                 mbTrackData: {
                   mbTrackName: mbTrack.name,
                   mbAlbumName: mbAlbum.albumName,
                   mbArtistNames: mbArtists
-                    .map((artist) => artist.name)
+                    .map((artist: any) => artist.name)
                     .join(', '),
                   mbTrackId: mbTrack.mbTrackId,
                   mbLength: mbTrack.length,
