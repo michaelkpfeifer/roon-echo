@@ -8,14 +8,69 @@ import { findRoonTrackByNameAndAlbumName, upsertPlay } from './repository.js';
 import type { Play } from '../../shared/internal/play';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
 import type { DatabaseSchema } from '../databaseSchema';
-import {
-  applySeekPositionToPlayedSegments,
-  getPlayedTime,
-} from './scheduledTracks';
 import { toIso8601 } from './utils';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
+
+const mergePlayedSegments = (playedSegments) => {
+  const sorted = playedSegments.sort((s1, s2) => s1[0] - s2[0]);
+
+  return sorted.reduce((acc, currentSegment) => {
+    if (acc.length === 0) {
+      acc.push(currentSegment);
+      return acc;
+    }
+
+    const lastSegment = acc[acc.length - 1];
+    if (lastSegment[1] === currentSegment[0]) {
+      acc[acc.length - 1] = [lastSegment[0], currentSegment[1]];
+      return acc;
+    }
+
+    acc.push(currentSegment);
+    return acc;
+  }, []);
+};
+
+const applySeekPositionToPlayedSegments = (seekPosition, playedSegments) => {
+  if (playedSegments.length === 0) {
+    return [[seekPosition, seekPosition]];
+  }
+
+  const seekPositionExtendsPlayedSegment = playedSegments.some(
+    ([, end]) => end + 1 === seekPosition,
+  );
+
+  if (seekPositionExtendsPlayedSegment) {
+    return mergePlayedSegments(
+      playedSegments.map(([start, end]) => {
+        if (end + 1 === seekPosition) {
+          return [start, seekPosition];
+        }
+        return [start, end];
+      }),
+    );
+  }
+
+  const seekPositionIncludedInPlayedSegments = playedSegments.some(
+    ([start, end]) => start <= seekPosition && seekPosition <= end,
+  );
+
+  if (seekPositionIncludedInPlayedSegments) {
+    return playedSegments;
+  }
+
+  return [...playedSegments, [seekPosition, seekPosition]];
+};
+
+const getPlayedTime = (playedSegments) => {
+  if (playedSegments.length === 0) {
+    return 0;
+  }
+
+  return fp.sum(playedSegments.map(([start, end]) => end - start));
+};
 
 const buildPlay = (
   id: string,
@@ -230,4 +285,9 @@ const updatePlays = async ({
   return newZonePlayingStates;
 };
 
-export { updatePlays };
+export {
+  applySeekPositionToPlayedSegments,
+  getPlayedTime,
+  mergePlayedSegments,
+  updatePlays,
+};
