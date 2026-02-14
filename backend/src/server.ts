@@ -32,11 +32,11 @@ import {
 } from './messages.js';
 import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
-import { dbInit, insertPlayedTrackInHistory } from './repository.js';
+import { dbInit } from './repository.js';
 import { initializeRoonData } from './roonData.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition';
-import { camelCaseKeys, snakeCaseKeys, toIso8601 } from './utils.js';
+import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';

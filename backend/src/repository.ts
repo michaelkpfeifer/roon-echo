@@ -313,13 +313,6 @@ const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
     .merge();
 };
 
-const insertPlayedTrackInHistory = async (
-  db: Knex<DatabaseSchema>,
-  track: any,
-) => {
-  await db<DatabaseSchema['history']>('history').insert(track);
-};
-
 export {
   dbInit,
   fetchMbAlbum,
@@ -327,7 +320,6 @@ export {
   fetchRoonAlbum,
   fetchRoonTracks,
   findRoonTrackByNameAndAlbumName,
-  insertPlayedTrackInHistory,
   insertRoonAlbum,
   insertRoonTracks,
   normalizeCandidate,
