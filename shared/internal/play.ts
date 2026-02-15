@@ -12,4 +12,4 @@ type Play = {
   isPlayed: boolean;
 };
 
-export { Play };
+export type { Play };

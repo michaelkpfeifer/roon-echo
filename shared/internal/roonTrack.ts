@@ -6,4 +6,4 @@ type RoonTrack = {
   position: number;
 };
 
-export { RoonTrack };
+export type { RoonTrack };

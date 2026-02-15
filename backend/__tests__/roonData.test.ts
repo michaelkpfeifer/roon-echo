@@ -14,8 +14,8 @@ import {
   buildRoonTrack,
   createRoonTrack,
 } from '../__factories__/roonTrackFactory.js';
-import type { DatabaseSchema } from '../databaseSchema';
-import knexConfig from '../knexfile';
+import type { DatabaseSchema } from '../databaseSchema.js';
+import knexConfig from '../knexfile.js';
 import * as browser from '../src/browser.js';
 import {
   createAlbumAggregateWithRoonAlbum,

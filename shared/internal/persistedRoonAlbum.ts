@@ -8,4 +8,4 @@ type PersistedRoonAlbum = {
   updatedAt: string;
 };
 
-export { PersistedRoonAlbum };
+export type { PersistedRoonAlbum };

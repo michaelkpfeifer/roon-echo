@@ -8,4 +8,4 @@ type RoonExtendedTrack = {
   roonArtistName: string;
 };
 
-export { RoonExtendedTrack };
+export type { RoonExtendedTrack };

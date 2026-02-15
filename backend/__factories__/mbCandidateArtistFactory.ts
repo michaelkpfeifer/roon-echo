@@ -1,4 +1,4 @@
-import { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist';
+import type { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist.js';
 
 const buildMbCandidateArtist = (
   overrides?: Partial<MbCandidateArtist>,

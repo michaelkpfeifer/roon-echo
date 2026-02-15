@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { AlbumAggregate } from '../../../shared/internal/albumAggregate';
-import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory';
-import { buildMbAlbum } from '../../__factories__/mbAlbumFactory';
-import { buildMbArtists } from '../../__factories__/mbArtistFactory';
-import { buildMbCandidates } from '../../__factories__/mbCandidateFactory';
-import { buildMbTracks } from '../../__factories__/mbTrackFactory';
-import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory';
-import { buildRoonTracks } from '../../__factories__/roonTrackFactory';
+import type { AlbumAggregate } from '../../../shared/internal/albumAggregate.js';
+import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory.js';
+import { buildMbAlbum } from '../../__factories__/mbAlbumFactory.js';
+import { buildMbArtists } from '../../__factories__/mbArtistFactory.js';
+import { buildMbCandidates } from '../../__factories__/mbCandidateFactory.js';
+import { buildMbTracks } from '../../__factories__/mbTrackFactory.js';
+import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory.js';
+import { buildRoonTracks } from '../../__factories__/roonTrackFactory.js';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithRoonAlbum,

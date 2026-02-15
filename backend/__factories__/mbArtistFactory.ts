@@ -1,4 +1,4 @@
-import { MbArtist } from '../../shared/internal/mbArtist';
+import type { MbArtist } from '../../shared/internal/mbArtist.js';
 
 const buildMbArtist = (overrides?: Partial<MbArtist>): MbArtist => ({
   mbArtistId: '019b8afe-c1b4-74f5-80ba-f025cecacfdd',

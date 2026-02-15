@@ -6,4 +6,4 @@ type MbCandidateTrack = {
   length: number | null;
 };
 
-export { MbCandidateTrack };
+export type { MbCandidateTrack };

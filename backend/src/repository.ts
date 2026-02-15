@@ -3,14 +3,14 @@ import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
-import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
-import type { MbCandidate } from '../../shared/internal/mbCandidate';
-import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
-import type { Play } from '../../shared/internal/play';
-import type { RoonAlbum } from '../../shared/internal/roonAlbum';
-import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
-import type { RoonTrack } from '../../shared/internal/roonTrack';
-import type { DatabaseSchema } from '../databaseSchema';
+import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
+import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import type { Play } from '../../shared/internal/play.js';
+import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
+import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
+import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { DatabaseSchema } from '../databaseSchema.js';
 
 const dbInit = async (db: Knex<DatabaseSchema>) => {
   // await db('mb_albums_mb_artists').del();

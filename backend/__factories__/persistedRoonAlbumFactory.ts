@@ -1,8 +1,8 @@
 import type { Knex } from 'knex';
 
-import { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import { snakeCaseKeys } from '../src/utils';
+import { snakeCaseKeys } from '../src/utils.js';
 
 const buildPersistedRoonAlbum = (
   overrides?: Partial<PersistedRoonAlbum>,

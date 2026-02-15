@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { ZodError } from 'zod';
 
-import { extractQueueItems } from '../src/queues';
+import { extractQueueItems } from '../src/queues.js';
 
 describe('extractQueueItems', () => {
   const items = [

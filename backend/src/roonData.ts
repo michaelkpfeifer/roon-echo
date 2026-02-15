@@ -8,25 +8,25 @@ import {
   buildAlbumAggregateWithRoonAlbum,
   buildAlbumAggregateWithRoonTracks,
   buildEmptyAlbumAggregate,
-} from './factories/albumAggregateFactory';
+} from './factories/albumAggregateFactory.js';
 import {
   fetchRoonAlbum,
   fetchRoonTracks,
   insertRoonAlbum,
   insertRoonTracks,
-} from './repository';
-import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse';
-import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
-import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum';
-import type { RoonAlbum } from '../../shared/internal/roonAlbum';
-import type { RoonTrack } from '../../shared/internal/roonTrack';
-import type { DatabaseSchema } from '../databaseSchema';
-import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse';
-import { transformToRoonAlbum } from './transforms/roonAlbum';
-import { transformToRoonTrack } from './transforms/roonAlbum';
+} from './repository.js';
+import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse.js';
+import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate.js';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
+import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { DatabaseSchema } from '../databaseSchema.js';
+import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse.js';
+import { transformToRoonAlbum } from './transforms/roonAlbum.js';
+import { transformToRoonTrack } from './transforms/roonAlbum.js';
 import { camelCaseKeys } from './utils.js';
-import type { RawRoonTrack } from '../../shared/external/rawRoonTrack';
+import type { RawRoonTrack } from '../../shared/external/rawRoonTrack.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(

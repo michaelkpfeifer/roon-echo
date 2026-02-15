@@ -1,6 +1,6 @@
-import { MbCandidate } from '../../shared/internal/mbCandidate';
-import { buildMbCandidateArtists } from './mbCandidateArtistFactory';
-import { buildMbCandidateTracks } from './mbCandidateTrackFactory';
+import { buildMbCandidateArtists } from './mbCandidateArtistFactory.js';
+import { buildMbCandidateTracks } from './mbCandidateTrackFactory.js';
+import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 
 const buildMbCandidate = (overrides?: Partial<MbCandidate>): MbCandidate => ({
   mbAlbumId: '019b89e7-8473-7429-aaef-300cb0cb6864',

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { RawRoonAlbumSchema } from './rawRoonAlbum';
-import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum';
+import { RawRoonAlbumSchema } from './rawRoonAlbum.js';
+import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum.js';
 
 const RawRoonLoadAlbumsResponseSchema = z.object({
   items: z.array(z.unknown()).transform((items) => {

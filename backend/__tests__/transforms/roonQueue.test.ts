@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 
-import type { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem';
+import type { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem.js';
 import {
   transformToRoonQueueItem,
   transformToRoonQueue,
-} from '../../src/transforms/roonQueue';
+} from '../../src/transforms/roonQueue.js';
 
 describe('transformToRoonQueueitem', () => {
   it('transforms a single RawRoonQueueItem into a RoonQueueItem', () => {

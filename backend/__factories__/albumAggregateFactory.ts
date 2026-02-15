@@ -1,7 +1,7 @@
-import { buildRoonAlbum } from './roonAlbumFactory';
-import { buildRoonTracks } from './roonTrackFactory';
-import type { RoonAlbum } from '../../shared/internal/roonAlbum';
-import type { RoonTrack } from '../../shared/internal/roonTrack';
+import { buildRoonAlbum } from './roonAlbumFactory.js';
+import { buildRoonTracks } from './roonTrackFactory.js';
+import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
+import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 
 const buildAlbumAggregate = (
   stage: string,

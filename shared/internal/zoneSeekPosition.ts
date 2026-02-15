@@ -4,4 +4,4 @@ type ZoneSeekPosition = {
   seekPosition: number | null;
 };
 
-export { ZoneSeekPosition };
+export type { ZoneSeekPosition };

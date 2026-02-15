@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "dist",
     "allowJs": true,
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "verbatimModuleSyntax": true,
   },
   "include": ["src", "__tests__", "types"]
 }

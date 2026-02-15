@@ -111,4 +111,4 @@ type DatabaseSchema = {
   };
 };
 
-export { DatabaseSchema };
+export type { DatabaseSchema };

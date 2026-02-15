@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { RawRoonLoadAlbumResponseSchema } from '../../src/schemas/rawRoonLoadAlbumResponse';
+import { RawRoonLoadAlbumResponseSchema } from '../../src/schemas/rawRoonLoadAlbumResponse.js';
 
 describe('RawRoonLoadAlbumResponseSchema', () => {
   const mockResponse = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { transformToRoonAlbum } from '../../src/transforms/roonAlbum';
+import { transformToRoonAlbum } from '../../src/transforms/roonAlbum.js';
 
 describe('transformToRoonAlbum', () => {
   it('transforms a RawRoonAlbum into a RoonAlbum', () => {

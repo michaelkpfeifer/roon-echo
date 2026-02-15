@@ -1,4 +1,4 @@
-import { OneLine, TwoLine, ThreeLine } from './nLine';
+import type { OneLine, TwoLine, ThreeLine } from './nLine.js';
 
 type RoonQueueItem = {
   queueItemId: number;
@@ -9,4 +9,4 @@ type RoonQueueItem = {
   threeLine: ThreeLine;
 };
 
-export { RoonQueueItem };
+export type { RoonQueueItem };

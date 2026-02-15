@@ -5,13 +5,13 @@ import fp from 'lodash/fp.js';
 import { v7 as uuidv7 } from 'uuid';
 
 import { findRoonTrackByNameAndAlbumName, upsertPlay } from './repository.js';
-import type { Play } from '../../shared/internal/play';
-import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack';
-import type { DatabaseSchema } from '../databaseSchema';
-import { toIso8601 } from './utils';
-import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems';
-import type { ZonePlayingState } from '../../shared/internal/zonePlayingState';
-import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
+import type { Play } from '../../shared/internal/play.js';
+import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
+import type { DatabaseSchema } from '../databaseSchema.js';
+import { toIso8601 } from './utils.js';
+import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
+import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
 
 const mergePlayedSegments = (playedSegments: number[][]) => {
   const sorted = playedSegments.sort((s1, s2) => s1[0] - s2[0]);

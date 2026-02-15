@@ -3,12 +3,12 @@ import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import type { Server } from 'socket.io';
 
-import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import type { DatabaseSchema } from '../databaseSchema';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate.js';
+import type { DatabaseSchema } from '../databaseSchema.js';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithoutMbMatch,
-} from './factories/albumAggregateFactory';
+} from './factories/albumAggregateFactory.js';
 import {
   fetchMbAlbum,
   fetchMbCandidates,
@@ -16,12 +16,12 @@ import {
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   upsertMbCandidate,
-} from './repository';
-import { compareMbAndRoonTracks } from './roonMbMatches';
-import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse';
-import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse';
-import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse';
-import { transformToMbCandidate } from './transforms/mbCandidate';
+} from './repository.js';
+import { compareMbAndRoonTracks } from './roonMbMatches.js';
+import { RawMbCandidateSearchResponseSchema } from './schemas/rawMbCandidateSearchResponse.js';
+import { RawMbFetchReleaseResponseMediaSchema } from './schemas/rawMbFetchReleaseMediaResponse.js';
+import { RawMbFetchReleaseResponseSchema } from './schemas/rawMbFetchReleaseResponse.js';
+import { transformToMbCandidate } from './transforms/mbCandidate.js';
 
 dotenv.config();
 const mbReleaseEndpoint = process.env.MB_RELEASE_ENDPOINT;

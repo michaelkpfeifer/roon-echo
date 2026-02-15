@@ -1,4 +1,4 @@
-import { RawOneLine, RawTwoLine, RawThreeLine } from './rawNLine';
+import type { RawOneLine, RawTwoLine, RawThreeLine } from './rawNLine.js';
 
 type RawRoonQueueItem = {
   queueItemId: number;
@@ -9,4 +9,4 @@ type RawRoonQueueItem = {
   threeLine: RawThreeLine;
 };
 
-export { RawRoonQueueItem };
+export type { RawRoonQueueItem };

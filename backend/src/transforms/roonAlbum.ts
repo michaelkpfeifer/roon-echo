@@ -1,7 +1,7 @@
-import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum';
-import type { RawRoonTrack } from '../../../shared/external/rawRoonTrack';
-import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
-import type { RoonTrack } from '../../../shared/internal/roonTrack';
+import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum.js';
+import type { RawRoonTrack } from '../../../shared/external/rawRoonTrack.js';
+import type { RoonAlbum } from '../../../shared/internal/roonAlbum.js';
+import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
 
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,

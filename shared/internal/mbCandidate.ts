@@ -1,5 +1,5 @@
-import { MbCandidateArtist } from './mbCandidateArtist.js';
-import { MbCandidateTrack } from './mbCandidateTrack.js';
+import type { MbCandidateArtist } from './mbCandidateArtist.js';
+import type { MbCandidateTrack } from './mbCandidateTrack.js';
 
 type MbCandidate = {
   mbAlbumId: string;
@@ -12,4 +12,4 @@ type MbCandidate = {
   mbCandidateTracks: MbCandidateTrack[];
 };
 
-export { MbCandidate };
+export type { MbCandidate };

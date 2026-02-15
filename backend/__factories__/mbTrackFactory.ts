@@ -1,4 +1,4 @@
-import { MbTrack } from '../../shared/internal/mbTrack';
+import type { MbTrack } from '../../shared/internal/mbTrack.js';
 
 const buildMbTrack = (overrides?: Partial<MbTrack>): MbTrack => ({
   mbTrackId: '019b8aef-7b2a-7e4f-aca9-6cf9c98c6729',
