@@ -13,4 +13,4 @@ type RawThreeLine = {
   line3: string;
 };
 
-export { RawOneLine, RawTwoLine, RawThreeLine };
+export type { RawOneLine, RawTwoLine, RawThreeLine };

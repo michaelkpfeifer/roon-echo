@@ -1,6 +1,6 @@
 import knexInit from 'knex';
 import knexConfig from './knexfile.js';
-import type { DatabaseSchema } from './databaseSchema';
+import type { DatabaseSchema } from './databaseSchema.ts';
 import type { Knex } from 'knex';
 
 const environment = (process.env.NODE_ENV ||

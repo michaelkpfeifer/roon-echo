@@ -1,8 +1,8 @@
 import type { Knex } from 'knex';
 
-import type { RoonTrack } from '../../shared/internal/roonTrack';
+import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import { snakeCaseKeys } from '../src/utils';
+import { snakeCaseKeys } from '../src/utils.js';
 
 const buildRoonTrack = (overrides?: Partial<RoonTrack>): RoonTrack => ({
   roonTrackId: '019b894a-8ba4-7637-bd24-7227397cac9e',

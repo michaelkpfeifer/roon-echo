@@ -1,4 +1,4 @@
-import { RawRoonAlbum } from './rawRoonAlbum';
+import { RawRoonAlbum } from './rawRoonAlbum.js';
 
 type RawRoonLoadAlbumsResponse = {
     items: RawRoonAlbum[];

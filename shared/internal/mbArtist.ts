@@ -7,4 +7,4 @@ type MbArtist = {
   disambiguation: string;
 };
 
-export { MbArtist };
+export type { MbArtist };

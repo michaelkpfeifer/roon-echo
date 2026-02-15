@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { RawRoonTrackSchema } from './rawRoonTrack';
+import { RawRoonTrackSchema } from './rawRoonTrack.js';
 
 const RawRoonLoadAlbumResponseSchema = z
   .any()

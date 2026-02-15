@@ -1,7 +1,7 @@
-import type { RoonQueueItem } from './roonQueueItem';
+import type { RoonQueueItem } from './roonQueueItem.js';
 
 type PlayingQueueItems = {
   [key: string]: RoonQueueItem | null;
 };
 
-export { PlayingQueueItems };
+export type { PlayingQueueItems };

@@ -8,4 +8,4 @@ type MbTrack = {
   length?: number;
 };
 
-export { MbTrack };
+export type { MbTrack };

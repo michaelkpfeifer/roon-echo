@@ -5,4 +5,4 @@ type RawRoonTrack = {
   itemKey: string;
 };
 
-export { RawRoonTrack };
+export type { RawRoonTrack };

@@ -8,4 +8,4 @@ type RoonAlbum = {
   candidatesMatchedAt: string | null;
 };
 
-export { RoonAlbum };
+export type { RoonAlbum };

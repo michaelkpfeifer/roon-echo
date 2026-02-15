@@ -5,4 +5,4 @@ type ZonePlayingState = {
   previousPlayId: string | null;
 };
 
-export { ZonePlayingState };
+export type { ZonePlayingState };

@@ -1,5 +1,5 @@
-import { RoonQueueItem } from "./roonQueueItem";
+import type { RoonQueueItem } from './roonQueueItem.js';
 
 type RoonQueue = RoonQueueItem[];
 
-export { RoonQueue };
+export type { RoonQueue };

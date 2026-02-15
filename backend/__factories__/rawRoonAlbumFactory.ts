@@ -1,4 +1,4 @@
-import { RawRoonAlbum } from '../../shared/external/rawRoonAlbum';
+import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 
 const buildRawRoonAlbum = (
   overrides?: Partial<RawRoonAlbum>,

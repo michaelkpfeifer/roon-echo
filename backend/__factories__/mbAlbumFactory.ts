@@ -1,4 +1,4 @@
-import { MbAlbum } from '../../shared/internal/mbAlbum';
+import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 
 const buildMbAlbum = (overrides?: Partial<MbAlbum>): MbAlbum => ({
   mbAlbumId: '019b8aeb-6f04-7502-9da2-a76b5409b837',

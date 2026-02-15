@@ -1,7 +1,7 @@
-import { RawRoonQueue } from '../../../shared/external/rawRoonQueue';
-import { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem';
-import { RoonQueue } from '../../../shared/internal/roonQueue';
-import { RoonQueueItem } from '../../../shared/internal/roonQueueItem';
+import type { RawRoonQueue } from '../../../shared/external/rawRoonQueue.js';
+import type { RawRoonQueueItem } from '../../../shared/external/rawRoonQueueItem.js';
+import type { RoonQueue } from '../../../shared/internal/roonQueue.js';
+import type { RoonQueueItem } from '../../../shared/internal/roonQueueItem.js';
 
 const transformToRoonQueueItem = (raw: RawRoonQueueItem): RoonQueueItem => ({
   queueItemId: raw.queueItemId,

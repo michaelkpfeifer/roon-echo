@@ -1,4 +1,4 @@
-import { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack';
+import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js';
 
 const buildMbCandidateTrack = (
   overrides?: Partial<MbCandidateTrack>,

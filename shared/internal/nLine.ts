@@ -13,4 +13,4 @@ type ThreeLine = {
   line3: string;
 };
 
-export { OneLine, TwoLine, ThreeLine };
+export type { OneLine, TwoLine, ThreeLine };

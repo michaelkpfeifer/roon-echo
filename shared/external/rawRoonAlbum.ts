@@ -6,4 +6,4 @@ type RawRoonAlbum = {
   hint: string;
 };
 
-export { RawRoonAlbum };
+export type { RawRoonAlbum };

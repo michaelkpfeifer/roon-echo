@@ -1,9 +1,9 @@
-import { MbAlbum } from './mbAlbum';
-import { RoonAlbum } from './roonAlbum.js';
-import { RoonTrack } from './roonTrack.js';
-import { MbCandidate } from './mbCandidate.js';
-import { MbArtist } from './mbArtist';
-import { MbTrack } from './mbTrack';
+import type { MbAlbum } from './mbAlbum.js';
+import type { RoonAlbum } from './roonAlbum.js';
+import type { RoonTrack } from './roonTrack.js';
+import type { MbCandidate } from './mbCandidate.js';
+import type { MbArtist } from './mbArtist.js';
+import type { MbTrack } from './mbTrack.js';
 
 type AlbumAggregate =
   | {
@@ -38,4 +38,4 @@ type AlbumAggregate =
       mbCandidates: MbCandidate[];
     };
 
-export { AlbumAggregate };
+export type { AlbumAggregate };

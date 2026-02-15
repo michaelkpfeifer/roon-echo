@@ -6,4 +6,4 @@ type MbAlbum = {
   releaseDate?: string;
 };
 
-export { MbAlbum };
+export type { MbAlbum };
