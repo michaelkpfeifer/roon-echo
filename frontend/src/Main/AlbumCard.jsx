@@ -23,28 +23,6 @@ const albumStageIcon = (stage) => {
   return Icon;
 };
 
-const imageLinkTarget = (albumAggregate) => {
-  let linkTarget;
-
-  switch (albumAggregate.stage) {
-    case 'withMbMatch':
-      linkTarget = `/albums/${albumAggregate.id}`;
-      break;
-    case 'withoutMbMatch':
-      linkTarget = '';
-      break;
-    case 'withRoonTracks':
-      linkTarget = '';
-      break;
-    default:
-      throw new Error(
-        `Error: Unexpected albumAggregate stage: ${albumAggregate.stage}`,
-      );
-  }
-
-  return linkTarget;
-};
-
 function AlbumData({ stage, albumName, artistName }) {
   const Icon = albumStageIcon(stage);
 
@@ -65,7 +43,7 @@ function AlbumCard({ albumAggregate }) {
 
   return (
     <div className="album-card">
-      <Link to={imageLinkTarget(albumAggregate)}>
+      <Link to={`/albums/${albumAggregate.id}`}>
         <img
           src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
           alt={albumAggregate.roonAlbum.albumName}
