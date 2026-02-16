@@ -295,10 +295,8 @@ roon.start_discovery();
 
 await coreReadyPromise;
 
-let zonesReadyPromise;
 let resolveZonesReady: any;
-
-zonesReadyPromise = new Promise((resolve) => {
+const zonesReadyPromise = new Promise((resolve) => {
   resolveZonesReady = resolve;
 });
 
@@ -425,11 +423,10 @@ io.on('connection', async (socket) => {
     subscribeToQueueChanges(zones.map((zone: any) => zone.zoneId));
   });
 
-  socket.on('trackAddNext', ({ albumKey, position, zoneId, mbTrackData }) => {
+  socket.on('trackAddNext', ({ albumKey, position, zoneId }) => {
     roonApiRateLimiter.schedule(async () => {
       /* eslint-disable no-console */
       console.log('server.js: processing trackAddNext message');
-      console.log('server.js: io.on(): mbTrackData:', mbTrackData);
       /* eslint-enable no-console */
 
       await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
@@ -449,38 +446,33 @@ io.on('connection', async (socket) => {
     });
   });
 
-  socket.on(
-    'albumAddNext',
-    ({ roonAlbum, mbAlbum, mbArtists, mbTracks, zoneId }) =>
-      roonApiRateLimiter.schedule(async () => {
-        /* eslint-disable no-console */
-        console.log('server.js: processing albumAddNext message');
-        console.log('server.js: io.on(): roonAlbum:', roonAlbum);
-        console.log('server.js: io.on(): mbAlbum:', mbAlbum);
-        console.log('server.js: io.on(): mbTracks:', mbTracks);
-        console.log('server.js: io.on(): mbArtists:', mbArtists);
-        /* eslint-enable no-console */
+  socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
+    roonApiRateLimiter.schedule(async () => {
+      /* eslint-disable no-console */
+      console.log('server.js: processing albumAddNext message');
+      console.log('server.js: io.on(): roonAlbum:', roonAlbum);
+      /* eslint-enable no-console */
 
-        browser
-          .loadAlbum(browseInstance, roonAlbum.itemKey)
-          .then((albumItems) => {
-            const playAlbumKey = albumItems.items[0].item_key;
+      browser
+        .loadAlbum(browseInstance, roonAlbum.itemKey)
+        .then((albumItems) => {
+          const playAlbumKey = albumItems.items[0].item_key;
 
-            browser
-              .loadTrack(browseInstance, playAlbumKey)
-              .then(async (albumPlayActions) => {
-                const addNextAction = albumPlayActions.items.find(
-                  (item: any) => item.title == 'Add Next',
-                );
+          browser
+            .loadTrack(browseInstance, playAlbumKey)
+            .then(async (albumPlayActions) => {
+              const addNextAction = albumPlayActions.items.find(
+                (item: any) => item.title == 'Add Next',
+              );
 
-                await browseInstance.browse({
-                  hierarchy: 'browse',
-                  item_key: addNextAction.item_key,
-                  zone_or_output_id: zoneId,
-                });
+              await browseInstance.browse({
+                hierarchy: 'browse',
+                item_key: addNextAction.item_key,
+                zone_or_output_id: zoneId,
               });
-          });
-      }),
+            });
+        });
+    }),
   );
 
   socket.on('pause', ({ zoneId }) => {

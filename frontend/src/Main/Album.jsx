@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext';
-import { formatMbTrackLength } from '../utils';
+import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 
 function Album() {
   const { appState, config, coreUrl, socketRef } = useContext(AppContext);
@@ -12,34 +12,37 @@ function Album() {
     (currentAlbumAggregate) => currentAlbumAggregate.id === id,
   );
 
-  const { mbArtists, roonAlbum } = album;
-  const { albumName, artistName, imageKey } = roonAlbum;
-  const artistNames = mbArtists.map((artist) => artist.name).join(', ');
+  const { roonAlbum } = album;
+  const { albumName, artistName: roonAlbumArtistName, imageKey } = roonAlbum;
 
   const enqueueTrackNext = (track) => {
     socketRef.current.emit('trackAddNext', {
       albumKey: album.roonAlbum.itemKey,
       position: track.position,
       zoneId: config.selectedZoneId,
-      mbTrackData: {
-        mbTrackName: track.name,
-        mbAlbumName: albumName,
-        mbArtistNames: artistNames,
-        mbTrackId: track.mbTrackId,
-        mbLength: track.length,
-        roonAlbumId: album.roonAlbum.roonAlbumId,
-      },
     });
   };
 
   const enqueueAlbumNext = (album) => {
     socketRef.current.emit('albumAddNext', {
       roonAlbum: album.roonAlbum,
-      mbAlbum: album.mbAlbum,
-      mbTracks: album.mbTracks,
-      mbArtists: album.mbArtists,
       zoneId: config.selectedZoneId,
     });
+  };
+
+  const formattedTrackLength = (roonTrack, index) => {
+    if (roonTrack.length) {
+      return formatRoonTrackLength(roonTrack.length);
+    }
+
+    if (album.stage === 'withMbMatch') {
+      const mbTrack = album.mbTracks[index];
+      if (mbTrack.length) {
+        return formatMbTrackLength(mbTrack.length);
+      }
+    }
+
+    return '-';
   };
 
   return (
@@ -51,7 +54,7 @@ function Album() {
           className="album-heading__image"
         />
         <div>
-          <div className="album-heading__artists">{artistName}</div>
+          <div className="album-heading__artists">{roonAlbumArtistName}</div>
           <div className="album-heading__name">{albumName}</div>
           <div className="album-actions">
             <button
@@ -65,18 +68,18 @@ function Album() {
         </div>
       </div>
 
-      {album.mbTracks.map((track) => (
-        <div key={track.mbTrackId} className="album-track-row">
-          <div className="album-track-row__number">{track.number}</div>
-          <div className="album-track-row__name">{track.name}</div>
+      {album.roonTracks.map((roonTrack, index) => (
+        <div key={roonTrack.roonTrackId} className="album-track-row">
+          <div className="album-track-row__number">{roonTrack.number}</div>
+          <div className="album-track-row__name">{roonTrack.trackName}</div>
           <div className="album-track-row__length">
-            {formatMbTrackLength(track.length)}
+            {formattedTrackLength(roonTrack, index)}
           </div>
           <div className="album-track-row__track-add-next">
             <button
               type="button"
               onClick={() => {
-                enqueueTrackNext(track);
+                enqueueTrackNext(roonTrack);
               }}
             >
               Play Next
