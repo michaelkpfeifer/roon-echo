@@ -58,19 +58,19 @@ const mergePersistedRoonAlbum = (
     PersistedRoonAlbum,
     {
       error: string;
-      albumName: string;
-      artistName: string;
+      roonAlbumName: string;
+      roonAlbumArtistName: string;
     }
   >,
 ): RoonAlbum => {
   const roonAlbumAttributes = persistedRoonAlbumResult.isErr()
     ? {
         roonAlbumId: uuidv7(),
-        candidatesFetchedAt: null,
-        candidatesMatchedAt: null,
+        mbCandidatesFetchedAt: null,
+        mbCandidatesMatchedAt: null,
       }
     : fp.pick(
-        ['roonAlbumId', 'candidatesFetchedAt', 'candidatesMatchedAt'],
+        ['roonAlbumId', 'mbCandidatesFetchedAt', 'mbCandidatesMatchedAt'],
         persistedRoonAlbumResult._unsafeUnwrap(),
       );
 

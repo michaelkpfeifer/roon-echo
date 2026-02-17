@@ -7,8 +7,8 @@ const transformToRoonAlbum = (
   raw: RawRoonAlbum,
   persistedAttributes: {
     roonAlbumId: string;
-    candidatesFetchedAt: string | null;
-    candidatesMatchedAt: string | null;
+    mbCandidatesFetchedAt: string | null;
+    mbCandidatesMatchedAt: string | null;
   },
 ): RoonAlbum => ({
   roonAlbumId: persistedAttributes.roonAlbumId,
@@ -16,8 +16,8 @@ const transformToRoonAlbum = (
   roonAlbumArtistName: raw.subtitle,
   imageKey: raw.imageKey,
   itemKey: raw.itemKey,
-  candidatesFetchedAt: persistedAttributes.candidatesFetchedAt,
-  candidatesMatchedAt: persistedAttributes.candidatesMatchedAt,
+  mbCandidatesFetchedAt: persistedAttributes.mbCandidatesFetchedAt,
+  mbCandidatesMatchedAt: persistedAttributes.mbCandidatesMatchedAt,
 });
 
 const transformToRoonTrack = (

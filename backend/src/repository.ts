@@ -30,8 +30,8 @@ const fetchRoonAlbum = async (
     PersistedRoonAlbum,
     {
       error: string;
-      albumName: string;
-      artistName: string;
+      roonAlbumName: string;
+      roonAlbumArtistName: string;
     }
   >
 > => {
@@ -45,8 +45,8 @@ const fetchRoonAlbum = async (
   if (roonAlbums.length === 0) {
     return err({
       error: 'repository.ts: fetchRoonAlbum(): Error: roonAlbumNotFound',
-      albumName: rawRoonAlbum.title,
-      artistName: rawRoonAlbum.subtitle,
+      roonAlbumName: rawRoonAlbum.title,
+      roonAlbumArtistName: rawRoonAlbum.subtitle,
     });
   }
 
@@ -57,10 +57,10 @@ const updateCandidatesFetchedAtTimestamp = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
-  await db<DatabaseSchema['roon_albums']>('roon_albums')
+  await db<DatabaseSchema['albums']>('albums')
     .where({ roon_album_id: roonAlbum.roonAlbumId })
     .update({
-      candidates_fetched_at: roonAlbum.candidatesFetchedAt,
+      mb_candidates_fetched_at: roonAlbum.mbCandidatesFetchedAt,
     });
 };
 
@@ -71,7 +71,7 @@ const updateCandidatesMatchedAtTimestamp = async (
   await db<DatabaseSchema['roon_albums']>('roon_albums')
     .where({ roon_album_id: roonAlbum.roonAlbumId })
     .update({
-      candidates_matched_at: roonAlbum.candidatesMatchedAt,
+      mb_candidates_matched_at: roonAlbum.mbCandidatesMatchedAt,
     });
 };
 
@@ -157,10 +157,10 @@ const insertRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
-  await db<DatabaseSchema['roon_albums']>('roon_albums').insert({
+  await db<DatabaseSchema['albums']>('albums').insert({
     roon_album_id: roonAlbum.roonAlbumId,
-    album_name: roonAlbum.albumName,
-    artist_name: roonAlbum.artistName,
+    roon_album_name: roonAlbum.roonAlbumName,
+    roon_album_artist_name: roonAlbum.roonAlbumArtistName,
   });
 };
 

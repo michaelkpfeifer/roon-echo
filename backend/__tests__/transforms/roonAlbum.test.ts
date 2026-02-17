@@ -14,16 +14,16 @@ describe('transformToRoonAlbum', () => {
     const roonAlbumId = '08575675-304f-470f-ac02-a29f0d2e64b1';
     const persistedAttributes = {
       roonAlbumId,
-      candidatesFetchedAt: '2025-12-31 16:00',
-      candidatesMatchedAt: '2025-12-31 16:01',
+      mbCandidatesFetchedAt: '2025-12-31 16:00',
+      mbCandidatesMatchedAt: '2025-12-31 16:01',
     };
 
     const result = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
 
     expect(result).toEqual({
       roonAlbumId,
-      albumName: 'Some Album Name',
-      artistName: 'Some Artist Name',
+      roonAlbumName: 'Some Album Name',
+      roonAlbumArtistName: 'Some Artist Name',
       imageKey: 'someimagekey',
       itemKey: '123:45',
       candidatesFetchedAt: '2025-12-31 16:00',

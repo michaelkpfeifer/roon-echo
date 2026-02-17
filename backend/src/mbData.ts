@@ -121,7 +121,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
   | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
   | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
 > => {
-  if (!albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt) {
+  if (!albumAggregateWithPersistedData.roonAlbum.mbCandidatesFetchedAt) {
     const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
       runMbCandidateSearch(
         albumAggregateWithPersistedData.roonAlbum.roonAlbumName,
@@ -153,7 +153,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       await upsertMbCandidate(db, mbCandidate);
     }
 
-    albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt =
+    albumAggregateWithPersistedData.roonAlbum.mbCandidatesFetchedAt =
       new Date().toISOString();
     await updateCandidatesFetchedAtTimestamp(
       db,
@@ -161,7 +161,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
     );
   }
 
-  if (!albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt) {
+  if (!albumAggregateWithPersistedData.roonAlbum.mbCandidatesMatchedAt) {
     const candidates = await fetchMbCandidates(
       db,
       albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
@@ -183,7 +183,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       }
     }
 
-    albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt =
+    albumAggregateWithPersistedData.roonAlbum.mbCandidatesMatchedAt =
       new Date().toISOString();
     await updateCandidatesMatchedAtTimestamp(
       db,
@@ -251,7 +251,7 @@ const getPersistedAlbumAggregateData = async (
 ) => {
   const roonAlbumData = albumAggregateWithRoonTracks.roonAlbum;
 
-  if (!roonAlbumData.candidatesMatchedAt) {
+  if (!roonAlbumData.mbCandidatesMatchedAt) {
     return albumAggregateWithRoonTracks;
   }
 
