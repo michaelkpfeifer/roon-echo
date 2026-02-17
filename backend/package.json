@@ -13,7 +13,11 @@
     "test": "yarn type-check && vitest",
     "test:coverage": "yarn type-check && vitest run --coverage",
     "debug": "nodemon --inspect --exec tsx index.js",
-    "debug-break": "nodemon --inspect-brk --exec tsx index.js"
+    "debug-break": "nodemon --inspect-brk --exec tsx index.js",
+    "migrate:latest": "node --import tsx ./node_modules/.bin/knex migrate:latest",
+    "migrate:rollback": "node --import tsx ./node_modules/.bin/knex migrate:rollback",
+    "migrate:make": "node --import tsx ./node_modules/.bin/knex migrate:make",
+    "migrate:status": "node --import tsx ./node_modules/.bin/knex migrate:status"
   },
   "dependencies": {
     "better-sqlite3": "^11.7.2",
