@@ -12,8 +12,8 @@ const transformToRoonAlbum = (
   },
 ): RoonAlbum => ({
   roonAlbumId: persistedAttributes.roonAlbumId,
-  albumName: raw.title,
-  artistName: raw.subtitle,
+  roonAlbumName: raw.title,
+  roonAlbumArtistName: raw.subtitle,
   imageKey: raw.imageKey,
   itemKey: raw.itemKey,
   candidatesFetchedAt: persistedAttributes.candidatesFetchedAt,

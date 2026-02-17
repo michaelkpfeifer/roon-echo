@@ -44,8 +44,8 @@ describe('mergePersistedRoonAlbum', () => {
     );
 
     expect(roonAlbum.roonAlbumId).toEqual(roonAlbumId);
-    expect(roonAlbum.albumName).toEqual(rawRoonAlbum.title);
-    expect(roonAlbum.artistName).toEqual(rawRoonAlbum.subtitle);
+    expect(roonAlbum.roonAlbumName).toEqual(rawRoonAlbum.title);
+    expect(roonAlbum.roonAlbumArtistName).toEqual(rawRoonAlbum.subtitle);
     expect(roonAlbum.candidatesFetchedAt).toEqual(candidatesFetchedAt);
     expect(roonAlbum.candidatesMatchedAt).toEqual(candidatesMatchedAt);
   });
@@ -63,8 +63,8 @@ describe('mergePersistedRoonAlbum', () => {
     );
 
     expect(roonAlbum.roonAlbumId.length).toEqual(36);
-    expect(roonAlbum.albumName).toEqual(rawRoonAlbum.title);
-    expect(roonAlbum.artistName).toEqual(rawRoonAlbum.subtitle);
+    expect(roonAlbum.roonAlbumName).toEqual(rawRoonAlbum.title);
+    expect(roonAlbum.roonAlbumArtistName).toEqual(rawRoonAlbum.subtitle);
     expect(roonAlbum.candidatesFetchedAt).toEqual(null);
     expect(roonAlbum.candidatesMatchedAt).toEqual(null);
   });
@@ -114,8 +114,8 @@ describe('getRoonAlbums', () => {
     const result = await getRoonAlbums(testDb, mockBrowseInstance);
 
     expect(result).toHaveLength(1);
-    expect(result[0].albumName).toBe('New Album');
-    expect(result[0].artistName).toBe('New Artist');
+    expect(result[0].roonAlbumName).toBe('New Album');
+    expect(result[0].roonAlbumArtistName).toBe('New Artist');
     expect(result[0].candidatesFetchedAt).toBeNull();
     expect(result[0].candidatesMatchedAt).toBeNull();
 
@@ -156,8 +156,8 @@ describe('getRoonAlbums', () => {
     const result = await getRoonAlbums(testDb, mockBrowseInstance);
 
     expect(result[0].roonAlbumId).toBe(roonAlbumId);
-    expect(result[0].albumName).toBe('Known Album');
-    expect(result[0].artistName).toBe('Known Artist');
+    expect(result[0].roonAlbumName).toBe('Known Album');
+    expect(result[0].roonAlbumArtistName).toBe('Known Artist');
 
     const dbRows = await testDb('roon_albums').select();
     expect(dbRows).toHaveLength(1);
@@ -172,8 +172,12 @@ describe('createAlbumAggregateWithRoonAlbum', () => {
 
     expect(albumAggregate.stage).toEqual('withRoonAlbum');
     expect(albumAggregate.id).toEqual(roonAlbum.roonAlbumId);
-    expect(albumAggregate.roonAlbum.albumName).toEqual(roonAlbum.albumName);
-    expect(albumAggregate.roonAlbum.artistName).toEqual(roonAlbum.artistName);
+    expect(albumAggregate.roonAlbum.roonAlbumName).toEqual(
+      roonAlbum.roonAlbumName,
+    );
+    expect(albumAggregate.roonAlbum.roonAlbumArtistName).toEqual(
+      roonAlbum.roonAlbumArtistName,
+    );
     expect(albumAggregate.roonAlbum.imageKey).toEqual(roonAlbum.imageKey);
     expect(albumAggregate.roonAlbum.itemKey).toEqual(roonAlbum.itemKey);
   });
@@ -236,14 +240,14 @@ describe('getRoonTracks', () => {
   it('should handle albums whose tracks are not in the database', async () => {
     const roonAlbumId = uuidv7();
     const roonAlbum = buildRoonAlbum({
-      roonAlbumId: roonAlbumId,
-      albumName: '12 Golden Country Greats',
-      artistName: 'Ween',
+      roonAlbumId,
+      roonAlbumName: '12 Golden Country Greats',
+      roonAlbumArtistName: 'Ween',
     });
     const albumAggregateWithRoonAlbum =
       createAlbumAggregateWithRoonAlbum(roonAlbum);
     await createPersistedRoonAlbum(testDb, {
-      roonAlbumId: roonAlbumId,
+      roonAlbumId,
       albumName: '12 Golden Country Greats',
       artistName: 'Ween',
     });
@@ -269,21 +273,21 @@ describe('getRoonTracks', () => {
   it('should reuse persisted data', async () => {
     const roonAlbumId = uuidv7();
     const roonAlbum = buildRoonAlbum({
-      roonAlbumId: roonAlbumId,
-      albumName: '12 Golden Country Greats',
-      artistName: 'Ween',
+      roonAlbumId,
+      roonAlbumName: '12 Golden Country Greats',
+      roonAlbumArtistName: 'Ween',
     });
     const albumAggregateWithRoonAlbum =
       createAlbumAggregateWithRoonAlbum(roonAlbum);
     await createPersistedRoonAlbum(testDb, {
-      roonAlbumId: roonAlbumId,
+      roonAlbumId,
       albumName: '12 Golden Country Greats',
       artistName: 'Ween',
     });
     const roonTrackId1 = uuidv7();
     await createRoonTrack(testDb, {
       roonTrackId: roonTrackId1,
-      roonAlbumId: roonAlbumId,
+      roonAlbumId,
       trackName: "I'm Holding You",
       number: '1',
       position: 1,
@@ -291,7 +295,7 @@ describe('getRoonTracks', () => {
     const roonTrackId2 = uuidv7();
     await createRoonTrack(testDb, {
       roonTrackId: roonTrackId2,
-      roonAlbumId: roonAlbumId,
+      roonAlbumId,
       trackName: 'Japanese Cowboy',
       number: '1',
       position: 1,
@@ -428,7 +432,7 @@ describe('initializeRoonData', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].stage).toBe('withRoonTracks');
-    expect(result[0].roonAlbum.albumName).toBe('12 Golden Country Greats');
+    expect(result[0].roonAlbum.roonAlbumName).toBe('12 Golden Country Greats');
     expect(result[0].roonTracks[0].trackName).toBe("I'm Holding You");
     expect(result[0].roonTracks[1].trackName).toBe('Japanese Cowboy');
   });

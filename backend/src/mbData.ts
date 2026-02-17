@@ -124,8 +124,8 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
   if (!albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt) {
     const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
       runMbCandidateSearch(
-        albumAggregateWithPersistedData.roonAlbum.albumName,
-        albumAggregateWithPersistedData.roonAlbum.artistName,
+        albumAggregateWithPersistedData.roonAlbum.roonAlbumName,
+        albumAggregateWithPersistedData.roonAlbum.roonAlbumArtistName,
       ),
     );
 

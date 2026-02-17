@@ -1,7 +1,7 @@
 type RoonAlbum = {
   roonAlbumId: string;
-  albumName: string;
-  artistName: string;
+  roonAlbumName: string;
+  roonAlbumArtistName: string;
   imageKey: string;
   itemKey: string;
   candidatesFetchedAt: string | null;
