@@ -11,6 +11,19 @@ type DatabaseSchema = {
     is_locked: number;
   };
 
+  albums: {
+    roon_album_id: string;
+    roon_album_name: string;
+    roon_album_artist_name: string;
+    mb_candidates_fetched_at: string;
+    mb_candidates_matched_at: string;
+    mb_album_id: string;
+    mb_album_name: string;
+    mb_score: string;
+    mb_track_count: string;
+    mb_release_date: string;
+  };
+
   roon_albums: {
     roon_album_id: string;
     album_name: string;
