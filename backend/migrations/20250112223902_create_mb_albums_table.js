@@ -15,7 +15,7 @@ export function up(knex) {
       release_date TEXT,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
+      FOREIGN KEY(roon_album_id) REFERENCES albums(roon_album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
       PRIMARY KEY (mb_album_id, roon_album_id)

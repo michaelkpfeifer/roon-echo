@@ -17,7 +17,7 @@ export function up(knex) {
       mb_candidate_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
+      FOREIGN KEY(roon_album_id) REFERENCES albums(roon_album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
       PRIMARY KEY (roon_album_id, mb_album_id)
