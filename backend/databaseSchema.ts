@@ -15,13 +15,13 @@ type DatabaseSchema = {
     roon_album_id: string;
     roon_album_name: string;
     roon_album_artist_name: string;
-    mb_candidates_fetched_at: string;
-    mb_candidates_matched_at: string;
-    mb_album_id: string;
-    mb_album_name: string;
-    mb_score: string;
-    mb_track_count: string;
-    mb_release_date: string;
+    mb_candidates_fetched_at: string | null;
+    mb_candidates_matched_at: string | null;
+    mb_album_id: string | null;
+    mb_album_name: string | null;
+    mb_score: string | null;
+    mb_track_count: string | null;
+    mb_release_date: string | null;
   };
 
   roon_albums: {

@@ -8,8 +8,8 @@ export async function up(knex: Knex): Promise<void> {
       roon_album_artist_name TEXT NOT NULL,
       mb_candidates_fetched_at DATETIME,
       mb_candidates_matched_at DATETIME,
-      mb_album_id TEXT NOT NULL CHECK (length(mb_album_id) = 36),
-      mb_album_name TEXT NOT NULL,
+      mb_album_id TEXT CHECK (length(mb_album_id) = 36),
+      mb_album_name TEXT,
       mb_score INTEGER,
       mb_track_count INTEGER,
       mb_release_date
