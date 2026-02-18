@@ -119,7 +119,7 @@ describe('getRoonAlbums', () => {
     expect(result[0].mbCandidatesFetchedAt).toBeNull();
     expect(result[0].mbCandidatesMatchedAt).toBeNull();
 
-    const dbRows = await testDb('roon_albums').select();
+    const dbRows = await testDb('albums').select();
     expect(dbRows).toHaveLength(1);
   });
 
@@ -159,7 +159,7 @@ describe('getRoonAlbums', () => {
     expect(result[0].roonAlbumName).toBe('Known Album');
     expect(result[0].roonAlbumArtistName).toBe('Known Artist');
 
-    const dbRows = await testDb('roon_albums').select();
+    const dbRows = await testDb('albums').select();
     expect(dbRows).toHaveLength(1);
   });
 });

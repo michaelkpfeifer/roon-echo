@@ -26,8 +26,8 @@ describe('transformToRoonAlbum', () => {
       roonAlbumArtistName: 'Some Artist Name',
       imageKey: 'someimagekey',
       itemKey: '123:45',
-      candidatesFetchedAt: '2025-12-31 16:00',
-      candidatesMatchedAt: '2025-12-31 16:01',
+      mbCandidatesFetchedAt: '2025-12-31 16:00',
+      mbCandidatesMatchedAt: '2025-12-31 16:01',
     });
   });
 });

@@ -35,11 +35,9 @@ const fetchRoonAlbum = async (
     }
   >
 > => {
-  const roonAlbums = await db<DatabaseSchema['roon_albums']>(
-    'roon_albums',
-  ).where({
-    album_name: rawRoonAlbum.title,
-    artist_name: rawRoonAlbum.subtitle,
+  const roonAlbums = await db<DatabaseSchema['albums']>('albums').where({
+    roon_album_name: rawRoonAlbum.title,
+    roon_album_artist_name: rawRoonAlbum.subtitle,
   });
 
   if (roonAlbums.length === 0) {
@@ -68,7 +66,7 @@ const updateCandidatesMatchedAtTimestamp = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
-  await db<DatabaseSchema['roon_albums']>('roon_albums')
+  await db<DatabaseSchema['albums']>('albums')
     .where({ roon_album_id: roonAlbum.roonAlbumId })
     .update({
       mb_candidates_matched_at: roonAlbum.mbCandidatesMatchedAt,
