@@ -77,8 +77,8 @@ const fetchRoonTracks = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
 ): Promise<RoonTrack[]> => {
-  const albumId = roonAlbum.roonAlbumId;
-  const roonTracks = await db<DatabaseSchema['roon_albums']>('roon_tracks')
+  const albumId = roonAlbum.albumId;
+  const roonTracks = await db<DatabaseSchema['roon_tracks']>('roon_tracks')
     .select(
       'roon_track_id',
       'roon_album_id',
@@ -87,7 +87,7 @@ const fetchRoonTracks = async (
       'position',
     )
     .where({
-      roon_album_id: roonAlbumId,
+      album_id: albumId,
     });
 
   return camelCaseKeys(roonTracks);
@@ -170,7 +170,7 @@ const insertRoonTracks = async (
     for (const roonTrack of roonTracks) {
       await trx<DatabaseSchema['roon_tracks']>('roon_tracks').insert({
         roon_track_id: roonTrack.roonTrackId,
-        roon_album_id: roonTrack.roonAlbumId,
+        album_id: roonTrack.albumId,
         track_name: roonTrack.trackName,
         number: roonTrack.number,
         position: roonTrack.position,

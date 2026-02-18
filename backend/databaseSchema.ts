@@ -36,7 +36,7 @@ type DatabaseSchema = {
 
   roon_tracks: {
     roon_track_id: string;
-    roon_album_id: string;
+    album_id: string;
     track_name: string;
     number: string;
     position: number;

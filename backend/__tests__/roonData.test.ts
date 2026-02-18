@@ -261,9 +261,9 @@ describe('getRoonTracks', () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result[0].roonAlbumId).toBe(albumId);
+    expect(result[0].albumId).toBe(albumId);
     expect(result[0].trackName).toBe("I'm Holding You");
-    expect(result[1].roonAlbumId).toBe(albumId);
+    expect(result[1].albumId).toBe(albumId);
     expect(result[1].trackName).toBe('Japanese Cowboy');
 
     const dbRows = await testDb('roon_tracks').select();
@@ -308,9 +308,9 @@ describe('getRoonTracks', () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result[0].roonAlbumId).toBe(albumId);
+    expect(result[0].albumId).toBe(albumId);
     expect(result[0].trackName).toBe("I'm Holding You");
-    expect(result[1].roonAlbumId).toBe(albumId);
+    expect(result[1].albumId).toBe(albumId);
     expect(result[1].trackName).toBe('Japanese Cowboy');
   });
 });

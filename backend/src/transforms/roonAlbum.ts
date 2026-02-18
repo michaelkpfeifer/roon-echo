@@ -22,7 +22,7 @@ const transformToRoonAlbum = (
 
 const transformToRoonTrack = (
   raw: RawRoonTrack,
-  roonAlbumId: string,
+  albumId: string,
   roonTrackId: string,
   index: number,
 ): RoonTrack => {
@@ -30,7 +30,7 @@ const transformToRoonTrack = (
 
   return {
     roonTrackId,
-    roonAlbumId,
+    albumId,
     trackName,
     number,
     position: index + 1,
