@@ -1,7 +1,7 @@
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 
 const buildRoonAlbum = (overrides?: Partial<RoonAlbum>): RoonAlbum => ({
-  roonAlbumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
+  albumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
   roonAlbumName: 'Default Album',
   roonAlbumArtistName: 'Default Artist',
   itemKey: '1357:4',

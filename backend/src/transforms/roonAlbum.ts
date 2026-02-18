@@ -6,12 +6,12 @@ import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,
   persistedAttributes: {
-    roonAlbumId: string;
+    albumId: string;
     mbCandidatesFetchedAt: string | null;
     mbCandidatesMatchedAt: string | null;
   },
 ): RoonAlbum => ({
-  roonAlbumId: persistedAttributes.roonAlbumId,
+  albumId: persistedAttributes.albumId,
   roonAlbumName: raw.title,
   roonAlbumArtistName: raw.subtitle,
   imageKey: raw.imageKey,

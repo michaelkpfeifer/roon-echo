@@ -1,5 +1,5 @@
 type PersistedRoonAlbum = {
-  roonAlbumId: string;
+  albumId: string;
   roonAlbumName: string;
   roonAlbumArtistName: string;
   mbCandidatesFetchedAt: string | null;

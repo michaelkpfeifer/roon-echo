@@ -28,12 +28,12 @@ import {
 
 describe('mergePersistedRoonAlbum', () => {
   it('returns a merged Roon album if data is present in the database', () => {
-    const roonAlbumId = '019bd187-1aea-74ba-9b84-ec279f4354dd';
+    const albumId = '019bd187-1aea-74ba-9b84-ec279f4354dd';
     const mbCandidatesFetchedAt = '2026-02-02 22:10';
     const mbCandidatesMatchedAt = '2026-02-02 22:11';
     const rawRoonAlbum = buildRawRoonAlbum();
     const persistedRoonAlbum = buildPersistedRoonAlbum({
-      roonAlbumId,
+      albumId,
       mbCandidatesFetchedAt,
       mbCandidatesMatchedAt,
     });
@@ -43,7 +43,7 @@ describe('mergePersistedRoonAlbum', () => {
       ok(persistedRoonAlbum),
     );
 
-    expect(roonAlbum.roonAlbumId).toEqual(roonAlbumId);
+    expect(roonAlbum.albumId).toEqual(albumId);
     expect(roonAlbum.roonAlbumName).toEqual(rawRoonAlbum.title);
     expect(roonAlbum.roonAlbumArtistName).toEqual(rawRoonAlbum.subtitle);
     expect(roonAlbum.mbCandidatesFetchedAt).toEqual(mbCandidatesFetchedAt);
@@ -62,7 +62,7 @@ describe('mergePersistedRoonAlbum', () => {
       }),
     );
 
-    expect(roonAlbum.roonAlbumId.length).toEqual(36);
+    expect(roonAlbum.albumId.length).toEqual(36);
     expect(roonAlbum.roonAlbumName).toEqual(rawRoonAlbum.title);
     expect(roonAlbum.roonAlbumArtistName).toEqual(rawRoonAlbum.subtitle);
     expect(roonAlbum.mbCandidatesFetchedAt).toEqual(null);
@@ -124,10 +124,10 @@ describe('getRoonAlbums', () => {
   });
 
   it('should reuse persisted data', async () => {
-    const roonAlbumId = uuidv7();
+    const albumId = uuidv7();
 
     await createPersistedRoonAlbum(testDb, {
-      roonAlbumId,
+      albumId,
       roonAlbumName: 'Known Album',
       roonAlbumArtistName: 'Known Artist',
     });
@@ -155,7 +155,7 @@ describe('getRoonAlbums', () => {
 
     const result = await getRoonAlbums(testDb, mockBrowseInstance);
 
-    expect(result[0].roonAlbumId).toBe(roonAlbumId);
+    expect(result[0].albumId).toBe(albumId);
     expect(result[0].roonAlbumName).toBe('Known Album');
     expect(result[0].roonAlbumArtistName).toBe('Known Artist');
 
@@ -171,7 +171,7 @@ describe('createAlbumAggregateWithRoonAlbum', () => {
     const albumAggregate = createAlbumAggregateWithRoonAlbum(roonAlbum);
 
     expect(albumAggregate.stage).toEqual('withRoonAlbum');
-    expect(albumAggregate.id).toEqual(roonAlbum.roonAlbumId);
+    expect(albumAggregate.id).toEqual(roonAlbum.albumId);
     expect(albumAggregate.roonAlbum.roonAlbumName).toEqual(
       roonAlbum.roonAlbumName,
     );
@@ -238,16 +238,16 @@ describe('getRoonTracks', () => {
   });
 
   it('should handle albums whose tracks are not in the database', async () => {
-    const roonAlbumId = uuidv7();
+    const albumId = uuidv7();
     const roonAlbum = buildRoonAlbum({
-      roonAlbumId,
+      albumId,
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
     });
     const albumAggregateWithRoonAlbum =
       createAlbumAggregateWithRoonAlbum(roonAlbum);
     await createPersistedRoonAlbum(testDb, {
-      roonAlbumId,
+      albumId,
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
     });
@@ -261,9 +261,9 @@ describe('getRoonTracks', () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result[0].roonAlbumId).toBe(roonAlbumId);
+    expect(result[0].roonAlbumId).toBe(albumId);
     expect(result[0].trackName).toBe("I'm Holding You");
-    expect(result[1].roonAlbumId).toBe(roonAlbumId);
+    expect(result[1].roonAlbumId).toBe(albumId);
     expect(result[1].trackName).toBe('Japanese Cowboy');
 
     const dbRows = await testDb('roon_tracks').select();
@@ -271,23 +271,23 @@ describe('getRoonTracks', () => {
   });
 
   it('should reuse persisted data', async () => {
-    const roonAlbumId = uuidv7();
+    const albumId = uuidv7();
     const roonAlbum = buildRoonAlbum({
-      roonAlbumId,
+      albumId,
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
     });
     const albumAggregateWithRoonAlbum =
       createAlbumAggregateWithRoonAlbum(roonAlbum);
     await createPersistedRoonAlbum(testDb, {
-      roonAlbumId,
+      albumId,
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
     });
     const roonTrackId1 = uuidv7();
     await createRoonTrack(testDb, {
       roonTrackId: roonTrackId1,
-      roonAlbumId,
+      albumId,
       trackName: "I'm Holding You",
       number: '1',
       position: 1,
@@ -295,7 +295,7 @@ describe('getRoonTracks', () => {
     const roonTrackId2 = uuidv7();
     await createRoonTrack(testDb, {
       roonTrackId: roonTrackId2,
-      roonAlbumId,
+      albumId,
       trackName: 'Japanese Cowboy',
       number: '1',
       position: 1,
@@ -308,9 +308,9 @@ describe('getRoonTracks', () => {
     );
 
     expect(result).toHaveLength(2);
-    expect(result[0].roonAlbumId).toBe(roonAlbumId);
+    expect(result[0].roonAlbumId).toBe(albumId);
     expect(result[0].trackName).toBe("I'm Holding You");
-    expect(result[1].roonAlbumId).toBe(roonAlbumId);
+    expect(result[1].roonAlbumId).toBe(albumId);
     expect(result[1].trackName).toBe('Japanese Cowboy');
   });
 });
@@ -338,7 +338,7 @@ describe('createAlbumAggregateWithRoonTracks', () => {
     );
 
     expect(albumAggregate.stage).toEqual('withRoonTracks');
-    expect(albumAggregate.id).toEqual(roonAlbum.roonAlbumId);
+    expect(albumAggregate.id).toEqual(roonAlbum.albumId);
     expect(albumAggregate.roonTracks).toHaveLength(2);
     expect(albumAggregate.roonTracks[0].roonTrackId).toEqual(
       roonTracks[0].roonTrackId,

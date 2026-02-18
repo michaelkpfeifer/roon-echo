@@ -7,7 +7,7 @@ import { snakeCaseKeys } from '../src/utils.js';
 const buildPersistedRoonAlbum = (
   overrides?: Partial<PersistedRoonAlbum>,
 ): PersistedRoonAlbum => ({
-  roonAlbumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
+  albumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
   roonAlbumName: 'Default Album',
   roonAlbumArtistName: 'Default Artist',
   mbCandidatesFetchedAt: null,
@@ -22,7 +22,7 @@ const createPersistedRoonAlbum = async (
   overrides?: Partial<PersistedRoonAlbum>,
 ): Promise<PersistedRoonAlbum> => {
   const persistedRoonAlbum: PersistedRoonAlbum = {
-    roonAlbumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
+    albumId: '019b8914-76dc-7470-a65e-0b2b45d74489',
     roonAlbumName: 'Default Album',
     roonAlbumArtistName: 'Default Artist',
     mbCandidatesFetchedAt: null,

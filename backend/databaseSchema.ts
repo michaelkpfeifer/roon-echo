@@ -12,7 +12,7 @@ type DatabaseSchema = {
   };
 
   albums: {
-    roon_album_id: string;
+    album_id: string;
     roon_album_name: string;
     roon_album_artist_name: string;
     mb_candidates_fetched_at: string | null;

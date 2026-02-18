@@ -11,9 +11,9 @@ describe('transformToRoonAlbum', () => {
       itemKey: '123:45',
       hint: 'list',
     };
-    const roonAlbumId = '08575675-304f-470f-ac02-a29f0d2e64b1';
+    const albumId = '08575675-304f-470f-ac02-a29f0d2e64b1';
     const persistedAttributes = {
-      roonAlbumId,
+      albumId,
       mbCandidatesFetchedAt: '2025-12-31 16:00',
       mbCandidatesMatchedAt: '2025-12-31 16:01',
     };
@@ -21,7 +21,7 @@ describe('transformToRoonAlbum', () => {
     const result = transformToRoonAlbum(rawRoonAlbum, persistedAttributes);
 
     expect(result).toEqual({
-      roonAlbumId,
+      albumId,
       roonAlbumName: 'Some Album Name',
       roonAlbumArtistName: 'Some Artist Name',
       imageKey: 'someimagekey',

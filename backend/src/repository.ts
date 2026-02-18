@@ -56,7 +56,7 @@ const updateCandidatesFetchedAtTimestamp = async (
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
   await db<DatabaseSchema['albums']>('albums')
-    .where({ roon_album_id: roonAlbum.roonAlbumId })
+    .where({ album_id: roonAlbum.albumId })
     .update({
       mb_candidates_fetched_at: roonAlbum.mbCandidatesFetchedAt,
     });
@@ -67,7 +67,7 @@ const updateCandidatesMatchedAtTimestamp = async (
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
   await db<DatabaseSchema['albums']>('albums')
-    .where({ roon_album_id: roonAlbum.roonAlbumId })
+    .where({ album_id: roonAlbum.albumId })
     .update({
       mb_candidates_matched_at: roonAlbum.mbCandidatesMatchedAt,
     });
@@ -77,7 +77,7 @@ const fetchRoonTracks = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
 ): Promise<RoonTrack[]> => {
-  const roonAlbumId = roonAlbum.roonAlbumId;
+  const albumId = roonAlbum.roonAlbumId;
   const roonTracks = await db<DatabaseSchema['roon_albums']>('roon_tracks')
     .select(
       'roon_track_id',
@@ -156,7 +156,7 @@ const insertRoonAlbum = async (
   roonAlbum: RoonAlbum,
 ): Promise<void> => {
   await db<DatabaseSchema['albums']>('albums').insert({
-    roon_album_id: roonAlbum.roonAlbumId,
+    album_id: roonAlbum.albumId,
     roon_album_name: roonAlbum.roonAlbumName,
     roon_album_artist_name: roonAlbum.roonAlbumArtistName,
   });
@@ -248,7 +248,7 @@ const normalizeCandidate = async (
           mb_album_id: mbCandidate.mbAlbumId,
           roon_album_id: mbCandidate.roonAlbumId,
           mb_artist_id: artist.mbArtistId,
-          position: position,
+          position,
           joinphrase: artist.joinphrase || '',
         })
         .onConflict(['mb_album_id', 'roon_album_id', 'mb_artist_id'])
