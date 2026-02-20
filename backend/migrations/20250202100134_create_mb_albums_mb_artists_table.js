@@ -9,17 +9,17 @@ export async function up(knex) {
         CHECK (length(mb_album_id) = 36),
       mb_artist_id TEXT NOT NULL
         CHECK (length(mb_artist_id) = 36),
-      roon_album_id TEXT NOT NULL
-        CHECK (length(roon_album_id) = 36),
+      album_id TEXT NOT NULL
+        CHECK (length(album_id) = 36),
       position INTEGER NOT NULL,
       joinphrase TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(mb_album_id, roon_album_id) REFERENCES mb_albums(mb_album_id, roon_album_id)
+      FOREIGN KEY(mb_album_id, album_id) REFERENCES mb_albums(mb_album_id, album_id)
         ON DELETE CASCADE,
       FOREIGN KEY(mb_artist_id) REFERENCES mb_artists(mb_artist_id)
         ON DELETE CASCADE,
-      CONSTRAINT mb_albums_mb_artists_primary_key PRIMARY KEY (mb_album_id, roon_album_id, mb_artist_id)
+      CONSTRAINT mb_albums_mb_artists_primary_key PRIMARY KEY (mb_album_id, album_id, mb_artist_id)
     );
   `);
 

@@ -79,13 +79,7 @@ const fetchRoonTracks = async (
 ): Promise<RoonTrack[]> => {
   const albumId = roonAlbum.albumId;
   const roonTracks = await db<DatabaseSchema['roon_tracks']>('roon_tracks')
-    .select(
-      'roon_track_id',
-      'roon_album_id',
-      'track_name',
-      'number',
-      'position',
-    )
+    .select('roon_track_id', 'album_id', 'track_name', 'number', 'position')
     .where({
       album_id: albumId,
     });

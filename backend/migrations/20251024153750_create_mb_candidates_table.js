@@ -7,8 +7,8 @@ export function up(knex) {
     CREATE TABLE mb_candidates (
       mb_album_id TEXT NOT NULL
         CHECK (length(mb_album_id) = 36),
-      roon_album_id TEXT NOT NULL
-        CHECK (length(roon_album_id) = 36),
+      album_id TEXT NOT NULL
+        CHECK (length(album_id) = 36),
       score INTEGER,
       track_count INTEGER,
       release_date DATETIME,
@@ -17,10 +17,10 @@ export function up(knex) {
       mb_candidate_tracks TEXT NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(roon_album_id) REFERENCES albums(roon_album_id)
+      FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (roon_album_id, mb_album_id)
+      PRIMARY KEY (album_id, mb_album_id)
     );
   `);
 }
