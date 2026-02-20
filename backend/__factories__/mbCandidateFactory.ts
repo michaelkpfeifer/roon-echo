@@ -4,7 +4,7 @@ import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 
 const buildMbCandidate = (overrides?: Partial<MbCandidate>): MbCandidate => ({
   mbAlbumId: '019b89e7-8473-7429-aaef-300cb0cb6864',
-  roonAlbumId: '019b89e7-ef2e-7d51-88f4-59141810c6a6',
+  albumId: '019b89e7-ef2e-7d51-88f4-59141810c6a6',
   score: 100,
   trackCount: 10,
   releaseDate: '1999-10-10',

@@ -127,15 +127,15 @@ const findRoonTrackByNameAndAlbumName = async (
 
 const fetchMbCandidates = async (
   db: Knex<DatabaseSchema>,
-  roonAlbumId: string,
+  albumId: string,
 ): Promise<MbCandidate[]> => {
   const rows = await db<DatabaseSchema['mb_candidates']>('mb_candidates')
-    .where({ roon_album_id: roonAlbumId })
+    .where({ album_id: albumId })
     .orderBy('score', 'desc');
 
   return rows.map((row) => ({
     mbAlbumId: row.mb_album_id,
-    roonAlbumId: row.roon_album_id,
+    albumId: row.album_id,
     score: row.score,
     trackCount: row.track_count,
     releaseDate: row.release_date,
@@ -180,7 +180,7 @@ const upsertMbCandidate = async (
   await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .insert({
       mb_album_id: mbCandidate.mbAlbumId,
-      roon_album_id: mbCandidate.roonAlbumId,
+      album_id: mbCandidate.albumId,
       score: mbCandidate.score,
       track_count: mbCandidate.trackCount,
       release_date: mbCandidate.releaseDate,
@@ -188,7 +188,7 @@ const upsertMbCandidate = async (
       mb_candidate_artists: JSON.stringify(mbCandidate.mbCandidateArtists),
       mb_candidate_tracks: JSON.stringify(mbCandidate.mbCandidateTracks),
     })
-    .onConflict(['mb_album_id', 'roon_album_id'])
+    .onConflict(['mb_album_id', 'album_id'])
     .merge();
 };
 
@@ -200,19 +200,19 @@ const normalizeCandidate = async (
     await trx<DatabaseSchema['mb_albums']>('mb_albums')
       .insert({
         mb_album_id: mbCandidate.mbAlbumId,
-        roon_album_id: mbCandidate.roonAlbumId,
+        album_id: mbCandidate.albumId,
         album_name: mbCandidate.mbCandidateAlbumName,
         score: mbCandidate.score,
         track_count: mbCandidate.trackCount,
         release_date: mbCandidate.releaseDate,
       })
-      .onConflict(['mb_album_id', 'roon_album_id'])
+      .onConflict(['mb_album_id', 'album_id'])
       .merge();
 
     const tracksToInsert = mbCandidate.mbCandidateTracks.map((track) => ({
       mb_track_id: track.mbTrackId,
       mb_album_id: mbCandidate.mbAlbumId,
-      roon_album_id: mbCandidate.roonAlbumId,
+      album_id: mbCandidate.albumId,
       name: track.name,
       number: track.number,
       position: track.position,
@@ -221,7 +221,7 @@ const normalizeCandidate = async (
 
     await trx<DatabaseSchema['mb_tracks']>('mb_tracks')
       .insert(tracksToInsert)
-      .onConflict(['mb_track_id', 'roon_album_id'])
+      .onConflict(['mb_track_id', 'album_id'])
       .merge();
 
     let position = 1;
@@ -240,12 +240,12 @@ const normalizeCandidate = async (
       await trx<DatabaseSchema['mb_albums_mb_artists']>('mb_albums_mb_artists')
         .insert({
           mb_album_id: mbCandidate.mbAlbumId,
-          roon_album_id: mbCandidate.roonAlbumId,
+          album_id: mbCandidate.albumId,
           mb_artist_id: artist.mbArtistId,
           position,
           joinphrase: artist.joinphrase || '',
         })
-        .onConflict(['mb_album_id', 'roon_album_id', 'mb_artist_id'])
+        .onConflict(['mb_album_id', 'album_id', 'mb_artist_id'])
         .merge();
 
       position++;
@@ -253,22 +253,22 @@ const normalizeCandidate = async (
   });
 };
 
-const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
+const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
   const albumRow = await db<DatabaseSchema['mb_albums']>('mb_albums')
-    .where({ roon_album_id: roonAlbumId })
+    .where({ album_id: albumId })
     .first();
 
   if (!albumRow) {
     return err({
       fetchMbAlbum: 'Error: mbAlbumNotFound',
-      roon_album_id: roonAlbumId,
+      album_id: albumId,
     });
   }
 
   const tracks = await db<DatabaseSchema['mb_tracks']>('mb_tracks')
     .where({
       mb_album_id: albumRow.mb_album_id,
-      roon_album_id: roonAlbumId,
+      album_id: albumId,
     })
     .orderBy('position', 'asc');
 
@@ -280,7 +280,7 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, roonAlbumId: string) => {
     )
     .where({
       'mb_albums_mb_artists.mb_album_id': albumRow.mb_album_id,
-      'mb_albums_mb_artists.roon_album_id': roonAlbumId,
+      'mb_albums_mb_artists.album_id': albumId,
     })
     .select(
       'mb_artists.*',

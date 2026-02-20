@@ -164,7 +164,7 @@ const loadAlbum = async (browseInstance, itemKey) => {
 
     return albumLoadData;
   } catch (err) {
-    process.stderr.write('Error: Failed to load track by item key:', err, '\n');
+    process.stderr.write(`Error: Failed to load track by item key: ${err}\n`);
     exit(1);
   }
 };
