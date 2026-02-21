@@ -21,14 +21,20 @@ type DatabaseSchema = {
     mb_score: number | null;
     mb_track_count: number | null;
     mb_release_date: string | null;
+    created_at: string;
+    updated_at: string;
   };
 
-  roon_tracks: {
-    roon_track_id: string;
+  tracks: {
+    track_id: string;
     album_id: string;
-    track_name: string;
-    number: string;
-    position: number;
+    roon_track_name: string;
+    roon_number: string;
+    roon_position: number;
+    mb_track_name: string | null;
+    mb_number: string | null;
+    mb_position: number | null;
+    mb_length: number | null;
     created_at: string;
     updated_at: string;
   };
@@ -38,18 +44,6 @@ type DatabaseSchema = {
     name: string;
     sort_name: string;
     disambiguation: string | null;
-    created_at: string;
-    updated_at: string;
-  };
-
-  mb_tracks: {
-    mb_track_id: string;
-    mb_album_id: string;
-    album_id: string;
-    name: string;
-    number: string;
-    position: number;
-    length: number | null;
     created_at: string;
     updated_at: string;
   };
