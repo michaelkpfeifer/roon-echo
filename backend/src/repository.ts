@@ -22,9 +22,8 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
     await db('plays').del();
     await db('albums_mb_artists').del();
     await db('mb_artists').del();
-    await db('mb_tracks').del();
     await db('mb_candidates').del();
-    await db('roon_tracks').del();
+    await db('tracks').del();
     await db('albums').del();
   }
 };
