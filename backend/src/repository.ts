@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
@@ -12,14 +13,20 @@ import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 
+dotenv.config();
+
+const deleteDataAtStartup = process.env.DELETE_DATA_AT_STARTUP;
+
 const dbInit = async (db: Knex<DatabaseSchema>) => {
-  // await db('mb_albums_mb_artists').del();
-  // await db('mb_artists').del();
-  // await db('mb_tracks').del();
-  // await db('mb_albums').del();
-  // await db('mb_candidates').del();
-  // await db('roon_tracks').del();
-  // await db('roon_albums').del();
+  if (deleteDataAtStartup === 'true') {
+    await db('plays').del();
+    await db('albums_mb_artists').del();
+    await db('mb_artists').del();
+    await db('mb_tracks').del();
+    await db('mb_candidates').del();
+    await db('roon_tracks').del();
+    await db('albums').del();
+  }
 };
 
 const fetchRoonAlbum = async (

@@ -1,4 +1,10 @@
+import dotenv from 'dotenv';
 import { exit } from 'node:process';
+
+dotenv.config();
+
+const roonBrowserAlbumsOffset = parseInt(process.env.ROON_BROWSER_ALBUMS_OFFSET, 10)
+const roonBrowserAlbumsCount = parseInt(process.env.ROON_BROWSER_ALBUMS_COUNT, 10)
 
 const browseAsync = (browseInstance, options) =>
   new Promise((resolve, reject) => {
@@ -139,8 +145,8 @@ const loadAlbums = async (browseInstance) => {
   });
   const albumsLoadData = await loadAsync(browseInstance, {
     hierarchy: 'browse',
-    offset: 0,
-    count: Math.min(32, albumsBrowseData.list.count),
+    offset: roonBrowserAlbumsOffset,
+    count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
   });
   return albumsLoadData;
 };
