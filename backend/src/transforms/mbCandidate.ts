@@ -3,7 +3,7 @@ import type { MbCandidateArtist } from '../../../shared/internal/mbCandidateArti
 import type { MbCandidateTrack } from '../../../shared/internal/mbCandidateTrack.js';
 
 const transformToMbCandidate = (
-  roonAlbumId: string,
+  albumId: string,
   rawMbCandidate: any,
   rawMbFetchReleaseResponse: any,
 ): MbCandidate => {
@@ -30,7 +30,7 @@ const transformToMbCandidate = (
 
   return {
     mbAlbumId: rawMbFetchReleaseResponse.id,
-    roonAlbumId,
+    albumId,
     releaseDate: rawMbFetchReleaseResponse.date || null,
     score: rawMbCandidate.score,
     trackCount: mbCandidateTracks.length,

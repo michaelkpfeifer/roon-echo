@@ -3,7 +3,7 @@ import type { MbCandidateTrack } from './mbCandidateTrack.js';
 
 type MbCandidate = {
   mbAlbumId: string;
-  roonAlbumId: string;
+  albumId: string;
   score: number | null;
   trackCount: number | null;
   releaseDate: string | null;

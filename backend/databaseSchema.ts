@@ -11,22 +11,30 @@ type DatabaseSchema = {
     is_locked: number;
   };
 
-  roon_albums: {
-    roon_album_id: string;
-    album_name: string;
-    artist_name: string;
-    candidates_fetched_at: string | null;
-    candidates_matched_at: string | null;
+  albums: {
+    album_id: string;
+    roon_album_name: string;
+    roon_album_artist_name: string;
+    mb_candidates_fetched_at: string | null;
+    mb_candidates_matched_at: string | null;
+    mb_album_name: string | null;
+    mb_score: number | null;
+    mb_track_count: number | null;
+    mb_release_date: string | null;
     created_at: string;
     updated_at: string;
   };
 
-  roon_tracks: {
-    roon_track_id: string;
-    roon_album_id: string;
-    track_name: string;
-    number: string;
-    position: number;
+  tracks: {
+    track_id: string;
+    album_id: string;
+    roon_track_name: string;
+    roon_number: string;
+    roon_position: number;
+    mb_track_name: string | null;
+    mb_number: string | null;
+    mb_position: number | null;
+    mb_length: number | null;
     created_at: string;
     updated_at: string;
   };
@@ -40,33 +48,9 @@ type DatabaseSchema = {
     updated_at: string;
   };
 
-  mb_albums: {
-    mb_album_id: string;
-    roon_album_id: string;
-    album_name: string;
-    score: number | null;
-    track_count: number | null;
-    release_date: string | null;
-    created_at: string;
-    updated_at: string;
-  };
-
-  mb_tracks: {
-    mb_track_id: string;
-    mb_album_id: string;
-    roon_album_id: string;
-    name: string;
-    number: string;
-    position: number;
-    length: number | null;
-    created_at: string;
-    updated_at: string;
-  };
-
-  mb_albums_mb_artists: {
-    mb_album_id: string;
+  albums_mb_artists: {
     mb_artist_id: string;
-    roon_album_id: string;
+    album_id: string;
     position: number;
     joinphrase: string;
     created_at: string;
@@ -83,7 +67,7 @@ type DatabaseSchema = {
 
   mb_candidates: {
     mb_album_id: string;
-    roon_album_id: string;
+    album_id: string;
     score: number | null;
     track_count: number | null;
     release_date: string | null;
@@ -97,9 +81,9 @@ type DatabaseSchema = {
   plays: {
     id: string;
     roon_track_id: string;
-    roon_album_id: string;
+    album_id: string;
     roon_album_name: string;
-    roon_artist_name: string;
+    roon_album_artist_name: string;
     roon_track_name: string;
     number: string;
     position: number;

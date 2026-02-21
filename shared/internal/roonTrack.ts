@@ -1,6 +1,6 @@
 type RoonTrack = {
   roonTrackId: string;
-  roonAlbumId: string;
+  albumId: string;
   trackName: string;
   number: string;
   position: number;

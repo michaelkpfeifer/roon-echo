@@ -1,6 +1,5 @@
 type MbAlbum = {
-  mbAlbumId: string;
-  roonAlbumId: string;
+  albumId: string;
   score: number;
   trackCount: number;
   releaseDate?: string;

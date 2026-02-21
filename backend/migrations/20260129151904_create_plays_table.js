@@ -9,8 +9,8 @@ export async function up(knex) {
         CHECK (length(id) = 36),
       roon_track_id TEXT NOT NULL
         CHECK (length(roon_track_id) = 36),
-      roon_album_id TEXT NOT NULL
-        CHECK (length(roon_album_id) = 36),
+      album_id TEXT NOT NULL
+        CHECK (length(album_id) = 36),
       roon_album_name TEXT NOT NULL,
       roon_artist_name TEXT NOT NULL,
       roon_track_name TEXT NOT NULL,
@@ -24,7 +24,7 @@ export async function up(knex) {
       FOREIGN KEY(roon_track_id) REFERENCES roon_tracks(roon_track_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      FOREIGN KEY(roon_album_id) REFERENCES roon_albums(roon_album_id)
+      FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
       PRIMARY KEY (id)

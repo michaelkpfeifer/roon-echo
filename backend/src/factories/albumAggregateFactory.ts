@@ -19,8 +19,8 @@ const buildAlbumAggregateWithRoonAlbum = (
 ): Extract<AlbumAggregate, { stage: 'withRoonAlbum' }> => ({
   ...emptyAlbumAggregate,
   stage: 'withRoonAlbum',
-  id: roonAlbum.roonAlbumId,
-  roonAlbum: roonAlbum,
+  id: roonAlbum.albumId,
+  roonAlbum,
 });
 
 const buildAlbumAggregateWithRoonTracks = (
@@ -32,7 +32,7 @@ const buildAlbumAggregateWithRoonTracks = (
 ): Extract<AlbumAggregate, { stage: 'withRoonTracks' }> => ({
   ...albumAggregateWithRoonAlbum,
   stage: 'withRoonTracks',
-  roonTracks: roonTracks,
+  roonTracks,
 });
 
 const buildAlbumAggregateWithMbMatch = (

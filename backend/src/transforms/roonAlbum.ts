@@ -6,23 +6,23 @@ import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,
   persistedAttributes: {
-    roonAlbumId: string;
-    candidatesFetchedAt: string | null;
-    candidatesMatchedAt: string | null;
+    albumId: string;
+    mbCandidatesFetchedAt: string | null;
+    mbCandidatesMatchedAt: string | null;
   },
 ): RoonAlbum => ({
-  roonAlbumId: persistedAttributes.roonAlbumId,
-  albumName: raw.title,
-  artistName: raw.subtitle,
+  albumId: persistedAttributes.albumId,
+  roonAlbumName: raw.title,
+  roonAlbumArtistName: raw.subtitle,
   imageKey: raw.imageKey,
   itemKey: raw.itemKey,
-  candidatesFetchedAt: persistedAttributes.candidatesFetchedAt,
-  candidatesMatchedAt: persistedAttributes.candidatesMatchedAt,
+  mbCandidatesFetchedAt: persistedAttributes.mbCandidatesFetchedAt,
+  mbCandidatesMatchedAt: persistedAttributes.mbCandidatesMatchedAt,
 });
 
 const transformToRoonTrack = (
   raw: RawRoonTrack,
-  roonAlbumId: string,
+  albumId: string,
   roonTrackId: string,
   index: number,
 ): RoonTrack => {
@@ -30,7 +30,7 @@ const transformToRoonTrack = (
 
   return {
     roonTrackId,
-    roonAlbumId,
+    albumId,
     trackName,
     number,
     position: index + 1,

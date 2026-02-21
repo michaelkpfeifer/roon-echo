@@ -121,11 +121,11 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
   | Extract<AlbumAggregate, { stage: 'withMbMatch' }>
   | Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>
 > => {
-  if (!albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt) {
+  if (!albumAggregateWithPersistedData.roonAlbum.mbCandidatesFetchedAt) {
     const searchResults = await mbApiRateLimiter.schedule({ priority: 5 }, () =>
       runMbCandidateSearch(
-        albumAggregateWithPersistedData.roonAlbum.albumName,
-        albumAggregateWithPersistedData.roonAlbum.artistName,
+        albumAggregateWithPersistedData.roonAlbum.roonAlbumName,
+        albumAggregateWithPersistedData.roonAlbum.roonAlbumArtistName,
       ),
     );
 
@@ -145,7 +145,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
         RawMbFetchReleaseResponseSchema.parse(fullRelease);
 
       const mbCandidate = transformToMbCandidate(
-        albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+        albumAggregateWithPersistedData.roonAlbum.albumId,
         rawMbCandidate,
         rawMbFetchReleaseResponse,
       );
@@ -153,7 +153,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       await upsertMbCandidate(db, mbCandidate);
     }
 
-    albumAggregateWithPersistedData.roonAlbum.candidatesFetchedAt =
+    albumAggregateWithPersistedData.roonAlbum.mbCandidatesFetchedAt =
       new Date().toISOString();
     await updateCandidatesFetchedAtTimestamp(
       db,
@@ -161,10 +161,10 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
     );
   }
 
-  if (!albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt) {
+  if (!albumAggregateWithPersistedData.roonAlbum.mbCandidatesMatchedAt) {
     const candidates = await fetchMbCandidates(
       db,
-      albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+      albumAggregateWithPersistedData.roonAlbum.albumId,
     );
 
     const roonTrackTitles = albumAggregateWithPersistedData.roonTracks.map(
@@ -183,7 +183,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       }
     }
 
-    albumAggregateWithPersistedData.roonAlbum.candidatesMatchedAt =
+    albumAggregateWithPersistedData.roonAlbum.mbCandidatesMatchedAt =
       new Date().toISOString();
     await updateCandidatesMatchedAtTimestamp(
       db,
@@ -193,11 +193,11 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
 
   const mbCandidates = await fetchMbCandidates(
     db,
-    albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+    albumAggregateWithPersistedData.roonAlbum.albumId,
   );
   const mbAlbumResult = await fetchMbAlbum(
     db,
-    albumAggregateWithPersistedData.roonAlbum.roonAlbumId,
+    albumAggregateWithPersistedData.roonAlbum.albumId,
   );
 
   if (mbAlbumResult.isOk()) {
@@ -251,12 +251,12 @@ const getPersistedAlbumAggregateData = async (
 ) => {
   const roonAlbumData = albumAggregateWithRoonTracks.roonAlbum;
 
-  if (!roonAlbumData.candidatesMatchedAt) {
+  if (!roonAlbumData.mbCandidatesMatchedAt) {
     return albumAggregateWithRoonTracks;
   }
 
-  const mbCandidates = await fetchMbCandidates(db, roonAlbumData.roonAlbumId);
-  const mbAlbumResult = await fetchMbAlbum(db, roonAlbumData.roonAlbumId);
+  const mbCandidates = await fetchMbCandidates(db, roonAlbumData.albumId);
+  const mbAlbumResult = await fetchMbAlbum(db, roonAlbumData.albumId);
 
   if (mbAlbumResult.isOk()) {
     return buildAlbumAggregateWithMbMatch(
