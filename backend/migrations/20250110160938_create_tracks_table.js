@@ -4,20 +4,24 @@
  */
 export function up(knex) {
   return knex.raw(`
-    CREATE TABLE roon_tracks (
-      roon_track_id TEXT NOT NULL
-        CHECK (length(roon_track_id) = 36),
+    CREATE TABLE tracks (
+      track_id TEXT NOT NULL
+        CHECK (length(track_id) = 36),
       album_id TEXT NOT NULL
         CHECK (length(album_id) = 36),
-      track_name TEXT NOT NULL,
-      number TEXT NOT NULL,
-      position INTEGER NOT NULL,
+      roon_track_name TEXT NOT NULL,
+      roon_number TEXT NOT NULL,
+      roon_position INTEGER NOT NULL,
+      mb_track_name TEXT,
+      mb_number TEXT ,
+      mb_position INTEGER,
+      mb_length INTEGER,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (roon_track_id)
+      PRIMARY KEY (track_id)
     );
   `);
 }
@@ -27,5 +31,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable('roon_tracks');
+  return knex.schema.dropTable('tracks');
 }
