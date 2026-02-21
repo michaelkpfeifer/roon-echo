@@ -17,10 +17,9 @@ type DatabaseSchema = {
     roon_album_artist_name: string;
     mb_candidates_fetched_at: string | null;
     mb_candidates_matched_at: string | null;
-    mb_album_id: string | null;
     mb_album_name: string | null;
-    mb_score: string | null;
-    mb_track_count: string | null;
+    mb_score: number | null;
+    mb_track_count: number | null;
     mb_release_date: string | null;
   };
 
@@ -76,8 +75,7 @@ type DatabaseSchema = {
     updated_at: string;
   };
 
-  mb_albums_mb_artists: {
-    mb_album_id: string;
+  albums_mb_artists: {
     mb_artist_id: string;
     album_id: string;
     position: number;
@@ -110,9 +108,9 @@ type DatabaseSchema = {
   plays: {
     id: string;
     roon_track_id: string;
-    roon_album_id: string;
+    album_id: string;
     roon_album_name: string;
-    roon_artist_name: string;
+    roon_album_artist_name: string;
     roon_track_name: string;
     number: string;
     position: number;

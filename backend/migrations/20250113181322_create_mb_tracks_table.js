@@ -7,8 +7,6 @@ export function up(knex) {
     CREATE TABLE mb_tracks (
       mb_track_id TEXT NOT NULL
         CHECK (length(mb_track_id) = 36),
-      mb_album_id TEXT NOT NULL
-        CHECK (length(mb_album_id) = 36),
       album_id TEXT NOT NULL
         CHECK (length(album_id) = 36),
       name TEXT NOT NULL,
@@ -17,10 +15,10 @@ export function up(knex) {
       length INTEGER,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(mb_album_id, album_id) REFERENCES mb_albums(mb_album_id, album_id)
+      FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (mb_track_id, album_id)
+      PRIMARY KEY (mb_track_id)
     );
   `);
 }

@@ -5,8 +5,6 @@
 export function up(knex) {
   return knex.raw(`
     CREATE TABLE mb_candidates (
-      mb_album_id TEXT NOT NULL
-        CHECK (length(mb_album_id) = 36),
       album_id TEXT NOT NULL
         CHECK (length(album_id) = 36),
       score INTEGER,
@@ -20,7 +18,7 @@ export function up(knex) {
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-      PRIMARY KEY (album_id, mb_album_id)
+      PRIMARY KEY (album_id)
     );
   `);
 }

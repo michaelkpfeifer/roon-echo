@@ -92,35 +92,31 @@ const findRoonTrackByNameAndAlbumName = async (
   roonAlbumName: string,
   roonTrackName: string,
 ): Promise<RoonExtendedTrack[]> => {
-  const rows = await db<DatabaseSchema['roon_albums']>('roon_albums')
-    .join(
-      'roon_tracks',
-      'roon_albums.roon_album_id',
-      'roon_tracks.roon_album_id',
-    )
+  const rows = await db<DatabaseSchema['albums']>('albums')
+    .join('roon_tracks', 'albums.album_id', 'roon_tracks.album_id')
     .where({
-      'roon_albums.album_name': roonAlbumName,
+      'albums.roon_album_name': roonAlbumName,
       'roon_tracks.track_name': roonTrackName,
     })
     .select([
       'roon_tracks.roon_track_id',
-      'roon_albums.roon_album_id',
+      'albums.album_id',
       'roon_tracks.track_name',
       'roon_tracks.number',
       'roon_tracks.position',
-      'roon_albums.album_name',
-      'roon_albums.artist_name',
+      'albums.roon_album_name',
+      'albums.roon_album_artist_name',
     ]);
 
   return rows.map((row): RoonExtendedTrack => {
     return {
       roonTrackId: row.roon_track_id,
-      roonAlbumId: row.roon_album_id,
+      albumId: row.album_id,
       trackName: row.track_name,
       number: row.number,
       position: row.position,
-      roonAlbumName: row.album_name,
-      roonArtistName: row.artist_name,
+      roonAlbumName: row.roon_album_name,
+      roonAlbumArtistName: row.roon_album_artist_name,
     };
   });
 };
@@ -179,7 +175,6 @@ const upsertMbCandidate = async (
 ) => {
   await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .insert({
-      mb_album_id: mbCandidate.mbAlbumId,
       album_id: mbCandidate.albumId,
       score: mbCandidate.score,
       track_count: mbCandidate.trackCount,
@@ -188,7 +183,7 @@ const upsertMbCandidate = async (
       mb_candidate_artists: JSON.stringify(mbCandidate.mbCandidateArtists),
       mb_candidate_tracks: JSON.stringify(mbCandidate.mbCandidateTracks),
     })
-    .onConflict(['mb_album_id', 'album_id'])
+    .onConflict(['album_id'])
     .merge();
 };
 
@@ -197,21 +192,19 @@ const normalizeCandidate = async (
   mbCandidate: MbCandidate,
 ) => {
   return db.transaction(async (trx) => {
-    await trx<DatabaseSchema['mb_albums']>('mb_albums')
+    await trx<DatabaseSchema['albums']>('albums')
       .insert({
-        mb_album_id: mbCandidate.mbAlbumId,
         album_id: mbCandidate.albumId,
-        album_name: mbCandidate.mbCandidateAlbumName,
-        score: mbCandidate.score,
-        track_count: mbCandidate.trackCount,
-        release_date: mbCandidate.releaseDate,
+        mb_album_name: mbCandidate.mbCandidateAlbumName,
+        mb_score: mbCandidate.score,
+        mb_track_count: mbCandidate.trackCount,
+        mb_release_date: mbCandidate.releaseDate,
       })
-      .onConflict(['mb_album_id', 'album_id'])
+      .onConflict(['album_id'])
       .merge();
 
     const tracksToInsert = mbCandidate.mbCandidateTracks.map((track) => ({
       mb_track_id: track.mbTrackId,
-      mb_album_id: mbCandidate.mbAlbumId,
       album_id: mbCandidate.albumId,
       name: track.name,
       number: track.number,
@@ -237,15 +230,14 @@ const normalizeCandidate = async (
         .onConflict('mb_artist_id')
         .ignore();
 
-      await trx<DatabaseSchema['mb_albums_mb_artists']>('mb_albums_mb_artists')
+      await trx<DatabaseSchema['albums_mb_artists']>('albums_mb_artists')
         .insert({
-          mb_album_id: mbCandidate.mbAlbumId,
           album_id: mbCandidate.albumId,
           mb_artist_id: artist.mbArtistId,
           position,
           joinphrase: artist.joinphrase || '',
         })
-        .onConflict(['mb_album_id', 'album_id', 'mb_artist_id'])
+        .onConflict(['album_id', 'mb_artist_id'])
         .merge();
 
       position++;
@@ -254,7 +246,7 @@ const normalizeCandidate = async (
 };
 
 const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
-  const albumRow = await db<DatabaseSchema['mb_albums']>('mb_albums')
+  const albumRow = await db<DatabaseSchema['albums']>('albums')
     .where({ album_id: albumId })
     .first();
 
@@ -267,27 +259,25 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
 
   const tracks = await db<DatabaseSchema['mb_tracks']>('mb_tracks')
     .where({
-      mb_album_id: albumRow.mb_album_id,
       album_id: albumId,
     })
     .orderBy('position', 'asc');
 
   const artists = await db<DatabaseSchema['mb_artists']>('mb_artists')
     .join(
-      'mb_albums_mb_artists',
+      'albums_mb_artists',
       'mb_artists.mb_artist_id',
-      'mb_albums_mb_artists.mb_artist_id',
+      'albums_mb_artists.mb_artist_id',
     )
     .where({
-      'mb_albums_mb_artists.mb_album_id': albumRow.mb_album_id,
-      'mb_albums_mb_artists.album_id': albumId,
+      'albums_mb_artists.album_id': albumId,
     })
     .select(
       'mb_artists.*',
-      'mb_albums_mb_artists.position',
-      'mb_albums_mb_artists.joinphrase',
+      'albums_mb_artists.position',
+      'albums_mb_artists.joinphrase',
     )
-    .orderBy('mb_albums_mb_artists.position', 'asc');
+    .orderBy('albums_mb_artists.position', 'asc');
 
   return ok(
     camelCaseKeys({
