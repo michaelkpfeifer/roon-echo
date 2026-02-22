@@ -434,7 +434,7 @@ describe('initializeRoonData', () => {
     expect(result).toHaveLength(1);
     expect(result[0].stage).toBe('withRoonTracks');
     expect(result[0].roonAlbum.roonAlbumName).toBe('12 Golden Country Greats');
-    expect(result[0].roonTracks[0].trackName).toBe("I'm Holding You");
-    expect(result[0].roonTracks[1].trackName).toBe('Japanese Cowboy');
+    expect(result[0].roonTracks[0].roonTrackName).toBe("I'm Holding You");
+    expect(result[0].roonTracks[1].roonTrackName).toBe('Japanese Cowboy');
   });
 });

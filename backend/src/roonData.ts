@@ -150,21 +150,12 @@ const initializeRoonData = async (
   browseInstance: RoonApiBrowse,
 ) => {
   const roonAlbums = await getRoonAlbums(db, browseInstance);
-
   const albumAggregatesWithRoonAlbum: Extract<
     AlbumAggregate,
     { stage: 'withRoonAlbum' }
   >[] = roonAlbums.map((roonAlbum) =>
     createAlbumAggregateWithRoonAlbum(roonAlbum),
   );
-
-  /* eslint-disable no-console */
-  console.log(
-    'albumAggregatesWithRoonAlbum:',
-    JSON.stringify(albumAggregatesWithRoonAlbum, null, 4),
-  );
-  /* eslint-enable no-console */
-
   const albumAggregatesWithRoonTracks: Extract<
     AlbumAggregate,
     { stage: 'withRoonTracks' }
@@ -183,13 +174,6 @@ const initializeRoonData = async (
 
     albumAggregatesWithRoonTracks.push(albumAggregateWithRoonTracks);
   }
-
-  /* eslint-disable no-console */
-  console.log(
-    'albumAggregatesWithRoonTracks:',
-    JSON.stringify(albumAggregatesWithRoonTracks, null, 4),
-  );
-  /* eslint-enable no-console */
 
   return albumAggregatesWithRoonTracks;
 };
