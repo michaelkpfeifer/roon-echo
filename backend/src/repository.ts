@@ -172,12 +172,12 @@ const insertRoonTracks = async (
 ) => {
   db.transaction(async (trx) => {
     for (const roonTrack of roonTracks) {
-      await trx<DatabaseSchema['roon_tracks']>('roon_tracks').insert({
-        roon_track_id: roonTrack.roonTrackId,
+      await trx<DatabaseSchema['tracks']>('tracks').insert({
+        track_id: roonTrack.trackId,
         album_id: roonTrack.albumId,
-        track_name: roonTrack.trackName,
-        number: roonTrack.number,
-        position: roonTrack.position,
+        roon_track_name: roonTrack.roonTrackName,
+        roon_number: roonTrack.roonNumber,
+        roon_position: roonTrack.roonPosition,
       });
     }
   });

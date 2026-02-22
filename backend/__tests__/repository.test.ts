@@ -4,9 +4,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createPersistedRoonTrack } from '../__factories__/persistedRoonTrackFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
+import { buildRoonTrack } from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
-import { fetchRoonTracks } from '../src/repository.js';
+import { fetchRoonTracks, insertRoonTracks } from '../src/repository.js';
 
 describe('fetchRoonTracks', () => {
   let testDb: Knex<DatabaseSchema>;
@@ -53,6 +54,54 @@ describe('fetchRoonTracks', () => {
       roonNumber: '2',
       roonPosition: 2,
     });
+
+    const roonTracks = await fetchRoonTracks(testDb, roonAlbum);
+
+    expect(roonTracks).toHaveLength(2);
+    expect(new Set(roonTracks.map((t) => t.trackId))).toStrictEqual(
+      new Set([trackId1, trackId2]),
+    );
+  });
+});
+
+describe('insertRoonTracks', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('should insert the given Roon tracks into the tracks table', async () => {
+    const roonAlbum = await createRoonAlbum(testDb, {});
+
+    const trackId1 = '019c84e0-57ce-7b4a-95ed-9662da873f9c';
+    const trackId2 = '019c84e1-0e42-7d64-9a9e-61752d8c200f';
+
+    const roonTrack1 = buildRoonTrack({
+      albumId: roonAlbum.albumId,
+      trackId: trackId1,
+      roonTrackName: 'Track 1',
+      roonNumber: '1',
+      roonPosition: 1,
+    });
+    const roonTrack2 = buildRoonTrack({
+      albumId: roonAlbum.albumId,
+      trackId: trackId2,
+      roonTrackName: 'Track 2',
+      roonNumber: '2',
+      roonPosition: 2,
+    });
+
+    await insertRoonTracks(testDb, [roonTrack1, roonTrack2]);
 
     const roonTracks = await fetchRoonTracks(testDb, roonAlbum);
 
