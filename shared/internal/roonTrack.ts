@@ -1,9 +1,9 @@
 type RoonTrack = {
-  roonTrackId: string;
+  trackId: string;
   albumId: string;
-  trackName: string;
-  number: string;
-  position: number;
+  roonTrackName: string;
+  roonNumber: string;
+  roonPosition: number;
 };
 
 export type { RoonTrack };
