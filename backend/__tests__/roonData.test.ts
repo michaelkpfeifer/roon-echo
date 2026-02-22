@@ -4,6 +4,7 @@ import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import {
   buildPersistedRoonAlbum,
   createPersistedRoonAlbum,
@@ -239,7 +240,7 @@ describe('getRoonTracks', () => {
 
   it('should handle albums whose tracks are not in the database', async () => {
     const albumId = uuidv7();
-    const roonAlbum = buildRoonAlbum({
+    const roonAlbum: RoonAlbum = buildRoonAlbum({
       albumId,
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
@@ -262,11 +263,11 @@ describe('getRoonTracks', () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].albumId).toBe(albumId);
-    expect(result[0].trackName).toBe("I'm Holding You");
+    expect(result[0].roonTrackName).toBe("I'm Holding You");
     expect(result[1].albumId).toBe(albumId);
-    expect(result[1].trackName).toBe('Japanese Cowboy');
+    expect(result[1].roonTrackName).toBe('Japanese Cowboy');
 
-    const dbRows = await testDb('roon_tracks').select();
+    const dbRows = await testDb('tracks').select();
     expect(dbRows).toHaveLength(2);
   });
 
@@ -284,21 +285,21 @@ describe('getRoonTracks', () => {
       roonAlbumName: '12 Golden Country Greats',
       roonAlbumArtistName: 'Ween',
     });
-    const roonTrackId1 = uuidv7();
+    const trackId1 = uuidv7();
     await createRoonTrack(testDb, {
-      roonTrackId: roonTrackId1,
+      trackId: trackId1,
       albumId,
-      trackName: "I'm Holding You",
-      number: '1',
-      position: 1,
+      roonTrackName: "I'm Holding You",
+      roonNumber: '1',
+      roonPosition: 1,
     });
-    const roonTrackId2 = uuidv7();
+    const trackId2 = uuidv7();
     await createRoonTrack(testDb, {
-      roonTrackId: roonTrackId2,
+      trackId: trackId2,
       albumId,
-      trackName: 'Japanese Cowboy',
-      number: '1',
-      position: 1,
+      roonTrackName: 'Japanese Cowboy',
+      roonNumber: '2',
+      roonPosition: 2,
     });
 
     const result = await getRoonTracks(
@@ -309,9 +310,9 @@ describe('getRoonTracks', () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].albumId).toBe(albumId);
-    expect(result[0].trackName).toBe("I'm Holding You");
+    expect(result[0].roonTrackName).toBe("I'm Holding You");
     expect(result[1].albumId).toBe(albumId);
-    expect(result[1].trackName).toBe('Japanese Cowboy');
+    expect(result[1].roonTrackName).toBe('Japanese Cowboy');
   });
 });
 
