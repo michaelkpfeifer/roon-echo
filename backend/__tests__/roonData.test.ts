@@ -321,16 +321,16 @@ describe('createAlbumAggregateWithRoonTracks', () => {
     const roonAlbum = buildRoonAlbum();
     const albumAggregateWithRoonAlbum =
       createAlbumAggregateWithRoonAlbum(roonAlbum);
-    const roonTrackId1 = uuidv7();
-    const roonTrackId2 = uuidv7();
+    const trackId1 = uuidv7();
+    const trackId2 = uuidv7();
     const roonTracks = [
       buildRoonTrack({
-        roonTrackId: roonTrackId1,
-        trackName: "I'm Holding You",
+        trackId: trackId1,
+        roonTrackName: "I'm Holding You",
       }),
       buildRoonTrack({
-        roonTrackId: roonTrackId2,
-        trackName: 'Japanese Cowboy',
+        trackId: trackId2,
+        roonTrackName: 'Japanese Cowboy',
       }),
     ];
     const albumAggregate = createAlbumAggregateWithRoonTracks(
@@ -341,12 +341,8 @@ describe('createAlbumAggregateWithRoonTracks', () => {
     expect(albumAggregate.stage).toEqual('withRoonTracks');
     expect(albumAggregate.id).toEqual(roonAlbum.albumId);
     expect(albumAggregate.roonTracks).toHaveLength(2);
-    expect(albumAggregate.roonTracks[0].roonTrackId).toEqual(
-      roonTracks[0].roonTrackId,
-    );
-    expect(albumAggregate.roonTracks[1].roonTrackId).toEqual(
-      roonTracks[1].roonTrackId,
-    );
+    expect(albumAggregate.roonTracks[0].trackId).toEqual(roonTracks[0].trackId);
+    expect(albumAggregate.roonTracks[1].trackId).toEqual(roonTracks[1].trackId);
   });
 });
 
