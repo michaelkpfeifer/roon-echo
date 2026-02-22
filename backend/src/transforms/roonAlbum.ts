@@ -1,7 +1,5 @@
 import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum.js';
-import type { RawRoonTrack } from '../../../shared/external/rawRoonTrack.js';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum.js';
-import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
 
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,
@@ -20,21 +18,4 @@ const transformToRoonAlbum = (
   mbCandidatesMatchedAt: persistedAttributes.mbCandidatesMatchedAt,
 });
 
-const transformToRoonTrack = (
-  raw: RawRoonTrack,
-  albumId: string,
-  roonTrackId: string,
-  index: number,
-): RoonTrack => {
-  const [number, trackName] = raw.title.split(/\s(.+)/);
-
-  return {
-    roonTrackId,
-    albumId,
-    trackName,
-    number,
-    position: index + 1,
-  };
-};
-
-export { transformToRoonAlbum, transformToRoonTrack };
+export { transformToRoonAlbum };
