@@ -41,7 +41,7 @@ const createRoonTrack = async (
     ...overrides,
   };
 
-  await db('roon_tracks').insert(snakeCaseKeys(roonTrack));
+  await db('tracks').insert(snakeCaseKeys(roonTrack));
   return roonTrack;
 };
 
