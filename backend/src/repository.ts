@@ -84,11 +84,19 @@ const fetchRoonTracks = async (
   roonAlbum: RoonAlbum,
 ): Promise<RoonTrack[]> => {
   const albumId = roonAlbum.albumId;
-  const roonTracks = await db<DatabaseSchema['roon_tracks']>('roon_tracks')
-    .select('roon_track_id', 'album_id', 'track_name', 'number', 'position')
+
+  const roonTracks = await db<DatabaseSchema['tracks']>('tracks')
+    .select(
+      'track_id',
+      'album_id',
+      'roon_track_name',
+      'roon_number',
+      'roon_position',
+    )
     .where({
       album_id: albumId,
-    });
+    })
+    .orderBy('roon_number', 'asc');
 
   return camelCaseKeys(roonTracks);
 };
