@@ -1,13 +1,99 @@
 import knexInit from 'knex';
 import type { Knex } from 'knex';
+import type { Result } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
+import type { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist.js';
+import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js';
+import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
+import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
+import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.js';
+import { createPersistedRoonAlbum } from '../__factories__/persistedRoonAlbumFactory.js';
 import { createPersistedRoonTrack } from '../__factories__/persistedRoonTrackFactory.js';
+import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import { buildRoonTrack } from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
-import { fetchRoonTracks, insertRoonTracks } from '../src/repository.js';
+import {
+  fetchRoonAlbum,
+  fetchRoonTracks,
+  insertRoonTracks,
+  normalizeCandidate,
+} from '../src/repository.js';
+
+describe('fetchRoonAlbum', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns an error result if the album cannot be found', async () => {
+    const rawRoonAlbum = buildRawRoonAlbum({
+      title: 'Album Name',
+      subtitle: 'Artist Name',
+    });
+
+    const fetchRoonAlbumResult: Result<
+      PersistedRoonAlbum,
+      {
+        error: string;
+        roonAlbumName: string;
+        roonAlbumArtistName: string;
+      }
+    > = await fetchRoonAlbum(testDb, rawRoonAlbum);
+
+    expect(fetchRoonAlbumResult.isErr()).toBe(true);
+    if (fetchRoonAlbumResult.isErr()) {
+      expect(fetchRoonAlbumResult.error.error).toMatch(/roonAlbumNotFound/);
+      expect(fetchRoonAlbumResult.error.roonAlbumName).toBe('Album Name');
+      expect(fetchRoonAlbumResult.error.roonAlbumArtistName).toBe(
+        'Artist Name',
+      );
+    }
+  });
+
+  it('returns a success result if the album can be found', async () => {
+    const rawRoonAlbum = buildRawRoonAlbum({
+      title: 'Album Name',
+      subtitle: 'Artist Name',
+    });
+    const roonAlbum = await createRoonAlbum(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+
+    const fetchRoonAlbumResult: Result<
+      PersistedRoonAlbum,
+      {
+        error: string;
+        roonAlbumName: string;
+        roonAlbumArtistName: string;
+      }
+    > = await fetchRoonAlbum(testDb, rawRoonAlbum);
+
+    expect(fetchRoonAlbumResult.isOk()).toBe(true);
+    if (fetchRoonAlbumResult.isOk()) {
+      expect(fetchRoonAlbumResult.value.roonAlbumName).toBe('Album Name');
+      expect(fetchRoonAlbumResult.value.roonAlbumArtistName).toBe(
+        'Artist Name',
+      );
+      expect(fetchRoonAlbumResult.value.albumId).toBe(roonAlbum.albumId);
+    }
+  });
+});
 
 describe('fetchRoonTracks', () => {
   let testDb: Knex<DatabaseSchema>;

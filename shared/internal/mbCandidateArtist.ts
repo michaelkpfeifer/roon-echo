@@ -5,4 +5,5 @@ type MbCandidateArtist = {
   sortName: string;
   disambiguation: string | null;
 };
+
 export type { MbCandidateArtist };

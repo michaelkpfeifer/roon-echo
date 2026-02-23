@@ -12,6 +12,7 @@ import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
+import { toPersistedRoonAlbum } from './internal/albumRow.js';
 
 dotenv.config();
 
@@ -54,7 +55,7 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return ok(camelCaseKeys(roonAlbums[0]));
+  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0])));
 };
 
 const updateCandidatesFetchedAtTimestamp = async (

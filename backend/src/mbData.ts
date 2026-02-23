@@ -168,7 +168,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
     );
 
     const roonTrackTitles = albumAggregateWithPersistedData.roonTracks.map(
-      (track) => track.trackName,
+      (track) => track.roonTrackName,
     );
 
     for (const candidate of candidates) {
