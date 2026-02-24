@@ -1,8 +1,10 @@
 type MbAlbum = {
   albumId: string;
-  score: number;
-  trackCount: number;
-  releaseDate?: string;
+  mbAlbumId: string;
+  mbAlbumName: string;
+  mbScore: number;
+  mbTrackCount: number;
+  mbReleaseDate?: string;
 };
 
 export type { MbAlbum };
