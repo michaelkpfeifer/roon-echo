@@ -5,6 +5,7 @@ import { err, ok } from 'neverthrow';
 
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
+import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
@@ -12,7 +13,7 @@ import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import { toPersistedRoonAlbum } from './internal/albumRow.js';
+import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 
 dotenv.config();
 
@@ -56,6 +57,24 @@ const fetchRoonAlbum = async (
   }
 
   return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0])));
+};
+
+const fetchMbAlbumByAlbumId = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+): Promise<Result<MbAlbum, { error: string; albumId: string }>> => {
+  const mbAlbums = await db<DatabaseSchema['albums']>('albums').where({
+    album_id: albumId,
+  });
+
+  if (mbAlbums.length === 0) {
+    return err({
+      error: 'repository.ts: fetchMbAlbumByAlbumId(): Error: mbAlbumNotFound',
+      albumId,
+    });
+  }
+
+  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0])));
 };
 
 const updateCandidatesFetchedAtTimestamp = async (
@@ -313,6 +332,7 @@ const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
 export {
   dbInit,
   fetchMbAlbum,
+  fetchMbAlbumByAlbumId,
   fetchMbCandidates,
   fetchRoonAlbum,
   fetchRoonTracks,

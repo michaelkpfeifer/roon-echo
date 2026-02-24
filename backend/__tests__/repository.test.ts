@@ -3,14 +3,15 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist.js';
 import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import { createAlbumRow } from '../__factories__/albumRowFactory.js';
 import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
 import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
 import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.js';
-import { createPersistedRoonAlbum } from '../__factories__/persistedRoonAlbumFactory.js';
 import { createPersistedRoonTrack } from '../__factories__/persistedRoonTrackFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
@@ -18,6 +19,7 @@ import { buildRoonTrack } from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
+  fetchMbAlbumByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
   insertRoonTracks,
@@ -91,6 +93,64 @@ describe('fetchRoonAlbum', () => {
         'Artist Name',
       );
       expect(fetchRoonAlbumResult.value.albumId).toBe(roonAlbum.albumId);
+    }
+  });
+});
+
+describe('fetchMbAlbumByAlbumId', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns an error result if the album cannot be found', async () => {
+    const albumId = '019c9144-309f-72d5-96d1-5d910ba58830';
+    const fetchMbAlbumResult: Result<
+      MbAlbum,
+      {
+        error: string;
+        albumId: string;
+      }
+    > = await fetchMbAlbumByAlbumId(testDb, albumId);
+
+    expect(fetchMbAlbumResult.isErr()).toBe(true);
+    if (fetchMbAlbumResult.isErr()) {
+      expect(fetchMbAlbumResult.error.error).toMatch(/mbAlbumNotFound/);
+      expect(fetchMbAlbumResult.error.albumId).toBe(albumId);
+    }
+  });
+
+  it('returns a success result if the album can be found', async () => {
+    const albumId = '019c9144-309f-72d5-96d1-5d910ba58830';
+    const mbAlbumId = '019c9160-0fbd-7d8f-8b24-7b511bfeaaf8';
+    const albumRow = await createAlbumRow(testDb, {
+      albumId,
+      mbAlbumId,
+    });
+
+    const fetchMbAlbumResult: Result<
+      MbAlbum,
+      {
+        error: string;
+        albumId: string;
+      }
+    > = await fetchMbAlbumByAlbumId(testDb, albumId);
+
+    expect(fetchMbAlbumResult.isOk()).toBe(true);
+    if (fetchMbAlbumResult.isOk()) {
+      expect(fetchMbAlbumResult.value.albumId).toBe(albumId);
+      expect(fetchMbAlbumResult.value.mbAlbumId).toBe(mbAlbumId);
+      expect(fetchMbAlbumResult.value.mbAlbumName).toBe(albumRow.mbAlbumName);
     }
   });
 });
