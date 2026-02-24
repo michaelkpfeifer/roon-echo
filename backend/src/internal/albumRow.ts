@@ -6,6 +6,7 @@ type AlbumRow = {
   roonAlbumArtistName: string;
   mbCandidatesFetchedAt: string | null;
   mbCandidatesMatchedAt: string | null;
+  mbAlbumId: string | null;
   mbAlbumName: string | null;
   mbScore: string | null;
   mbTrackCount: string | null;

@@ -17,6 +17,7 @@ type DatabaseSchema = {
     roon_album_artist_name: string;
     mb_candidates_fetched_at: string | null;
     mb_candidates_matched_at: string | null;
+    mb_album_id: string | null;
     mb_album_name: string | null;
     mb_score: number | null;
     mb_track_count: number | null;
