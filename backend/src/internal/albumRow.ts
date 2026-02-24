@@ -1,3 +1,4 @@
+import type { MbAlbum } from '../../../shared/internal/mbAlbum.js';
 import type { PersistedRoonAlbum } from '../../../shared/internal/persistedRoonAlbum.js';
 
 type AlbumRow = {
@@ -8,11 +9,31 @@ type AlbumRow = {
   mbCandidatesMatchedAt: string | null;
   mbAlbumId: string | null;
   mbAlbumName: string | null;
-  mbScore: string | null;
-  mbTrackCount: string | null;
-  mbReleaseDate: string | null;
+  mbScore: number | null;
+  mbTrackCount: number | null;
+  mbReleaseDate: string | undefined;
   createdAt: string;
   updatedAt: string;
+};
+
+const toMbAlbum = (row: AlbumRow): MbAlbum => {
+  if (
+    row.mbAlbumId === null ||
+    row.mbAlbumName === null ||
+    row.mbScore === null ||
+    row.mbTrackCount === null
+  ) {
+    throw new Error('albumRow.ts: toMbAlbum(): requiredPropertiesMissing');
+  }
+
+  return {
+    albumId: row.albumId,
+    mbAlbumId: row.mbAlbumId,
+    mbAlbumName: row.mbAlbumName,
+    mbScore: row.mbScore,
+    mbTrackCount: row.mbTrackCount,
+    mbReleaseDate: row.mbReleaseDate,
+  };
 };
 
 const toPersistedRoonAlbum = (row: AlbumRow): PersistedRoonAlbum => {
@@ -28,4 +49,4 @@ const toPersistedRoonAlbum = (row: AlbumRow): PersistedRoonAlbum => {
 };
 
 export type { AlbumRow };
-export { toPersistedRoonAlbum };
+export { toMbAlbum, toPersistedRoonAlbum };
