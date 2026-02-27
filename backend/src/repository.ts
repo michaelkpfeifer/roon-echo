@@ -7,6 +7,7 @@ import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
+import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
@@ -14,6 +15,7 @@ import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
+import { toMbTrack } from './internal/trackRow.js';
 
 dotenv.config();
 
@@ -175,6 +177,17 @@ const fetchMbCandidates = async (
   }));
 };
 
+const fetchMbTracksByAlbumId = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+): Promise<MbTrack[]> => {
+  const trackRows = await db<DatabaseSchema['tracks']>('tracks').where({
+    album_id: albumId,
+  });
+
+  return trackRows.map((trackRow) => toMbTrack(camelCaseKeys(trackRow)));
+};
+
 const insertRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
@@ -334,6 +347,7 @@ export {
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
   fetchMbCandidates,
+  fetchMbTracksByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
   findRoonTrackByNameAndAlbumName,

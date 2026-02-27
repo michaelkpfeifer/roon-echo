@@ -7,6 +7,7 @@ import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist.js';
 import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js';
+import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import { createAlbumRow } from '../__factories__/albumRowFactory.js';
 import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
@@ -15,11 +16,16 @@ import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.
 import { createPersistedRoonTrack } from '../__factories__/persistedRoonTrackFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
-import { buildRoonTrack } from '../__factories__/roonTrackFactory.js';
+import {
+  buildRoonTrack,
+  createRoonTrack,
+} from '../__factories__/roonTrackFactory.js';
+import { createTrackRow } from '../__factories__/trackRowFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
   fetchMbAlbumByAlbumId,
+  fetchMbTracksByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
   insertRoonTracks,
@@ -152,6 +158,61 @@ describe('fetchMbAlbumByAlbumId', () => {
       expect(fetchMbAlbumResult.value.mbAlbumId).toBe(mbAlbumId);
       expect(fetchMbAlbumResult.value.mbAlbumName).toBe(albumRow.mbAlbumName);
     }
+  });
+});
+
+describe('fetchMbTracksByAlbumId', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns a list of MusicBrainz tracks with the given album ID', async () => {
+    const albumId = '019c9bf4-7822-7dec-8a0a-13826b3094df';
+    const trackId1 = '019c9bf6-1a50-74fc-9a3a-9a807a39e72c';
+    const trackId2 = '019c9bf6-45a5-7492-971b-c7838c96bac6';
+    const mbTrackId1 = '019c9ff2-0a1d-7c2d-8e29-f4629e39fb81';
+    const mbTrackId2 = '019c9ff2-486f-768d-a1a5-cd2a8bf1e99a';
+    await createRoonAlbum(testDb, {
+      albumId,
+    });
+    await createTrackRow(testDb, {
+      albumId,
+      trackId: trackId1,
+      mbTrackId: mbTrackId1,
+    });
+    await createTrackRow(testDb, {
+      albumId,
+      trackId: trackId2,
+      mbTrackId: mbTrackId2,
+    });
+
+    const mbTracks: MbTrack[] = await fetchMbTracksByAlbumId(testDb, albumId);
+
+    expect(
+      new Set(
+        mbTracks.map((mbTrack) => [
+          mbTrack.albumId,
+          mbTrack.trackId,
+          mbTrack.mbTrackId,
+        ]),
+      ),
+    ).toEqual(
+      new Set([
+        [albumId, trackId1, mbTrackId1],
+        [albumId, trackId2, mbTrackId2],
+      ]),
+    );
   });
 });
 
