@@ -24,7 +24,7 @@ const createAlbumRow = async (
     ...overrides,
   };
 
-  await db('albums').insert(snakeCaseKeys(albumRow));
+  await db<DatabaseSchema['albums']>('albums').insert(snakeCaseKeys(albumRow));
 
   return albumRow;
 };
