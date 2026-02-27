@@ -1,11 +1,11 @@
 type MbTrack = {
+  trackId: string;
+  albumId: string;
   mbTrackId: string;
-  mbAlbumId: string;
-  roonAlbumId: string;
-  name: string;
-  number: string;
-  position: number;
-  length?: number;
+  mbTrackName: string;
+  mbNumber: string;
+  mbPosition: number;
+  mbLength?: number;
 };
 
 export type { MbTrack };
