@@ -4,8 +4,6 @@ const buildMbArtist = (overrides?: Partial<MbArtist>): MbArtist => ({
   mbArtistId: '019b8afe-c1b4-74f5-80ba-f025cecacfdd',
   name: 'Default Artist 1',
   sortName: 'Artist, Default 1',
-  joinphrase: '',
-  position: 1,
   disambiguation: 'Default Disambiguation 1',
   ...overrides,
 });
@@ -13,7 +11,6 @@ const buildMbArtist = (overrides?: Partial<MbArtist>): MbArtist => ({
 const buildNthMbArtist = (number: number) =>
   buildMbArtist({
     name: `Artist ${number}`,
-    position: number,
   });
 
 const buildMbArtists = (count: number): MbArtist[] => {
