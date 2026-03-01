@@ -79,6 +79,28 @@ const fetchMbAlbumByAlbumId = async (
   return ok(toMbAlbum(camelCaseKeys(mbAlbums[0])));
 };
 
+const fetchMbArtistsByAlbumId = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+) => {
+  const mbArtistRows = await db<DatabaseSchema['mb_artists']>('mb_artists')
+    .join(
+      'albums_mb_artists',
+      'mb_artists.mb_artist_id',
+      'albums_mb_artists.mb_artist_id',
+    )
+    .where({
+      'albums_mb_artists.album_id': albumId,
+    })
+    .select([
+      'mb_artists.mb_artist_id',
+      'mb_artists.name',
+      'mb_artists.sort_name',
+    ]);
+
+  return camelCaseKeys(mbArtistRows);
+};
+
 const updateCandidatesFetchedAtTimestamp = async (
   db: Knex<DatabaseSchema>,
   roonAlbum: RoonAlbum,
@@ -346,6 +368,7 @@ export {
   dbInit,
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
+  fetchMbArtistsByAlbumId,
   fetchMbCandidates,
   fetchMbTracksByAlbumId,
   fetchRoonAlbum,
