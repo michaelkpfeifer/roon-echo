@@ -261,56 +261,95 @@ const normalizeCandidate = async (
   mbCandidate: MbCandidate,
 ) => {
   return db.transaction(async (trx) => {
-    await trx<DatabaseSchema['albums']>('albums')
-      .insert({
+    const album = await trx('albums')
+      .where({ album_id: mbCandidate.albumId })
+      .first();
+
+    if (!album) {
+      return err({
+        error: 'repository.ts: normalizeCandidate(): Error: albumNotFound',
+        mbCandidate,
+      });
+    }
+
+    await trx('albums').where({ album_id: mbCandidate.albumId }).update({
+      mb_album_id: mbCandidate.mbAlbumId,
+      mb_album_name: mbCandidate.mbCandidateAlbumName,
+      mb_score: mbCandidate.score,
+      mb_track_count: mbCandidate.trackCount,
+      mb_release_date: mbCandidate.releaseDate,
+      updated_at: trx.fn.now(),
+    });
+
+    const albumTrackCountQueryResult = await trx('tracks')
+      .where({
         album_id: mbCandidate.albumId,
-        mb_album_name: mbCandidate.mbCandidateAlbumName,
-        mb_score: mbCandidate.score,
-        mb_track_count: mbCandidate.trackCount,
-        mb_release_date: mbCandidate.releaseDate,
       })
-      .onConflict(['album_id'])
-      .merge();
+      .count('album_id AS count');
 
-    const tracksToInsert = mbCandidate.mbCandidateTracks.map((track) => ({
-      mb_track_id: track.mbTrackId,
-      album_id: mbCandidate.albumId,
-      name: track.name,
-      number: track.number,
-      position: track.position,
-      length: track.length,
-    }));
+    const albumTrackCount: number = parseInt(
+      albumTrackCountQueryResult[0]['count'].toString(),
+      10,
+    );
 
-    await trx<DatabaseSchema['mb_tracks']>('mb_tracks')
-      .insert(tracksToInsert)
-      .onConflict(['mb_track_id', 'album_id'])
-      .merge();
+    if (albumTrackCount !== mbCandidate.mbCandidateTracks.length) {
+      return err({
+        error:
+          'repository.ts: normalizeCandidate(): Error: trackCountsNotEqual',
+        mbCandidate,
+      });
+    }
 
-    let position = 1;
+    for (const mbCandidateTrack of mbCandidate.mbCandidateTracks) {
+      await trx<DatabaseSchema['tracks']>('tracks')
+        .where({
+          album_id: mbCandidate.albumId,
+          roon_position: mbCandidateTrack.position,
+        })
+        .update({
+          mb_track_id: mbCandidateTrack.mbTrackId,
+          mb_track_name: mbCandidateTrack.name,
+          mb_number: mbCandidateTrack.number,
+          mb_position: mbCandidateTrack.position,
+          mb_length: mbCandidateTrack.length,
+        });
+    }
 
-    for (const artist of mbCandidate.mbCandidateArtists) {
+    for (const mbArtist of mbCandidate.mbCandidateArtists) {
+      await trx<DatabaseSchema['albums_mb_artists']>('albums_mb_artists')
+        .where({
+          album_id: mbCandidate.albumId,
+          mb_artist_id: mbArtist.mbArtistId,
+        })
+        .delete();
+    }
+
+    let artistPosition = 1;
+
+    for (const mbArtist of mbCandidate.mbCandidateArtists) {
       await trx<DatabaseSchema['mb_artists']>('mb_artists')
         .insert({
-          mb_artist_id: artist.mbArtistId,
-          name: artist.name,
-          sort_name: artist.sortName,
-          disambiguation: artist.disambiguation,
+          mb_artist_id: mbArtist.mbArtistId,
+          name: mbArtist.name,
+          sort_name: mbArtist.sortName,
+          disambiguation: mbArtist.disambiguation,
         })
         .onConflict('mb_artist_id')
-        .ignore();
-
-      await trx<DatabaseSchema['albums_mb_artists']>('albums_mb_artists')
-        .insert({
-          album_id: mbCandidate.albumId,
-          mb_artist_id: artist.mbArtistId,
-          position,
-          joinphrase: artist.joinphrase || '',
-        })
-        .onConflict(['album_id', 'mb_artist_id'])
         .merge();
 
-      position++;
+      await trx<DatabaseSchema['albums_mb_artists']>(
+        'albums_mb_artists',
+      ).insert({
+        album_id: mbCandidate.albumId,
+        mb_artist_id: mbArtist.mbArtistId,
+        position: artistPosition,
+        joinphrase: mbArtist.joinphrase || '',
+      });
+
+      artistPosition++;
     }
+
+    return ok({});
   });
 };
 

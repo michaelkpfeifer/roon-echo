@@ -389,3 +389,180 @@ describe('insertRoonTracks', () => {
     );
   });
 });
+
+describe('normalizeCandidate', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  let mbCandidateArtist1: MbCandidateArtist;
+  let mbCandidateArtist2: MbCandidateArtist;
+  let mbCandidateTrack1: MbCandidateTrack;
+  let mbCandidateTrack2: MbCandidateTrack;
+  let mbCandidate: MbCandidate;
+
+  let albumId: string;
+  let mbArtistId1: string;
+  let mbArtistId2: string;
+  let mbTrackId1: string;
+  let trackId1: string;
+  let mbTrackId2: string;
+  let trackId2: string;
+
+  beforeEach(async () => {
+    const mbAlbumId = '019c8b21-1e4a-7450-8d02-863bf1b8a18e';
+    albumId = '019c8b1f-9970-775f-99f6-c9f7a41786c6';
+    mbArtistId1 = '019c8b21-1e4a-7450-8d02-863bf1b8a18e';
+    mbArtistId2 = '019c8b23-ba19-7316-b497-68673d21c3d6';
+    mbTrackId1 = '019c8b23-e297-7dc4-a446-ff4e8ac4127e';
+    trackId1 = '019c95ba-a176-7b2f-ab04-f89566050916';
+    mbTrackId2 = '019c8b24-3b72-71a3-bac3-00f97225e0a0';
+    trackId2 = '019c95ba-ec8a-724f-b997-ad0ef015ff88';
+
+    mbCandidateArtist1 = buildMbCandidateArtist({
+      mbArtistId: mbArtistId1,
+      name: 'Artist 1',
+      sortName: 'Artist 1',
+    });
+    mbCandidateArtist2 = buildMbCandidateArtist({
+      mbArtistId: mbArtistId2,
+      name: 'Artist 2',
+      sortName: 'Artist 2',
+    });
+    mbCandidateTrack1 = buildMbCandidateTrack({
+      mbTrackId: mbTrackId1,
+      name: 'Track 1',
+      position: 1,
+    });
+    mbCandidateTrack2 = buildMbCandidateTrack({
+      mbTrackId: mbTrackId2,
+      name: 'Track 2',
+      position: 2,
+    });
+    mbCandidate = buildMbCandidate({
+      mbAlbumId,
+      albumId,
+      mbCandidateAlbumName: 'Test Album',
+      mbCandidateArtists: [mbCandidateArtist1, mbCandidateArtist2],
+      mbCandidateTracks: [mbCandidateTrack1, mbCandidateTrack2],
+    });
+
+    await createRoonAlbum(testDb, {
+      albumId,
+      roonAlbumName: 'Test Album',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    await createRoonTrack(testDb, {
+      trackId: trackId1,
+      albumId,
+      roonTrackName: 'Track 1',
+      roonPosition: 1,
+    });
+    await createRoonTrack(testDb, {
+      trackId: trackId2,
+      albumId,
+      roonTrackName: 'Track 2',
+      roonPosition: 2,
+    });
+  });
+
+  it('inserts MusicBrainz album data into the albums table', async () => {
+    await normalizeCandidate(testDb, mbCandidate);
+
+    const mbAlbum = (
+      await fetchMbAlbumByAlbumId(testDb, mbCandidate.albumId)
+    ).unwrapOr({});
+
+    expect(mbAlbum).toStrictEqual({
+      albumId: mbCandidate.albumId,
+      mbAlbumId: mbCandidate.mbAlbumId,
+      mbAlbumName: mbCandidate.mbCandidateAlbumName,
+      mbReleaseDate: mbCandidate.releaseDate,
+      mbScore: mbCandidate.score,
+      mbTrackCount: mbCandidate.trackCount,
+    });
+  });
+
+  it('inserts MusicBrainz track data into the tracks table', async () => {
+    await normalizeCandidate(testDb, mbCandidate);
+
+    const mbTracks: MbTrack[] = await fetchMbTracksByAlbumId(
+      testDb,
+      mbCandidate.albumId,
+    );
+
+    expect(
+      new Set(
+        mbTracks.map((mbTrack) => [
+          mbTrack.albumId,
+          mbTrack.trackId,
+          mbTrack.mbTrackId,
+        ]),
+      ),
+    ).toEqual(
+      new Set([
+        [albumId, trackId1, mbTrackId1],
+        [albumId, trackId2, mbTrackId2],
+      ]),
+    );
+  });
+
+  it('inserts MusicBrainz artist data into the mb_artists table', async () => {
+    await normalizeCandidate(testDb, mbCandidate);
+
+    const mbArtists = await fetchMbArtistsByAlbumId(
+      testDb,
+      mbCandidate.albumId,
+    );
+
+    expect(
+      new Set(
+        mbArtists.map((mbArtist: MbArtist) => [
+          mbArtist.mbArtistId,
+          mbArtist.name,
+          mbArtist.sortName,
+        ]),
+      ),
+    ).toEqual(
+      new Set([
+        [mbArtistId1, 'Artist 1', 'Artist 1'],
+        [mbArtistId2, 'Artist 2', 'Artist 2'],
+      ]),
+    );
+  });
+
+  it('returns an error value if the album cannot be found', async () => {
+    const mbAlbumResult = await normalizeCandidate(testDb, {
+      ...mbCandidate,
+      albumId: 'this-is-not-a-uuid',
+    });
+
+    expect(mbAlbumResult.isErr()).toBe(true);
+    if (mbAlbumResult.isErr()) {
+      expect(mbAlbumResult.error.error).toMatch(/albumNotFound/);
+    }
+  });
+
+  it('returns an error value if the number of Roon and MusicBrainz tracks are not equal', async () => {
+    const mbAlbumResult = await normalizeCandidate(testDb, {
+      ...mbCandidate,
+      mbCandidateTracks: [mbCandidateTrack1],
+    });
+
+    expect(mbAlbumResult.isErr()).toBe(true);
+    if (mbAlbumResult.isErr()) {
+      expect(mbAlbumResult.error.error).toMatch(/trackCountsNotEqual/);
+    }
+  });
+});
