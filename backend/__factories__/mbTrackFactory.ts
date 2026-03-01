@@ -1,21 +1,21 @@
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 
 const buildMbTrack = (overrides?: Partial<MbTrack>): MbTrack => ({
+  trackId: '019caa5f-97d8-7bbc-8f91-aa59538d2e64',
+  albumId: '019b8aef-b559-79a3-81ec-80f126b85554',
   mbTrackId: '019b8aef-7b2a-7e4f-aca9-6cf9c98c6729',
-  mbAlbumId: '019b8aef-b559-79a3-81ec-80f126b85554',
-  roonAlbumId: '019b8aef-e38e-76be-a769-193ccac8c920',
-  name: 'Default Track 1',
-  number: '1',
-  position: 1,
-  length: 25500,
+  mbTrackName: 'Default Track 1',
+  mbNumber: '1',
+  mbPosition: 1,
+  mbLength: 25500,
   ...overrides,
 });
 
 const buildNthMbTrack = (number: number) =>
   buildMbTrack({
-    name: `Track ${number}`,
-    number: `${number}`,
-    position: number,
+    mbTrackName: `Track ${number}`,
+    mbNumber: `${number}`,
+    mbPosition: number,
   });
 
 const buildMbTracks = (count: number): MbTrack[] => {
