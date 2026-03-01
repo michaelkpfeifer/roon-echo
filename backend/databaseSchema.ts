@@ -82,7 +82,7 @@ type DatabaseSchema = {
 
   plays: {
     id: string;
-    roon_track_id: string;
+    track_id: string;
     album_id: string;
     roon_album_name: string;
     roon_album_artist_name: string;

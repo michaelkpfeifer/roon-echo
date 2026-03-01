@@ -7,8 +7,8 @@ export async function up(knex) {
     CREATE TABLE plays (
       id TEXT NOT NULL
         CHECK (length(id) = 36),
-      roon_track_id TEXT NOT NULL
-        CHECK (length(roon_track_id) = 36),
+      track_id TEXT NOT NULL
+        CHECK (length(track_id) = 36),
       album_id TEXT NOT NULL
         CHECK (length(album_id) = 36),
       roon_album_name TEXT NOT NULL,
@@ -21,7 +21,7 @@ export async function up(knex) {
       is_played BOOLEAN NOT NULL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY(roon_track_id) REFERENCES roon_tracks(roon_track_id)
+      FOREIGN KEY(track_id) REFERENCES tracks(track_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
