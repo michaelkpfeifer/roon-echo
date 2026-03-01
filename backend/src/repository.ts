@@ -365,33 +365,14 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
     });
   }
 
-  const tracks = await db<DatabaseSchema['mb_tracks']>('mb_tracks')
-    .where({
-      album_id: albumId,
-    })
-    .orderBy('position', 'asc');
-
-  const artists = await db<DatabaseSchema['mb_artists']>('mb_artists')
-    .join(
-      'albums_mb_artists',
-      'mb_artists.mb_artist_id',
-      'albums_mb_artists.mb_artist_id',
-    )
-    .where({
-      'albums_mb_artists.album_id': albumId,
-    })
-    .select(
-      'mb_artists.*',
-      'albums_mb_artists.position',
-      'albums_mb_artists.joinphrase',
-    )
-    .orderBy('albums_mb_artists.position', 'asc');
+  const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
+  const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
   return ok(
     camelCaseKeys({
       mbAlbum: albumRow,
-      mbArtists: artists,
-      mbTracks: tracks,
+      mbArtists,
+      mbTracks,
     }),
   );
 };
