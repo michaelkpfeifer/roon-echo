@@ -23,7 +23,7 @@ const albumStageIcon = (stage) => {
   return Icon;
 };
 
-function AlbumData({ stage, albumName, artistName }) {
+function AlbumData({ stage, roonAlbumName, roonAlbumArtistName }) {
   const Icon = albumStageIcon(stage);
 
   return (
@@ -31,9 +31,9 @@ function AlbumData({ stage, albumName, artistName }) {
       <div className="album-card__album-name">
         {Icon}
         &nbsp;
-        <b>{albumName}</b>
+        <b>{roonAlbumName}</b>
       </div>
-      <div className="album-card__artist-name">{artistName}</div>
+      <div className="album-card__artist-name">{roonAlbumArtistName}</div>
     </>
   );
 }
@@ -46,15 +46,15 @@ function AlbumCard({ albumAggregate }) {
       <Link to={`/albums/${albumAggregate.id}`}>
         <img
           src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={albumAggregate.roonAlbum.albumName}
+          alt={albumAggregate.roonAlbum.roonAlbumName}
           className="album-card__image"
         />
       </Link>
 
       <AlbumData
         stage={albumAggregate.stage}
-        albumName={albumAggregate.roonAlbum.albumName}
-        artistName={albumAggregate.roonAlbum.artistName}
+        roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
+        roonAlbumArtistName={albumAggregate.roonAlbum.roonAlbumArtistName}
       />
     </div>
   );
