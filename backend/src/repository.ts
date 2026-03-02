@@ -151,19 +151,19 @@ const findRoonTrackByNameAndAlbumName = async (
   roonTrackName: string,
 ): Promise<RoonExtendedTrack[]> => {
   const rows = await db<DatabaseSchema['albums']>('albums')
-    .join('roon_tracks', 'albums.album_id', 'roon_tracks.album_id')
+    .join('tracks', 'albums.album_id', 'tracks.album_id')
     .where({
       'albums.roon_album_name': roonAlbumName,
-      'roon_tracks.track_name': roonTrackName,
+      'tracks.roon_track_name': roonTrackName,
     })
     .select([
-      'roon_tracks.roon_track_id',
       'albums.album_id',
-      'roon_tracks.track_name',
-      'roon_tracks.number',
-      'roon_tracks.position',
       'albums.roon_album_name',
       'albums.roon_album_artist_name',
+      'tracks.track_id',
+      'tracks.roon_track_name',
+      'tracks.roon_number',
+      'tracks.roon_position',
     ]);
 
   return rows.map((row): RoonExtendedTrack => {
