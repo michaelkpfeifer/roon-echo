@@ -360,17 +360,25 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
 
   if (!albumRow) {
     return err({
+      fetchMbAlbum: 'Error: albumNotFound',
+      album_id: albumId,
+    });
+  }
+
+  if (albumRow.mb_album_id === null) {
+    return err({
       fetchMbAlbum: 'Error: mbAlbumNotFound',
       album_id: albumId,
     });
   }
 
+  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow));
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
   return ok(
     camelCaseKeys({
-      mbAlbum: albumRow,
+      mbAlbum,
       mbArtists,
       mbTracks,
     }),
