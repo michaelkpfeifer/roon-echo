@@ -168,13 +168,13 @@ const findRoonTrackByNameAndAlbumName = async (
 
   return rows.map((row): RoonExtendedTrack => {
     return {
-      roonTrackId: row.roon_track_id,
       albumId: row.album_id,
-      trackName: row.track_name,
-      number: row.number,
-      position: row.position,
       roonAlbumName: row.roon_album_name,
       roonAlbumArtistName: row.roon_album_artist_name,
+      trackId: row.track_id,
+      roonTrackName: row.roon_track_name,
+      roonNumber: row.roon_number,
+      roonPosition: row.roon_position,
     };
   });
 };
