@@ -1,9 +1,10 @@
 type MbAlbum = {
+  albumId: string;
   mbAlbumId: string;
-  roonAlbumId: string;
-  score: number;
-  trackCount: number;
-  releaseDate?: string;
+  mbAlbumName: string;
+  mbScore: number;
+  mbTrackCount: number;
+  mbReleaseDate?: string;
 };
 
 export type { MbAlbum };

@@ -48,7 +48,7 @@ describe('buildAlbumAggregateWithRoonAlbum', () => {
     );
 
     expect(result.stage).toBe('withRoonAlbum');
-    expect(result.id).toBe(roonAlbum.roonAlbumId);
+    expect(result.id).toBe(roonAlbum.albumId);
     expect(result.roonAlbum).toBe(roonAlbum);
   });
 });

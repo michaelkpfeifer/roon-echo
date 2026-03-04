@@ -1,9 +1,9 @@
 type Play = {
   id: string;
   roonTrackId: string;
-  roonAlbumId: string;
+  albumId: string;
   roonAlbumName: string;
-  roonArtistName: string;
+  roonAlbumArtistName: string;
   roonTrackName: string;
   number: string;
   position: number;

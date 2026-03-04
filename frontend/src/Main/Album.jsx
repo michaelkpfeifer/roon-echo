@@ -13,7 +13,11 @@ function Album() {
   );
 
   const { roonAlbum } = album;
-  const { albumName, artistName: roonAlbumArtistName, imageKey } = roonAlbum;
+  const {
+    roonAlbumName,
+    roonAlbumArtistName: roonAlbumArtistName,
+    imageKey,
+  } = roonAlbum;
 
   const enqueueTrackNext = (track) => {
     socketRef.current.emit('trackAddNext', {
@@ -50,12 +54,12 @@ function Album() {
       <div className="album-heading">
         <img
           src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
-          alt={albumName}
+          alt={roonAlbumName}
           className="album-heading__image"
         />
         <div>
           <div className="album-heading__artists">{roonAlbumArtistName}</div>
-          <div className="album-heading__name">{albumName}</div>
+          <div className="album-heading__name">{roonAlbumName}</div>
           <div className="album-actions">
             <button
               type="button"
@@ -70,8 +74,8 @@ function Album() {
 
       {album.roonTracks.map((roonTrack, index) => (
         <div key={roonTrack.roonTrackId} className="album-track-row">
-          <div className="album-track-row__number">{roonTrack.number}</div>
-          <div className="album-track-row__name">{roonTrack.trackName}</div>
+          <div className="album-track-row__number">{roonTrack.roonNumber}</div>
+          <div className="album-track-row__name">{roonTrack.roonTrackName}</div>
           <div className="album-track-row__length">
             {formattedTrackLength(roonTrack, index)}
           </div>

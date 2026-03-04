@@ -32,6 +32,7 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
   });
 
   it('should filter out albums with empty titles', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const invalidAlbum = {
       title: '',
       subtitle: 'Some Artist',
@@ -44,9 +45,15 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const result = RawRoonLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('[Validation Failed]'),
+    );
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Path'));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Reason'));
   });
 
   it('should filter out "Unknown Artist" subtitles', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const invalidAlbum = {
       title: 'Greatest Hits',
       subtitle: 'Unknown Artist',
@@ -59,6 +66,11 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const result = RawRoonLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('[Validation Failed]'),
+    );
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Path'));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Reason'));
   });
 
   it('should log a warning when an album is filtered', () => {

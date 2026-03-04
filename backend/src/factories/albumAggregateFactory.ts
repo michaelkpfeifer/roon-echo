@@ -5,6 +5,7 @@ import type { MbCandidate } from '../../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../../shared/internal/mbTrack.js';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum.js';
 import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
+import type { SortCriteria } from '../../../shared/internal/sortCriteria.js';
 
 const buildEmptyAlbumAggregate = (): Extract<
   AlbumAggregate,
@@ -19,8 +20,13 @@ const buildAlbumAggregateWithRoonAlbum = (
 ): Extract<AlbumAggregate, { stage: 'withRoonAlbum' }> => ({
   ...emptyAlbumAggregate,
   stage: 'withRoonAlbum',
-  id: roonAlbum.roonAlbumId,
-  roonAlbum: roonAlbum,
+  id: roonAlbum.albumId,
+  roonAlbum,
+  sortCriteria: {
+    artistNames: roonAlbum.roonAlbumArtistName,
+    mbReleaseDate: null,
+    roonAlbumName: roonAlbum.roonAlbumName,
+  },
 });
 
 const buildAlbumAggregateWithRoonTracks = (
@@ -32,7 +38,7 @@ const buildAlbumAggregateWithRoonTracks = (
 ): Extract<AlbumAggregate, { stage: 'withRoonTracks' }> => ({
   ...albumAggregateWithRoonAlbum,
   stage: 'withRoonTracks',
-  roonTracks: roonTracks,
+  roonTracks,
 });
 
 const buildAlbumAggregateWithMbMatch = (
@@ -49,6 +55,10 @@ const buildAlbumAggregateWithMbMatch = (
   mbAlbum: mbAlbumData.mbAlbum,
   mbArtists: mbAlbumData.mbArtists,
   mbTracks: mbAlbumData.mbTracks,
+  sortCriteria: {
+    ...albumAggregateWithRoonTracks.sortCriteria,
+    mbReleaseDate: mbAlbumData.mbAlbum.mbReleaseDate || null,
+  },
 });
 
 const buildAlbumAggregateWithoutMbMatch = (

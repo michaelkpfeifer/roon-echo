@@ -11,8 +11,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "(find src -name \\*.js -o -name \\*.jsx) | xargs yarn eslint",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test": "rm -rf dist && vitest",
+    "test:coverage": "rm -rf dist && vitest run --coverage"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",

@@ -1,9 +1,11 @@
-type RoonTrack = {
+type PersistedRoonTrack = {
   trackId: string;
   albumId: string;
   roonTrackName: string;
   roonNumber: string;
   roonPosition: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
-export type { RoonTrack };
+export type { PersistedRoonTrack };

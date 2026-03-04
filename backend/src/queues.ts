@@ -16,10 +16,6 @@ const isRawRoonQueueWithChanges = (obj: unknown): obj is { changes: any[] } =>
 const parseQueue = (queue: unknown) => RawRoonQueueSchema.parse(queue);
 
 const extractQueueItems = (queue: unknown): RoonQueue => {
-  /* eslint-disable no-console */
-  console.log('queues.ts: extractQueueItems(): queue:', queue);
-  /* eslint-enable no-console */
-
   const parsed = parseQueue(queue);
 
   if (isRawRoonQueueWithItems(parsed)) {

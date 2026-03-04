@@ -83,14 +83,19 @@ const buildPlay = (
 ): Play => {
   const playedTime = getPlayedTime(playedSegments);
 
-  return fp.omit(['trackName'], {
-    ...roonExtendedTrack,
-    roonTrackName: roonExtendedTrack.trackName,
+  return {
+    roonTrackId: roonExtendedTrack.trackId,
+    roonTrackName: roonExtendedTrack.roonTrackName,
+    albumId: roonExtendedTrack.albumId,
+    number: roonExtendedTrack.roonNumber,
+    position: roonExtendedTrack.roonPosition,
+    roonAlbumName: roonExtendedTrack.roonAlbumName,
+    roonAlbumArtistName: roonExtendedTrack.roonAlbumArtistName,
     id,
     playedAt: toIso8601(new Date()),
     fractionPlayed: playedTime / trackLength,
     isPlayed: 2 * playedTime >= trackLength,
-  });
+  };
 };
 
 const getSeekPosition = (

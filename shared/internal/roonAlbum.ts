@@ -1,11 +1,11 @@
 type RoonAlbum = {
-  roonAlbumId: string;
-  albumName: string;
-  artistName: string;
+  albumId: string;
+  roonAlbumName: string;
+  roonAlbumArtistName: string;
   imageKey: string;
   itemKey: string;
-  candidatesFetchedAt: string | null;
-  candidatesMatchedAt: string | null;
+  mbCandidatesFetchedAt: string | null;
+  mbCandidatesMatchedAt: string | null;
 };
 
 export type { RoonAlbum };

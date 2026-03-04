@@ -1,11 +1,11 @@
 type RoonExtendedTrack = {
-  roonTrackId: string;
-  roonAlbumId: string;
-  trackName: string;
-  number: string;
-  position: number;
+  trackId: string;
+  albumId: string;
+  roonTrackName: string;
+  roonNumber: string;
+  roonPosition: number;
   roonAlbumName: string;
-  roonArtistName: string;
+  roonAlbumArtistName: string;
 };
 
 export type { RoonExtendedTrack };
