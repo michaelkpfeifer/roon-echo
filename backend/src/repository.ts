@@ -136,6 +136,7 @@ const fetchRoonTracks = async (
       'roon_track_name',
       'roon_number',
       'roon_position',
+      'roon_length',
     )
     .where({
       album_id: albumId,

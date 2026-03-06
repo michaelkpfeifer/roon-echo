@@ -1,4 +1,5 @@
 import type { Knex } from 'knex';
+import fp from 'lodash/fp.js';
 
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
@@ -44,7 +45,7 @@ const createRoonTrack = async (
   };
 
   await db('tracks').insert(snakeCaseKeys(roonTrack));
-  return roonTrack;
+  return fp.omit(['createdAt', 'updatedAt'], roonTrack);
 };
 
 export { buildRoonTrack, buildRoonTracks, createRoonTrack };

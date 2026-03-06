@@ -317,28 +317,27 @@ describe('fetchRoonTracks', () => {
     const trackId1 = '019c84e0-57ce-7b4a-95ed-9662da873f9c';
     const trackId2 = '019c84e1-0e42-7d64-9a9e-61752d8c200f';
 
-    await createPersistedRoonTrack(testDb, {
+    const track1 = await createRoonTrack(testDb, {
       albumId: roonAlbum.albumId,
       trackId: trackId1,
       roonTrackName: 'Track 1',
       roonNumber: '1',
       roonPosition: 1,
+      roonLength: 1234,
     });
 
-    await createPersistedRoonTrack(testDb, {
+    const track2 = await createRoonTrack(testDb, {
       albumId: roonAlbum.albumId,
       trackId: trackId2,
       roonTrackName: 'Track 2',
       roonNumber: '2',
       roonPosition: 2,
+      roonLength: 2345,
     });
 
     const roonTracks = await fetchRoonTracks(testDb, roonAlbum);
 
-    expect(roonTracks).toHaveLength(2);
-    expect(new Set(roonTracks.map((t) => t.trackId))).toStrictEqual(
-      new Set([trackId1, trackId2]),
-    );
+    expect(new Set([track1, track2])).toStrictEqual(new Set([...roonTracks]));
   });
 });
 
