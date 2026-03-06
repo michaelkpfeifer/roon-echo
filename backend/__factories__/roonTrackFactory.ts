@@ -10,6 +10,7 @@ const buildRoonTrack = (overrides?: Partial<RoonTrack>): RoonTrack => ({
   roonTrackName: 'Default Track 1',
   roonNumber: '1',
   roonPosition: 1,
+  roonLength: 12345,
   ...overrides,
 });
 
@@ -36,6 +37,7 @@ const createRoonTrack = async (
     roonTrackName: 'Default Track 1',
     roonNumber: '1',
     roonPosition: 1,
+    roonLength: 12345,
     createdAt: '2026-01-21 15:00',
     updatedAt: '2026-01-21 15:00',
     ...overrides,

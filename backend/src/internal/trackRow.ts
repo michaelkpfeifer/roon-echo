@@ -6,6 +6,7 @@ type TrackRow = {
   roonTrackName: string;
   roonNumber: string;
   roonPosition: number;
+  roonLength: number | null;
   mbTrackId: string | null;
   mbTrackName: string | null;
   mbNumber: string | null;

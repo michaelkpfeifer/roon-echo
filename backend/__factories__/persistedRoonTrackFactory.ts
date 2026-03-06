@@ -14,6 +14,7 @@ const createPersistedRoonTrack = async (
     roonTrackName: 'Default Track',
     roonNumber: '1',
     roonPosition: 1,
+    roonLength: 12345,
     createdAt: '2026-01-21 16:00',
     updatedAt: '2026-01-21 16:30',
     ...overrides,

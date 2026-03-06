@@ -32,6 +32,7 @@ type DatabaseSchema = {
     roon_track_name: string;
     roon_number: string;
     roon_position: number;
+    roon_length: number | null;
     mb_track_id: string | null;
     mb_track_name: string | null;
     mb_number: string | null;

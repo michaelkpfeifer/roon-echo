@@ -15,6 +15,7 @@ const transformToRoonTrack = (
     roonTrackName,
     roonNumber,
     roonPosition: index + 1,
+    roonLength: 12345,
   };
 };
 

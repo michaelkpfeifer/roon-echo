@@ -12,6 +12,7 @@ export function up(knex) {
       roon_track_name TEXT NOT NULL,
       roon_number TEXT NOT NULL,
       roon_position INTEGER NOT NULL,
+      roon_length INTEGER,
       mb_track_id TEXT
         CHECK (length(track_id) = 36),
       mb_track_name TEXT,
