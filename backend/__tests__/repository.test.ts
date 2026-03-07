@@ -10,13 +10,13 @@ import type { MbCandidateArtist } from '../../shared/internal/mbCandidateArtist.
 import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import { createAlbumRow } from '../__factories__/albumRowFactory.js';
 import { linkAlbumAndMbArtist } from '../__factories__/albumsMbArtistsFactory.js';
 import { createMbArtist } from '../__factories__/mbArtistFactory.js';
 import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
 import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
 import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.js';
-import { createPersistedRoonTrack } from '../__factories__/persistedRoonTrackFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import {
@@ -32,6 +32,7 @@ import {
   fetchMbTracksByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
+  findRoonTrackByNameAndAlbumName,
   insertRoonTracks,
   normalizeCandidate,
 } from '../src/repository.js';
@@ -338,6 +339,61 @@ describe('fetchRoonTracks', () => {
     const roonTracks = await fetchRoonTracks(testDb, roonAlbum);
 
     expect(new Set([track1, track2])).toStrictEqual(new Set([...roonTracks]));
+  });
+});
+
+describe('findRoonTrackByNameAndAlbumName', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('should return an empty list if there is not track with the given name in the given album', async () => {
+    const tracks: RoonExtendedTrack[] = await findRoonTrackByNameAndAlbumName(
+      testDb,
+      'Some Track Name',
+      'Some Album Name',
+    );
+
+    expect(tracks).toEqual([]);
+  });
+
+  it('should return all tracks matching the track name and album name specification', async () => {
+    const roonAlbum = await createRoonAlbum(testDb, {
+      roonAlbumName: 'Test Album',
+    });
+
+    const trackId1 = '019cc8ec-0d1a-7e0f-9fea-2d905e33148f';
+    const trackId2 = '019cc8ec-48e3-7993-a63a-860afaae956c';
+
+    createRoonTrack(testDb, {
+      trackId: trackId1,
+      albumId: roonAlbum.albumId,
+      roonTrackName: 'Test Track 1',
+    });
+    createRoonTrack(testDb, {
+      trackId: trackId2,
+      albumId: roonAlbum.albumId,
+      roonTrackName: 'Test Track 2',
+    });
+
+    const tracks: RoonExtendedTrack[] = await findRoonTrackByNameAndAlbumName(
+      testDb,
+      'Test Album',
+      'Test Track 1',
+    );
+
+    expect(tracks[0].trackId).toBe(trackId1);
   });
 });
 
