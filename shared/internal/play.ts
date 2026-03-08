@@ -1,12 +1,13 @@
 type Play = {
   id: string;
-  roonTrackId: string;
+  trackId: string;
   albumId: string;
   roonAlbumName: string;
   roonAlbumArtistName: string;
   roonTrackName: string;
-  number: string;
-  position: number;
+  roonNumber: string;
+  roonPosition: number;
+  roonLength: number;
   playedAt: string;
   fractionPlayed: number;
   isPlayed: boolean;

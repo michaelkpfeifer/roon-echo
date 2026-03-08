@@ -1,4 +1,5 @@
 import type { Knex } from 'knex';
+import fp from 'lodash/fp.js';
 
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
@@ -10,6 +11,7 @@ const buildRoonTrack = (overrides?: Partial<RoonTrack>): RoonTrack => ({
   roonTrackName: 'Default Track 1',
   roonNumber: '1',
   roonPosition: 1,
+  roonLength: 12345,
   ...overrides,
 });
 
@@ -36,13 +38,14 @@ const createRoonTrack = async (
     roonTrackName: 'Default Track 1',
     roonNumber: '1',
     roonPosition: 1,
+    roonLength: 12345,
     createdAt: '2026-01-21 15:00',
     updatedAt: '2026-01-21 15:00',
     ...overrides,
   };
 
   await db('tracks').insert(snakeCaseKeys(roonTrack));
-  return roonTrack;
+  return fp.omit(['createdAt', 'updatedAt'], roonTrack);
 };
 
 export { buildRoonTrack, buildRoonTracks, createRoonTrack };

@@ -32,6 +32,7 @@ type DatabaseSchema = {
     roon_track_name: string;
     roon_number: string;
     roon_position: number;
+    roon_length: number | null;
     mb_track_id: string | null;
     mb_track_name: string | null;
     mb_number: string | null;
@@ -87,8 +88,9 @@ type DatabaseSchema = {
     roon_album_name: string;
     roon_album_artist_name: string;
     roon_track_name: string;
-    number: string;
-    position: number;
+    roon_number: string;
+    roon_position: number;
+    roon_length: number;
     played_at: string;
     fraction_played: number;
     is_played: boolean;

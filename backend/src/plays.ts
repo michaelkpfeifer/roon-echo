@@ -84,14 +84,15 @@ const buildPlay = (
   const playedTime = getPlayedTime(playedSegments);
 
   return {
-    roonTrackId: roonExtendedTrack.trackId,
-    roonTrackName: roonExtendedTrack.roonTrackName,
+    id,
+    trackId: roonExtendedTrack.trackId,
     albumId: roonExtendedTrack.albumId,
-    number: roonExtendedTrack.roonNumber,
-    position: roonExtendedTrack.roonPosition,
     roonAlbumName: roonExtendedTrack.roonAlbumName,
     roonAlbumArtistName: roonExtendedTrack.roonAlbumArtistName,
-    id,
+    roonTrackName: roonExtendedTrack.roonTrackName,
+    roonNumber: roonExtendedTrack.roonNumber,
+    roonPosition: roonExtendedTrack.roonPosition,
+    roonLength: trackLength,
     playedAt: toIso8601(new Date()),
     fractionPlayed: playedTime / trackLength,
     isPlayed: 2 * playedTime >= trackLength,
@@ -169,10 +170,9 @@ const getRoonExtendedTrack = async (
   );
 
   if (persistedTrackswithAlbums.length > 1) {
-    process.stderr.write(
-      `Error: Could not uniquely identify persisted playing track: ${roonTrackName}.\n`,
+    throw new Error(
+      `Error: Could not uniquely identify track ${roonTrackName} on ${roonAlbumName}.`,
     );
-    exit(2);
   }
 
   if (persistedTrackswithAlbums.length === 0) {

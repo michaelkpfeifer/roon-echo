@@ -14,6 +14,7 @@ const createTrackRow = async (
     roonTrackName: 'Track 1',
     roonNumber: '1',
     roonPosition: 1,
+    roonLength: 12345,
     mbTrackId: '019c9c29-4974-7664-a6f8-8aac0c68ae63',
     mbTrackName: 'Track 1',
     mbNumber: '1',

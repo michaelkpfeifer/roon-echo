@@ -32,12 +32,18 @@ import {
 } from './messages.js';
 import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
-import { dbInit } from './repository.js';
+import {
+  dbInit,
+  findRoonTrackByNameAndAlbumName,
+  updateRoonLengthInTrack,
+} from './repository.js';
 import { initializeRoonData } from './roonData.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
+import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
+import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
 import { db } from '../db.js';
@@ -67,11 +73,31 @@ let staticZoneData = {};
 let zonePlayingStates: ZonePlayingState[] = [];
 const playingQueueItems: PlayingQueueItems = {};
 
-const subscribeToQueueChanges = (zoneIds: string[]) => {
-  /* eslint-disable no-console */
-  console.log('server.js: subscribeToQueueChanges(): zoneIds:', zoneIds);
-  /* eslint-enable no-console */
+const updateRoonTrackLengths = async (queueItems: RoonQueueItem[]) => {
+  for (const queueItem of queueItems) {
+    const roonAlbumName = queueItem.threeLine.line3;
+    const roonTrackName = queueItem.threeLine.line1;
 
+    const tracks = await findRoonTrackByNameAndAlbumName(
+      db,
+      roonAlbumName,
+      roonTrackName,
+    );
+
+    if (tracks.length > 1) {
+      throw new Error(
+        `Error: Could not uniquely identify track ${roonTrackName} on ${roonAlbumName}.`,
+      );
+    }
+
+    if (tracks.length === 1) {
+      const track: RoonExtendedTrack = tracks[0];
+      updateRoonLengthInTrack(db, track.trackId, queueItem.length);
+    }
+  }
+};
+
+const subscribeToQueueChanges = (zoneIds: string[]) => {
   zoneIds.forEach((zoneId: string) => {
     transport.subscribe_queue(
       zoneId,
@@ -79,6 +105,7 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
       (response: any, snakeCaseQueue: any) => {
         const queue = camelCaseKeys(snakeCaseQueue);
         const queueItems = extractQueueItems(queue);
+        updateRoonTrackLengths(queueItems);
 
         /* eslint-disable no-console */
         console.log('server.js: subscribeToQueueChanges: response:', response);

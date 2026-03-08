@@ -12,10 +12,11 @@ export async function up(knex) {
       album_id TEXT NOT NULL
         CHECK (length(album_id) = 36),
       roon_album_name TEXT NOT NULL,
-      roon_artist_name TEXT NOT NULL,
+      roon_album_artist_name TEXT NOT NULL,
       roon_track_name TEXT NOT NULL,
-      number TEXT NOT NULL,
-      position INTEGER NOT NULL,
+      roon_number TEXT NOT NULL,
+      roon_position INTEGER NOT NULL,
+      roon_length INTEGER NOT NULL,
       played_at TEXT NOT NULL,
       fraction_played FLOAT NOT NULL,
       is_played BOOLEAN NOT NULL,
@@ -32,8 +33,8 @@ export async function up(knex) {
   `);
 
   await knex.raw(`
-    CREATE INDEX plays_roon_album_artist_track_name
-      ON plays (roon_album_name, roon_artist_name, roon_track_name);
+    CREATE INDEX plays_roon_album_name_roon_album_artist_name_roon_track_name
+      ON plays (roon_album_name, roon_album_artist_name, roon_track_name);
   `);
 }
 

@@ -136,6 +136,7 @@ const fetchRoonTracks = async (
       'roon_track_name',
       'roon_number',
       'roon_position',
+      'roon_length',
     )
     .where({
       album_id: albumId,
@@ -164,6 +165,7 @@ const findRoonTrackByNameAndAlbumName = async (
       'tracks.roon_track_name',
       'tracks.roon_number',
       'tracks.roon_position',
+      'tracks.roon_length',
     ]);
 
   return rows.map((row): RoonExtendedTrack => {
@@ -175,6 +177,7 @@ const findRoonTrackByNameAndAlbumName = async (
       roonTrackName: row.roon_track_name,
       roonNumber: row.roon_number,
       roonPosition: row.roon_position,
+      roonLength: row.roonLength,
     };
   });
 };
@@ -392,6 +395,16 @@ const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
     .merge();
 };
 
+const updateRoonLengthInTrack = async (
+  db: Knex<DatabaseSchema>,
+  trackId: string,
+  roonLength: number,
+): Promise<void> => {
+  await db<DatabaseSchema['tracks']>('tracks')
+    .where({ track_id: trackId })
+    .update({ roon_length: roonLength });
+};
+
 export {
   dbInit,
   fetchMbAlbum,
@@ -407,6 +420,7 @@ export {
   normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
+  updateRoonLengthInTrack,
   upsertMbCandidate,
   upsertPlay,
 };

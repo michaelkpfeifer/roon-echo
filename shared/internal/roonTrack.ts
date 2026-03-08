@@ -4,6 +4,7 @@ type RoonTrack = {
   roonTrackName: string;
   roonNumber: string;
   roonPosition: number;
+  roonLength: number | null;
 };
 
 export type { RoonTrack };
