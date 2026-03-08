@@ -170,10 +170,9 @@ const getRoonExtendedTrack = async (
   );
 
   if (persistedTrackswithAlbums.length > 1) {
-    process.stderr.write(
-      `Error: Could not uniquely identify persisted playing track: ${roonTrackName}.\n`,
+    throw new Error(
+      `Error: Could not uniquely identify track ${roonTrackName} on ${roonAlbumName}.`,
     );
-    exit(2);
   }
 
   if (persistedTrackswithAlbums.length === 0) {

@@ -35,6 +35,7 @@ import {
   findRoonTrackByNameAndAlbumName,
   insertRoonTracks,
   normalizeCandidate,
+  updateRoonLengthInTrack,
 } from '../src/repository.js';
 
 describe('fetchRoonAlbum', () => {
@@ -619,5 +620,44 @@ describe('normalizeCandidate', () => {
     if (mbAlbumResult.isErr()) {
       expect(mbAlbumResult.error.error).toMatch(/trackCountsNotEqual/);
     }
+  });
+});
+
+describe('updateRoonLengthInTrack', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('updates the Roon track length of the specified track', async () => {
+    const trackId = '019cccfe-f145-73a4-932a-3d64c8a72cf7';
+    const roonLength = 123;
+
+    const albumRow = await createAlbumRow(testDb);
+    await createTrackRow(testDb, {
+      trackId,
+      albumId: albumRow.albumId,
+      roonLength: null,
+    });
+
+    await updateRoonLengthInTrack(testDb, trackId, roonLength);
+
+    const length = (
+      await testDb<DatabaseSchema['tracks']>('tracks').where({
+        track_id: trackId,
+      })
+    )[0].roon_length;
+
+    expect(length).toBe(123);
   });
 });

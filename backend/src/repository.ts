@@ -395,6 +395,16 @@ const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
     .merge();
 };
 
+const updateRoonLengthInTrack = async (
+  db: Knex<DatabaseSchema>,
+  trackId: string,
+  roonLength: number,
+): Promise<void> => {
+  await db<DatabaseSchema['tracks']>('tracks')
+    .where({ track_id: trackId })
+    .update({ roon_length: roonLength });
+};
+
 export {
   dbInit,
   fetchMbAlbum,
@@ -410,6 +420,7 @@ export {
   normalizeCandidate,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
+  updateRoonLengthInTrack,
   upsertMbCandidate,
   upsertPlay,
 };
