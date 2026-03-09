@@ -8,17 +8,11 @@ const normalizeTrackTitle = (title: string) =>
     .toLowerCase()
     .trim();
 
-const compareMbAndRoonTracks = (mbTracks: string[], roonTracks: string[]) =>
-  fp.isEqualWith(
-    (a, b) => {
-      if (Array.isArray(a) && Array.isArray(b)) {
-        return undefined;
-      }
-
-      return normalizeTrackTitle(a) === normalizeTrackTitle(b);
-    },
-    mbTracks,
-    roonTracks,
+const compareMbAndRoonTracks = (mbTracks: string[], roonTracks: string[]) => {
+  return fp.isEqual(
+    mbTracks.map((track) => normalizeTrackTitle(track)),
+    roonTracks.map((track) => normalizeTrackTitle(track)),
   );
+};
 
 export { compareMbAndRoonTracks };
