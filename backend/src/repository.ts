@@ -247,6 +247,7 @@ const upsertMbCandidate = async (
 ) => {
   await db<DatabaseSchema['mb_candidates']>('mb_candidates')
     .insert({
+      mb_album_id: mbCandidate.mbAlbumId,
       album_id: mbCandidate.albumId,
       score: mbCandidate.score,
       track_count: mbCandidate.trackCount,
@@ -255,7 +256,7 @@ const upsertMbCandidate = async (
       mb_candidate_artists: JSON.stringify(mbCandidate.mbCandidateArtists),
       mb_candidate_tracks: JSON.stringify(mbCandidate.mbCandidateTracks),
     })
-    .onConflict(['album_id'])
+    .onConflict(['mb_album_id'])
     .merge();
 };
 

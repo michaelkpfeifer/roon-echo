@@ -167,9 +167,9 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       albumAggregateWithPersistedData.roonAlbum.albumId,
     );
 
-    const roonTrackTitles = albumAggregateWithPersistedData.roonTracks.map(
-      (track) => track.roonTrackName,
-    );
+    const roonTrackTitles = albumAggregateWithPersistedData.roonTracks
+      .sort((a, b) => a.roonPosition - b.roonPosition)
+      .map((track) => track.roonTrackName);
 
     for (const candidate of candidates) {
       const mbTrackTitles = candidate.mbCandidateTracks.map(
@@ -177,7 +177,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       );
 
       if (compareMbAndRoonTracks(mbTrackTitles, roonTrackTitles)) {
-        normalizeCandidate(db, candidate);
+        await normalizeCandidate(db, candidate);
 
         break;
       }
