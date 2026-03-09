@@ -16,6 +16,7 @@ export function up(knex) {
       mb_track_id TEXT
         CHECK (length(track_id) = 36),
       mb_track_name TEXT,
+      mb_medium_position INTEGER,
       mb_number TEXT ,
       mb_position INTEGER,
       mb_length INTEGER,

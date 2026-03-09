@@ -499,13 +499,16 @@ describe('normalizeCandidate', () => {
     mbCandidateTrack1 = buildMbCandidateTrack({
       mbTrackId: mbTrackId1,
       name: 'Track 1',
+      number: '1',
       position: 1,
     });
     mbCandidateTrack2 = buildMbCandidateTrack({
       mbTrackId: mbTrackId2,
       name: 'Track 2',
+      number: '2',
       position: 2,
     });
+
     mbCandidate = buildMbCandidate({
       mbAlbumId,
       albumId,
