@@ -5,6 +5,7 @@ const buildMbCandidateTrack = (
 ): MbCandidateTrack => ({
   mbTrackId: '019b89e2-177c-7094-944c-d3b14fc0b16e',
   name: 'Default Track 1',
+  mediumPosition: 1,
   number: '1',
   position: 1,
   length: 12300,

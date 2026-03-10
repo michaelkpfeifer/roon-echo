@@ -304,15 +304,19 @@ const normalizeCandidate = async (
       });
     }
 
-    for (const mbCandidateTrack of mbCandidate.mbCandidateTracks) {
+    for (const [
+      positionMinus1,
+      mbCandidateTrack,
+    ] of mbCandidate.mbCandidateTracks.entries()) {
       await trx<DatabaseSchema['tracks']>('tracks')
         .where({
           album_id: mbCandidate.albumId,
-          roon_position: mbCandidateTrack.position,
+          roon_position: positionMinus1 + 1,
         })
         .update({
           mb_track_id: mbCandidateTrack.mbTrackId,
           mb_track_name: mbCandidateTrack.name,
+          mb_medium_position: mbCandidateTrack.mediumPosition,
           mb_number: mbCandidateTrack.number,
           mb_position: mbCandidateTrack.position,
           mb_length: mbCandidateTrack.length,

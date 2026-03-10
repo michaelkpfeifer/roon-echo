@@ -9,6 +9,7 @@ type TrackRow = {
   roonLength: number | null;
   mbTrackId: string | null;
   mbTrackName: string | null;
+  mbMediumPosition: number | null;
   mbNumber: string | null;
   mbPosition: number | null;
   mbLength: number | undefined;
@@ -20,6 +21,7 @@ const toMbTrack = (row: TrackRow): MbTrack => {
   if (
     row.mbTrackId === null ||
     row.mbTrackName === null ||
+    row.mbMediumPosition == null ||
     row.mbNumber === null ||
     row.mbPosition === null
   ) {
@@ -31,6 +33,7 @@ const toMbTrack = (row: TrackRow): MbTrack => {
     albumId: row.albumId,
     mbTrackId: row.mbTrackId,
     mbTrackName: row.mbTrackName,
+    mbMediumPosition: row.mbMediumPosition,
     mbNumber: row.mbNumber,
     mbPosition: row.mbPosition,
     mbLength: row.mbLength,

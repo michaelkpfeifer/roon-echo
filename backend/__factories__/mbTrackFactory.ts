@@ -5,6 +5,7 @@ const buildMbTrack = (overrides?: Partial<MbTrack>): MbTrack => ({
   albumId: '019b8aef-b559-79a3-81ec-80f126b85554',
   mbTrackId: '019b8aef-7b2a-7e4f-aca9-6cf9c98c6729',
   mbTrackName: 'Default Track 1',
+  mbMediumPosition: 1,
   mbNumber: '1',
   mbPosition: 1,
   mbLength: 25500,
