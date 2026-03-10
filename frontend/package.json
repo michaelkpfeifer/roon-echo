@@ -11,6 +11,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "(find src -name \\*.js -o -name \\*.jsx) | xargs yarn eslint",
+    "type-check": "tsc --noEmit",
     "test": "rm -rf dist && vitest",
     "test:coverage": "rm -rf dist && vitest run --coverage"
   },
