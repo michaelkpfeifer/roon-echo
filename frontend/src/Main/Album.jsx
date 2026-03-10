@@ -73,7 +73,7 @@ function Album() {
       </div>
 
       {album.roonTracks.map((roonTrack, index) => (
-        <div key={roonTrack.roonTrackId} className="album-track-row">
+        <div key={roonTrack.trackId} className="album-track-row">
           <div className="album-track-row__number">{roonTrack.roonNumber}</div>
           <div className="album-track-row__name">{roonTrack.roonTrackName}</div>
           <div className="album-track-row__length">
