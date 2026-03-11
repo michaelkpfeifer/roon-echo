@@ -14,7 +14,7 @@ import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { mergeAlbum, mergeQueues, setAlbums } from './utils';
-
+import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage';
 import type { ServerToClientEvents, ClientToServerEvents } from "../../shared/internal/socket";
 
 function App() {
@@ -67,14 +67,9 @@ function App() {
       setCoreUrl(roonCoreUrl);
     });
 
-    socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
-      // console.log(
-      //   'App.jsx: processing zonesSeekChanged message: zonesSeekChangedMessage:',
-      //   zonesSeekChangedMessage,
-      // );
-
+    socket.on('zonesSeekChanged', (zonesSeekChangedMessage: ZonesSeekChangedMessage) => {
       setRoonState((currentState) =>
-        Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
+        Object.values(zonesSeekChangedMessage).reduce<{ zones: {} }>((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
           if (seekPosition) {
             return fp.merge(acc, {

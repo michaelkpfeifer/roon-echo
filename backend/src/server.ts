@@ -46,6 +46,7 @@ import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
+import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
@@ -170,7 +171,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
                 RawZonesSeekChangedMessageSchema.parse(message[subType]),
               );
 
-            const frontendMessage =
+            const frontendMessage: ZonesSeekChangedMessage =
               frontendZonesSeekChangedMessage(zoneSeekPositions);
 
             /* eslint-disable no-console */

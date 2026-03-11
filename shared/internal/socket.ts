@@ -1,5 +1,7 @@
-type ServerToClientEvents = {};
+import type { ZonesSeekChangedMessage } from './zonesSeekChangedMessage.js';
 
-type ClientToServerEvents = {};
+type ServerToClientEvents = {
+  zonesSeekChanged: (message: ZonesSeekChangedMessage) => void;
+type ClientToServerEvents = {
 
 export type { ClientToServerEvents, ServerToClientEvents };
