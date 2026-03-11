@@ -37,11 +37,11 @@ function App() {
 
   useEffect(() => saveConfig(config), [config]);
 
-  const socketRef = useRef(null);
+  const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
 
   useEffect(() => {
     socketRef.current = io('http://192.168.2.102:4000');
-    const socket = socketRef.current;
+    const socket: Socket<ServerToClientEvents, ClientToServerEvents> = socketRef.current;
 
     socket.on('initialState', (initialState) => {
       /* eslint-disable no-console */
