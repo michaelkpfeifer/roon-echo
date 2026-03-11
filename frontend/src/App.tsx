@@ -1,7 +1,7 @@
 import fp from 'lodash/fp';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
@@ -14,6 +14,8 @@ import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { mergeAlbum, mergeQueues, setAlbums } from './utils';
+
+import type { ServerToClientEvents, ClientToServerEvents } from "../../shared/internal/socket";
 
 function App() {
   const [roonState, setRoonState] = useState({

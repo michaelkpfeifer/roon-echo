@@ -46,13 +46,17 @@ import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from '../../shared/internal/socket.js';
 import { db } from '../db.js';
 
 dbInit(db);
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin: true,
     methods: ['GET', 'POST'],
