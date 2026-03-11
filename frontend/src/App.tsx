@@ -33,7 +33,7 @@ function App() {
     () => loadConfig() || { selectedZoneId: null },
   );
 
-  const [coreUrl, setCoreUrl] = useState(null);
+  const [coreUrl, setCoreUrl] = useState<string | null>(null);
 
   useEffect(() => saveConfig(config), [config]);
 
