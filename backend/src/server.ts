@@ -42,15 +42,15 @@ import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedM
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
-import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
-import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
-import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
-import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
+import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from '../../shared/internal/socket.js';
+import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
+import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
 import { db } from '../db.js';
 
 dbInit(db);
@@ -508,18 +508,10 @@ io.on('connection', async (socket) => {
   );
 
   socket.on('pause', ({ zoneId }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing pause message: message:', zoneId);
-    /* eslint-enable no-console */
-
     transport.control(zoneId, 'pause');
   });
 
   socket.on('play', ({ zoneId }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing play message: message:', zoneId);
-    /* eslint-enable no-console */
-
     transport.control(zoneId, 'play');
   });
 
