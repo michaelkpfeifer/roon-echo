@@ -455,14 +455,10 @@ io.on('connection', async (socket) => {
     subscribeToQueueChanges(zones.map((zone: any) => zone.zoneId));
   });
 
-  socket.on('trackAddNext', ({ albumKey, position, zoneId }) => {
+  socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
     roonApiRateLimiter.schedule(async () => {
-      /* eslint-disable no-console */
-      console.log('server.js: processing trackAddNext message');
-      /* eslint-enable no-console */
-
       await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-        const trackKey = albumItems.items[position].item_key;
+        const trackKey = albumItems.items[roonPosition].item_key;
         browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
           const trackAddNextItem = trackActions.items.find(
             (item: any) => item.title === 'Add Next',
@@ -480,11 +476,6 @@ io.on('connection', async (socket) => {
 
   socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
     roonApiRateLimiter.schedule(async () => {
-      /* eslint-disable no-console */
-      console.log('server.js: processing albumAddNext message');
-      console.log('server.js: io.on(): roonAlbum:', roonAlbum);
-      /* eslint-enable no-console */
-
       browser
         .loadAlbum(browseInstance, roonAlbum.itemKey)
         .then((albumItems) => {
