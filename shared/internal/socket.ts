@@ -1,9 +1,12 @@
 import type { ZonesSeekChangedMessage } from './zonesSeekChangedMessage.js';
 import type { RoonAlbum } from './roonAlbum.js';
 import type { ZoneMap } from './zoneMap.js';
-import type { RoonQueueItem } from './roonQueueItem';
+import type { RoonQueueItem } from './roonQueueItem.js';
+import type { AlbumAggregate } from './albumAggregate.js';
 
 type ServerToClientEvents = {
+  albumUpdate: (album: AlbumAggregate) => void;
+  albums: (albums: AlbumAggregate[]) => void;
   coreUrl: (coreUrl: string) => void;
   initialState: (initialState: ZoneMap) => void;
   queueChanged: (queueChanged: {
