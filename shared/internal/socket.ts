@@ -1,9 +1,15 @@
 import type { ZonesSeekChangedMessage } from './zonesSeekChangedMessage.js';
 import type { RoonAlbum } from './roonAlbum.js';
 import type { ZoneMap } from './zoneMap.js';
+import type { RoonQueueItem } from './roonQueueItem';
 
 type ServerToClientEvents = {
+  coreUrl: (coreUrl: string) => void;
   initialState: (initialState: ZoneMap) => void;
+  queueChanged: (queueChanged: {
+    zoneId: string;
+    queueItems: RoonQueueItem[];
+  }) => void;
   zonesSeekChanged: (message: ZonesSeekChangedMessage) => void;
 };
 type ClientToServerEvents = {

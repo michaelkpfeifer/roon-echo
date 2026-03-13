@@ -1,5 +1,5 @@
 import type { ZoneMap } from '../../../shared/internal/zoneMap';
 
-type roonState = ZoneMap | null;
+type RoonState = ZoneMap | null;
 
-export type { roonState };
+export type { RoonState };
