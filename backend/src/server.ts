@@ -38,6 +38,7 @@ import {
   updateRoonLengthInTrack,
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
+import { db } from '../db.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
@@ -48,10 +49,10 @@ import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from '../../shared/internal/socket.js';
+import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
 import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
-import { db } from '../db.js';
 
 dbInit(db);
 
@@ -441,7 +442,7 @@ io.on('connection', async (socket) => {
     console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
     /* eslint-enable no-console */
 
-    const frontendRoonState = frontendZonesChangedMessage(zones);
+    const frontendRoonState: ZoneMap = frontendZonesChangedMessage(zones);
 
     /* eslint-disable no-console */
     console.log(

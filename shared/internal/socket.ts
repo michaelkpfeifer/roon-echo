@@ -1,7 +1,11 @@
 import type { ZonesSeekChangedMessage } from './zonesSeekChangedMessage.js';
+import type { RoonAlbum } from './roonAlbum.js';
+import type { ZoneMap } from './zoneMap.js';
 
 type ServerToClientEvents = {
+  initialState: (initialState: ZoneMap) => void;
   zonesSeekChanged: (message: ZonesSeekChangedMessage) => void;
+};
 type ClientToServerEvents = {
   albumAddNext: (roonAlbumAndZone: {
     roonAlbum: RoonAlbum;
