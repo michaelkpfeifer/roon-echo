@@ -54,10 +54,6 @@ function App() {
       socketRef.current;
 
     socket.on('initialState', (initialState) => {
-      /* eslint-disable no-console */
-      console.log('App.jsx: App(): initialState:', initialState);
-      /* eslint-enable no-console */
-
       setRoonState(initialState);
 
       setAppState((currentAppState) => ({
@@ -67,13 +63,6 @@ function App() {
     });
 
     socket.on('coreUrl', (roonCoreUrl) => {
-      /* eslint-disable no-console */
-      // console.log(
-      //   'App.jsx, processing coreUrl message: roonCoreUrl:',
-      //   roonCoreUrl,
-      // );
-      /* eslint-enable no-console */
-
       setCoreUrl(roonCoreUrl);
     });
 
@@ -109,52 +98,22 @@ function App() {
     );
 
     socket.on('zonesChanged', (zonesChangedMessage) => {
-      // console.log(
-      //   'App.jsx: processing zonesChanged message: zonesChangedMessage =',
-      //   zonesChangedMessage,
-      // );
-
       setRoonState((currentState) =>
         fp.merge(currentState, zonesChangedMessage),
       );
     });
 
     socket.on('albums', (albums) => {
-      /* eslint-disable no-console */
-      console.log('App.jsx: processing albums message: albums:', albums);
-      /* eslint-enable no-console */
-
       setAppState((currentAppState) => setAlbums(currentAppState, albums));
     });
 
     socket.on('albumUpdate', (album) => {
-      /* eslint-disable no-console */
-      console.log('App.jsx: processing albumUpdate message: album:', album);
-      /* eslint-enable no-console */
-
       setAppState((currentAppState) => mergeAlbum(currentAppState, album));
     });
 
     socket.on('queueChanged', ({ zoneId, queueItems }) => {
-      /* eslint-disable no-console */
-      console.log('App.jsx: processing queueChanged message: zoneid:', zoneId);
-      /* eslint-enable no-console */
-      /* eslint-disable no-console */
-      console.log(
-        'App.jsx: processing queueChanged message: queueItems:',
-        queueItems,
-      );
-      /* eslint-enable no-console */
-
       setAppState((currentAppState) => {
         const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
-
-        /* eslint-disable no-console */
-        console.log(
-          'App.jsx: processing queueChanged message: mergedQueues:',
-          mergedQueues,
-        );
-        /* eslint-enable no-console */
 
         return mergedQueues;
       });

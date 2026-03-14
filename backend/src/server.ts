@@ -160,13 +160,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
       Object.keys(message).forEach(async (subType) => {
         switch (subType) {
           case 'zonesSeekChanged': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesSeekChanged" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             const zoneSeekPositions: ZoneSeekPosition[] =
               transformToZoneSeekPositions(
                 RawZonesSeekChangedMessageSchema.parse(message[subType]),
@@ -174,13 +167,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
 
             const frontendMessage: ZonesSeekChangedMessage =
               frontendZonesSeekChangedMessage(zoneSeekPositions);
-
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: emitting zonesSeekChanged message: frontendMessage:',
-            //   JSON.stringify(frontendMessage, null, 4),
-            // );
-            /* eslint-enable no-console */
 
             io.emit('zonesSeekChanged', frontendMessage);
 
@@ -197,23 +183,9 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesChanged': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesChanged" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             const frontendMessage = frontendZonesChangedMessage(
               message[subType],
             );
-
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: emitting zonesChanged message: frontendMessage):',
-            //   JSON.stringify(frontendMessage, null, 4),
-            // );
-            /* eslint-enable no-console */
 
             io.emit('zonesChanged', frontendMessage);
 
@@ -223,13 +195,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesAdded': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesAdded" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             subscribeToQueueChanges(
               message[subType].map((zone: any) => zone.zoneId),
             );
@@ -240,26 +205,12 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesRemoved': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesRemoved" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             logChangedZonesRemoved(JSON.stringify(message[subType]));
 
             break;
           }
 
           default: {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received unknown "Changed" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             logChangedUnknown(subType, JSON.stringify(message[subType]));
 
             break;
@@ -269,13 +220,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
       break;
 
     default: {
-      /* eslint-disable no-console */
-      // console.log(
-      //   'server.js: coreMessageHandler(): Received unknown message: message:',
-      //   JSON.stringify(message, null, 4),
-      // );
-      /* eslint-enable no-console */
-
       logUnknown(message);
     }
   }
