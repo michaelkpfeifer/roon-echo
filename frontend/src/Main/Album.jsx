@@ -22,7 +22,7 @@ function Album() {
   const enqueueTrackNext = (track) => {
     socketRef.current.emit('trackAddNext', {
       albumKey: album.roonAlbum.itemKey,
-      position: track.position,
+      roonPosition: track.roonPosition,
       zoneId: config.selectedZoneId,
     });
   };

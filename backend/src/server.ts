@@ -38,21 +38,27 @@ import {
   updateRoonLengthInTrack,
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
+import { db } from '../db.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
-import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
+import type { RoonQueueItem } from '../../shared/internal/roonQueueItem.js';
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+} from '../../shared/internal/socket.js';
+import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
-import { db } from '../db.js';
+import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
 
 dbInit(db);
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin: true,
     methods: ['GET', 'POST'],
@@ -154,27 +160,13 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
       Object.keys(message).forEach(async (subType) => {
         switch (subType) {
           case 'zonesSeekChanged': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesSeekChanged" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             const zoneSeekPositions: ZoneSeekPosition[] =
               transformToZoneSeekPositions(
                 RawZonesSeekChangedMessageSchema.parse(message[subType]),
               );
 
-            const frontendMessage =
+            const frontendMessage: ZonesSeekChangedMessage =
               frontendZonesSeekChangedMessage(zoneSeekPositions);
-
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: emitting zonesSeekChanged message: frontendMessage:',
-            //   JSON.stringify(frontendMessage, null, 4),
-            // );
-            /* eslint-enable no-console */
 
             io.emit('zonesSeekChanged', frontendMessage);
 
@@ -191,23 +183,9 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesChanged': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesChanged" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             const frontendMessage = frontendZonesChangedMessage(
               message[subType],
             );
-
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: emitting zonesChanged message: frontendMessage):',
-            //   JSON.stringify(frontendMessage, null, 4),
-            // );
-            /* eslint-enable no-console */
 
             io.emit('zonesChanged', frontendMessage);
 
@@ -217,13 +195,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesAdded': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesAdded" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             subscribeToQueueChanges(
               message[subType].map((zone: any) => zone.zoneId),
             );
@@ -234,26 +205,12 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesRemoved': {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received "zonesRemoved" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             logChangedZonesRemoved(JSON.stringify(message[subType]));
 
             break;
           }
 
           default: {
-            /* eslint-disable no-console */
-            // console.log(
-            //   'server.js: coreMessageHandler(): Received unknown "Changed" message: message:',
-            //   JSON.stringify(message[subType], null, 4),
-            // );
-            /* eslint-enable no-console */
-
             logChangedUnknown(subType, JSON.stringify(message[subType]));
 
             break;
@@ -263,13 +220,6 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
       break;
 
     default: {
-      /* eslint-disable no-console */
-      // console.log(
-      //   'server.js: coreMessageHandler(): Received unknown message: message:',
-      //   JSON.stringify(message, null, 4),
-      // );
-      /* eslint-enable no-console */
-
       logUnknown(message);
     }
   }
@@ -436,7 +386,7 @@ io.on('connection', async (socket) => {
     console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
     /* eslint-enable no-console */
 
-    const frontendRoonState = frontendZonesChangedMessage(zones);
+    const frontendRoonState: ZoneMap = frontendZonesChangedMessage(zones);
 
     /* eslint-disable no-console */
     console.log(
@@ -450,14 +400,10 @@ io.on('connection', async (socket) => {
     subscribeToQueueChanges(zones.map((zone: any) => zone.zoneId));
   });
 
-  socket.on('trackAddNext', ({ albumKey, position, zoneId }) => {
+  socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
     roonApiRateLimiter.schedule(async () => {
-      /* eslint-disable no-console */
-      console.log('server.js: processing trackAddNext message');
-      /* eslint-enable no-console */
-
       await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-        const trackKey = albumItems.items[position].item_key;
+        const trackKey = albumItems.items[roonPosition].item_key;
         browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
           const trackAddNextItem = trackActions.items.find(
             (item: any) => item.title === 'Add Next',
@@ -475,11 +421,6 @@ io.on('connection', async (socket) => {
 
   socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
     roonApiRateLimiter.schedule(async () => {
-      /* eslint-disable no-console */
-      console.log('server.js: processing albumAddNext message');
-      console.log('server.js: io.on(): roonAlbum:', roonAlbum);
-      /* eslint-enable no-console */
-
       browser
         .loadAlbum(browseInstance, roonAlbum.itemKey)
         .then((albumItems) => {
@@ -503,18 +444,10 @@ io.on('connection', async (socket) => {
   );
 
   socket.on('pause', ({ zoneId }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing pause message: message:', zoneId);
-    /* eslint-enable no-console */
-
     transport.control(zoneId, 'pause');
   });
 
   socket.on('play', ({ zoneId }) => {
-    /* eslint-disable no-console */
-    console.log('server.js: processing play message: message:', zoneId);
-    /* eslint-enable no-console */
-
     transport.control(zoneId, 'play');
   });
 
