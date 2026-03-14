@@ -167,7 +167,7 @@ function App() {
             </div>
           </div>
           <div className="footer">
-            <NowPlaying roonState={roonState} appState={appState} />
+            <NowPlaying />
           </div>
         </div>
       </Router>
