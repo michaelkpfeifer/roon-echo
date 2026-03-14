@@ -7,15 +7,19 @@ function ZoneSelection() {
   const { appState, roonState, setAppState, setConfig } =
     useContext(AppContext);
 
+  if (roonState === null) {
+    throw new Error('Error: Cannot get Roon State')
+  }
+
   const closeModal = () =>
     setAppState((currentAppState) => ({
       ...currentAppState,
       isZonesModalOpen: false,
     }));
 
-  const isZoneSelected = (zoneId) => appState.tmpSelectedZoneId === zoneId;
+  const isZoneSelected = (zoneId: string) => appState.tmpSelectedZoneId === zoneId;
 
-  const handleZoneSelection = (zoneId) =>
+  const handleZoneSelection = (zoneId: string) =>
     setAppState((currentAppState) => ({
       ...currentAppState,
       tmpSelectedZoneId: zoneId,

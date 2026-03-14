@@ -6,6 +6,10 @@ import { findSelectedZone } from '../utils';
 function Cover() {
   const { config, coreUrl, roonState } = useContext(AppContext);
 
+  if (roonState === null) {
+    throw new Error('Error: Cannot get Roon State')
+  }
+
   const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
   if (selectedZone === null) {
@@ -17,14 +21,6 @@ function Cover() {
   }
 
   const imageUrl = `${coreUrl}/api/image/${selectedZone.nowPlaying.imageKey}?scale=fit&width=72&height=72`;
-
-  /* eslint-disable no-console */
-  // console.log('Cover.jsx: Cover(), imageUrl:', imageUrl);
-  /* eslint-enable no-console */
-
-  /* eslint-disable no-console */
-  // console.log('Cover.jsx: Cover(), selectedZone:', selectedZone);
-  /* eslint-enable no-console */
 
   return (
     <div>
