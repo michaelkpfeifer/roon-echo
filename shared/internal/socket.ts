@@ -13,8 +13,10 @@ type ServerToClientEvents = {
     zoneId: string;
     queueItems: RoonQueueItem[];
   }) => void;
+  zonesChanged: (message: ZoneMap) => void;
   zonesSeekChanged: (message: ZonesSeekChangedMessage) => void;
 };
+
 type ClientToServerEvents = {
   albumAddNext: (roonAlbumAndZone: {
     roonAlbum: RoonAlbum;
