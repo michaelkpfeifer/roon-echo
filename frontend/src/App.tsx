@@ -6,6 +6,7 @@ import type { Socket } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
+import type { AppContextType } from './internal/appContextType';
 import type { AppState } from './internal/appState';
 import type { RoonState } from './internal/roonState';
 import Album from './Main/Album';
@@ -132,7 +133,7 @@ function App() {
   // console.log('App.jsx: App(): config:', config);
   /* eslint-enable no-console */
 
-  const contextValue = useMemo(
+  const appContextValue: AppContextType = useMemo(
     () => ({
       appState,
       config,
@@ -147,7 +148,7 @@ function App() {
   );
 
   return (
-    <AppContext.Provider value={contextValue}>
+    <AppContext.Provider value={appContextValue}>
       <Router>
         <div className="page">
           <div className="header" />
