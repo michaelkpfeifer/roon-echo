@@ -16,6 +16,10 @@ function Controls() {
     return null;
   }
 
+  if (selectedZone.nowPlaying === null) {
+    return null;
+  }
+
   const controls = (
     <div
       style={{
