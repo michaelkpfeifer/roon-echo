@@ -6,13 +6,13 @@ import { findSelectedZone } from '../utils';
 function Controls() {
   const { config, roonState, socketRef } = useContext(AppContext);
 
+  if (roonState === null) {
+    throw new Error('Error: Cannot get Roon State')
+  }
+
   const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
   if (selectedZone === null) {
-    return null;
-  }
-
-  if (selectedZone.nowPlaying === null) {
     return null;
   }
 
@@ -31,6 +31,9 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
+            if (socketRef.current === null) {
+              throw new Error('Error: Cannot talk to backend.')
+            }
             socketRef.current.emit('pause', { zoneId: selectedZone.zoneId });
           }}
           disabled={selectedZone.state === 'paused'}
@@ -42,6 +45,9 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
+            if (socketRef.current === null) {
+              throw new Error('Error: Cannot talk to backend.')
+            }
             socketRef.current.emit('play', { zoneId: selectedZone.zoneId });
           }}
           disabled={selectedZone.state === 'playing'}

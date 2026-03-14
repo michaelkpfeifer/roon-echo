@@ -1,6 +1,6 @@
-import type { AppContextType } from './internal/appContextType';
-
 import { createContext } from 'react';
+
+import type { AppContextType } from './internal/appContextType';
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
 

@@ -6,6 +6,10 @@ import { findSelectedZone } from '../utils';
 function SelectedZone() {
   const { config, roonState } = useContext(AppContext);
 
+  if (roonState === null) {
+    throw new Error('Error: Cannot get Roon State')
+  }
+
   const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
 
   if (selectedZone === null) {
