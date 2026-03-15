@@ -86,6 +86,13 @@ const getRoonAlbums = async (
 
   const rawRoonAlbums: RawRoonAlbum[] = validatedResponse.items;
 
+  const distinctRawRoonAlbumsCount = new Set(
+    rawRoonAlbums.map((a) => `${a.title}::${a.subtitle}`),
+  ).size;
+  if (distinctRawRoonAlbumsCount !== rawRoonAlbums.length) {
+    throw new Error('Error: Duplicate albums detected. Aborting.');
+  }
+
   const roonAlbums: RoonAlbum[] = [];
 
   for (const rawRoonAlbum of rawRoonAlbums) {
