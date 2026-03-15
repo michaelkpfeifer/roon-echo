@@ -1,3 +1,4 @@
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
@@ -11,4 +12,8 @@ import './styles/global/track-row.css';
 import './styles/global/queue.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
