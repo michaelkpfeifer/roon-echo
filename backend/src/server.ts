@@ -77,6 +77,8 @@ let browseInstance: any;
 
 let staticZoneData = {};
 let zonePlayingStates: ZonePlayingState[] = [];
+let queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[] =
+  [];
 const playingQueueItems: PlayingQueueItems = {};
 
 const updateRoonTrackLengths = async (queueItems: RoonQueueItem[]) => {
@@ -103,6 +105,16 @@ const updateRoonTrackLengths = async (queueItems: RoonQueueItem[]) => {
   }
 };
 
+const updateQueueChangedMessages = (
+  newMessage: { zoneId: string; queueItems: RoonQueueItem[] },
+  queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[],
+) => {
+  return [
+    ...queueChangedMessages.filter((msg) => msg.zoneId !== newMessage.zoneId),
+    newMessage,
+  ];
+};
+
 const subscribeToQueueChanges = (zoneIds: string[]) => {
   zoneIds.forEach((zoneId: string) => {
     transport.subscribe_queue(
@@ -124,6 +136,10 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
 
         playingQueueItems[zoneId] = queueItems[0] || null;
 
+        queueChangedMessages = updateQueueChangedMessages(
+          { zoneId, queueItems },
+          queueChangedMessages,
+        );
         io.emit('queueChanged', { zoneId, queueItems });
 
         return null;
@@ -397,7 +413,9 @@ io.on('connection', async (socket) => {
 
     socket.emit('initialState', frontendRoonState);
 
-    subscribeToQueueChanges(zones.map((zone: any) => zone.zoneId));
+    queueChangedMessages.forEach((message) => {
+      socket.emit('queueChanged', message);
+    });
   });
 
   socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
