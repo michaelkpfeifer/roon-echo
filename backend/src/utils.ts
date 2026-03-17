@@ -1,6 +1,6 @@
 import fp from 'lodash/fp.js';
 
-const camelCaseKeys = (obj) => {
+const camelCaseKeys = (obj: unknown): unknown => {
   if (Array.isArray(obj)) {
     return obj.map(camelCaseKeys);
   }
@@ -8,14 +8,16 @@ const camelCaseKeys = (obj) => {
   if (fp.isPlainObject(obj)) {
     return fp.mapKeys(
       fp.camelCase,
-      fp.mapValues((value) => camelCaseKeys(value))(obj),
+      fp.mapValues((value) => camelCaseKeys(value))(
+        obj as Record<string, unknown>,
+      ),
     );
   }
 
   return obj;
 };
 
-const snakeCaseKeys = (obj) => {
+const snakeCaseKeys = (obj: unknown): unknown => {
   if (Array.isArray(obj)) {
     return obj.map(snakeCaseKeys);
   }
@@ -23,14 +25,16 @@ const snakeCaseKeys = (obj) => {
   if (fp.isPlainObject(obj)) {
     return fp.mapKeys(
       fp.snakeCase,
-      fp.mapValues((value) => snakeCaseKeys(value))(obj),
+      fp.mapValues((value) => snakeCaseKeys(value))(
+        obj as Record<string, unknown>,
+      ),
     );
   }
 
   return obj;
 };
 
-const toIso8601 = (ts) => {
+const toIso8601 = (ts: Date) => {
   const year = ts.getFullYear();
   const month = String(ts.getMonth() + 1).padStart(2, '0');
   const day = String(ts.getDate()).padStart(2, '0');
