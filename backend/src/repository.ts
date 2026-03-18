@@ -7,6 +7,7 @@ import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
+import type { MbArtist } from '../../shared/internal/mbArtist.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
@@ -100,7 +101,7 @@ const fetchMbArtistsByAlbumId = async (
       'mb_artists.sort_name',
     ]);
 
-  return camelCaseKeys(mbArtistRows);
+  return camelCaseKeys(mbArtistRows) as MbArtist[];
 };
 
 const updateCandidatesFetchedAtTimestamp = async (
@@ -388,13 +389,11 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
-  return ok(
-    camelCaseKeys({
-      mbAlbum,
-      mbArtists,
-      mbTracks,
-    }),
-  );
+  return ok({
+    mbAlbum,
+    mbArtists,
+    mbTracks,
+  });
 };
 
 const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {

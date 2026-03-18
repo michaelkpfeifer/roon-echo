@@ -1,7 +1,8 @@
 import type { Knex } from 'knex';
 
-import type { DatabaseSchema } from '../databaseSchema.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
+import type { MbArtistRow } from '../../shared/internal/mbArtistRow.js';
+import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
 const buildMbArtist = (overrides?: Partial<MbArtist>): MbArtist => ({
@@ -35,7 +36,7 @@ const createMbArtist = async (
   };
 
   await db<DatabaseSchema['mb_artists']>('mb_artists').insert(
-    snakeCaseKeys(mbArtist),
+    snakeCaseKeys(mbArtist) as MbArtistRow,
   );
 
   return mbArtist;
