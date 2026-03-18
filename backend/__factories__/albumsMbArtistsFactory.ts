@@ -18,7 +18,12 @@ const linkAlbumAndMbArtist = async (
   },
 ) => {
   await db<DatabaseSchema['albums_mb_artists']>('albums_mb_artists').insert(
-    snakeCaseKeys({ albumId, mbArtistId, position, joinphrase }),
+    snakeCaseKeys({ albumId, mbArtistId, position, joinphrase }) as {
+      album_id: string;
+      mb_artist_id: string;
+      position: number;
+      joinphrase: string;
+    },
   );
 };
 
