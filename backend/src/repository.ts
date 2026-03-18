@@ -3,6 +3,7 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
+import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
@@ -15,7 +16,7 @@ import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
-import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
+import type { TrackRow } from './internal/trackRow.js';
 import { toMbTrack } from './internal/trackRow.js';
 
 dotenv.config();
@@ -211,7 +212,9 @@ const fetchMbTracksByAlbumId = async (
     album_id: albumId,
   });
 
-  return trackRows.map((trackRow) => toMbTrack(camelCaseKeys(trackRow)));
+  return trackRows.map((trackRow) =>
+    toMbTrack(camelCaseKeys(trackRow) as TrackRow),
+  );
 };
 
 const insertRoonAlbum = async (

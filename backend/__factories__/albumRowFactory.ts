@@ -2,8 +2,8 @@ import type { Knex } from 'knex';
 
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from '../src/internal/albumRow.js';
-import { snakeCaseKeys } from '../src/utils.js';
 import type { AlbumRowRow } from '../src/internal/albumRowRow.js';
+import { snakeCaseKeys } from '../src/utils.js';
 
 const createAlbumRow = async (
   db: Knex<DatabaseSchema>,
