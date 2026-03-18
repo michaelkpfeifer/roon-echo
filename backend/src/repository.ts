@@ -14,6 +14,7 @@ import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
+import type { AlbumRow } from './internal/albumRow.js';
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
 
@@ -58,7 +59,7 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0])));
+  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumRow));
 };
 
 const fetchMbAlbumByAlbumId = async (
@@ -76,7 +77,7 @@ const fetchMbAlbumByAlbumId = async (
     });
   }
 
-  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0])));
+  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumRow));
 };
 
 const fetchMbArtistsByAlbumId = async (
@@ -380,7 +381,7 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
     });
   }
 
-  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow));
+  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow) as AlbumRow);
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
