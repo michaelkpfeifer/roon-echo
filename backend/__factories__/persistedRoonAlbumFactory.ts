@@ -1,6 +1,7 @@
 import type { Knex } from 'knex';
 
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
+import type { PersistedRoonAlbumRow } from '../../shared/internal/persistedRoonAlbumRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
@@ -32,7 +33,9 @@ const createPersistedRoonAlbum = async (
     ...overrides,
   };
 
-  await db('albums').insert(snakeCaseKeys(persistedRoonAlbum));
+  await db<DatabaseSchema['albums']>('albums').insert(
+    snakeCaseKeys(persistedRoonAlbum) as PersistedRoonAlbumRow,
+  );
   return persistedRoonAlbum;
 };
 
