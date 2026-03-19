@@ -4,6 +4,7 @@ import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
+import { toMbTrack } from './internal/trackRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
@@ -18,7 +19,6 @@ import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
 import type { TrackRow } from './internal/trackRow.js';
-import { toMbTrack } from './internal/trackRow.js';
 
 dotenv.config();
 
@@ -146,7 +146,7 @@ const fetchRoonTracks = async (
     })
     .orderBy('roon_number', 'asc');
 
-  return camelCaseKeys(roonTracks);
+  return roonTracks.map((track) => camelCaseKeys(track) as RoonTrack);
 };
 
 const findRoonTrackByNameAndAlbumName = async (

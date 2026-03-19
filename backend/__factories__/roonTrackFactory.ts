@@ -2,6 +2,7 @@ import type { Knex } from 'knex';
 import fp from 'lodash/fp.js';
 
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { RoonTrackRow } from '../../shared/internal/roonTrackRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
@@ -44,7 +45,10 @@ const createRoonTrack = async (
     ...overrides,
   };
 
-  await db('tracks').insert(snakeCaseKeys(roonTrack));
+  await db<DatabaseSchema['tracks']>('tracks').insert(
+    snakeCaseKeys(roonTrack) as RoonTrackRow,
+  );
+
   return fp.omit(['createdAt', 'updatedAt'], roonTrack);
 };
 
