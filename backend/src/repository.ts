@@ -13,6 +13,7 @@ import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
+import type { PlayRow } from '../../shared/internal/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
@@ -398,7 +399,7 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
 
 const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
   await db<DatabaseSchema['plays']>('plays')
-    .insert(snakeCaseKeys(play))
+    .insert(snakeCaseKeys(play) as PlayRow)
     .onConflict(['id'])
     .merge();
 };
