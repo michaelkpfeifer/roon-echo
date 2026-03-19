@@ -39,6 +39,7 @@ import {
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
 import { db } from '../db.js';
+import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
 import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
@@ -298,7 +299,12 @@ const zonesReadyPromise = new Promise((resolve) => {
 
 transport.get_zones((error: any, body: any) => {
   staticZoneData = Object.fromEntries(
-    camelCaseKeys(body.zones).map((zoneData: any) => {
+    (
+      camelCaseKeys(RawTransportGetZonesResponseSchema.parse(body.zones)) as {
+        zoneId: string;
+        displayName: string;
+      }[]
+    ).map((zoneData: any) => {
       return [
         zoneData.zoneId,
         {
