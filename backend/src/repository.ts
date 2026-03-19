@@ -3,19 +3,23 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
+import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
+import { toMbTrack } from './internal/trackRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
 import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
+import type { MbArtist } from '../../shared/internal/mbArtist.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
+import type { PlayRow } from '../../shared/internal/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
-import { toMbTrack } from './internal/trackRow.js';
+import type { AlbumRow } from './internal/albumRow.js';
+import type { TrackRow } from './internal/trackRow.js';
 
 dotenv.config();
 
@@ -58,7 +62,7 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0])));
+  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumRow));
 };
 
 const fetchMbAlbumByAlbumId = async (
@@ -76,7 +80,7 @@ const fetchMbAlbumByAlbumId = async (
     });
   }
 
-  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0])));
+  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumRow));
 };
 
 const fetchMbArtistsByAlbumId = async (
@@ -98,7 +102,7 @@ const fetchMbArtistsByAlbumId = async (
       'mb_artists.sort_name',
     ]);
 
-  return camelCaseKeys(mbArtistRows);
+  return camelCaseKeys(mbArtistRows) as MbArtist[];
 };
 
 const updateCandidatesFetchedAtTimestamp = async (
@@ -143,7 +147,7 @@ const fetchRoonTracks = async (
     })
     .orderBy('roon_number', 'asc');
 
-  return camelCaseKeys(roonTracks);
+  return roonTracks.map((track) => camelCaseKeys(track) as RoonTrack);
 };
 
 const findRoonTrackByNameAndAlbumName = async (
@@ -210,7 +214,9 @@ const fetchMbTracksByAlbumId = async (
     album_id: albumId,
   });
 
-  return trackRows.map((trackRow) => toMbTrack(camelCaseKeys(trackRow)));
+  return trackRows.map((trackRow) =>
+    toMbTrack(camelCaseKeys(trackRow) as TrackRow),
+  );
 };
 
 const insertRoonAlbum = async (
@@ -380,22 +386,20 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
     });
   }
 
-  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow));
+  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow) as AlbumRow);
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
-  return ok(
-    camelCaseKeys({
-      mbAlbum,
-      mbArtists,
-      mbTracks,
-    }),
-  );
+  return ok({
+    mbAlbum,
+    mbArtists,
+    mbTracks,
+  });
 };
 
 const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
   await db<DatabaseSchema['plays']>('plays')
-    .insert(snakeCaseKeys(play))
+    .insert(snakeCaseKeys(play) as PlayRow)
     .onConflict(['id'])
     .merge();
 };

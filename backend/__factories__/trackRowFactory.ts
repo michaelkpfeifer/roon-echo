@@ -2,6 +2,7 @@ import type { Knex } from 'knex';
 
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { TrackRow } from '../src/internal/trackRow.js';
+import type { TrackRowRow } from '../src/internal/trackRowRow.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
 const createTrackRow = async (
@@ -26,7 +27,9 @@ const createTrackRow = async (
     ...overrides,
   };
 
-  await db<DatabaseSchema['tracks']>('tracks').insert(snakeCaseKeys(trackRow));
+  await db<DatabaseSchema['tracks']>('tracks').insert(
+    snakeCaseKeys(trackRow) as TrackRowRow,
+  );
 
   return trackRow;
 };

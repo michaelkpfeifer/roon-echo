@@ -2,6 +2,7 @@ import type { Knex } from 'knex';
 import fp from 'lodash/fp.js';
 
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
+import type { RoonAlbumRow } from '../../shared/internal/roonAlbumRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
@@ -31,8 +32,8 @@ const createRoonAlbum = async (
     ...overrides,
   };
 
-  await db('albums').insert(
-    snakeCaseKeys(fp.omit(['itemKey', 'imageKey'], roonAlbum)),
+  await db<DatabaseSchema['albums']>('albums').insert(
+    snakeCaseKeys(fp.omit(['itemKey', 'imageKey'], roonAlbum)) as RoonAlbumRow,
   );
   return roonAlbum;
 };
