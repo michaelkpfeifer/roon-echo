@@ -39,6 +39,7 @@ import {
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
 import { db } from '../db.js';
+import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
@@ -149,7 +150,7 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
 };
 
 const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
-  const message = camelCaseKeys(snakeCaseData);
+  const message = camelCaseKeys(snakeCaseData) as Record<string, unknown>;
 
   switch (messageType) {
     case 'Subscribed':
@@ -212,7 +213,9 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
 
           case 'zonesAdded': {
             subscribeToQueueChanges(
-              message[subType].map((zone: any) => zone.zoneId),
+              RawZonesAddedMessageSchema.parse(message[subType]).map(
+                (zone: any) => zone.zoneId,
+              ),
             );
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
