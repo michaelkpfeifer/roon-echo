@@ -15,10 +15,10 @@ import * as browser from './browser.js';
 import {
   logChanged,
   logChangedUnknown,
-  logChangedZones,
   logChangedZonesAdded,
+  logChangedZonesChanged,
   logChangedZonesRemoved,
-  logChangedZonesSeek,
+  logChangedZonesSeekChanged,
   logSubscribed,
   logUnknown,
 } from './logging.js';
@@ -195,7 +195,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
               playingQueueItems,
             });
 
-            logChangedZonesSeek(JSON.stringify(message[subType]));
+            logChangedZonesSeekChanged(JSON.stringify(message[subType]));
 
             break;
           }
@@ -207,7 +207,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
 
             io.emit('zonesChanged', frontendMessage);
 
-            logChangedZones(JSON.stringify(message[subType]));
+            logChangedZonesChanged(JSON.stringify(message[subType]));
 
             break;
           }
