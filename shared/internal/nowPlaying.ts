@@ -1,13 +1,12 @@
 import type { OneLine, TwoLine, ThreeLine } from './nLine.ts';
 
 type NowPlaying = {
-  seekPosition: number;
+  seekPosition: number | null;
   length: number;
   imageKey: string;
-  artistImageKeys: string[];
   oneLine: OneLine;
-  TwoLine: TwoLine;
-  ThreeLine: ThreeLine;
+  twoLine: TwoLine;
+  threeLine: ThreeLine;
 };
 
 export type { NowPlaying };

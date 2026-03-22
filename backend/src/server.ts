@@ -41,7 +41,12 @@ import { initializeRoonData } from './roonData.js';
 import { db } from '../db.js';
 import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
 import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
+import { RawZonesChangedMessageSchema } from './schemas/rawZonesChangedMessage.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
+import {
+  transformAdditionsToZones,
+  transformChangesToZones,
+} from './transforms/zone.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
@@ -200,9 +205,10 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesChanged': {
-            const frontendMessage = frontendZonesChangedMessage(
-              message[subType],
+            const zones = transformAdditionsToZones(
+              RawZonesChangedMessageSchema.parse(message[subType]),
             );
+            const frontendMessage = frontendZonesChangedMessage(zones);
 
             io.emit('zonesChanged', frontendMessage);
 
@@ -212,11 +218,11 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
           }
 
           case 'zonesAdded': {
-            subscribeToQueueChanges(
-              RawZonesAddedMessageSchema.parse(message[subType]).map(
-                (zone: any) => zone.zoneId,
-              ),
+            const zones = transformChangesToZones(
+              RawZonesAddedMessageSchema.parse(message[subType]),
             );
+
+            subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
 

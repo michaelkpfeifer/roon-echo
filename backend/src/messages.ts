@@ -1,21 +1,21 @@
+import type { Zone } from '../../shared/internal/zone.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
 
-const extractZoneData = (zoneData) => ({
-  zoneId: zoneData.zoneId,
-  displayName: zoneData.displayName,
-  state: zoneData.state,
-  queueTimeRemaining: zoneData.queueTimeRemaining,
-  nowPlaying: zoneData.nowPlaying ? zoneData.nowPlaying : null,
+const extractZoneData = (zone: Zone) => ({
+  zoneId: zone.zoneId,
+  displayName: zone.displayName,
+  state: zone.state,
+  queueTimeRemaining: zone.queueTimeRemaining,
+  nowPlaying: zone.nowPlaying ? zone.nowPlaying : null,
 });
 
-const frontendZonesChangedMessage = (zonesChangedMessage) => ({
-  zones: Object.fromEntries(
-    zonesChangedMessage.map((zoneData) => [
-      zoneData.zoneId,
-      extractZoneData(zoneData),
-    ]),
-  ),
-});
+const frontendZonesChangedMessage = (zones: Zone[]) => {
+  return {
+    zones: Object.fromEntries(
+      zones.map((zone) => [zone.zoneId, extractZoneData(zone)]),
+    ),
+  };
+};
 
 const frontendZonesSeekChangedMessage = (
   zoneSeekPositions: ZoneSeekPosition[],
