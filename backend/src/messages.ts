@@ -1,3 +1,5 @@
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
+
 const extractZoneData = (zoneData) => ({
   zoneId: zoneData.zoneId,
   displayName: zoneData.displayName,
@@ -15,9 +17,11 @@ const frontendZonesChangedMessage = (zonesChangedMessage) => ({
   ),
 });
 
-const frontendZonesSeekChangedMessage = (zonesSeekChangedMessage) =>
+const frontendZonesSeekChangedMessage = (
+  zoneSeekPositions: ZoneSeekPosition[],
+) =>
   Object.fromEntries(
-    zonesSeekChangedMessage.map((zoneData) => [
+    zoneSeekPositions.map((zoneData) => [
       zoneData.zoneId,
       {
         seekPosition: zoneData.seekPosition,
