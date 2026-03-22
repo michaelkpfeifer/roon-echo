@@ -54,7 +54,6 @@ import type {
 import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
-import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
 
 dbInit(db);
 
@@ -183,7 +182,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
                 RawZonesSeekChangedMessageSchema.parse(message[subType]),
               );
 
-            const frontendMessage: ZonesSeekChangedMessage =
+            const frontendMessage =
               frontendZonesSeekChangedMessage(zoneSeekPositions);
 
             io.emit('zonesSeekChanged', frontendMessage);

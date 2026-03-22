@@ -22,7 +22,6 @@ import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from '../../shared/internal/socket';
-import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage';
 
 function App() {
   const [roonState, setRoonState] = useState<RoonState>({
@@ -67,36 +66,33 @@ function App() {
       setCoreUrl(roonCoreUrl);
     });
 
-    socket.on(
-      'zonesSeekChanged',
-      (zonesSeekChangedMessage: ZonesSeekChangedMessage) => {
-        setRoonState((currentState) =>
-          Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
-            const { queueTimeRemaining, seekPosition, zoneId } = val;
-            if (seekPosition) {
-              return fp.merge(acc, {
-                zones: {
-                  [zoneId]: {
-                    queueTimeRemaining,
-                    nowPlaying: {
-                      seekPosition,
-                    },
+    socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
+      setRoonState((currentState) =>
+        Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
+          const { queueTimeRemaining, seekPosition, zoneId } = val;
+          if (seekPosition) {
+            return fp.merge(acc, {
+              zones: {
+                [zoneId]: {
+                  queueTimeRemaining,
+                  nowPlaying: {
+                    seekPosition,
                   },
                 },
-              });
-            } else {
-              return fp.merge(acc, {
-                zones: {
-                  [zoneId]: {
-                    queueTimeRemaining,
-                  },
+              },
+            });
+          } else {
+            return fp.merge(acc, {
+              zones: {
+                [zoneId]: {
+                  queueTimeRemaining,
                 },
-              });
-            }
-          }, currentState),
-        );
-      },
-    );
+              },
+            });
+          }
+        }, currentState),
+      );
+    });
 
     socket.on('zonesChanged', (zonesChangedMessage) => {
       setRoonState((currentState) =>

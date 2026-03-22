@@ -1,8 +1,8 @@
-import type { ZonesSeekChangedMessage } from './zonesSeekChangedMessage.js';
 import type { RoonAlbum } from './roonAlbum.js';
 import type { ZoneMap } from './zoneMap.js';
 import type { RoonQueueItem } from './roonQueueItem.js';
 import type { AlbumAggregate } from './albumAggregate.js';
+import type { ZoneSeekPosition } from './zoneSeekPosition.js';
 
 type ServerToClientEvents = {
   albumUpdate: (album: AlbumAggregate) => void;
@@ -14,7 +14,7 @@ type ServerToClientEvents = {
     queueItems: RoonQueueItem[];
   }) => void;
   zonesChanged: (message: ZoneMap) => void;
-  zonesSeekChanged: (message: ZonesSeekChangedMessage) => void;
+  zonesSeekChanged: (message: Record<string, ZoneSeekPosition>) => void;
 };
 
 type ClientToServerEvents = {
