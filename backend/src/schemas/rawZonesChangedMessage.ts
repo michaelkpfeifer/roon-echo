@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { RawNowPlayingSchema } from './rawNowPlaying.js';
 
-const RawZonesAddedMessageSchema = z.array(
+const RawZonesChangedMessageSchema = z.array(
   z.object({
     zoneId: z.string(),
     displayName: z.string(),
@@ -12,4 +12,4 @@ const RawZonesAddedMessageSchema = z.array(
   }),
 );
 
-export { RawZonesAddedMessageSchema };
+export { RawZonesChangedMessageSchema };

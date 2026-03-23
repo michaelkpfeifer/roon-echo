@@ -27,11 +27,11 @@ const logChangedUnknown = (subType, subMessage) => {
   return null;
 };
 
-const logChangedZones = (subMessage) => {
+const logChangedZonesChanged = (subMessage) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
-      sub_type: 'zones',
+      sub_type: 'zonesChanged',
       message: subMessage,
     });
   });
@@ -63,11 +63,11 @@ const logChangedZonesRemoved = (subMessage) => {
   return null;
 };
 
-const logChangedZonesSeek = (subMessage) => {
+const logChangedZonesSeekChanged = (subMessage) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
-      sub_type: 'zonesSeek',
+      sub_type: 'zonesSeekChanged',
       message: subMessage,
     });
   });
@@ -100,10 +100,10 @@ const logUnknown = (message) => {
 export {
   logChanged,
   logChangedUnknown,
-  logChangedZones,
+  logChangedZonesChanged,
   logChangedZonesAdded,
   logChangedZonesRemoved,
-  logChangedZonesSeek,
+  logChangedZonesSeekChanged,
   logSubscribed,
   logUnknown,
 };

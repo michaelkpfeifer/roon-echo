@@ -1,5 +1,4 @@
 import http from 'http';
-import { exit } from 'node:process';
 
 import Bottleneck from 'bottleneck';
 import cors from 'cors';
@@ -15,10 +14,10 @@ import * as browser from './browser.js';
 import {
   logChanged,
   logChangedUnknown,
-  logChangedZones,
   logChangedZonesAdded,
+  logChangedZonesChanged,
   logChangedZonesRemoved,
-  logChangedZonesSeek,
+  logChangedZonesSeekChanged,
   logSubscribed,
   logUnknown,
 } from './logging.js';
@@ -41,7 +40,13 @@ import { initializeRoonData } from './roonData.js';
 import { db } from '../db.js';
 import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
 import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
+import { RawZonesChangedMessageSchema } from './schemas/rawZonesChangedMessage.js';
 import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedMessage.js';
+import {
+  transformAdditionsToZones,
+  transformChangesToZones,
+  transformTransportGetZones,
+} from './transforms/zone.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
 import type { PlayingQueueItems } from '../../shared/internal/playingQueueItems.js';
@@ -51,10 +56,10 @@ import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from '../../shared/internal/socket.js';
+import type { Zone } from '../../shared/internal/zone.js';
 import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
-import type { ZonesSeekChangedMessage } from '../../shared/internal/zonesSeekChangedMessage.js';
 
 dbInit(db);
 
@@ -77,7 +82,7 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport: any;
 let browseInstance: any;
 
-let staticZoneData = {};
+let staticZoneData: Zone[] = [];
 let zonePlayingStates: ZonePlayingState[] = [];
 let queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[] =
   [];
@@ -183,7 +188,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
                 RawZonesSeekChangedMessageSchema.parse(message[subType]),
               );
 
-            const frontendMessage: ZonesSeekChangedMessage =
+            const frontendMessage =
               frontendZonesSeekChangedMessage(zoneSeekPositions);
 
             io.emit('zonesSeekChanged', frontendMessage);
@@ -195,29 +200,30 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
               playingQueueItems,
             });
 
-            logChangedZonesSeek(JSON.stringify(message[subType]));
+            logChangedZonesSeekChanged(JSON.stringify(message[subType]));
 
             break;
           }
 
           case 'zonesChanged': {
-            const frontendMessage = frontendZonesChangedMessage(
-              message[subType],
+            const zones = transformAdditionsToZones(
+              RawZonesChangedMessageSchema.parse(message[subType]),
             );
+            const frontendMessage = frontendZonesChangedMessage(zones);
 
             io.emit('zonesChanged', frontendMessage);
 
-            logChangedZones(JSON.stringify(message[subType]));
+            logChangedZonesChanged(JSON.stringify(message[subType]));
 
             break;
           }
 
           case 'zonesAdded': {
-            subscribeToQueueChanges(
-              RawZonesAddedMessageSchema.parse(message[subType]).map(
-                (zone: any) => zone.zoneId,
-              ),
+            const zones = transformChangesToZones(
+              RawZonesAddedMessageSchema.parse(message[subType]),
             );
+
+            subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
 
@@ -298,21 +304,8 @@ const zonesReadyPromise = new Promise((resolve) => {
 });
 
 transport.get_zones((error: any, body: any) => {
-  staticZoneData = Object.fromEntries(
-    (
-      camelCaseKeys(RawTransportGetZonesResponseSchema.parse(body.zones)) as {
-        zoneId: string;
-        displayName: string;
-      }[]
-    ).map((zoneData: any) => {
-      return [
-        zoneData.zoneId,
-        {
-          zoneId: zoneData.zoneId,
-          displayName: zoneData.displayName,
-        },
-      ];
-    }),
+  staticZoneData = transformTransportGetZones(
+    RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)),
   );
 
   resolveZonesReady();
@@ -324,9 +317,9 @@ await zonesReadyPromise;
 console.log('server.js: main(): staticZoneData:', staticZoneData);
 /* eslint-enable no-console */
 
-zonePlayingStates = Object.keys(staticZoneData).map((zoneId) => {
+zonePlayingStates = staticZoneData.map((zone) => {
   return {
-    zoneId,
+    zoneId: zone.zoneId,
     previousQueueItemId: null,
     previousPlayedSegments: [],
     previousPlayId: null,
@@ -397,34 +390,20 @@ io.on('connection', async (socket) => {
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
 
-  transport.get_zones((error: any, body: any) => {
-    if (error) {
-      process.stderr.write(
-        `Error: Could not get zone data from Roon core: ${error}.`,
-      );
-      exit(3);
-    }
+  const frontendRoonState: ZoneMap =
+    frontendZonesChangedMessage(staticZoneData);
 
-    const zones = camelCaseKeys(body.zones);
+  /* eslint-disable no-console */
+  console.log(
+    'server.js: io.on(): frontendRoonState',
+    JSON.stringify(frontendRoonState, null, 4),
+  );
+  /* eslint-enable no-console */
 
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
-    /* eslint-enable no-console */
+  socket.emit('initialState', frontendRoonState);
 
-    const frontendRoonState: ZoneMap = frontendZonesChangedMessage(zones);
-
-    /* eslint-disable no-console */
-    console.log(
-      'server.js: io.on(): frontendRoonState',
-      JSON.stringify(frontendRoonState, null, 4),
-    );
-    /* eslint-enable no-console */
-
-    socket.emit('initialState', frontendRoonState);
-
-    queueChangedMessages.forEach((message) => {
-      socket.emit('queueChanged', message);
-    });
+  queueChangedMessages.forEach((message) => {
+    socket.emit('queueChanged', message);
   });
 
   socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
