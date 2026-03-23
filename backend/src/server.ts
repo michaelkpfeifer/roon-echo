@@ -1,5 +1,4 @@
 import http from 'http';
-import { exit } from 'node:process';
 
 import Bottleneck from 'bottleneck';
 import cors from 'cors';
@@ -57,6 +56,7 @@ import type {
   ServerToClientEvents,
   ClientToServerEvents,
 } from '../../shared/internal/socket.js';
+import type { Zone } from '../../shared/internal/zone.js';
 import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
@@ -82,7 +82,7 @@ const coreUrlConfigured = process.env.CORE_URL;
 let transport: any;
 let browseInstance: any;
 
-let staticZoneData = {};
+let staticZoneData: Zone[] = [];
 let zonePlayingStates: ZonePlayingState[] = [];
 let queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[] =
   [];
@@ -304,18 +304,8 @@ const zonesReadyPromise = new Promise((resolve) => {
 });
 
 transport.get_zones((error: any, body: any) => {
-  staticZoneData = Object.fromEntries(
-    RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)).map(
-      (zone) => {
-        return [
-          zone.zoneId,
-          {
-            zoneId: zone.zoneId,
-            displayName: zone.displayName,
-          },
-        ];
-      },
-    ),
+  staticZoneData = transformTransportGetZones(
+    RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)),
   );
 
   resolveZonesReady();
@@ -327,9 +317,9 @@ await zonesReadyPromise;
 console.log('server.js: main(): staticZoneData:', staticZoneData);
 /* eslint-enable no-console */
 
-zonePlayingStates = Object.keys(staticZoneData).map((zoneId) => {
+zonePlayingStates = staticZoneData.map((zone) => {
   return {
-    zoneId,
+    zoneId: zone.zoneId,
     previousQueueItemId: null,
     previousPlayedSegments: [],
     previousPlayId: null,
@@ -400,36 +390,20 @@ io.on('connection', async (socket) => {
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
 
-  transport.get_zones((error: any, body: any) => {
-    if (error) {
-      process.stderr.write(
-        `Error: Could not get zone data from Roon core: ${error}.`,
-      );
-      exit(3);
-    }
+  const frontendRoonState: ZoneMap =
+    frontendZonesChangedMessage(staticZoneData);
 
-    const zones = transformTransportGetZones(
-      RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)),
-    );
+  /* eslint-disable no-console */
+  console.log(
+    'server.js: io.on(): frontendRoonState',
+    JSON.stringify(frontendRoonState, null, 4),
+  );
+  /* eslint-enable no-console */
 
-    /* eslint-disable no-console */
-    console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));
-    /* eslint-enable no-console */
+  socket.emit('initialState', frontendRoonState);
 
-    const frontendRoonState: ZoneMap = frontendZonesChangedMessage(zones);
-
-    /* eslint-disable no-console */
-    console.log(
-      'server.js: io.on(): frontendRoonState',
-      JSON.stringify(frontendRoonState, null, 4),
-    );
-    /* eslint-enable no-console */
-
-    socket.emit('initialState', frontendRoonState);
-
-    queueChangedMessages.forEach((message) => {
-      socket.emit('queueChanged', message);
-    });
+  queueChangedMessages.forEach((message) => {
+    socket.emit('queueChanged', message);
   });
 
   socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
