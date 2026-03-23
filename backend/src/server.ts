@@ -46,6 +46,7 @@ import { RawZonesSeekChangedMessageSchema } from './schemas/rawZonesSeekChangedM
 import {
   transformAdditionsToZones,
   transformChangesToZones,
+  transformTransportGetZones,
 } from './transforms/zone.js';
 import { transformToZoneSeekPositions } from './transforms/zoneSeekPosition.js';
 import { camelCaseKeys } from './utils.js';
@@ -304,20 +305,17 @@ const zonesReadyPromise = new Promise((resolve) => {
 
 transport.get_zones((error: any, body: any) => {
   staticZoneData = Object.fromEntries(
-    (
-      camelCaseKeys(RawTransportGetZonesResponseSchema.parse(body.zones)) as {
-        zoneId: string;
-        displayName: string;
-      }[]
-    ).map((zoneData: any) => {
-      return [
-        zoneData.zoneId,
-        {
-          zoneId: zoneData.zoneId,
-          displayName: zoneData.displayName,
-        },
-      ];
-    }),
+    RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)).map(
+      (zone) => {
+        return [
+          zone.zoneId,
+          {
+            zoneId: zone.zoneId,
+            displayName: zone.displayName,
+          },
+        ];
+      },
+    ),
   );
 
   resolveZonesReady();
@@ -410,7 +408,9 @@ io.on('connection', async (socket) => {
       exit(3);
     }
 
-    const zones = camelCaseKeys(body.zones);
+    const zones = transformTransportGetZones(
+      RawTransportGetZonesResponseSchema.parse(camelCaseKeys(body.zones)),
+    );
 
     /* eslint-disable no-console */
     console.log('server.js: io.on(): zones', JSON.stringify(zones, null, 4));

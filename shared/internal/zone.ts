@@ -4,7 +4,7 @@ type Zone = {
   zoneId: string;
   displayName: string;
   state: string;
-  queueTimeRemaining: number;
+  queueTimeRemaining: number | null;
   nowPlaying: NowPlaying | null;
 };
 

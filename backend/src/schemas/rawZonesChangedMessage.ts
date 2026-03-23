@@ -7,8 +7,8 @@ const RawZonesChangedMessageSchema = z.array(
     zoneId: z.string(),
     displayName: z.string(),
     state: z.string(),
-    queueTimeRemaining: z.number(),
-    nowPlaying: z.nullable(RawNowPlayingSchema),
+    queueTimeRemaining: z.number().nullable().optional().default(null),
+    nowPlaying: z.nullable(RawNowPlayingSchema).optional().default(null),
   }),
 );
 
