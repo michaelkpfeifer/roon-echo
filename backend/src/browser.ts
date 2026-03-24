@@ -1,14 +1,15 @@
-import dotenv from 'dotenv';
 import { exit } from 'node:process';
+
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const roonBrowserAlbumsOffset = parseInt(
-  process.env.ROON_BROWSER_ALBUMS_OFFSET,
+  process.env.ROON_BROWSER_ALBUMS_OFFSET ?? '0',
   10,
 );
 const roonBrowserAlbumsCount = parseInt(
-  process.env.ROON_BROWSER_ALBUMS_COUNT,
+  process.env.ROON_BROWSER_ALBUMS_COUNT ?? '99999',
   10,
 );
 
