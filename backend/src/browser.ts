@@ -3,8 +3,14 @@ import { exit } from 'node:process';
 
 dotenv.config();
 
-const roonBrowserAlbumsOffset = parseInt(process.env.ROON_BROWSER_ALBUMS_OFFSET, 10)
-const roonBrowserAlbumsCount = parseInt(process.env.ROON_BROWSER_ALBUMS_COUNT, 10)
+const roonBrowserAlbumsOffset = parseInt(
+  process.env.ROON_BROWSER_ALBUMS_OFFSET,
+  10,
+);
+const roonBrowserAlbumsCount = parseInt(
+  process.env.ROON_BROWSER_ALBUMS_COUNT,
+  10,
+);
 
 const browseAsync = (browseInstance, options) =>
   new Promise((resolve, reject) => {
