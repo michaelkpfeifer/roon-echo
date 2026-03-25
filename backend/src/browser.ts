@@ -180,7 +180,7 @@ const loadAlbums = async (
 
 const loadAlbum = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
-  itemKey,
+  itemKey: string,
 ) => {
   try {
     const albumBrowseData = await browseAsync(browseInstance, {
@@ -207,7 +207,7 @@ const loadAlbum = async (
 
 const loadTrack = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
-  itemKey,
+  itemKey: string,
 ) => {
   try {
     const trackBrowseData = await browseAsync(browseInstance, {
