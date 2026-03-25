@@ -1,6 +1,7 @@
 import { exit } from 'node:process';
 
 import dotenv from 'dotenv';
+import type RoonApiBrowse from 'node-roon-api-browse';
 
 dotenv.config();
 
@@ -13,7 +14,10 @@ const roonBrowserAlbumsCount = parseInt(
   10,
 );
 
-const browseAsync = (browseInstance, options) =>
+const browseAsync = (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  options,
+) =>
   new Promise((resolve, reject) => {
     browseInstance.browse(options, (browseError, browsePayload) => {
       if (browseError) {
@@ -24,7 +28,10 @@ const browseAsync = (browseInstance, options) =>
     });
   });
 
-const loadAsync = (browseInstance, options) =>
+const loadAsync = (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  options,
+) =>
   new Promise((resolve, reject) => {
     browseInstance.load(options, (loadError, loadPayload) => {
       if (loadError) {
@@ -35,7 +42,10 @@ const loadAsync = (browseInstance, options) =>
     });
   });
 
-const loadLibrary = async (browseInstance, libraryBrowseData) => {
+const loadLibrary = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  libraryBrowseData,
+) => {
   try {
     const libraryLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
@@ -61,7 +71,10 @@ const loadLibrary = async (browseInstance, libraryBrowseData) => {
   }
 };
 
-const browseLibrary = async (browseInstance, libraryItem) => {
+const browseLibrary = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  libraryItem,
+) => {
   try {
     const libraryBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',
@@ -86,7 +99,10 @@ const browseLibrary = async (browseInstance, libraryItem) => {
   }
 };
 
-const loadTopLevel = async (browseInstance, topLevelBrowseData) => {
+const loadTopLevel = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  topLevelBrowseData,
+) => {
   try {
     const topLevelLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
@@ -115,7 +131,9 @@ const loadTopLevel = async (browseInstance, topLevelBrowseData) => {
   }
 };
 
-const browseTopLevel = async (browseInstance) => {
+const browseTopLevel = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+) => {
   try {
     const topLevelBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',
@@ -141,7 +159,9 @@ const browseTopLevel = async (browseInstance) => {
   }
 };
 
-const loadAlbums = async (browseInstance) => {
+const loadAlbums = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+) => {
   const libraryLoadData = await browseTopLevel(browseInstance);
   const albumsItem = libraryLoadData.items.find(
     (item) => item.title === 'Albums',
@@ -158,7 +178,10 @@ const loadAlbums = async (browseInstance) => {
   return albumsLoadData;
 };
 
-const loadAlbum = async (browseInstance, itemKey) => {
+const loadAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  itemKey,
+) => {
   try {
     const albumBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',
@@ -182,7 +205,10 @@ const loadAlbum = async (browseInstance, itemKey) => {
   }
 };
 
-const loadTrack = async (browseInstance, itemKey) => {
+const loadTrack = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  itemKey,
+) => {
   try {
     const trackBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',

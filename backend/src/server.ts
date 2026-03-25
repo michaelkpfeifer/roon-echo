@@ -80,7 +80,7 @@ dotenv.config();
 const coreUrlConfigured = process.env.CORE_URL;
 
 let transport: any;
-let browseInstance: any;
+let browseInstance: InstanceType<typeof RoonApiBrowse>;
 
 let staticZoneData: Zone[] = [];
 let zonePlayingStates: ZonePlayingState[] = [];
