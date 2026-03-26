@@ -42,6 +42,10 @@ export default tseslint.config(
           },
         },
       ],
+      'no-use-before-define': [
+        'error',
+        { functions: true, classes: true, variables: true },
+      ],
       'no-else-return': 'off',
       'no-await-in-loop': 'off',
       'no-restricted-syntax': 'off',
@@ -78,6 +82,7 @@ export default tseslint.config(
     },
     rules: {
       'no-unused-vars': 'off',
+      'no-use-before-define': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -91,6 +96,16 @@ export default tseslint.config(
         { prefer: 'type-imports' },
       ],
       'object-shorthand': ['warn', 'always'],
+      '@typescript-eslint/no-use-before-define': [
+        'error',
+        {
+          functions: true,
+          classes: true,
+          variables: true,
+          enums: true,
+          typedefs: true,
+        },
+      ],
     },
   },
 
