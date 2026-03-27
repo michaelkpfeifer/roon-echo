@@ -14,12 +14,24 @@ const roonBrowserAlbumsCount = parseInt(
   10,
 );
 
+type BrowseOptions = {
+  hierarchy: string;
+  item_key?: string;
+  pop_all?: boolean;
+};
+
+type LoadOptions = {
+  hierarchy: string;
+  offset?: number;
+  count?: number;
+};
+
 const browseAsync = (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
-  options,
+  browseOptions: BrowseOptions,
 ) =>
   new Promise((resolve, reject) => {
-    browseInstance.browse(options, (browseError, browsePayload) => {
+    browseInstance.browse(browseOptions, (browseError, browsePayload) => {
       if (browseError) {
         reject(browseError);
       } else {
@@ -30,10 +42,10 @@ const browseAsync = (
 
 const loadAsync = (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
-  options,
+  loadOptions: LoadOptions,
 ) =>
   new Promise((resolve, reject) => {
-    browseInstance.load(options, (loadError, loadPayload) => {
+    browseInstance.load(loadOptions, (loadError, loadPayload) => {
       if (loadError) {
         reject(loadError);
       } else {
@@ -49,7 +61,6 @@ const loadLibrary = async (
   try {
     const libraryLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
-      offset: 0,
       count: libraryBrowseData.list.count,
     });
 
@@ -138,7 +149,6 @@ const browseTopLevel = async (
     const topLevelBrowseData = await browseAsync(browseInstance, {
       hierarchy: 'browse',
       pop_all: true,
-      item_key: null,
     });
 
     /* eslint-disable no-console */
@@ -232,4 +242,4 @@ const loadTrack = async (
   }
 };
 
-export { browseAsync, loadAlbum, loadAlbums, loadAsync, loadTrack };
+export { loadAlbum, loadAlbums, loadAsync, loadTrack };
