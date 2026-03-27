@@ -1,5 +1,3 @@
-import { exit } from 'node:process';
-
 import dotenv from 'dotenv';
 import type RoonApiBrowse from 'node-roon-api-browse';
 
@@ -73,12 +71,7 @@ const loadLibrary = async (
 
     return libraryLoadData;
   } catch (err) {
-    process.stderr.write(
-      'Error: Failed to load top level hierarchy:',
-      err,
-      '\n',
-    );
-    exit(1);
+    throw new Error(`Error: Failed to load albums from library: ${err}.`);
   }
 };
 
@@ -101,12 +94,7 @@ const browseLibrary = async (
 
     return loadLibrary(browseInstance, libraryBrowseData);
   } catch (err) {
-    process.stderr.write(
-      'Error: Failed to browse library hierarchy:',
-      err,
-      '.\n',
-    );
-    exit(1);
+    throw new Error(`Error: Failed to browse library by item key: ${err}.`);
   }
 };
 
@@ -133,12 +121,7 @@ const loadTopLevel = async (
       topLevelLoadData.items.find((item) => item.title === 'Library'),
     );
   } catch (err) {
-    process.stderr.write(
-      'Error: Failed to load top level hierarchy:',
-      err,
-      '.\n',
-    );
-    exit(1);
+    throw new Error(`Error: Failed to load top level hierarchy: ${err}.`);
   }
 };
 
@@ -160,12 +143,7 @@ const browseTopLevel = async (
 
     return loadTopLevel(browseInstance, topLevelBrowseData);
   } catch (err) {
-    process.stderr.write(
-      'Error: Failed to browse top level hierarchy:',
-      err,
-      '\n',
-    );
-    exit(1);
+    throw new Error(`Error: Failed to browse top level hierarchy: ${err}.`);
   }
 };
 
@@ -210,8 +188,7 @@ const loadAlbum = async (
 
     return albumLoadData;
   } catch (err) {
-    process.stderr.write(`Error: Failed to load track by item key: ${err}\n`);
-    exit(1);
+    throw new Error(`Error: Failed to load album by item key: ${err}.`);
   }
 };
 
@@ -237,9 +214,8 @@ const loadTrack = async (
 
     return trackLoadData;
   } catch (err) {
-    process.stderr.write('Error: Failed to load track by item key:', err, '\n');
-    exit(1);
+    throw new Error(`Error: Failed to load track by item key: ${err}.`);
   }
 };
 
-export { loadAlbum, loadAlbums, loadAsync, loadTrack };
+export { loadAlbum, loadAlbums, loadTrack };
