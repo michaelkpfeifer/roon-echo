@@ -8,14 +8,11 @@ const RawRoonLoadAlbumResponseSchema = z
   .pipe(
     z.object({
       items: z.array(RawRoonTrackSchema),
-      offset: z.literal(0),
       list: z.object({
-        level: z.number(),
         title: z.string(),
         subtitle: z.string(),
         imageKey: z.string(),
         count: z.number(),
-        displayOffset: z.null(),
       }),
     }),
   );
