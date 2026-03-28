@@ -13,18 +13,63 @@ const roonBrowserAlbumsCount = parseInt(
   10,
 );
 
+const rawErrorResponseSchema = z.string();
+
+type RawErrorResponse = z.infer<typeof rawErrorResponseSchema>;
+
 const rawBrowseResponseSchema = z.object({
   action: z.literal('list'),
   list: z.object({
     level: z.number(),
     title: z.string(),
     subtitle: z.string().nullable(),
-    image_key: z.null(),
+    image_key: z.string().nullable(),
     count: z.number(),
     display_offset: z.null(),
-    hint: z.literal('action_list').nullable(),
   }),
 });
+
+type RawBrowseResponse = z.infer<typeof rawBrowseResponseSchema>;
+
+const rawLoadTrackResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string(),
+      item_key: z.string(),
+    }),
+  ),
+  list: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+  }),
+});
+
+type RawLoadTrackResponse = z.infer<typeof rawLoadTrackResponseSchema>;
+
+const rawLoadAlbumResponseSchema = z
+  .any()
+  .transform((data) => ({ ...data, items: data.items.slice(1) }))
+  .pipe(
+    z.object({
+      items: z.array(
+        z.object({
+          title: z.string(),
+          subtitle: z.string(),
+          item_key: z.string(),
+        }),
+      ),
+      list: z.object({
+        title: z.string(),
+        subtitle: z.string(),
+        image_key: z.string(),
+        count: z.number(),
+      }),
+    }),
+  );
+
+type RawLoadAlbumResponse = z.infer<typeof rawLoadAlbumResponseSchema>;
+
+type RawLoadResponse = RawLoadTrackResponse | RawLoadAlbumResponse;
 
 type BrowseOptions = {
   hierarchy: string;
@@ -43,13 +88,16 @@ const browseAsync = (
   browseOptions: BrowseOptions,
 ) =>
   new Promise((resolve, reject) => {
-    browseInstance.browse(browseOptions, (browseError, browsePayload) => {
-      if (browseError) {
-        reject(browseError);
-      } else {
-        resolve(browsePayload);
-      }
-    });
+    browseInstance.browse(
+      browseOptions,
+      (browseError: RawErrorResponse, browsePayload: RawBrowseResponse) => {
+        if (browseError) {
+          reject(browseError);
+        } else {
+          resolve(browsePayload);
+        }
+      },
+    );
   });
 
 const loadAsync = (
@@ -57,13 +105,16 @@ const loadAsync = (
   loadOptions: LoadOptions,
 ) =>
   new Promise((resolve, reject) => {
-    browseInstance.load(loadOptions, (loadError, loadPayload) => {
-      if (loadError) {
-        reject(loadError);
-      } else {
-        resolve(loadPayload);
-      }
-    });
+    browseInstance.load(
+      loadOptions,
+      (loadError: RawErrorResponse, loadPayload: RawLoadResponse) => {
+        if (loadError) {
+          reject(loadError);
+        } else {
+          resolve(loadPayload);
+        }
+      },
+    );
   });
 
 const loadLibrary = async (
@@ -85,7 +136,9 @@ const loadLibrary = async (
 
     return libraryLoadData;
   } catch (err) {
-    throw new Error(`Error: Failed to load albums from library: ${err}.`);
+    throw new Error(
+      `Error: Failed to load albums from library: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
@@ -108,7 +161,9 @@ const browseLibrary = async (
 
     return loadLibrary(browseInstance, libraryBrowseData);
   } catch (err) {
-    throw new Error(`Error: Failed to browse library by item key: ${err}.`);
+    throw new Error(
+      `Error: Failed to browse library by item key: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
@@ -135,7 +190,9 @@ const loadTopLevel = async (
       topLevelLoadData.items.find((item) => item.title === 'Library'),
     );
   } catch (err) {
-    throw new Error(`Error: Failed to load top level hierarchy: ${err}.`);
+    throw new Error(
+      `Error: Failed to load top level hierarchy: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
@@ -157,7 +214,9 @@ const browseTopLevel = async (
 
     return loadTopLevel(browseInstance, topLevelBrowseData);
   } catch (err) {
-    throw new Error(`Error: Failed to browse top level hierarchy: ${err}.`);
+    throw new Error(
+      `Error: Failed to browse top level hierarchy: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
@@ -185,24 +244,30 @@ const loadAlbum = async (
   itemKey: string,
 ) => {
   try {
-    const albumBrowseData = await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: itemKey,
-    });
+    const albumBrowseData = rawBrowseResponseSchema.parse(
+      await browseAsync(browseInstance, {
+        hierarchy: 'browse',
+        item_key: itemKey,
+      }),
+    );
 
-    const albumLoadData = await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: albumBrowseData.list.count,
-    });
+    const albumLoadData = rawLoadAlbumResponseSchema.parse(
+      await loadAsync(browseInstance, {
+        hierarchy: 'browse',
+        offset: 0,
+        count: albumBrowseData.list.count,
+      }),
+    );
 
     /* eslint-disable no-console */
-    // console.log('browser.js: loadTopLevel(): albumLoadData:', albumLoadData);
+    // console.log('browser.js: loadAlbum(): albumLoadData:', albumLoadData);
     /* eslint-enable no-console */
 
     return albumLoadData;
   } catch (err) {
-    throw new Error(`Error: Failed to load album by item key: ${err}.`);
+    throw new Error(
+      `Error: Failed to load album by item key: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
@@ -218,23 +283,23 @@ const loadTrack = async (
       }),
     );
 
-    /* eslint-disable no-console */
-    console.log('browser.js: loadTrack(): trackBrowseData:', trackBrowseData);
-    /* eslint-enable no-console */
-
-    const trackLoadData = await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: trackBrowseData.list.count,
-    });
+    const trackLoadData = rawLoadTrackResponseSchema.parse(
+      await loadAsync(browseInstance, {
+        hierarchy: 'browse',
+        offset: 0,
+        count: trackBrowseData.list.count,
+      }),
+    );
 
     /* eslint-disable no-console */
-    console.log('browser.js: loadTrack(): trackLoadData:', trackLoadData);
+    // console.log('browser.js: loadTrack(): trackLoadData:', trackLoadData);
     /* eslint-enable no-console */
 
     return trackLoadData;
   } catch (err) {
-    throw new Error(`Error: Failed to load track by item key: ${err}.`);
+    throw new Error(
+      `Error: Failed to load track by item key: ${rawErrorResponseSchema.parse(err)}.`,
+    );
   }
 };
 
