@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import type RoonApiBrowse from 'node-roon-api-browse';
+import { z } from 'zod';
 
 dotenv.config();
 
@@ -11,6 +12,19 @@ const roonBrowserAlbumsCount = parseInt(
   process.env.ROON_BROWSER_ALBUMS_COUNT ?? '99999',
   10,
 );
+
+const rawBrowseResponseSchema = z.object({
+  action: z.literal('list'),
+  list: z.object({
+    level: z.number(),
+    title: z.string(),
+    subtitle: z.string().nullable(),
+    image_key: z.null(),
+    count: z.number(),
+    display_offset: z.null(),
+    hint: z.literal('action_list').nullable(),
+  }),
+});
 
 type BrowseOptions = {
   hierarchy: string;
@@ -197,10 +211,16 @@ const loadTrack = async (
   itemKey: string,
 ) => {
   try {
-    const trackBrowseData = await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: itemKey,
-    });
+    const trackBrowseData = rawBrowseResponseSchema.parse(
+      await browseAsync(browseInstance, {
+        hierarchy: 'browse',
+        item_key: itemKey,
+      }),
+    );
+
+    /* eslint-disable no-console */
+    console.log('browser.js: loadTrack(): trackBrowseData:', trackBrowseData);
+    /* eslint-enable no-console */
 
     const trackLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
@@ -209,7 +229,7 @@ const loadTrack = async (
     });
 
     /* eslint-disable no-console */
-    // console.log('browser.js: loadTopLevel(): trackLoadData:', trackLoadData);
+    console.log('browser.js: loadTrack(): trackLoadData:', trackLoadData);
     /* eslint-enable no-console */
 
     return trackLoadData;
