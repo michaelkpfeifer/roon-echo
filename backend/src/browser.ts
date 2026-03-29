@@ -120,7 +120,7 @@ type LoadOptions = {
 
 function buildErrorMessage(description: string, err: BrowseError) {
   if (err instanceof z.ZodError) {
-    return `Error: ${description}: Validation failed: ${z.flattenError(err)}`;
+    return `Error: ${description}: Validation failed: ${JSON.stringify(z.flattenError(err), null, 4)}`;
   } else {
     return `Error: ${description}: Roon API error: ${rawErrorResponseSchema.parse(err)}`;
   }
@@ -183,6 +183,10 @@ const loadAlbums = async (
       (item) => item.title === 'Library',
     );
 
+    if (!libraryItem) {
+      throw new Error('Library not found despite validation.');
+    }
+
     const libraryBrowseData = rawBrowseResponseSchema.parse(
       await browseAsync(browseInstance, {
         hierarchy: 'browse',
@@ -202,6 +206,10 @@ const loadAlbums = async (
       (item) => item.title === 'Albums',
     );
 
+    if (!albumItem) {
+      throw new Error('Albums not found despite validation.');
+    }
+
     const albumsBrowseData = rawBrowseResponseSchema.parse(
       await browseAsync(browseInstance, {
         hierarchy: 'browse',
@@ -218,7 +226,7 @@ const loadAlbums = async (
     return albumsLoadData;
   } catch (err) {
     throw new Error(
-      buildErrorMessage('Error: Failed to load albums', err as BrowseError),
+      buildErrorMessage('Failed to load albums', err as BrowseError),
     );
   }
 };
@@ -250,10 +258,7 @@ const loadAlbum = async (
     return albumLoadData;
   } catch (err) {
     throw new Error(
-      buildErrorMessage(
-        'Error: Failed to load album by item key',
-        err as BrowseError,
-      ),
+      buildErrorMessage('Failed to load album by item key', err as BrowseError),
     );
   }
 };
@@ -281,10 +286,7 @@ const loadTrack = async (
     return trackLoadData;
   } catch (err) {
     throw new Error(
-      buildErrorMessage(
-        'Error: Failed to load track by item key',
-        err as BrowseError,
-      ),
+      buildErrorMessage('Failed to load track by item key', err as BrowseError),
     );
   }
 };
