@@ -16,6 +16,7 @@ const roonBrowserAlbumsCount = parseInt(
 const rawErrorResponseSchema = z.string();
 
 type RawErrorResponse = z.infer<typeof rawErrorResponseSchema>;
+type BrowseError = RawErrorResponse | z.ZodError;
 
 const rawBrowseResponseSchema = z.object({
   action: z.literal('list'),
@@ -31,7 +32,7 @@ const rawBrowseResponseSchema = z.object({
 
 type RawBrowseResponse = z.infer<typeof rawBrowseResponseSchema>;
 
-const rawLoadTrackResponseSchema = z.object({
+const rawLoadTopLevelResponseSchema = z.object({
   items: z.array(
     z.object({
       title: z.string(),
@@ -40,11 +41,26 @@ const rawLoadTrackResponseSchema = z.object({
   ),
   list: z.object({
     title: z.string(),
-    subtitle: z.string(),
+    count: z.number(),
   }),
 });
 
-type RawLoadTrackResponse = z.infer<typeof rawLoadTrackResponseSchema>;
+type RawLoadTopLevelResponse = z.infer<typeof rawLoadTopLevelResponseSchema>;
+
+const rawLoadLibraryResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string(),
+      item_key: z.string(),
+    }),
+  ),
+  list: z.object({
+    title: z.string(),
+    count: z.number(),
+  }),
+});
+
+type RawLoadLibraryResponse = z.infer<typeof rawLoadLibraryResponseSchema>;
 
 const rawLoadAlbumResponseSchema = z
   .any()
@@ -69,7 +85,26 @@ const rawLoadAlbumResponseSchema = z
 
 type RawLoadAlbumResponse = z.infer<typeof rawLoadAlbumResponseSchema>;
 
-type RawLoadResponse = RawLoadTrackResponse | RawLoadAlbumResponse;
+const rawLoadTrackResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string(),
+      item_key: z.string(),
+    }),
+  ),
+  list: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+  }),
+});
+
+type RawLoadTrackResponse = z.infer<typeof rawLoadTrackResponseSchema>;
+
+type RawLoadResponse =
+  | RawLoadTopLevelResponse
+  | RawLoadLibraryResponse
+  | RawLoadAlbumResponse
+  | RawLoadTrackResponse;
 
 type BrowseOptions = {
   hierarchy: string;
@@ -82,6 +117,14 @@ type LoadOptions = {
   offset?: number;
   count?: number;
 };
+
+function buildErrorMessage(description: string, err: BrowseError) {
+  if (err instanceof z.ZodError) {
+    return `Error: ${description}: Validation failed: ${z.flattenError(err)}`;
+  } else {
+    return `Error: ${description}: Roon API error: ${err}`;
+  }
+}
 
 const browseAsync = (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
@@ -117,125 +160,60 @@ const loadAsync = (
     );
   });
 
-const loadLibrary = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-  libraryBrowseData,
-) => {
-  try {
-    const libraryLoadData = await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      count: libraryBrowseData.list.count,
-    });
-
-    /* eslint-disable no-console */
-    // console.log(
-    //   'browser.js: loadTopLevel(): libraryLoadData:',
-    //   libraryLoadData,
-    // );
-    /* eslint-enable no-console */
-
-    return libraryLoadData;
-  } catch (err) {
-    throw new Error(
-      `Error: Failed to load albums from library: ${rawErrorResponseSchema.parse(err)}.`,
-    );
-  }
-};
-
-const browseLibrary = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-  libraryItem,
-) => {
-  try {
-    const libraryBrowseData = await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: libraryItem.item_key,
-    });
-
-    /* eslint-disable no-console */
-    // console.log(
-    //   'browser.js: browseLibrary(): libraryBrowseData:',
-    //   libraryBrowseData,
-    // );
-    /* eslint-enable no-console */
-
-    return loadLibrary(browseInstance, libraryBrowseData);
-  } catch (err) {
-    throw new Error(
-      `Error: Failed to browse library by item key: ${rawErrorResponseSchema.parse(err)}.`,
-    );
-  }
-};
-
-const loadTopLevel = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-  topLevelBrowseData,
-) => {
-  try {
-    const topLevelLoadData = await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: topLevelBrowseData.list.count,
-    });
-
-    /* eslint-disable no-console */
-    // console.log(
-    //   'browser.js: loadTopLevel(): topLevelLoadData:',
-    //   topLevelLoadData,
-    // );
-    /* eslint-enable no-console */
-
-    return browseLibrary(
-      browseInstance,
-      topLevelLoadData.items.find((item) => item.title === 'Library'),
-    );
-  } catch (err) {
-    throw new Error(
-      `Error: Failed to load top level hierarchy: ${rawErrorResponseSchema.parse(err)}.`,
-    );
-  }
-};
-
-const browseTopLevel = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-) => {
-  try {
-    const topLevelBrowseData = await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      pop_all: true,
-    });
-
-    /* eslint-disable no-console */
-    // console.log(
-    //   'browser.js: browseTopLevel(): topLevelBrowseData:',
-    //   topLevelBrowseData,
-    // );
-    /* eslint-enable no-console */
-
-    return loadTopLevel(browseInstance, topLevelBrowseData);
-  } catch (err) {
-    throw new Error(
-      `Error: Failed to browse top level hierarchy: ${rawErrorResponseSchema.parse(err)}.`,
-    );
-  }
-};
-
 const loadAlbums = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
 ) => {
-  const libraryLoadData = await browseTopLevel(browseInstance);
-  const albumsItem = libraryLoadData.items.find(
+  const topLevelBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      pop_all: true,
+    }),
+  );
+
+  const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: topLevelBrowseData.list.count,
+    }),
+  );
+
+  const libraryItem = topLevelLoadData.items.find(
+    (item) => item.title === 'Library',
+  );
+
+  const libraryBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: libraryItem.item_key,
+    }),
+  );
+
+  const libraryLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: libraryBrowseData.list.count,
+    }),
+  );
+
+  const albumItem = libraryLoadData.items.find(
     (item) => item.title === 'Albums',
   );
-  const albumsBrowseData = await browseAsync(browseInstance, {
-    hierarchy: 'browse',
-    item_key: albumsItem.item_key,
-  });
+
+  const albumsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: albumItem.item_key,
+    }),
+  );
+
   const albumsLoadData = await loadAsync(browseInstance, {
     hierarchy: 'browse',
     offset: roonBrowserAlbumsOffset,
     count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
   });
+
   return albumsLoadData;
 };
 
