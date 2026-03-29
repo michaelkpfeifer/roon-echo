@@ -122,7 +122,7 @@ function buildErrorMessage(description: string, err: BrowseError) {
   if (err instanceof z.ZodError) {
     return `Error: ${description}: Validation failed: ${z.flattenError(err)}`;
   } else {
-    return `Error: ${description}: Roon API error: ${err}`;
+    return `Error: ${description}: Roon API error: ${rawErrorResponseSchema.parse(err)}`;
   }
 }
 
@@ -163,58 +163,64 @@ const loadAsync = (
 const loadAlbums = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
 ) => {
-  const topLevelBrowseData = rawBrowseResponseSchema.parse(
-    await browseAsync(browseInstance, {
+  try {
+    const topLevelBrowseData = rawBrowseResponseSchema.parse(
+      await browseAsync(browseInstance, {
+        hierarchy: 'browse',
+        pop_all: true,
+      }),
+    );
+
+    const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+      await loadAsync(browseInstance, {
+        hierarchy: 'browse',
+        offset: 0,
+        count: topLevelBrowseData.list.count,
+      }),
+    );
+
+    const libraryItem = topLevelLoadData.items.find(
+      (item) => item.title === 'Library',
+    );
+
+    const libraryBrowseData = rawBrowseResponseSchema.parse(
+      await browseAsync(browseInstance, {
+        hierarchy: 'browse',
+        item_key: libraryItem.item_key,
+      }),
+    );
+
+    const libraryLoadData = rawLoadLibraryResponseSchema.parse(
+      await loadAsync(browseInstance, {
+        hierarchy: 'browse',
+        offset: 0,
+        count: libraryBrowseData.list.count,
+      }),
+    );
+
+    const albumItem = libraryLoadData.items.find(
+      (item) => item.title === 'Albums',
+    );
+
+    const albumsBrowseData = rawBrowseResponseSchema.parse(
+      await browseAsync(browseInstance, {
+        hierarchy: 'browse',
+        item_key: albumItem.item_key,
+      }),
+    );
+
+    const albumsLoadData = await loadAsync(browseInstance, {
       hierarchy: 'browse',
-      pop_all: true,
-    }),
-  );
+      offset: roonBrowserAlbumsOffset,
+      count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
+    });
 
-  const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
-    await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: topLevelBrowseData.list.count,
-    }),
-  );
-
-  const libraryItem = topLevelLoadData.items.find(
-    (item) => item.title === 'Library',
-  );
-
-  const libraryBrowseData = rawBrowseResponseSchema.parse(
-    await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: libraryItem.item_key,
-    }),
-  );
-
-  const libraryLoadData = rawLoadLibraryResponseSchema.parse(
-    await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: libraryBrowseData.list.count,
-    }),
-  );
-
-  const albumItem = libraryLoadData.items.find(
-    (item) => item.title === 'Albums',
-  );
-
-  const albumsBrowseData = rawBrowseResponseSchema.parse(
-    await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: albumItem.item_key,
-    }),
-  );
-
-  const albumsLoadData = await loadAsync(browseInstance, {
-    hierarchy: 'browse',
-    offset: roonBrowserAlbumsOffset,
-    count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
-  });
-
-  return albumsLoadData;
+    return albumsLoadData;
+  } catch (err) {
+    throw new Error(
+      buildErrorMessage('Error: Failed to load albums', err as BrowseError),
+    );
+  }
 };
 
 const loadAlbum = async (
@@ -244,7 +250,10 @@ const loadAlbum = async (
     return albumLoadData;
   } catch (err) {
     throw new Error(
-      `Error: Failed to load album by item key: ${rawErrorResponseSchema.parse(err)}.`,
+      buildErrorMessage(
+        'Error: Failed to load album by item key',
+        err as BrowseError,
+      ),
     );
   }
 };
@@ -269,14 +278,13 @@ const loadTrack = async (
       }),
     );
 
-    /* eslint-disable no-console */
-    // console.log('browser.js: loadTrack(): trackLoadData:', trackLoadData);
-    /* eslint-enable no-console */
-
     return trackLoadData;
   } catch (err) {
     throw new Error(
-      `Error: Failed to load track by item key: ${rawErrorResponseSchema.parse(err)}.`,
+      buildErrorMessage(
+        'Error: Failed to load track by item key',
+        err as BrowseError,
+      ),
     );
   }
 };
