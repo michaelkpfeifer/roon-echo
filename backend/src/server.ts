@@ -408,19 +408,11 @@ io.on('connection', async (socket) => {
 
   socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
     roonApiRateLimiter.schedule(async () => {
-      await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-        const trackKey = albumItems.items[roonPosition].item_key;
-        browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
-          const trackAddNextItem = trackActions.items.find(
-            (item: any) => item.title === 'Add Next',
-          );
-
-          browseInstance.browse({
-            hierarchy: 'browse',
-            item_key: trackAddNextItem.item_key,
-            zone_or_output_id: zoneId,
-          });
-        });
+      await browser.trackAddNext({
+        browseInstance,
+        albumKey,
+        roonPosition,
+        zoneId,
       });
     });
   });

@@ -291,4 +291,33 @@ const loadTrack = async (
   }
 };
 
-export { loadAlbum, loadAlbums, loadTrack };
+const trackAddNext = async ({
+  browseInstance,
+  albumKey,
+  roonPosition,
+  zoneId,
+}: {
+  browseInstance: InstanceType<typeof RoonApiBrowse>;
+  albumKey: string;
+  roonPosition: number;
+  zoneId: string;
+}) => {
+  const loadAlbumData = await loadAlbum(browseInstance, albumKey);
+  const trackKey = loadAlbumData.items[roonPosition].item_key;
+  const loadTrackData = await loadTrack(browseInstance, trackKey);
+  const trackAddNextItem = loadTrackData.items.find(
+    (item) => item.title === 'Add Next',
+  );
+
+  if (!trackAddNextItem) {
+    throw new Error('Error: Could not find track "Add Next" item.');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'browse',
+    item_key: trackAddNextItem.item_key,
+    zone_or_output_id: zoneId,
+  });
+};
+
+export { loadAlbum, loadAlbums, loadTrack, trackAddNext };
