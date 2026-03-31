@@ -419,25 +419,11 @@ io.on('connection', async (socket) => {
 
   socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
     roonApiRateLimiter.schedule(async () => {
-      browser
-        .loadAlbum(browseInstance, roonAlbum.itemKey)
-        .then((albumItems) => {
-          const playAlbumKey = albumItems.items[0].item_key;
-
-          browser
-            .loadTrack(browseInstance, playAlbumKey)
-            .then(async (albumPlayActions) => {
-              const addNextAction = albumPlayActions.items.find(
-                (item: any) => item.title == 'Add Next',
-              );
-
-              await browseInstance.browse({
-                hierarchy: 'browse',
-                item_key: addNextAction.item_key,
-                zone_or_output_id: zoneId,
-              });
-            });
-        });
+      await browser.albumAddNext({
+        browseInstance,
+        albumKey: roonAlbum.itemKey,
+        zoneId,
+      });
     }),
   );
 

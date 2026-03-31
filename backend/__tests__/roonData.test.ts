@@ -204,6 +204,7 @@ describe('getRoonTracks', () => {
       image_key: '0290033b354e02d0090b8d4ab7b5aa53',
       count: 3,
     },
+    play_album_item_key: '128:0',
   };
 
   let testDb: Knex<DatabaseSchema>;
@@ -374,6 +375,7 @@ describe('initializeRoonData', () => {
       image_key: '0290033b354e02d0090b8d4ab7b5aa53',
       count: 3,
     },
+    play_album_item_key: '128:0',
   };
 
   let testDb: Knex<DatabaseSchema>;

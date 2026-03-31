@@ -64,7 +64,11 @@ type RawLoadLibraryResponse = z.infer<typeof rawLoadLibraryResponseSchema>;
 
 const rawLoadAlbumResponseSchema = z
   .any()
-  .transform((data) => ({ ...data, items: data.items.slice(1) }))
+  .transform((data) => ({
+    ...data,
+    items: data.items.slice(1),
+    play_album_item_key: data.items[0]?.item_key ?? null,
+  }))
   .pipe(
     z.object({
       items: z.array(
@@ -80,6 +84,7 @@ const rawLoadAlbumResponseSchema = z
         image_key: z.string(),
         count: z.number(),
       }),
+      play_album_item_key: z.string(),
     }),
   );
 
@@ -100,11 +105,25 @@ const rawLoadTrackResponseSchema = z.object({
 
 type RawLoadTrackResponse = z.infer<typeof rawLoadTrackResponseSchema>;
 
+const rawLoadPlayAlbumOptionsResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string(),
+      item_key: z.string(),
+    }),
+  ),
+});
+
+type RawLoadPlayAlbumOptionsResponseSchema = z.infer<
+  typeof rawLoadPlayAlbumOptionsResponseSchema
+>;
+
 type RawLoadResponse =
   | RawLoadTopLevelResponse
   | RawLoadLibraryResponse
   | RawLoadAlbumResponse
-  | RawLoadTrackResponse;
+  | RawLoadTrackResponse
+  | RawLoadPlayAlbumOptionsResponseSchema;
 
 type BrowseOptions = {
   hierarchy: string;
@@ -251,10 +270,6 @@ const loadAlbum = async (
       }),
     );
 
-    /* eslint-disable no-console */
-    // console.log('browser.js: loadAlbum(): albumLoadData:', albumLoadData);
-    /* eslint-enable no-console */
-
     return albumLoadData;
   } catch (err) {
     throw new Error(
@@ -320,4 +335,50 @@ const trackAddNext = async ({
   });
 };
 
-export { loadAlbum, loadAlbums, loadTrack, trackAddNext };
+const albumAddNext = async ({
+  browseInstance,
+  albumKey,
+  zoneId,
+}: {
+  browseInstance: InstanceType<typeof RoonApiBrowse>;
+  albumKey: string;
+  zoneId: string;
+}) => {
+  const loadAlbumData = await loadAlbum(browseInstance, albumKey);
+  const playAlbumKey = loadAlbumData.play_album_item_key;
+
+  const playAlbumOptionsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: playAlbumKey,
+    }),
+  );
+
+  const playAlbumOptionsLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: playAlbumOptionsBrowseData.list.count,
+    }),
+  );
+
+  if (!playAlbumOptionsLoadData) {
+    throw new Error('Error: Could not find album play options.');
+  }
+
+  const albumAddNextItem = playAlbumOptionsLoadData.items.find(
+    (item) => item.title === 'Add Next',
+  );
+
+  if (!albumAddNextItem) {
+    throw new Error('Error: Could not find album "Add Next" item.');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'browse',
+    item_key: albumAddNextItem.item_key,
+    zone_or_output_id: zoneId,
+  });
+};
+
+export { albumAddNext, loadAlbum, loadAlbums, loadTrack, trackAddNext };
