@@ -22,7 +22,6 @@ import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbu
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import { RawRoonLoadAlbumResponseSchema } from './schemas/rawRoonLoadAlbumResponse.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
 import { camelCaseKeys } from './utils.js';
@@ -127,14 +126,9 @@ const getRoonTracks = async (
     return persistedRoonTracks;
   }
 
-  const response: unknown = camelCaseKeys(
-    await browser.loadAlbum(browseInstance, roonAlbum.itemKey),
-  );
+  const response = await browser.loadAlbum(browseInstance, roonAlbum.itemKey);
 
-  const rawRoonLoadAlbumResponse =
-    RawRoonLoadAlbumResponseSchema.parse(response);
-
-  const rawRoonTracks: RawRoonTrack[] = rawRoonLoadAlbumResponse.items;
+  const rawRoonTracks: RawRoonTrack[] = response.items;
 
   const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
     const trackId = uuidv7();

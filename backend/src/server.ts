@@ -80,7 +80,7 @@ dotenv.config();
 const coreUrlConfigured = process.env.CORE_URL;
 
 let transport: any;
-let browseInstance: any;
+let browseInstance: InstanceType<typeof RoonApiBrowse>;
 
 let staticZoneData: Zone[] = [];
 let zonePlayingStates: ZonePlayingState[] = [];
@@ -408,44 +408,22 @@ io.on('connection', async (socket) => {
 
   socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
     roonApiRateLimiter.schedule(async () => {
-      await browser.loadAlbum(browseInstance, albumKey).then((albumItems) => {
-        const trackKey = albumItems.items[roonPosition].item_key;
-        browser.loadTrack(browseInstance, trackKey).then((trackActions) => {
-          const trackAddNextItem = trackActions.items.find(
-            (item: any) => item.title === 'Add Next',
-          );
-
-          browseInstance.browse({
-            hierarchy: 'browse',
-            item_key: trackAddNextItem.item_key,
-            zone_or_output_id: zoneId,
-          });
-        });
+      await browser.trackAddNext({
+        browseInstance,
+        albumKey,
+        roonPosition,
+        zoneId,
       });
     });
   });
 
   socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
     roonApiRateLimiter.schedule(async () => {
-      browser
-        .loadAlbum(browseInstance, roonAlbum.itemKey)
-        .then((albumItems) => {
-          const playAlbumKey = albumItems.items[0].item_key;
-
-          browser
-            .loadTrack(browseInstance, playAlbumKey)
-            .then(async (albumPlayActions) => {
-              const addNextAction = albumPlayActions.items.find(
-                (item: any) => item.title == 'Add Next',
-              );
-
-              await browseInstance.browse({
-                hierarchy: 'browse',
-                item_key: addNextAction.item_key,
-                zone_or_output_id: zoneId,
-              });
-            });
-        });
+      await browser.albumAddNext({
+        browseInstance,
+        albumKey: roonAlbum.itemKey,
+        zoneId,
+      });
     }),
   );
 
