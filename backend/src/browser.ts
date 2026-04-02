@@ -2,8 +2,6 @@ import dotenv from 'dotenv';
 import type RoonApiBrowse from 'node-roon-api-browse';
 import { z } from 'zod';
 
-import type RawRoonTrack from '../../shared/external/rawRoonTrack.js';
-
 dotenv.config();
 
 const roonBrowserAlbumsOffset = parseInt(
