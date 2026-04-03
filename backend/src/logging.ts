@@ -4,7 +4,7 @@ import knexConfig from '../knexfile.js';
 
 const knex = knexInit(knexConfig.development);
 
-const logChanged = (message) => {
+const logChanged = (message: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -15,7 +15,7 @@ const logChanged = (message) => {
   return null;
 };
 
-const logChangedUnknown = (subType, subMessage) => {
+const logChangedUnknown = (subType: string, subMessage: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -27,7 +27,7 @@ const logChangedUnknown = (subType, subMessage) => {
   return null;
 };
 
-const logChangedZonesChanged = (subMessage) => {
+const logChangedZonesChanged = (subMessage: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -39,7 +39,7 @@ const logChangedZonesChanged = (subMessage) => {
   return null;
 };
 
-const logChangedZonesAdded = (subMessage) => {
+const logChangedZonesAdded = (subMessage: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -51,7 +51,7 @@ const logChangedZonesAdded = (subMessage) => {
   return null;
 };
 
-const logChangedZonesRemoved = (subMessage) => {
+const logChangedZonesRemoved = (subMessage: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -63,7 +63,7 @@ const logChangedZonesRemoved = (subMessage) => {
   return null;
 };
 
-const logChangedZonesSeekChanged = (subMessage) => {
+const logChangedZonesSeekChanged = (subMessage: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Changed',
@@ -75,7 +75,7 @@ const logChangedZonesSeekChanged = (subMessage) => {
   return null;
 };
 
-const logSubscribed = (message) => {
+const logSubscribed = (message: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Subscribed',
@@ -86,7 +86,7 @@ const logSubscribed = (message) => {
   return null;
 };
 
-const logUnknown = (message) => {
+const logUnknown = (message: string) => {
   knex.transaction(async (trx) => {
     await trx('roon_messages').insert({
       message_type: 'Subscribed',
@@ -100,8 +100,8 @@ const logUnknown = (message) => {
 export {
   logChanged,
   logChangedUnknown,
-  logChangedZonesChanged,
   logChangedZonesAdded,
+  logChangedZonesChanged,
   logChangedZonesRemoved,
   logChangedZonesSeekChanged,
   logSubscribed,

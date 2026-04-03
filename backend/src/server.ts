@@ -160,25 +160,11 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
 
   switch (messageType) {
     case 'Subscribed':
-      /* eslint-disable no-console */
-      // console.log(
-      //   'server.js: coreMessageHandler(): Received "Subscribed" message: message:',
-      //   JSON.stringify(message, null, 4),
-      // );
-      /* eslint-enable no-console */
-
-      logSubscribed(message);
+      logSubscribed(JSON.stringify(message));
 
       break;
     case 'Changed':
-      /* eslint-disable no-console */
-      // console.log(
-      //   'server.js: coreMessageHandler(): Received "Changed" message: message:',
-      //   JSON.stringify(message, null, 4),
-      // );
-      /* eslint-enable no-console */
-
-      logChanged(message);
+      logChanged(JSON.stringify(message));
 
       Object.keys(message).forEach(async (subType) => {
         switch (subType) {
@@ -246,7 +232,7 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
       break;
 
     default: {
-      logUnknown(message);
+      logUnknown(JSON.stringify(message));
     }
   }
 };
