@@ -1,8 +1,6 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export function up(knex) {
+import { Knex } from 'knex';
+
+export function up(knex: Knex): Promise<void> {
   return knex.raw(`
     CREATE TABLE tracks (
       track_id TEXT NOT NULL
@@ -30,10 +28,6 @@ export function up(knex) {
   `);
 }
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export function down(knex) {
+export function down(knex: Knex): Promise<void> {
   return knex.schema.dropTable('tracks');
 }

@@ -1,8 +1,6 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function up(knex) {
+import { Knex } from 'knex';
+
+export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE TABLE plays (
       id TEXT NOT NULL
@@ -38,10 +36,6 @@ export async function up(knex) {
   `);
 }
 
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export function down(knex) {
+export function down(knex: Knex): Promise<void> {
   return knex.schema.dropTable('plays');
 }
