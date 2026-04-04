@@ -8,20 +8,30 @@ function Tracks() {
   const { appState } = useContext(AppContext);
 
   const tracks = fp
-    .sortBy(
-      (album) => album.mbArtists[0].sortName,
-      appState.albums.filter((album) => album.stage === 'withMbMatch'),
+    .orderBy(
+      [
+        'sortCriteria.artistNames',
+        'sortCriteria.mbReleaseDate',
+        'sortCriteria.roonAlbumName',
+      ],
+      ['asc', 'asc', 'asc'],
+      appState.albums,
     )
-    .map((album) =>
-      album.mbTracks.map((track) => ({
-        ...track,
-        mbArtistNames: album.mbArtists.map((artist) => artist.name).join(', '),
-        mbAlbumName: album.mbAlbum.albumName,
-        roonAlbumImageKey: album.roonAlbum.imageKey,
-        roonAlbumItemKey: album.roonAlbum.itemKey,
-        roonAlbumId: album.roonAlbum.roonAlbumId,
-      })),
-    )
+    .map((album) => {
+      return album.roonTracks.map((roonTrack) => {
+        return {
+          roonAlbumArtistName: album.roonAlbum.roonAlbumArtistName,
+          roonAlbumImageKey: album.roonAlbum.imageKey,
+          roonAlbumItemKey: album.roonAlbum.itemKey,
+          roonAlbumName: album.roonAlbum.roonAlbumName,
+          roonLength: roonTrack.roonLength,
+          roonNumber: roonTrack.roonNumber,
+          roonPosition: roonTrack.roonPosition,
+          roonTrackName: roonTrack.roonTrackName,
+          trackId: roonTrack.trackId,
+        };
+      });
+    })
     .flat();
 
   return (
@@ -29,7 +39,7 @@ function Tracks() {
       <h1 className="heading-display">Tracks</h1>
       <div className="tracks-container">
         {tracks.map((track) => (
-          <div key={track.mbTrackId}>
+          <div key={track.trackId}>
             <TrackRow track={track} />
           </div>
         ))}
