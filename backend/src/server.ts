@@ -197,6 +197,8 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             );
             const frontendMessage = frontendZonesChangedMessage(zones);
 
+            staticZoneData = zones;
+
             io.emit('zonesChanged', frontendMessage);
 
             logChangedZonesChanged(JSON.stringify(message[subType]));

@@ -7,7 +7,7 @@ function Cover() {
   const { config, coreUrl, roonState } = useContext(AppContext);
 
   if (roonState === null) {
-    throw new Error('Error: Cannot get Roon State')
+    throw new Error('Error: Cannot get Roon State');
   }
 
   const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
