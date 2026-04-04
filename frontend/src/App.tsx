@@ -115,7 +115,11 @@ function App() {
         return mergedQueues;
       });
     });
-  }, [config]);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   /* eslint-disable no-console */
   // console.log('App.jsx: App(): roonState:', roonState);
