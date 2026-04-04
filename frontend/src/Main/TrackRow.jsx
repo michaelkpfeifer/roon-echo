@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { formatMbTrackLength } from '../utils';
+import { formatRoonTrackLength } from '../utils';
 
 function TrackRow({ track }) {
   const { config, coreUrl, socketRef } = useContext(AppContext);
@@ -14,14 +14,14 @@ function TrackRow({ track }) {
         src={`${coreUrl}/api/image/${track.roonAlbumImageKey}?scale=fit&width=75&height=75`}
         alt={track.name}
       />
-      <div className="track-row__number">{track.number}</div>
+      <div className="track-row__number">{track.roonNumber}</div>
       <div className="track-row__track">
-        <div className="track-row__name">{track.name}</div>
-        <div className="track-row__artist">{track.mbArtistNames}</div>
-        <div className="track-row__album">{track.mbAlbumName}</div>
+        <div className="track-row__name">{track.roonTrackName}</div>
+        <div className="track-row__artist">{track.roonAlbumArtistName}</div>
+        <div className="track-row__album">{track.roonAlbumName}</div>
       </div>
       <div className="track-row__length">
-        {formatMbTrackLength(track.length)}
+        {formatRoonTrackLength(track.roonLength)}
       </div>
       <div className="track-row__track-add-next">
         <button
@@ -29,16 +29,8 @@ function TrackRow({ track }) {
           onClick={() => {
             socketRef.current.emit('trackAddNext', {
               albumKey: track.roonAlbumItemKey,
-              position: track.position,
+              roonPosition: track.roonPosition,
               zoneId: config.selectedZoneId,
-              mbTrackData: {
-                mbTrackName: track.name,
-                mbAlbumName: track.mbAlbumName,
-                mbArtistNames: track.mbArtistNames,
-                mbTrackId: track.mbTrackId,
-                mbLength: track.length,
-                roonAlbumId: track.roonAlbumId,
-              },
             });
           }}
         >
@@ -51,15 +43,14 @@ function TrackRow({ track }) {
 
 TrackRow.propTypes = {
   track: PropTypes.shape({
-    number: PropTypes.string.isRequired,
-    position: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    length: PropTypes.number,
+    roonAlbumArtistName: PropTypes.string.isRequired,
     roonAlbumImageKey: PropTypes.string.isRequired,
     roonAlbumItemKey: PropTypes.string.isRequired,
-    mbTrackId: PropTypes.string.isRequired,
-    mbArtistNames: PropTypes.string.isRequired,
-    mbAlbumName: PropTypes.string.isRequired,
+    roonAlbumName: PropTypes.string.isRequired,
+    roonLength: PropTypes.number,
+    roonNumber: PropTypes.string.isRequired,
+    roonPosition: PropTypes.number.isRequired,
+    roonTrackName: PropTypes.string.isRequired,
   }).isRequired,
 };
 
