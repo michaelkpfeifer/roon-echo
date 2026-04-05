@@ -1,5 +1,7 @@
-import type { ZoneMap } from '../../../shared/internal/zoneMap';
+import type { Zone } from '../../../shared/internal/zone';
 
-type RoonState = ZoneMap | null;
+type RoonState = {
+  zones: Record<string, Zone>;
+} | null;
 
 export type { RoonState };

@@ -57,7 +57,6 @@ import type {
   ClientToServerEvents,
 } from '../../shared/internal/socket.js';
 import type { Zone } from '../../shared/internal/zone.js';
-import type { ZoneMap } from '../../shared/internal/zoneMap.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
 
@@ -378,8 +377,7 @@ io.on('connection', async (socket) => {
   socket.emit('coreUrl', coreUrl);
   socket.emit('albums', albumAggregatesWithPersistedData);
 
-  const frontendRoonState: ZoneMap =
-    frontendZonesChangedMessage(staticZoneData);
+  const frontendRoonState = frontendZonesChangedMessage(staticZoneData);
 
   /* eslint-disable no-console */
   console.log(
