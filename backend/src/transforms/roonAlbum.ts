@@ -1,5 +1,5 @@
-import type { RawRoonAlbum } from '../../../shared/external/rawRoonAlbum.js';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum.js';
+import type { RawRoonAlbum } from '../external/rawRoonAlbum.js';
 
 const transformToRoonAlbum = (
   raw: RawRoonAlbum,

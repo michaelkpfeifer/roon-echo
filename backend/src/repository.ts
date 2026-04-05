@@ -3,10 +3,10 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
+import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
-import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';

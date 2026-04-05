@@ -4,6 +4,7 @@ import type { Result } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import * as browser from './browser.js';
+import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import {
   buildAlbumAggregateWithRoonAlbum,
   buildAlbumAggregateWithRoonTracks,
@@ -16,7 +17,6 @@ import {
   insertRoonTracks,
 } from './repository.js';
 import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse.js';
-import type { RawRoonAlbum } from '../../shared/external/rawRoonAlbum.js';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
