@@ -5,6 +5,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 import * as browser from './browser.js';
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
+import type { RawRoonTrack } from './external/rawRoonTrack.js';
 import {
   buildAlbumAggregateWithRoonAlbum,
   buildAlbumAggregateWithRoonTracks,
@@ -25,7 +26,6 @@ import type { DatabaseSchema } from '../databaseSchema.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
 import { camelCaseKeys } from './utils.js';
-import type { RawRoonTrack } from '../../shared/external/rawRoonTrack.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
