@@ -4,7 +4,7 @@ import type {
   RawOneLine,
   RawTwoLine,
   RawThreeLine,
-} from '../../shared/external/rawNLine.js';
+} from './external/rawNLine.js';
 import type { RawRoonQueueItem } from '../../shared/external/rawRoonQueueItem.js';
 
 const hasNumber = (prop: string) => (obj: unknown) =>

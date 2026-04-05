@@ -1,5 +1,5 @@
-import type { RawRoonTrack } from '../../../shared/external/rawRoonTrack.js';
 import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
+import type { RawRoonTrack } from '../external/rawRoonTrack.js';
 
 const transformToRoonTrack = (
   raw: RawRoonTrack,
