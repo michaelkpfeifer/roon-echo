@@ -1,5 +1,5 @@
 import type { RoonAlbum } from './roonAlbum.js';
-import type { ZoneMap } from './zoneMap.js';
+import type { Zone } from './zone.js';
 import type { RoonQueueItem } from './roonQueueItem.js';
 import type { AlbumAggregate } from './albumAggregate.js';
 import type { ZoneSeekPosition } from './zoneSeekPosition.js';
@@ -8,12 +8,12 @@ type ServerToClientEvents = {
   albumUpdate: (album: AlbumAggregate) => void;
   albums: (albums: AlbumAggregate[]) => void;
   coreUrl: (coreUrl: string) => void;
-  initialState: (initialState: ZoneMap) => void;
+  initialState: (initialState: { zones: Record<string, Zone> }) => void;
   queueChanged: (queueChanged: {
     zoneId: string;
     queueItems: RoonQueueItem[];
   }) => void;
-  zonesChanged: (message: ZoneMap) => void;
+  zonesChanged: (message: { zones: Record<string, Zone> }) => void;
   zonesSeekChanged: (message: Record<string, ZoneSeekPosition>) => void;
 };
 
