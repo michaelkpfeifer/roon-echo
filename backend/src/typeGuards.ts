@@ -4,8 +4,8 @@ import type {
   RawOneLine,
   RawTwoLine,
   RawThreeLine,
-} from '../../shared/external/rawNLine.js';
-import type { RawRoonQueueItem } from '../../shared/external/rawRoonQueueItem.js';
+} from './external/rawNLine.js';
+import type { RawRoonQueueItem } from './external/rawRoonQueueItem.js';
 
 const hasNumber = (prop: string) => (obj: unknown) =>
   fp.isObject(obj) && fp.isNumber(fp.get(prop, obj));

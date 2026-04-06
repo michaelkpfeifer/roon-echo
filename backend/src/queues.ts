@@ -1,9 +1,9 @@
 import fp from 'lodash/fp.js';
 
+import type { RawRoonQueueItem } from './external/rawRoonQueueItem.js';
 import { RawRoonQueueSchema } from './schemas/rawRoonQueue.js';
 import { transformToRoonQueueItem } from './transforms/roonQueue.js';
 import { hasArray } from './typeGuards.js';
-import type { RawRoonQueueItem } from '../../shared/external/rawRoonQueueItem.js';
 import type { RoonQueue } from '../../shared/internal/roonQueue.js';
 
 const isRawRoonQueueWithItems = (
