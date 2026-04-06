@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import knexInit from 'knex';
 import type { Knex } from 'knex';
+import fp from 'lodash/fp.js';
 import RoonApi from 'node-roon-api';
 import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
@@ -94,6 +95,7 @@ let zonePlayingStates: ZonePlayingState[] = [];
 let queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[] =
   [];
 const playingQueueItems: PlayingQueueItems = {};
+const activeSubscriptions: Set<string> = new Set([]);
 
 const updateRoonTrackLengths = async (queueItems: RoonQueueItem[]) => {
   for (const queueItem of queueItems) {
@@ -131,6 +133,10 @@ const updateQueueChangedMessages = (
 
 const subscribeToQueueChanges = (zoneIds: string[]) => {
   zoneIds.forEach((zoneId: string) => {
+    if (activeSubscriptions.has(zoneId)) {
+      return null;
+    }
+
     transport.subscribe_queue(
       zoneId,
       100,
@@ -155,6 +161,8 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
           queueChangedMessages,
         );
         io.emit('queueChanged', { zoneId, queueItems });
+
+        activeSubscriptions.add(zoneId);
 
         return null;
       },
@@ -204,7 +212,9 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             );
             const frontendMessage = frontendZonesChangedMessage(zones);
 
-            staticZoneData = zones;
+            staticZoneData = fp.union(staticZoneData, zones);
+
+            subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
 
             io.emit('zonesChanged', frontendMessage);
 
@@ -217,8 +227,13 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             const zones = transformChangesToZones(
               RawZonesAddedMessageSchema.parse(message[subType]),
             );
+            const frontendMessage = frontendZonesChangedMessage(zones);
+
+            staticZoneData = fp.union(staticZoneData, zones);
 
             subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
+
+            io.emit('zonesChanged', frontendMessage);
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
 
@@ -324,6 +339,8 @@ zonePlayingStates = staticZoneData.map((zone) => {
 /* eslint-disable no-console */
 console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
+
+subscribeToQueueChanges(staticZoneData.map((zone) => zone.zoneId));
 
 const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
