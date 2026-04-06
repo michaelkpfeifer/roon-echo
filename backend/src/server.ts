@@ -94,6 +94,7 @@ let zonePlayingStates: ZonePlayingState[] = [];
 let queueChangedMessages: { zoneId: string; queueItems: RoonQueueItem[] }[] =
   [];
 const playingQueueItems: PlayingQueueItems = {};
+const activeSubscriptions: Set<string> = new Set([]);
 
 const updateRoonTrackLengths = async (queueItems: RoonQueueItem[]) => {
   for (const queueItem of queueItems) {
@@ -131,6 +132,10 @@ const updateQueueChangedMessages = (
 
 const subscribeToQueueChanges = (zoneIds: string[]) => {
   zoneIds.forEach((zoneId: string) => {
+    if (activeSubscriptions.has(zoneId)) {
+      return null;
+    }
+
     transport.subscribe_queue(
       zoneId,
       100,
@@ -155,6 +160,8 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
           queueChangedMessages,
         );
         io.emit('queueChanged', { zoneId, queueItems });
+
+        activeSubscriptions.add(zoneId);
 
         return null;
       },
