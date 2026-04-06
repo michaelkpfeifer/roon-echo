@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import knexInit from 'knex';
 import type { Knex } from 'knex';
+import fp from 'lodash/fp.js';
 import RoonApi from 'node-roon-api';
 import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
@@ -211,7 +212,9 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             );
             const frontendMessage = frontendZonesChangedMessage(zones);
 
-            staticZoneData = zones;
+            staticZoneData = fp.union(staticZoneData, zones);
+
+            subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
 
             io.emit('zonesChanged', frontendMessage);
 
@@ -224,8 +227,13 @@ const coreMessageHandler = (messageType: any, snakeCaseData: any) => {
             const zones = transformChangesToZones(
               RawZonesAddedMessageSchema.parse(message[subType]),
             );
+            const frontendMessage = frontendZonesChangedMessage(zones);
+
+            staticZoneData = fp.union(staticZoneData, zones);
 
             subscribeToQueueChanges(zones.map((zone) => zone.zoneId));
+
+            io.emit('zonesChanged', frontendMessage);
 
             logChangedZonesAdded(JSON.stringify(message[subType]));
 
