@@ -4,6 +4,8 @@ import Bottleneck from 'bottleneck';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import knexInit from 'knex';
+import type { Knex } from 'knex';
 import RoonApi from 'node-roon-api';
 import RoonApiBrowse from 'node-roon-api-browse';
 import RoonApiStatus from 'node-roon-api-status';
@@ -37,7 +39,7 @@ import {
   updateRoonLengthInTrack,
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
-import { db } from '../db.js';
+import type { DatabaseSchema } from '../databaseSchema.ts';
 import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
 import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
 import { RawZonesChangedMessageSchema } from './schemas/rawZonesChangedMessage.js';
@@ -59,6 +61,12 @@ import type {
 import type { Zone } from '../../shared/internal/zone.js';
 import type { ZonePlayingState } from '../../shared/internal/zonePlayingState.js';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition.js';
+import knexConfig from '../knexfile.js';
+
+const environment = (process.env.NODE_ENV ||
+  'development') as keyof typeof knexConfig;
+const untypedDb = knexInit(knexConfig[environment]);
+const db: Knex<DatabaseSchema> = untypedDb;
 
 dbInit(db);
 
