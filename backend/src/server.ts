@@ -325,6 +325,8 @@ zonePlayingStates = staticZoneData.map((zone) => {
 console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
 
+subscribeToQueueChanges(staticZoneData.map((zone) => zone.zoneId));
+
 const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
   maxConcurrent: 1,
