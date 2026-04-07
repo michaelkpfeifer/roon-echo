@@ -29,7 +29,7 @@ function Album() {
 
   const enqueueAlbumNext = (album) => {
     socketRef.current.emit('albumAddNext', {
-      roonAlbum: album.roonAlbum,
+      albumKey: album.roonAlbum.itemKey,
       zoneId: config.selectedZoneId,
     });
   };

@@ -428,11 +428,11 @@ io.on('connection', async (socket) => {
     });
   });
 
-  socket.on('albumAddNext', ({ roonAlbum, zoneId }) =>
+  socket.on('albumAddNext', ({ albumKey, zoneId }) =>
     roonApiRateLimiter.schedule(async () => {
       await browser.albumAddNext({
         browseInstance,
-        albumKey: roonAlbum.itemKey,
+        albumKey,
         zoneId,
       });
     }),
