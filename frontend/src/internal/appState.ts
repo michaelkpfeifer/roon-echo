@@ -3,7 +3,7 @@ import type { RoonQueueItem } from '../../../shared/internal/roonQueueItem';
 
 type AppState = {
   albums: AlbumAggregate[];
-  queues: Record<string, RoonQueueItem>;
+  queues: Record<string, RoonQueueItem[]>;
   isZonesModalOpen: boolean;
   tmpSelectedZoneId: string | null;
 };

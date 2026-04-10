@@ -11,7 +11,11 @@ import './styles/global/album.css';
 import './styles/global/track-row.css';
 import './styles/global/queue.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Cannot find root element.');
+
+const root = ReactDOM.createRoot(rootElement);
+
 root.render(
   <StrictMode>
     <App />
