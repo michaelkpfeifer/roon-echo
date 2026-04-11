@@ -1,13 +1,14 @@
 import fp from 'lodash/fp';
 import { useContext } from 'react';
 
+import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
 
 function Tracks() {
   const { appState } = useContext(AppContext);
 
-  const tracks = fp
+  const tracksWithAlbum = fp
     .orderBy(
       [
         'sortCriteria.artistNames',
@@ -18,17 +19,14 @@ function Tracks() {
       appState.albums,
     )
     .map((album) => {
-      return album.roonTracks.map((roonTrack) => {
+      if (album.stage === 'empty' || album.stage === 'withRoonAlbum') {
+        throw new Error('Error: Cannot render album aggregate without tracks.');
+      }
+
+      return album.roonTracks.map((roonTrack: RoonTrack) => {
         return {
-          roonAlbumArtistName: album.roonAlbum.roonAlbumArtistName,
-          roonAlbumImageKey: album.roonAlbum.imageKey,
-          roonAlbumItemKey: album.roonAlbum.itemKey,
-          roonAlbumName: album.roonAlbum.roonAlbumName,
-          roonLength: roonTrack.roonLength,
-          roonNumber: roonTrack.roonNumber,
-          roonPosition: roonTrack.roonPosition,
-          roonTrackName: roonTrack.roonTrackName,
-          trackId: roonTrack.trackId,
+          roonAlbum: album.roonAlbum,
+          roonTrack,
         };
       });
     })
@@ -38,9 +36,9 @@ function Tracks() {
     <>
       <h1 className="heading-display">Tracks</h1>
       <div className="tracks-container">
-        {tracks.map((track) => (
-          <div key={track.trackId}>
-            <TrackRow track={track} />
+        {tracksWithAlbum.map(({ roonAlbum, roonTrack }) => (
+          <div key={roonTrack.trackId}>
+            <TrackRow roonAlbum={roonAlbum} roonTrack={roonTrack} />
           </div>
         ))}
       </div>

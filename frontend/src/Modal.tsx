@@ -1,6 +1,11 @@
-import PropTypes from 'prop-types';
+type ModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  children: React.ReactNode;
+};
 
-function Modal({ isOpen, onClose, onConfirm, children }) {
+function Modal({ isOpen, onClose, onConfirm, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -26,12 +31,5 @@ function Modal({ isOpen, onClose, onConfirm, children }) {
     /* eslint-enable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
   );
 }
-
-Modal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onConfirm: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
-};
 
 export default Modal;
