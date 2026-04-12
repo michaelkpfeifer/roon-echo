@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
+import { socket } from '../socket';
 import { formatRoonTrackLength } from '../utils';
 
 type MainTrackRowProps = {
@@ -11,9 +12,8 @@ type MainTrackRowProps = {
 };
 
 function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
-  const { config, coreUrl, socketRef } = useContext(AppContext);
+  const { config, coreUrl } = useContext(AppContext);
 
-  const socket = socketRef.current;
   const zoneId = config.selectedZoneId;
 
   const addNextButton =

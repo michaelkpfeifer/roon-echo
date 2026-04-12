@@ -5,7 +5,7 @@ import AppContext from '../AppContext';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 
 function Album() {
-  const { appState, config, coreUrl, socketRef } = useContext(AppContext);
+  const { appState, config, coreUrl, socket } = useContext(AppContext);
   const { id } = useParams();
 
   const album = appState.albums.find(
@@ -20,7 +20,7 @@ function Album() {
   } = roonAlbum;
 
   const enqueueTrackNext = (track) => {
-    socketRef.current.emit('trackAddNext', {
+    socket.emit('trackAddNext', {
       albumKey: album.roonAlbum.itemKey,
       roonPosition: track.roonPosition,
       zoneId: config.selectedZoneId,
@@ -28,7 +28,7 @@ function Album() {
   };
 
   const enqueueAlbumNext = (album) => {
-    socketRef.current.emit('albumAddNext', {
+    socket.emit('albumAddNext', {
       albumKey: album.roonAlbum.itemKey,
       zoneId: config.selectedZoneId,
     });
