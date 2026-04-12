@@ -2,10 +2,11 @@ import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AppContext from '../AppContext';
+import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 
 function Album() {
-  const { appState, config, coreUrl, socket } = useContext(AppContext);
+  const { appState, config, coreUrl } = useContext(AppContext);
   const { id } = useParams();
 
   const album = appState.albums.find(
