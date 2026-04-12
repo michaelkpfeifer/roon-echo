@@ -1,10 +1,11 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import { socket } from '../socket';
 import { findSelectedZone } from '../utils';
 
 function Controls() {
-  const { config, roonState, socketRef } = useContext(AppContext);
+  const { config, roonState,  } = useContext(AppContext);
 
   if (roonState === null) {
     throw new Error('Error: Cannot get Roon State')
@@ -35,10 +36,7 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
-            if (socketRef.current === null) {
-              throw new Error('Error: Cannot talk to backend.')
-            }
-            socketRef.current.emit('pause', { zoneId: selectedZone.zoneId });
+            socket.emit('pause', { zoneId: selectedZone.zoneId });
           }}
           disabled={selectedZone.state === 'paused'}
         >
@@ -49,10 +47,7 @@ function Controls() {
         <button
           type="button"
           onClick={() => {
-            if (socketRef.current === null) {
-              throw new Error('Error: Cannot talk to backend.')
-            }
-            socketRef.current.emit('play', { zoneId: selectedZone.zoneId });
+            socket.emit('play', { zoneId: selectedZone.zoneId });
           }}
           disabled={selectedZone.state === 'playing'}
         >

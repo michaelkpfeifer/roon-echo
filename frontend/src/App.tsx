@@ -1,8 +1,6 @@
 import fp from 'lodash/fp';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { io } from 'socket.io-client';
-import type { Socket } from 'socket.io-client';
 
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
@@ -17,11 +15,8 @@ import Queues from './Main/Queues';
 import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
+import { socket } from './socket';
 import { mergeAlbum, mergeQueues, setAlbums } from './utils';
-import type {
-  ServerToClientEvents,
-  ClientToServerEvents,
-} from '../../shared/internal/socket';
 
 function App() {
   const [roonState, setRoonState] = useState<RoonState>({
@@ -43,15 +38,8 @@ function App() {
 
   useEffect(() => saveConfig(config), [config]);
 
-  const socketRef = useRef<Socket<
-    ServerToClientEvents,
-    ClientToServerEvents
-  > | null>(null);
-
   useEffect(() => {
-    socketRef.current = io('http://192.168.2.102:4000');
-    const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
-      socketRef.current;
+    socket.connect();
 
     socket.on('initialState', (initialState) => {
       setRoonState(initialState);
@@ -142,9 +130,8 @@ function App() {
       setAppState,
       setConfig,
       setRoonState,
-      socketRef,
     }),
-    [config, appState, coreUrl, roonState, socketRef],
+    [config, appState, coreUrl, roonState],
   );
 
   return (
