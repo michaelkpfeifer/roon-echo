@@ -5,8 +5,8 @@ import type { AlbumAggregate } from './albumAggregate.js';
 import type { ZoneSeekPosition } from './zoneSeekPosition.js';
 
 type ServerToClientEvents = {
-  albumUpdate: (album: AlbumAggregate) => void;
-  albums: (albums: AlbumAggregate[]) => void;
+  albumAggregateUpdate: (album: AlbumAggregate) => void;
+  albumAggregates: (albums: AlbumAggregate[]) => void;
   coreUrl: (coreUrl: string) => void;
   initialState: (initialState: { zones: Record<string, Zone> }) => void;
   queueChanged: (queueChanged: {
@@ -19,7 +19,7 @@ type ServerToClientEvents = {
 
 type ClientToServerEvents = {
   albumAddNext: (roonAlbumAndZone: {
-    roonAlbum: RoonAlbum;
+    albumKey: string;
     zoneId: string;
   }) => void;
   pause: (pause: { zoneId: string }) => void;

@@ -6,10 +6,10 @@ import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 
 function Album() {
-  const { appState, config, coreUrl } = useContext(AppContext);
+  const { albumAggregates, config, coreUrl } = useContext(AppContext);
   const { id } = useParams();
 
-  const album = appState.albums.find(
+  const album = albumAggregates.find(
     (currentAlbumAggregate) => currentAlbumAggregate.id === id,
   );
 

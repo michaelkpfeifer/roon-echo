@@ -4,15 +4,17 @@ import AppContext from '../AppContext';
 import ArtistCard from './ArtistCard';
 
 function Artists() {
-  const { appState } = useContext(AppContext);
+  const { albumAggregates } = useContext(AppContext);
 
   const roonAlbumArtistNames = [
     ...new Set(
-      appState.albums
+      albumAggregates
         .filter(
-          (album) => album.stage != 'empty' && album.stage != 'withRoonAlbum',
+          (albumAggregate) =>
+            albumAggregate.stage != 'empty' &&
+            albumAggregate.stage != 'withRoonAlbum',
         )
-        .map((album) => album.roonAlbum.roonAlbumArtistName),
+        .map((albumAggregate) => albumAggregate.roonAlbum.roonAlbumArtistName),
     ),
   ].sort();
 

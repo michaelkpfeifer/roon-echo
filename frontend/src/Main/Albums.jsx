@@ -5,7 +5,7 @@ import AppContext from '../AppContext';
 import AlbumCard from './AlbumCard';
 
 function Albums() {
-  const { appState } = useContext(AppContext);
+  const { albumAggregates } = useContext(AppContext);
 
   return (
     <>
@@ -19,11 +19,11 @@ function Albums() {
               'sortCriteria.roonAlbumName',
             ],
             ['asc', 'asc', 'asc'],
-            appState.albums,
+            albumAggregates,
           )
-          .map((album) => (
-            <div key={album.roonAlbum.itemKey}>
-              <AlbumCard albumAggregate={album} />
+          .map((albumAggregate) => (
+            <div key={albumAggregate.roonAlbum.itemKey}>
+              <AlbumCard albumAggregate={albumAggregate} />
             </div>
           ))}
       </div>
