@@ -16,15 +16,17 @@ import Tracks from './Main/Tracks';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
-import { mergeAlbum, mergeQueues, setAlbums } from './utils';
+import { mergeAlbumAggregate, mergeQueues } from './utils';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 
 function App() {
+  const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
+
   const [roonState, setRoonState] = useState<RoonState>({
     zones: {},
   });
 
   const [appState, setAppState] = useState<AppState>({
-    albums: [],
     queues: {},
     isZonesModalOpen: false,
     tmpSelectedZoneId: null,
@@ -88,13 +90,15 @@ function App() {
       );
     });
 
-    socket.on('albums', (albums) => {
-      setAppState((currentAppState) => setAlbums(currentAppState, albums));
+    socket.on('albumAggregates', (albumAggregates) => {
+      setAlbumAggregates(albumAggregates);
     });
 
-    socket.on('albumUpdate', (album) => {
-      setAppState((currentAppState) => mergeAlbum(currentAppState, album));
-    });
+    socket.on('albumAggregateUpdate', (albumAggregate) =>
+      setAlbumAggregates((currentAlbumAggregates) =>
+        mergeAlbumAggregate(currentAlbumAggregates, albumAggregate),
+      ),
+    );
 
     socket.on('queueChanged', ({ zoneId, queueItems }) => {
       setAppState((currentAppState) => {
@@ -123,6 +127,7 @@ function App() {
 
   const appContextValue: AppContextType = useMemo(
     () => ({
+      albumAggregates,
       appState,
       config,
       coreUrl,
@@ -131,7 +136,7 @@ function App() {
       setConfig,
       setRoonState,
     }),
-    [config, appState, coreUrl, roonState],
+    [albumAggregates, config, appState, coreUrl, roonState],
   );
 
   return (

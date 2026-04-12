@@ -207,6 +207,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       mbAlbumResult._unsafeUnwrap(),
     );
     io.emit('albumUpdate', albumAggregateWithMbMatch);
+    io.emit('albumAggregateUpdate', albumAggregateWithMbMatch);
     return albumAggregateWithMbMatch;
   } else {
     const albumAggregateWithoutMbMatch = buildAlbumAggregateWithoutMbMatch(
@@ -214,6 +215,7 @@ const enrichAlbumAggregateWithMusicBrainzData = async (
       mbCandidates,
     );
     io.emit('albumUpdate', albumAggregateWithoutMbMatch);
+    io.emit('albumAggregateUpdate', albumAggregateWithoutMbMatch);
     return albumAggregateWithoutMbMatch;
   }
 };

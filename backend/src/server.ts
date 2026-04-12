@@ -400,7 +400,7 @@ io.on('connection', async (socket) => {
   /* eslint-enable no-console */
 
   socket.emit('coreUrl', coreUrl);
-  socket.emit('albums', albumAggregatesWithPersistedData);
+  socket.emit('albumAggregates', albumAggregatesWithPersistedData);
 
   const frontendRoonState = frontendZonesChangedMessage(staticZoneData);
 

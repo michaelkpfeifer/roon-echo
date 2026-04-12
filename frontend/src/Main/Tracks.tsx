@@ -6,7 +6,7 @@ import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
 
 function Tracks() {
-  const { appState } = useContext(AppContext);
+  const { albumAggregates } = useContext(AppContext);
 
   const tracksWithAlbum = fp
     .orderBy(
@@ -16,16 +16,19 @@ function Tracks() {
         'sortCriteria.roonAlbumName',
       ],
       ['asc', 'asc', 'asc'],
-      appState.albums,
+      albumAggregates,
     )
-    .map((album) => {
-      if (album.stage === 'empty' || album.stage === 'withRoonAlbum') {
+    .map((albumAggregate) => {
+      if (
+        albumAggregate.stage === 'empty' ||
+        albumAggregate.stage === 'withRoonAlbum'
+      ) {
         throw new Error('Error: Cannot render album aggregate without tracks.');
       }
 
-      return album.roonTracks.map((roonTrack: RoonTrack) => {
+      return albumAggregate.roonTracks.map((roonTrack: RoonTrack) => {
         return {
-          roonAlbum: album.roonAlbum,
+          roonAlbum: albumAggregate.roonAlbum,
           roonTrack,
         };
       });
