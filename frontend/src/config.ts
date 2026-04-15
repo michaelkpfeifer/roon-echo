@@ -1,4 +1,6 @@
-const saveConfig = (config) => {
+import type { Config } from './internal/config';
+
+const saveConfig = (config: Config) => {
   localStorage.setItem('roonRemoteFrontendConfig', JSON.stringify(config));
 };
 
