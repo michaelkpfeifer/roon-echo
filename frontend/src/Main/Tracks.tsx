@@ -23,7 +23,9 @@ function Tracks() {
         albumAggregate.stage === 'empty' ||
         albumAggregate.stage === 'withRoonAlbum'
       ) {
-        throw new Error('Error: Cannot render album aggregate without tracks.');
+        throw new Error(
+          `Error: Unexpected albumAggregate stage: ${albumAggregate.stage}`,
+        );
       }
 
       return albumAggregate.roonTracks.map((roonTrack: RoonTrack) => {
