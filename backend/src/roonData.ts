@@ -95,7 +95,11 @@ const getRoonAlbums = async (
   const roonAlbums: RoonAlbum[] = [];
 
   for (const rawRoonAlbum of rawRoonAlbums) {
-    const persistedRoonAlbumResult = await fetchRoonAlbum(db, rawRoonAlbum);
+    const persistedRoonAlbumResult = await fetchRoonAlbum(
+      db,
+      rawRoonAlbum.title,
+      rawRoonAlbum.subtitle,
+    );
     const roonAlbum = mergePersistedRoonAlbum(
       rawRoonAlbum,
       persistedRoonAlbumResult,
