@@ -55,11 +55,6 @@ describe('fetchRoonAlbum', () => {
   });
 
   it('returns an error result if the album cannot be found', async () => {
-    const rawRoonAlbum = buildRawRoonAlbum({
-      title: 'Album Name',
-      subtitle: 'Artist Name',
-    });
-
     const fetchRoonAlbumResult: Result<
       PersistedRoonAlbum,
       {
@@ -67,7 +62,7 @@ describe('fetchRoonAlbum', () => {
         roonAlbumName: string;
         roonAlbumArtistName: string;
       }
-    > = await fetchRoonAlbum(testDb, rawRoonAlbum);
+    > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isErr()).toBe(true);
     if (fetchRoonAlbumResult.isErr()) {
@@ -80,10 +75,6 @@ describe('fetchRoonAlbum', () => {
   });
 
   it('returns a success result if the album can be found', async () => {
-    const rawRoonAlbum = buildRawRoonAlbum({
-      title: 'Album Name',
-      subtitle: 'Artist Name',
-    });
     const roonAlbum = await createRoonAlbum(testDb, {
       roonAlbumName: 'Album Name',
       roonAlbumArtistName: 'Artist Name',
@@ -96,7 +87,7 @@ describe('fetchRoonAlbum', () => {
         roonAlbumName: string;
         roonAlbumArtistName: string;
       }
-    > = await fetchRoonAlbum(testDb, rawRoonAlbum);
+    > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isOk()).toBe(true);
     if (fetchRoonAlbumResult.isOk()) {

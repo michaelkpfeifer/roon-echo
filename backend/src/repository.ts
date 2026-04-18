@@ -3,7 +3,6 @@ import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 
-import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
 import { camelCaseKeys, snakeCaseKeys } from './utils.js';
@@ -38,7 +37,8 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
 
 const fetchRoonAlbum = async (
   db: Knex<DatabaseSchema>,
-  rawRoonAlbum: RawRoonAlbum,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
 ): Promise<
   Result<
     PersistedRoonAlbum,
@@ -50,15 +50,15 @@ const fetchRoonAlbum = async (
   >
 > => {
   const roonAlbums = await db<DatabaseSchema['albums']>('albums').where({
-    roon_album_name: rawRoonAlbum.title,
-    roon_album_artist_name: rawRoonAlbum.subtitle,
+    roon_album_name: roonAlbumName,
+    roon_album_artist_name: roonAlbumArtistName,
   });
 
   if (roonAlbums.length === 0) {
     return err({
       error: 'repository.ts: fetchRoonAlbum(): Error: roonAlbumNotFound',
-      roonAlbumName: rawRoonAlbum.title,
-      roonAlbumArtistName: rawRoonAlbum.subtitle,
+      roonAlbumName,
+      roonAlbumArtistName,
     });
   }
 
