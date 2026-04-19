@@ -1,7 +1,9 @@
-import type { z } from 'zod';
-
-import type { RawRoonAlbumSchema } from '../schemas/rawRoonAlbum.js';
-
-type RawRoonAlbum = z.infer<typeof RawRoonAlbumSchema>;
+type RawRoonAlbum = {
+  title: string;
+  subtitle: string;
+  imageKey: string;
+  itemKey: string;
+  hint: string;
+};
 
 export type { RawRoonAlbum };
