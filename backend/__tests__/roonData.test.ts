@@ -91,26 +91,15 @@ describe('getRoonAlbums', () => {
   });
 
   it('should handle new albums not in the database', async () => {
-    vi.spyOn(browser, 'loadAlbums').mockResolvedValue({
-      items: [
-        {
-          title: 'New Album',
-          subtitle: 'New Artist',
-          image_key: 'img123',
-          item_key: 'item123',
-          hint: 'list',
-        },
-      ],
-      offset: 0,
-      list: {
-        level: 1,
-        title: 'Albums',
-        subtitle: null,
-        imageKey: null,
-        count: 10,
-        displayOffset: null,
+    vi.spyOn(browser, 'loadAlbums').mockResolvedValue([
+      {
+        title: 'New Album',
+        subtitle: 'New Artist',
+        imageKey: 'img123',
+        itemKey: 'item123',
+        hint: 'list',
       },
-    });
+    ]);
 
     const result = await getRoonAlbums(testDb, mockBrowseInstance);
 
@@ -133,26 +122,15 @@ describe('getRoonAlbums', () => {
       roonAlbumArtistName: 'Known Artist',
     });
 
-    vi.spyOn(browser, 'loadAlbums').mockResolvedValue({
-      items: [
-        {
-          title: 'Known Album',
-          subtitle: 'Known Artist',
-          image_key: 'img123',
-          item_key: 'item123',
-          hint: 'list',
-        },
-      ],
-      offset: 0,
-      list: {
-        level: 1,
-        title: 'Albums',
-        subtitle: null,
-        imageKey: null,
-        count: 10,
-        displayOffset: null,
+    vi.spyOn(browser, 'loadAlbums').mockResolvedValue([
+      {
+        title: 'Known Album',
+        subtitle: 'Known Artist',
+        imageKey: 'img123',
+        itemKey: 'item123',
+        hint: 'list',
       },
-    });
+    ]);
 
     const result = await getRoonAlbums(testDb, mockBrowseInstance);
 
@@ -334,26 +312,15 @@ describe('createAlbumAggregateWithRoonTracks', () => {
 });
 
 describe('initializeRoonData', () => {
-  const loadAlbumsResponse = {
-    items: [
-      {
-        title: '12 Golden Country Greats',
-        subtitle: 'Ween',
-        image_key: 'img123',
-        item_key: '12345:99',
-        hint: 'list',
-      },
-    ],
-    offset: 0,
-    list: {
-      level: 1,
-      title: 'Albums',
-      subtitle: null,
-      imageKey: null,
-      count: 1,
-      displayOffset: null,
+  const loadAlbumsResponse = [
+    {
+      title: '12 Golden Country Greats',
+      subtitle: 'Ween',
+      imageKey: 'img123',
+      itemKey: '12345:99',
+      hint: 'list',
     },
-  };
+  ];
 
   const loadAlbumResponse = {
     items: [

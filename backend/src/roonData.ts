@@ -17,7 +17,6 @@ import {
   insertRoonAlbum,
   insertRoonTracks,
 } from './repository.js';
-import { RawRoonLoadAlbumsResponseSchema } from './schemas/rawRoonLoadAlbumsResponse.js';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
@@ -25,7 +24,6 @@ import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
-import { camelCaseKeys } from './utils.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
@@ -80,10 +78,7 @@ const getRoonAlbums = async (
   db: Knex<DatabaseSchema>,
   browseInstance: RoonApiBrowse,
 ) => {
-  const response = camelCaseKeys(await browser.loadAlbums(browseInstance));
-  const validatedResponse = RawRoonLoadAlbumsResponseSchema.parse(response);
-
-  const rawRoonAlbums: RawRoonAlbum[] = validatedResponse.items;
+  const rawRoonAlbums = await browser.loadAlbums(browseInstance);
 
   const distinctRawRoonAlbumsCount = new Set(
     rawRoonAlbums.map((a) => `${a.title}::${a.subtitle}`),
