@@ -442,6 +442,7 @@ export {
   loadAlbum,
   loadAlbums,
   loadTrack,
+  rawLoadAlbumResponseSchema,
   rawLoadAlbumsResponseSchema,
   trackAddNext,
 };
