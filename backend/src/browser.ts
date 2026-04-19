@@ -2,6 +2,9 @@ import dotenv from 'dotenv';
 import type RoonApiBrowse from 'node-roon-api-browse';
 import { z } from 'zod';
 
+import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
+import { camelCaseKeys } from './utils.js';
+
 dotenv.config();
 
 const roonBrowserAlbumsOffset = parseInt(
@@ -61,6 +64,52 @@ const rawLoadLibraryResponseSchema = z.object({
 });
 
 type RawLoadLibraryResponse = z.infer<typeof rawLoadLibraryResponseSchema>;
+
+const rawAlbumSchema = z.object({
+  title: z.string().min(1, 'Title cannot be empty.'),
+  subtitle: z.string().refine((val) => val !== 'Unknown Artist', {
+    message: 'Artist cannot be unknown',
+  }),
+  image_key: z.string(),
+  item_key: z.string(),
+  hint: z.string(),
+});
+
+type RawAlbum = z.infer<typeof rawAlbumSchema>;
+
+const rawLoadAlbumsResponseSchema = z.object({
+  items: z.array(z.unknown()).transform((items) => {
+    return items.reduce((acc: RawAlbum[], item) => {
+      const result = rawAlbumSchema.safeParse(item);
+
+      if (result.success) {
+        acc.push(result.data);
+      } else {
+        /* eslint-disable no-console */
+        console.warn(
+          `[Validation Failed] schema: rawLoadAlbumsResponseSchema, data: ${JSON.stringify(item)}`,
+        );
+        /* eslint-enable no-console */
+        result.error.issues.forEach((issue) => {
+          /* eslint-disable no-console */
+          console.warn(`  - Path: ${issue.path.join('.')}`);
+          console.warn(`  - Reason: ${issue.message}`);
+          /* eslint-enable no-console */
+        });
+      }
+      return acc;
+    }, []);
+  }),
+  offset: z.number(),
+  list: z.object({
+    level: z.number(),
+    title: z.literal('Albums'),
+    subtitle: z.null(),
+    image_key: z.null(),
+    count: z.number(),
+    display_offset: z.null(),
+  }),
+});
 
 const rawLoadAlbumResponseSchema = z
   .any()
@@ -181,7 +230,7 @@ const loadAsync = (
 
 const loadAlbums = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
-) => {
+): Promise<RawRoonAlbum[]> => {
   try {
     const topLevelBrowseData = rawBrowseResponseSchema.parse(
       await browseAsync(browseInstance, {
@@ -236,16 +285,21 @@ const loadAlbums = async (
       }),
     );
 
-    const albumsLoadData = await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: roonBrowserAlbumsOffset,
-      count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
-    });
+    const albumsLoadData = rawLoadAlbumsResponseSchema.parse(
+      await loadAsync(browseInstance, {
+        hierarchy: 'browse',
+        offset: roonBrowserAlbumsOffset,
+        count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
+      }),
+    );
 
-    return albumsLoadData;
+    return albumsLoadData.items.map(
+      (item: RawAlbum) => camelCaseKeys(item) as RawRoonAlbum,
+    );
   } catch (err) {
     throw new Error(
       buildErrorMessage('Failed to load albums', err as BrowseError),
+      { cause: err },
     );
   }
 };
@@ -274,6 +328,7 @@ const loadAlbum = async (
   } catch (err) {
     throw new Error(
       buildErrorMessage('Failed to load album by item key', err as BrowseError),
+      { cause: err },
     );
   }
 };
@@ -302,6 +357,7 @@ const loadTrack = async (
   } catch (err) {
     throw new Error(
       buildErrorMessage('Failed to load track by item key', err as BrowseError),
+      { cause: err },
     );
   }
 };
