@@ -437,5 +437,12 @@ const albumAddNext = async ({
   });
 };
 
-export { albumAddNext, loadAlbum, loadAlbums, loadTrack, trackAddNext };
+export {
+  albumAddNext,
+  loadAlbum,
+  loadAlbums,
+  loadTrack,
+  rawLoadAlbumsResponseSchema,
+  trackAddNext,
+};
 export type { RawLoadAlbumResponse };

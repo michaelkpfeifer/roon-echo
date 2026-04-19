@@ -1,17 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { RawRoonLoadAlbumsResponseSchema } from '../../src/schemas/rawRoonLoadAlbumsResponse.js';
+import { rawLoadAlbumsResponseSchema } from '../src/browser.js';
 
-describe('RawRoonLoadAlbumsResponseSchema', () => {
+describe('rawLoadAlbumsResponseSchema', () => {
   const mockBaseResponse = {
     offset: 0,
     list: {
       level: 1,
       title: 'Albums',
       subtitle: null,
-      imageKey: null,
+      image_key: null,
       count: 6,
-      displayOffset: null,
+      display_offset: null,
     },
   };
 
@@ -19,13 +19,13 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const validAlbum = {
       title: 'Dark Side of the Moon',
       subtitle: 'Pink Floyd',
-      imageKey: 'someImageKey',
-      itemKey: 'someItemKey',
+      image_key: 'someImageKey',
+      item_key: 'someItemKey',
       hint: 'list',
     };
 
     const data = { ...mockBaseResponse, items: [validAlbum] };
-    const result = RawRoonLoadAlbumsResponseSchema.parse(data);
+    const result = rawLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(1);
     expect(result.items[0].title).toBe('Dark Side of the Moon');
@@ -36,13 +36,13 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const invalidAlbum = {
       title: '',
       subtitle: 'Some Artist',
-      imageKey: 'someImageKey',
-      itemKey: 'someItemKey',
+      image_key: 'someImageKey',
+      item_key: 'someItemKey',
       hint: 'list',
     };
 
     const data = { ...mockBaseResponse, items: [invalidAlbum] };
-    const result = RawRoonLoadAlbumsResponseSchema.parse(data);
+    const result = rawLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(0);
     expect(warn).toHaveBeenCalledWith(
@@ -50,6 +50,8 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     );
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Path'));
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Reason'));
+
+    warn.mockRestore();
   });
 
   it('should filter out "Unknown Artist" subtitles', () => {
@@ -57,13 +59,13 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     const invalidAlbum = {
       title: 'Greatest Hits',
       subtitle: 'Unknown Artist',
-      imageKey: 'someImageKey',
-      itemKey: 'someItemKey',
+      image_key: 'someImageKey',
+      item_key: 'someItemKey',
       hint: 'list',
     };
 
     const data = { ...mockBaseResponse, items: [invalidAlbum] };
-    const result = RawRoonLoadAlbumsResponseSchema.parse(data);
+    const result = rawLoadAlbumsResponseSchema.parse(data);
 
     expect(result.items).toHaveLength(0);
     expect(warn).toHaveBeenCalledWith(
@@ -71,23 +73,7 @@ describe('RawRoonLoadAlbumsResponseSchema', () => {
     );
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Path'));
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('Reason'));
-  });
 
-  it('should log a warning when an album is filtered', () => {
-    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const invalidAlbum = {
-      title: 'Greatest Hits',
-      subtitle: 'Unknown Artist',
-      imageKey: 'someImageKey',
-      itemKey: 'someItemKey',
-      hint: 'list',
-    };
-
-    const data = { ...mockBaseResponse, items: [invalidAlbum] };
-    RawRoonLoadAlbumsResponseSchema.parse(data);
-
-    expect(spy).toHaveBeenCalled();
-
-    spy.mockRestore();
+    warn.mockRestore();
   });
 });
