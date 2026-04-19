@@ -446,4 +446,3 @@ export {
   rawLoadAlbumsResponseSchema,
   trackAddNext,
 };
-export type { RawLoadAlbumResponse };
