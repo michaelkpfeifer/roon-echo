@@ -1,7 +1,6 @@
-import type { z } from 'zod';
-
-import type { RawRoonTrackSchema } from '../schemas/rawRoonTrack.js';
-
-type RawRoonTrack = z.infer<typeof RawRoonTrackSchema>;
+type RawRoonTrack = {
+  title: string;
+  subtitle: string;
+};
 
 export type { RawRoonTrack };
