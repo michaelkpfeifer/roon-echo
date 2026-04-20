@@ -4,7 +4,7 @@ type MbAlbum = {
   mbAlbumName: string;
   mbScore: number;
   mbTrackCount: number;
-  mbReleaseDate?: string;
+  mbReleaseDate: string | null;
 };
 
 export type { MbAlbum };
