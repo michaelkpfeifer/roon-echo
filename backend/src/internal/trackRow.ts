@@ -12,7 +12,7 @@ type TrackRow = {
   mbMediumPosition: number | null;
   mbNumber: string | null;
   mbPosition: number | null;
-  mbLength: number | undefined;
+  mbLength: number | null;
   createdAt: string;
   updatedAt: string;
 };
