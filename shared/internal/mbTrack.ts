@@ -6,7 +6,7 @@ type MbTrack = {
   mbMediumPosition: number;
   mbNumber: string;
   mbPosition: number;
-  mbLength?: number;
+  mbLength: number | null;
 };
 
 export type { MbTrack };

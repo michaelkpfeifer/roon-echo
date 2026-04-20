@@ -325,7 +325,7 @@ const normalizeCandidate = async (
           mb_medium_position: mbCandidateTrack.mediumPosition,
           mb_number: mbCandidateTrack.number,
           mb_position: mbCandidateTrack.position,
-          mb_length: mbCandidateTrack.length,
+          mb_length: mbCandidateTrack.length ?? null,
         });
     }
 
