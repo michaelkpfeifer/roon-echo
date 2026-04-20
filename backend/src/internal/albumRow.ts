@@ -11,7 +11,7 @@ type AlbumRow = {
   mbAlbumName: string | null;
   mbScore: number | null;
   mbTrackCount: number | null;
-  mbReleaseDate: string | undefined;
+  mbReleaseDate: string | null;
   createdAt: string;
   updatedAt: string;
 };

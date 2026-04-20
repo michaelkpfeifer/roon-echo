@@ -282,14 +282,16 @@ const normalizeCandidate = async (
       });
     }
 
-    await trx('albums').where({ album_id: mbCandidate.albumId }).update({
-      mb_album_id: mbCandidate.mbAlbumId,
-      mb_album_name: mbCandidate.mbCandidateAlbumName,
-      mb_score: mbCandidate.score,
-      mb_track_count: mbCandidate.trackCount,
-      mb_release_date: mbCandidate.releaseDate,
-      updated_at: trx.fn.now(),
-    });
+    await trx('albums')
+      .where({ album_id: mbCandidate.albumId })
+      .update({
+        mb_album_id: mbCandidate.mbAlbumId,
+        mb_album_name: mbCandidate.mbCandidateAlbumName,
+        mb_score: mbCandidate.score,
+        mb_track_count: mbCandidate.trackCount,
+        mb_release_date: mbCandidate.releaseDate ?? null,
+        updated_at: trx.fn.now(),
+      });
 
     const albumTrackCountQueryResult = await trx('tracks')
       .where({
