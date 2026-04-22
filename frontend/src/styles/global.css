@@ -18,6 +18,8 @@
   --bg-secondary: #f9f9f9;
   --track-list-text-primary: #111111;
   --track-list-track-secondary: #666666;
+  --album-card-text-primary: #111111;
+  --album-card-text-secondary: #666666;
 }
 
 body {

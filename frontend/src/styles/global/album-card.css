@@ -21,11 +21,12 @@
     font-size: 0.875rem;
     font-weight: 400;
     margin-bottom: 8px;
+    color: var(--album-card-text-primary);
 }
 
 .album-card__artist-name {
     font-size: 0.875rem;
-    color: #555;
+    color: var(--album-card-text-secondary);
 }
 
 .album-card__stage-icon {
