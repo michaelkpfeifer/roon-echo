@@ -1,6 +1,7 @@
 @import './global/album-card.css';
 @import './global/album.css';
 @import './global/albums.css';
+@import './global/artist-card.css';
 @import './global/artists.css';
 @import './global/main.css';
 @import './global/queue.css';
@@ -152,22 +153,4 @@ body {
 
 .modal-confirm:hover {
   background-color: var(--modal-confirm-button-hover-bg);
-}
-
-.artist-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: var(--bg-primary);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-}
-
-.artist-card__name {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 8px;
 }
