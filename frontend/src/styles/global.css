@@ -1,95 +1,108 @@
+@import './global/album-card.css';
+@import './global/album.css';
+@import './global/albums.css';
+@import './global/artist-card.css';
+@import './global/artists.css';
+@import './global/main.css';
+@import './global/queue.css';
+@import './global/sidebar.css';
+@import './global/track-row.css';
+@import './global/tracks.css';
+
 :root {
-    --modal-confirm-button-bg: #4CAF50;
-    --modal-confirm-button-hover-bg: #45a049;
-    --modal-confirm-button-text: white;
-    --bg-primary: white;
-    --bg-primary-hover: #f9f9f9;
-    --bg-secondary: #f9f9f9;
-    --track-list-text-primary: #111111;
-    --track-list-track-secondary: #666666;
+  --modal-confirm-button-bg: #4caf50;
+  --modal-confirm-button-hover-bg: #45a049;
+  --modal-confirm-button-text: white;
+  --bg-primary: white;
+  --bg-primary-hover: #f9f9f9;
+  --bg-secondary: #f9f9f9;
+  --track-list-text-primary: #111111;
+  --track-list-track-secondary: #666666;
+  --album-card-text-primary: #111111;
+  --album-card-text-secondary: #666666;
 }
 
 body {
-    margin: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-                 Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .page {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100vh;
 }
 
 .header {
-    height: 60px;
-    box-sizing: border-box;
-    background-color: var(--bg-secondary);
+  height: 60px;
+  box-sizing: border-box;
+  background-color: var(--bg-secondary);
 }
 
 .container {
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    box-sizing: border-box;
-    overflow: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .left {
-    width: 15vw;
-    box-sizing: border-box;
-    overflow: auto;
-    background-color: var(--bg-secondary);
-    padding: 32px;
+  width: 15vw;
+  box-sizing: border-box;
+  overflow: auto;
+  background-color: var(--bg-secondary);
+  padding: 32px;
 }
 
 .right {
-    width: 85vw;
-    box-sizing: border-box;
-    overflow: auto;
-    background-color: var(--bg-primary);
-    padding: 32px;
+  width: 85vw;
+  box-sizing: border-box;
+  overflow: auto;
+  background-color: var(--bg-primary);
+  padding: 32px;
 }
 
 .footer {
-    height: 120px;
-    box-sizing: border-box;
-    background-color: var(--bg-secondary);
+  height: 120px;
+  box-sizing: border-box;
+  background-color: var(--bg-secondary);
 }
 
 .now-playing {
-    display: flex;
-    flex-direction: row;
-    box-sizing: border-box;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  align-items: center;
 }
 
 .cover {
-    flex: 1;
-    box-sizing: border-box;
+  flex: 1;
+  box-sizing: border-box;
 }
 
 .cover > :first-child {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .cover img {
-    width: 72px;
-    height: auto;
-    margin-right: 16px;
+  width: 72px;
+  height: auto;
+  margin-right: 16px;
 }
 
 .controls {
-    flex: 1;
-    box-sizing: border-box;
+  flex: 1;
+  box-sizing: border-box;
 }
 
 .zones-and-volume {
-    flex: 1;
-    box-sizing: border-box;
+  flex: 1;
+  box-sizing: border-box;
 }
 
 .heading-display {
@@ -101,71 +114,45 @@ body {
 }
 
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    position: relative;
-    min-width: 400px;
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  min-width: 400px;
 }
 
 .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .modal-confirm {
-    margin-top: 15px;
-    padding: 10px 15px;
-    background-color: var(--modal-confirm-button-bg);
-    color: var(--modal-confirm-button-text);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: var(--modal-confirm-button-bg);
+  color: var(--modal-confirm-button-text);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .modal-confirm:hover {
-    background-color: var(--modal-confirm-button-hover-bg);
-}
-
-
-.artist-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: var(--bg-primary);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
-}
-
-.artist-card__name {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-.artists-container {
-    display: grid;
-    gap: 16px;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    margin-top: 16px;
+  background-color: var(--modal-confirm-button-hover-bg);
 }

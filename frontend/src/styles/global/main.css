@@ -1,0 +1,34 @@
+.main-container {
+  margin-top: 16px;
+}
+
+.count-cards-container {
+  display: grid;
+  gap: 36px;
+  grid-template-columns: repeat(3, 300px);
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+.count-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background-color: var(--bg-secondary);
+  padding: 24px;
+}
+
+.count-card__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.count-card__count {
+  font-size: 32px;
+}
+
+.count-card__item_name {
+  font-size: 16pt;
+}
