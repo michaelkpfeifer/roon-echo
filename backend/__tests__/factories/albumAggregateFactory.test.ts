@@ -6,8 +6,8 @@ import { buildMbAlbum } from '../../__factories__/mbAlbumFactory.js';
 import { buildMbArtists } from '../../__factories__/mbArtistFactory.js';
 import { buildMbCandidates } from '../../__factories__/mbCandidateFactory.js';
 import { buildMbTracks } from '../../__factories__/mbTrackFactory.js';
-import { buildRoonAlbum } from '../../__factories__/roonAlbumFactory.js';
-import { buildRoonTracks } from '../../__factories__/roonTrackFactory.js';
+import { buildRoonAlbum } from '../../../shared/factories/roonAlbumFactory.js';
+import { buildRoonTracks } from '../../../shared/factories/roonTrackFactory.js';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithRoonAlbum,
