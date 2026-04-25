@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate.js';
-import { buildAlbumAggregate } from '../../__factories__/albumAggregateFactory.js';
+import { buildAlbumAggregate } from '../../../shared/factories/albumAggregateFactory.js';
 import { buildMbAlbum } from '../../__factories__/mbAlbumFactory.js';
 import { buildMbArtists } from '../../__factories__/mbArtistFactory.js';
 import { buildMbCandidates } from '../../__factories__/mbCandidateFactory.js';
