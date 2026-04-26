@@ -117,7 +117,7 @@ function Album() {
                     enqueueAlbumNext(albumAggregate.roonAlbum.itemKey)
                   }
                 >
-                  Play Next
+                  Add Next
                 </button>
               </div>
             </div>
@@ -145,7 +145,7 @@ function Album() {
                     );
                   }}
                 >
-                  Play Next
+                  Add Next
                 </button>
               </div>
             </div>
