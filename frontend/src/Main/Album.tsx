@@ -98,11 +98,17 @@ function Album() {
       return (
         <>
           <div className="album-heading">
-            <img
-              src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
-              alt={roonAlbumName}
-              className="album-heading__image"
-            />
+            <button
+              type="button"
+              className="album-heading__image-button"
+              onClick={() => {}}
+            >
+              <img
+                src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+                alt={roonAlbumName}
+                className="album-heading__image"
+              />
+            </button>
             <div>
               <div className="album-heading__artists">
                 {roonAlbumArtistName}
