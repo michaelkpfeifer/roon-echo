@@ -5,13 +5,15 @@ import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
 import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
+import AlbumArt from './AlbumArt';
 
 function AlbumAggregateNotFound(id: string) {
   throw new Error(`Error: Cannot find album by ID ${id}.`);
 }
 
 function Album() {
-  const { albumAggregates, config, coreUrl } = useContext(AppContext);
+  const { albumAggregates, config, coreUrl, setIsAlbumArtModalOpen } =
+    useContext(AppContext);
   const { id } = useParams();
 
   const albumAggregate = albumAggregates.find((currentAlbumAggregate) => {
@@ -97,11 +99,12 @@ function Album() {
       const { roonAlbumName, roonAlbumArtistName, imageKey } = roonAlbum;
       return (
         <>
+          <AlbumArt />
           <div className="album-heading">
             <button
               type="button"
               className="album-heading__image-button"
-              onClick={() => {}}
+              onClick={() => setIsAlbumArtModalOpen(true)}
             >
               <img
                 src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
