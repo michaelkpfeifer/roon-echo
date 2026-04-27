@@ -3,8 +3,12 @@ import { useContext } from 'react';
 import AppContext from '../AppContext';
 import Modal from '../support/Modal';
 
-function AlbumArt() {
-  const { isAlbumArtModalOpen, setIsAlbumArtModalOpen } =
+type AlbumArtProps = {
+  imageKey: string;
+};
+
+function AlbumArt({ imageKey }: AlbumArtProps) {
+  const { coreUrl, isAlbumArtModalOpen, setIsAlbumArtModalOpen } =
     useContext(AppContext);
 
   return (
@@ -12,9 +16,9 @@ function AlbumArt() {
       isOpen={isAlbumArtModalOpen}
       onClose={() => setIsAlbumArtModalOpen(false)}
     >
-      <div>
-        <p></p>
-      </div>
+      <img
+        src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
+      />
     </Modal>
   );
 }
