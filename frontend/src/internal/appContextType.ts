@@ -10,9 +10,11 @@ type AppContextType = {
   appState: AppState;
   config: Config;
   coreUrl: string | null;
+  isAlbumArtModalOpen: boolean;
   roonState: RoonState;
   setAppState: Dispatch<SetStateAction<AppState>>;
   setConfig: Dispatch<SetStateAction<Config>>;
+  setIsAlbumArtModalOpen: Dispatch<SetStateAction<boolean>>;
   setRoonState: Dispatch<SetStateAction<RoonState>>;
 };
 

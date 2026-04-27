@@ -1,5 +1,5 @@
 import fp from 'lodash/fp';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import AppContext from './AppContext';
@@ -31,6 +31,8 @@ function App() {
     isZonesModalOpen: false,
     tmpSelectedZoneId: null,
   });
+
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
 
   const [config, setConfig] = useState(
     () => loadConfig() || { selectedZoneId: null },
@@ -125,19 +127,18 @@ function App() {
   // console.log('App.jsx: App(): config:', config);
   /* eslint-enable no-console */
 
-  const appContextValue: AppContextType = useMemo(
-    () => ({
-      albumAggregates,
-      appState,
-      config,
-      coreUrl,
-      roonState,
-      setAppState,
-      setConfig,
-      setRoonState,
-    }),
-    [albumAggregates, config, appState, coreUrl, roonState],
-  );
+  const appContextValue: AppContextType = {
+    albumAggregates,
+    appState,
+    config,
+    coreUrl,
+    isAlbumArtModalOpen,
+    roonState,
+    setAppState,
+    setConfig,
+    setIsAlbumArtModalOpen,
+    setRoonState,
+  };
 
   return (
     <AppContext.Provider value={appContextValue}>
