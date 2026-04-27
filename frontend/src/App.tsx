@@ -13,6 +13,7 @@ import Artists from './Main/Artists';
 import Home from './Main/Home';
 import Queues from './Main/Queues';
 import Tracks from './Main/Tracks';
+import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
@@ -157,6 +158,7 @@ function App() {
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
                 <Route path="/queues" element={<Queues />} />
+                <Route path="/zones" element={<Zones />} />
               </Routes>
             </div>
           </div>
