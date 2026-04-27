@@ -1,10 +1,10 @@
-type SimpleModalProps = {
+type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 };
 
-function SimpleModal({ isOpen, onClose, children }: SimpleModalProps) {
+function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -21,4 +21,4 @@ function SimpleModal({ isOpen, onClose, children }: SimpleModalProps) {
   );
 }
 
-export default SimpleModal;
+export default Modal;

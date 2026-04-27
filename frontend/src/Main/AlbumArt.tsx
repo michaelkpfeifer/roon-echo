@@ -1,21 +1,21 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import SimpleModal from '../SimpleModal';
+import Modal from '../support/Modal';
 
 function AlbumArt() {
   const { isAlbumArtModalOpen, setIsAlbumArtModalOpen } =
     useContext(AppContext);
 
   return (
-    <SimpleModal
+    <Modal
       isOpen={isAlbumArtModalOpen}
       onClose={() => setIsAlbumArtModalOpen(false)}
     >
       <div>
         <p></p>
       </div>
-    </SimpleModal>
+    </Modal>
   );
 }
 
