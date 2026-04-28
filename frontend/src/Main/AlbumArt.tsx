@@ -18,6 +18,7 @@ function AlbumArt({ imageKey }: AlbumArtProps) {
     >
       <img
         src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
+        alt=""
       />
     </Modal>
   );

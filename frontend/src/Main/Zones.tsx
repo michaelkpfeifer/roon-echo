@@ -1,5 +1,17 @@
+import { useContext } from 'react';
+
+import AppContext from '../AppContext';
+
 function Zones() {
-  return <div></div>;
+  const { zones } = useContext(AppContext);
+
+  return (
+    <div>
+      {Object.values(zones).map((zone) => (
+        <div key={zone.zoneId}>{zone.displayName}</div>
+      ))}
+    </div>
+  );
 }
 
 export default Zones;

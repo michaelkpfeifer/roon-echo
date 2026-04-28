@@ -19,9 +19,20 @@ import Sidebar from './Sidebar';
 import { socket } from './socket';
 import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import type { Zone } from '../../shared/internal/zone';
 
 function App() {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
+  const [config, setConfig] = useState(
+    () => loadConfig() || { selectedZoneId: null },
+  );
+  const [coreUrl, setCoreUrl] = useState<string | null>(null);
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+  const [zones, setZones] = useState<Record<string, Zone>>({});
+  const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
+    null,
+  );
+
 
   const [roonState, setRoonState] = useState<RoonState>({
     zones: {},
@@ -32,14 +43,6 @@ function App() {
     isZonesModalOpen: false,
     tmpSelectedZoneId: null,
   });
-
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
-
-  const [config, setConfig] = useState(
-    () => loadConfig() || { selectedZoneId: null },
-  );
-
-  const [coreUrl, setCoreUrl] = useState<string | null>(null);
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -53,6 +56,10 @@ function App() {
         ...currentAppState,
         tmpSelectedZoneId: loadConfig().selectedZoneId || null,
       }));
+
+      setZones(initialState.zones);
+
+      setDomSelectedZoneId(loadConfig().selectedZoneId || null);
     });
 
     socket.on('coreUrl', (roonCoreUrl) => {
@@ -133,12 +140,14 @@ function App() {
     appState,
     config,
     coreUrl,
+    domSelectedZoneId,
     isAlbumArtModalOpen,
     roonState,
     setAppState,
     setConfig,
     setIsAlbumArtModalOpen,
     setRoonState,
+    zones,
   };
 
   return (
