@@ -8,6 +8,7 @@
 @import './global/sidebar.css';
 @import './global/track-row.css';
 @import './global/tracks.css';
+@import './global/zones.css';
 
 :root {
   --modal-confirm-button-bg: #4caf50;

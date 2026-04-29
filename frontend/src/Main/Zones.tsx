@@ -6,11 +6,14 @@ function Zones() {
   const { zones } = useContext(AppContext);
 
   return (
-    <div>
-      {Object.values(zones).map((zone) => (
-        <div key={zone.zoneId}>{zone.displayName}</div>
-      ))}
-    </div>
+    <>
+      <h1 className="heading-display">Zones</h1>
+      <div className="zones-container">
+        {Object.values(zones).map((zone) => (
+          <div key={zone.zoneId}>{zone.displayName}</div>
+        ))}
+      </div>
+    </>
   );
 }
 
