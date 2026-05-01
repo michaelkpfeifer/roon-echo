@@ -8,7 +8,16 @@ type MainZoneProps = {
 };
 
 function ZoneRow({ zone }: MainZoneProps) {
-  const { domSelectedZoneId, setDomSelectedZoneId } = useContext(AppContext);
+  const { domSelectedZoneId, setConfig, setDomSelectedZoneId } =
+    useContext(AppContext);
+
+  const handleZoneSelection = () => {
+    setDomSelectedZoneId(zone.zoneId);
+    setConfig((currentConfig) => ({
+      ...currentConfig,
+      selectedZoneId: zone.zoneId,
+    }));
+  };
 
   const isZoneSelected = domSelectedZoneId === zone.zoneId;
 
@@ -21,7 +30,7 @@ function ZoneRow({ zone }: MainZoneProps) {
           name="zone-selection-group"
           value={zone.zoneId}
           checked={isZoneSelected}
-          onChange={() => setDomSelectedZoneId(zone.zoneId)}
+          onChange={handleZoneSelection}
         />
         <div className="zone-row__display-name">{zone.displayName}</div>
         <div className="zone-row__state">{zone.state}</div>
