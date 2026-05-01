@@ -8,6 +8,7 @@
 @import './global/sidebar.css';
 @import './global/track-row.css';
 @import './global/tracks.css';
+@import './global/zone-row.css';
 @import './global/zones.css';
 
 :root {

@@ -1,0 +1,24 @@
+.zone-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background-color: var(--bg-primary);
+  transition: background-color 0.2s;
+}
+
+.zone-row:hover {
+  background-color: var(--bg-primary-hover);
+}
+
+.zone-row__display-name {
+}
+
+.zone-row__state {
+}
+
+.zone-row__queue-time-remaining {
+  justify-self: end;
+  text-align: right;
+}
