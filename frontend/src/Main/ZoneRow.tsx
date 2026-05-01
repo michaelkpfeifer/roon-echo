@@ -1,18 +1,36 @@
+import { useContext } from 'react';
+
 import type { Zone } from '../../../shared/internal/zone';
+import AppContext from '../AppContext';
 
 type MainZoneProps = {
   zone: Zone;
 };
 
 function ZoneRow({ zone }: MainZoneProps) {
+  const { domSelectedZoneId, setDomSelectedZoneId } = useContext(AppContext);
+
+  const isZoneSelected = domSelectedZoneId === zone.zoneId;
+
   return (
-    <div className="zone-row">
-      <div className="zone-row__display-name">{zone.displayName}</div>
-      <div className="zone-row__state">{zone.state}</div>
-      <div className="zone-row__queue-time-remaining">
-        {zone.queueTimeRemaining}
+    /* eslint-disable jsx-a11y/label-has-associated-control */
+    <label>
+      <div className="zone-row">
+        <input
+          type="radio"
+          name="zone-selection-group"
+          value={zone.zoneId}
+          checked={isZoneSelected}
+          onChange={() => setDomSelectedZoneId(zone.zoneId)}
+        />
+        <div className="zone-row__display-name">{zone.displayName}</div>
+        <div className="zone-row__state">{zone.state}</div>
+        <div className="zone-row__queue-time-remaining">
+          {zone.queueTimeRemaining}
+        </div>
       </div>
-    </div>
+    </label>
+    /* eslint-enable jsx-a11y/label-has-associated-control */
   );
 }
 

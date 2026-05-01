@@ -16,6 +16,7 @@ type AppContextType = {
   roonState: RoonState;
   setAppState: Dispatch<SetStateAction<AppState>>;
   setConfig: Dispatch<SetStateAction<Config>>;
+  setDomSelectedZoneId: Dispatch<SetStateAction<string | null>>;
   setIsAlbumArtModalOpen: Dispatch<SetStateAction<boolean>>;
   setRoonState: Dispatch<SetStateAction<RoonState>>;
   zones: Record<string, Zone>;

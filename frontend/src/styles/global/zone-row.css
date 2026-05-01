@@ -1,6 +1,6 @@
 .zone-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 20px 1fr 1fr 1fr;
   align-items: center;
   gap: 16px;
   padding: 12px;
@@ -10,6 +10,9 @@
 
 .zone-row:hover {
   background-color: var(--bg-primary-hover);
+}
+
+.zone-row__selection {
 }
 
 .zone-row__display-name {

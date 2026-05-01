@@ -145,6 +145,7 @@ function App() {
     roonState,
     setAppState,
     setConfig,
+    setDomSelectedZoneId,
     setIsAlbumArtModalOpen,
     setRoonState,
     zones,
