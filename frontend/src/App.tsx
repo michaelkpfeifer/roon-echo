@@ -92,6 +92,28 @@ function App() {
           }
         }, currentState),
       );
+
+      setZones((currentZones) =>
+        Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
+          const { queueTimeRemaining, seekPosition, zoneId } = val;
+          if (seekPosition) {
+            return fp.merge(acc, {
+              [zoneId]: {
+                queueTimeRemaining,
+                nowPlaying: {
+                  seekPosition,
+                },
+              },
+            });
+          } else {
+            return fp.merge(acc, {
+              [zoneId]: {
+                queueTimeRemaining,
+              },
+            });
+          }
+        }, currentZones),
+      );
     });
 
     socket.on('zonesChanged', (zonesChangedMessage) => {
