@@ -1,6 +1,6 @@
 .zone-row {
   display: grid;
-  grid-template-columns: 20px 1fr 1fr 1fr;
+  grid-template-columns: 20px 2fr 1fr 1fr;
   align-items: center;
   gap: 16px;
   padding: 12px;
@@ -13,6 +13,7 @@
 }
 
 .zone-row__selection {
+  text-align: left;
 }
 
 .zone-row__display-name {
@@ -22,6 +23,5 @@
 }
 
 .zone-row__queue-time-remaining {
-  justify-self: end;
   text-align: right;
 }
