@@ -98,6 +98,13 @@ function App() {
       setRoonState((currentState) =>
         fp.merge(currentState, zonesChangedMessage),
       );
+
+      setZones((currentZones) => {
+        return {
+          ...currentZones,
+          ...zonesChangedMessage.zones,
+        };
+      });
     });
 
     socket.on('albumAggregates', (albumAggregates) => {
