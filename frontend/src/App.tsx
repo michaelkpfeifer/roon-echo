@@ -19,7 +19,9 @@ import Sidebar from './Sidebar';
 import { socket } from './socket';
 import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
 function App() {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
@@ -49,7 +51,9 @@ function App() {
   useEffect(() => {
     socket.connect();
 
-    socket.on('initialState', (initialState) => {
+    const handleInitialStateMessage = (initialState: {
+      zones: Record<string, Zone>;
+    }) => {
       setRoonState(initialState);
 
       setAppState((currentAppState) => ({
@@ -60,13 +64,19 @@ function App() {
       setZones(initialState.zones);
 
       setDomSelectedZoneId(loadConfig().selectedZoneId || null);
-    });
+    };
 
-    socket.on('coreUrl', (roonCoreUrl) => {
+    socket.on('initialState', handleInitialStateMessage);
+
+    const handleCoreUrlMessage = (roonCoreUrl: string) => {
       setCoreUrl(roonCoreUrl);
-    });
+    };
 
-    socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
+    socket.on('coreUrl', handleCoreUrlMessage);
+
+    const handleZonesSeekChangedMessage = (
+      zonesSeekChangedMessage: Record<string, ZoneSeekPosition>,
+    ) => {
       setRoonState((currentState) =>
         Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
@@ -114,9 +124,13 @@ function App() {
           }
         }, currentZones),
       );
-    });
+    };
 
-    socket.on('zonesChanged', (zonesChangedMessage) => {
+    socket.on('zonesSeekChanged', handleZonesSeekChangedMessage);
+
+    const handleZonesChangedMessage = (zonesChangedMessage: {
+      zones: Record<string, Zone>;
+    }) => {
       setRoonState((currentState) =>
         fp.merge(currentState, zonesChangedMessage),
       );
@@ -127,27 +141,50 @@ function App() {
           ...zonesChangedMessage.zones,
         };
       });
-    });
+    };
 
-    socket.on('albumAggregates', (albumAggregates) => {
+    socket.on('zonesChanged', handleZonesChangedMessage);
+
+    const handleAlbumAggregatesMessage = (
+      albumAggregates: AlbumAggregate[],
+    ) => {
       setAlbumAggregates(albumAggregates);
-    });
+    };
 
-    socket.on('albumAggregateUpdate', (albumAggregate) =>
+    socket.on('albumAggregates', handleAlbumAggregatesMessage);
+
+    const handleAlbumAggregateUpdate = (albumAggregate: AlbumAggregate) => {
       setAlbumAggregates((currentAlbumAggregates) =>
         mergeAlbumAggregate(currentAlbumAggregates, albumAggregate),
-      ),
-    );
+      );
+    };
 
-    socket.on('queueChanged', ({ zoneId, queueItems }) => {
+    socket.on('albumAggregateUpdate', handleAlbumAggregateUpdate);
+
+    const handleQueueChangedMessage = ({
+      zoneId,
+      queueItems,
+    }: {
+      zoneId: string;
+      queueItems: RoonQueueItem[];
+    }) => {
       setAppState((currentAppState) => {
         const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
 
         return mergedQueues;
       });
-    });
+    };
+
+    socket.on('queueChanged', handleQueueChangedMessage);
 
     return () => {
+      socket.off('queueChanged', handleQueueChangedMessage);
+      socket.off('albumAggregateUpdate', handleAlbumAggregateUpdate);
+      socket.off('albumAggregates', handleAlbumAggregatesMessage);
+      socket.off('zonesChanged', handleZonesChangedMessage);
+      socket.off('zonesSeekChanged', handleZonesSeekChangedMessage);
+      socket.off('coreUrl', handleCoreUrlMessage);
+      socket.off('initialState', handleInitialStateMessage);
       socket.disconnect();
     };
   }, []);
