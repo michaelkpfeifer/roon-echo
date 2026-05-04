@@ -6,7 +6,6 @@ import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
 import type { AppState } from './internal/appState';
-import type { RoonState } from './internal/roonState';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
@@ -35,11 +34,6 @@ function App() {
     null,
   );
 
-
-  const [roonState, setRoonState] = useState<RoonState>({
-    zones: {},
-  });
-
   const [appState, setAppState] = useState<AppState>({
     queues: {},
   });
@@ -52,8 +46,6 @@ function App() {
     const handleInitialStateMessage = (initialState: {
       zones: Record<string, Zone>;
     }) => {
-      setRoonState(initialState);
-
       setZones(initialState.zones);
 
       setDomSelectedZoneId(loadConfig().selectedZoneId || null);
@@ -70,32 +62,6 @@ function App() {
     const handleZonesSeekChangedMessage = (
       zonesSeekChangedMessage: Record<string, ZoneSeekPosition>,
     ) => {
-      setRoonState((currentState) =>
-        Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
-          const { queueTimeRemaining, seekPosition, zoneId } = val;
-          if (seekPosition) {
-            return fp.merge(acc, {
-              zones: {
-                [zoneId]: {
-                  queueTimeRemaining,
-                  nowPlaying: {
-                    seekPosition,
-                  },
-                },
-              },
-            });
-          } else {
-            return fp.merge(acc, {
-              zones: {
-                [zoneId]: {
-                  queueTimeRemaining,
-                },
-              },
-            });
-          }
-        }, currentState),
-      );
-
       setZones((currentZones) =>
         Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
@@ -124,10 +90,6 @@ function App() {
     const handleZonesChangedMessage = (zonesChangedMessage: {
       zones: Record<string, Zone>;
     }) => {
-      setRoonState((currentState) =>
-        fp.merge(currentState, zonesChangedMessage),
-      );
-
       setZones((currentZones) => {
         return {
           ...currentZones,
@@ -201,12 +163,10 @@ function App() {
     coreUrl,
     domSelectedZoneId,
     isAlbumArtModalOpen,
-    roonState,
     setAppState,
     setConfig,
     setDomSelectedZoneId,
     setIsAlbumArtModalOpen,
-    setRoonState,
     zones,
   };
 

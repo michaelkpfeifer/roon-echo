@@ -5,13 +5,9 @@ import { socket } from '../socket';
 import { findSelectedZone } from '../utils';
 
 function Controls() {
-  const { config, roonState,  } = useContext(AppContext);
+  const { config, zones  } = useContext(AppContext);
 
-  if (roonState === null) {
-    throw new Error('Error: Cannot get Roon State')
-  }
-
-  const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
+  const selectedZone = findSelectedZone(zones, config.selectedZoneId);
 
   if (selectedZone === null) {
     return null;

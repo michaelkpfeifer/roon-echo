@@ -7,7 +7,7 @@ import {
 } from '../src/utils';
 
 describe('lookupZoneName', () => {
-  const mockRoonZones = {
+  const mockZones = {
     'zone-1': {
       zoneId: '1601f4f798ff1773c83b77e489eaff98f7f4',
       displayName: 'MP 2000',
@@ -32,15 +32,15 @@ describe('lookupZoneName', () => {
   };
 
   test('returns displayName when zone exists and has displayName', () => {
-    expect(lookupZoneName(mockRoonZones, 'zone-1')).toBe('MP 2000');
+    expect(lookupZoneName(mockZones, 'zone-1')).toBe('MP 2000');
   });
 
   test('returns "-" when displayName is falsy', () => {
-    expect(lookupZoneName(mockRoonZones, 'zone-3')).toBe('-');
+    expect(lookupZoneName(mockZones, 'zone-3')).toBe('-');
   });
 
   test('throws when zone does not exist (expected behavior)', () => {
-    expect(() => lookupZoneName(mockRoonZones, 'nonexistent')).toThrow();
+    expect(() => lookupZoneName(mockZones, 'nonexistent')).toThrow();
   });
 });
 

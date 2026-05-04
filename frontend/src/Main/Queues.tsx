@@ -4,7 +4,7 @@ import AppContext from '../AppContext';
 import { formatRoonTrackLength, lookupZoneName } from '../utils';
 
 function Queues() {
-  const { appState, config, coreUrl, roonState } = useContext(AppContext);
+  const { appState, config, coreUrl, zones } = useContext(AppContext);
 
   return (
     <>
@@ -13,7 +13,7 @@ function Queues() {
         {config.selectedZoneId && appState.queues[config.selectedZoneId] && (
           <div className="queue-heading">
             <div className="queue-heading__name">
-              {lookupZoneName(roonState.zones, config.selectedZoneId)}
+              {lookupZoneName(zones, config.selectedZoneId)}
             </div>
             <div>
               {appState.queues[config.selectedZoneId].map(
