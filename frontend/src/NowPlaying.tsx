@@ -1,7 +1,7 @@
 import Controls from './NowPlaying/Controls';
 import Cover from './NowPlaying/Cover';
 import Volume from './NowPlaying/Volume';
-import Zones from './NowPlaying/Zones';
+import SelectedZone from './NowPlaying/SelectedZone';
 
 function NowPlaying() {
   return (
@@ -14,7 +14,7 @@ function NowPlaying() {
       </div>
       <div className="zones-and-volume">
         <span>
-          <Zones />
+          <SelectedZone />
         </span>
         <span>
           <Volume />
