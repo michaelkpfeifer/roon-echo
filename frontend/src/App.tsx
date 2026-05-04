@@ -42,8 +42,6 @@ function App() {
 
   const [appState, setAppState] = useState<AppState>({
     queues: {},
-    isZonesModalOpen: false,
-    tmpSelectedZoneId: null,
   });
 
   useEffect(() => saveConfig(config), [config]);
@@ -55,11 +53,6 @@ function App() {
       zones: Record<string, Zone>;
     }) => {
       setRoonState(initialState);
-
-      setAppState((currentAppState) => ({
-        ...currentAppState,
-        tmpSelectedZoneId: loadConfig().selectedZoneId || null,
-      }));
 
       setZones(initialState.zones);
 
