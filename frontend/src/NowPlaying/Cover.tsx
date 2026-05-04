@@ -4,13 +4,9 @@ import AppContext from '../AppContext';
 import { findSelectedZone } from '../utils';
 
 function Cover() {
-  const { config, coreUrl, roonState } = useContext(AppContext);
+  const { config, coreUrl, zones } = useContext(AppContext);
 
-  if (roonState === null) {
-    throw new Error('Error: Cannot get Roon State');
-  }
-
-  const selectedZone = findSelectedZone(roonState.zones, config.selectedZoneId);
+  const selectedZone = findSelectedZone(zones, config.selectedZoneId);
 
   if (selectedZone === null) {
     return null;

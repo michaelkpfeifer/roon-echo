@@ -38,7 +38,6 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
 
   return (
     <div className="track-row">
-      {' '}
       <img
         className="track-row__image"
         src={`${coreUrl}/api/image/${roonAlbum.imageKey}?scale=fit&width=75&height=75`}

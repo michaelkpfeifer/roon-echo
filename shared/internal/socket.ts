@@ -1,4 +1,3 @@
-import type { RoonAlbum } from './roonAlbum.js';
 import type { Zone } from './zone.js';
 import type { RoonQueueItem } from './roonQueueItem.js';
 import type { AlbumAggregate } from './albumAggregate.js';

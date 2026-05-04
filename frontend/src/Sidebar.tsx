@@ -26,7 +26,13 @@ function Sidebar() {
         <div className="sidebar-link-group">
           <div className="sidebar-link">
             <Link to="/queues">Queues</Link>
-          </div>{' '}
+          </div>
+        </div>
+
+        <div className="sidebar-link-group">
+          <div className="sidebar-link">
+            <Link to="/zones">Zones</Link>
+          </div>
         </div>
       </nav>
     </div>

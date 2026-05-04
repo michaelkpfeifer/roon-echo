@@ -6,111 +6,140 @@ import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
 import type { AppState } from './internal/appState';
-import type { RoonState } from './internal/roonState';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import Home from './Main/Home';
 import Queues from './Main/Queues';
 import Tracks from './Main/Tracks';
+import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
 import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
+import type { Zone } from '../../shared/internal/zone';
+import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
 function App() {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
-
-  const [roonState, setRoonState] = useState<RoonState>({
-    zones: {},
-  });
-
-  const [appState, setAppState] = useState<AppState>({
-    queues: {},
-    isZonesModalOpen: false,
-    tmpSelectedZoneId: null,
-  });
-
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
-
   const [config, setConfig] = useState(
     () => loadConfig() || { selectedZoneId: null },
   );
-
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+  const [zones, setZones] = useState<Record<string, Zone>>({});
+  const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
+    null,
+  );
+
+  const [appState, setAppState] = useState<AppState>({
+    queues: {},
+  });
 
   useEffect(() => saveConfig(config), [config]);
 
   useEffect(() => {
     socket.connect();
 
-    socket.on('initialState', (initialState) => {
-      setRoonState(initialState);
+    const handleInitialStateMessage = (initialState: {
+      zones: Record<string, Zone>;
+    }) => {
+      setZones(initialState.zones);
 
-      setAppState((currentAppState) => ({
-        ...currentAppState,
-        tmpSelectedZoneId: loadConfig().selectedZoneId || null,
-      }));
-    });
+      setDomSelectedZoneId(loadConfig().selectedZoneId || null);
+    };
 
-    socket.on('coreUrl', (roonCoreUrl) => {
+    socket.on('initialState', handleInitialStateMessage);
+
+    const handleCoreUrlMessage = (roonCoreUrl: string) => {
       setCoreUrl(roonCoreUrl);
-    });
+    };
 
-    socket.on('zonesSeekChanged', (zonesSeekChangedMessage) => {
-      setRoonState((currentState) =>
+    socket.on('coreUrl', handleCoreUrlMessage);
+
+    const handleZonesSeekChangedMessage = (
+      zonesSeekChangedMessage: Record<string, ZoneSeekPosition>,
+    ) => {
+      setZones((currentZones) =>
         Object.values(zonesSeekChangedMessage).reduce((acc, val) => {
           const { queueTimeRemaining, seekPosition, zoneId } = val;
           if (seekPosition) {
             return fp.merge(acc, {
-              zones: {
-                [zoneId]: {
-                  queueTimeRemaining,
-                  nowPlaying: {
-                    seekPosition,
-                  },
+              [zoneId]: {
+                queueTimeRemaining,
+                nowPlaying: {
+                  seekPosition,
                 },
               },
             });
           } else {
             return fp.merge(acc, {
-              zones: {
-                [zoneId]: {
-                  queueTimeRemaining,
-                },
+              [zoneId]: {
+                queueTimeRemaining,
               },
             });
           }
-        }, currentState),
+        }, currentZones),
       );
-    });
+    };
 
-    socket.on('zonesChanged', (zonesChangedMessage) => {
-      setRoonState((currentState) =>
-        fp.merge(currentState, zonesChangedMessage),
-      );
-    });
+    socket.on('zonesSeekChanged', handleZonesSeekChangedMessage);
 
-    socket.on('albumAggregates', (albumAggregates) => {
+    const handleZonesChangedMessage = (zonesChangedMessage: {
+      zones: Record<string, Zone>;
+    }) => {
+      setZones((currentZones) => {
+        return {
+          ...currentZones,
+          ...zonesChangedMessage.zones,
+        };
+      });
+    };
+
+    socket.on('zonesChanged', handleZonesChangedMessage);
+
+    const handleAlbumAggregatesMessage = (
+      albumAggregates: AlbumAggregate[],
+    ) => {
       setAlbumAggregates(albumAggregates);
-    });
+    };
 
-    socket.on('albumAggregateUpdate', (albumAggregate) =>
+    socket.on('albumAggregates', handleAlbumAggregatesMessage);
+
+    const handleAlbumAggregateUpdate = (albumAggregate: AlbumAggregate) => {
       setAlbumAggregates((currentAlbumAggregates) =>
         mergeAlbumAggregate(currentAlbumAggregates, albumAggregate),
-      ),
-    );
+      );
+    };
 
-    socket.on('queueChanged', ({ zoneId, queueItems }) => {
+    socket.on('albumAggregateUpdate', handleAlbumAggregateUpdate);
+
+    const handleQueueChangedMessage = ({
+      zoneId,
+      queueItems,
+    }: {
+      zoneId: string;
+      queueItems: RoonQueueItem[];
+    }) => {
       setAppState((currentAppState) => {
         const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
 
         return mergedQueues;
       });
-    });
+    };
+
+    socket.on('queueChanged', handleQueueChangedMessage);
 
     return () => {
+      socket.off('queueChanged', handleQueueChangedMessage);
+      socket.off('albumAggregateUpdate', handleAlbumAggregateUpdate);
+      socket.off('albumAggregates', handleAlbumAggregatesMessage);
+      socket.off('zonesChanged', handleZonesChangedMessage);
+      socket.off('zonesSeekChanged', handleZonesSeekChangedMessage);
+      socket.off('coreUrl', handleCoreUrlMessage);
+      socket.off('initialState', handleInitialStateMessage);
       socket.disconnect();
     };
   }, []);
@@ -132,12 +161,13 @@ function App() {
     appState,
     config,
     coreUrl,
+    domSelectedZoneId,
     isAlbumArtModalOpen,
-    roonState,
     setAppState,
     setConfig,
+    setDomSelectedZoneId,
     setIsAlbumArtModalOpen,
-    setRoonState,
+    zones,
   };
 
   return (
@@ -157,6 +187,7 @@ function App() {
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
                 <Route path="/queues" element={<Queues />} />
+                <Route path="/zones" element={<Zones />} />
               </Routes>
             </div>
           </div>

@@ -4,18 +4,18 @@ import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
 
 const findSelectedZone = (
-  roonZones: Record<string, Zone>,
+  zones: Record<string, Zone>,
   selectedZoneId: string | null,
 ) => {
   if (selectedZoneId === null) {
     return null;
   }
 
-  return roonZones[selectedZoneId] || null;
+  return zones[selectedZoneId] || null;
 };
 
-const lookupZoneName = (roonZones: Record<string, Zone>, zoneId: string) =>
-  roonZones[zoneId].displayName || '-';
+const lookupZoneName = (zones: Record<string, Zone>, zoneId: string) =>
+  zones[zoneId].displayName || '-';
 
 const mergeAlbumAggregate = (
   currentAlbumAggregates: AlbumAggregate[],

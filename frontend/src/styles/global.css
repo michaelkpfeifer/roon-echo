@@ -8,6 +8,8 @@
 @import './global/sidebar.css';
 @import './global/track-row.css';
 @import './global/tracks.css';
+@import './global/zone-row.css';
+@import './global/zones.css';
 
 :root {
   --modal-confirm-button-bg: #4caf50;
@@ -100,7 +102,7 @@ body {
   box-sizing: border-box;
 }
 
-.zones-and-volume {
+.zones {
   flex: 1;
   box-sizing: border-box;
 }
