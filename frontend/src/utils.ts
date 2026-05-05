@@ -76,11 +76,40 @@ const formatRoonTrackLength = (durationInSeconds: number | null) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const albumsCount = (albumAggregates: AlbumAggregate[]) =>
+  albumAggregates.length;
+
+const artistsCount = (albumAggregates: AlbumAggregate[]) =>
+  [
+    ...new Set(
+      albumAggregates
+        .filter(
+          (albumAggregate) =>
+            albumAggregate.stage != 'empty' &&
+            albumAggregate.stage != 'withRoonAlbum',
+        )
+        .map((albumAggregate) => albumAggregate.roonAlbum.roonAlbumArtistName),
+    ),
+  ].length;
+
+const tracksCount = (albumAggregates: AlbumAggregate[]) =>
+  albumAggregates
+    .filter(
+      (albumAggregate) =>
+        albumAggregate.stage != 'empty' &&
+        albumAggregate.stage != 'withRoonAlbum',
+    )
+    .map((albumAggregate) => albumAggregate.roonTracks.length)
+    .reduce((acc, n) => acc + n, 0);
+
 export {
+  albumsCount,
+  artistsCount,
   findSelectedZone,
   formatMbTrackLength,
   formatRoonTrackLength,
   lookupZoneName,
   mergeAlbumAggregate,
   mergeQueues,
+  tracksCount,
 };
