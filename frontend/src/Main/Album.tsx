@@ -99,7 +99,10 @@ function Album() {
       const { roonAlbumName, roonAlbumArtistName, imageKey } = roonAlbum;
       return (
         <>
-          <AlbumArt imageKey={imageKey} />
+          <AlbumArt
+            imageKey={imageKey}
+            alt={`${roonAlbumArtistName} - ${roonAlbumName}`}
+          />
           <div className="album-heading">
             <button
               type="button"

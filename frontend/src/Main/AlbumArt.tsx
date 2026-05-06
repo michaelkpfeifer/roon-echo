@@ -5,9 +5,10 @@ import Modal from '../support/Modal';
 
 type AlbumArtProps = {
   imageKey: string;
+  alt: string;
 };
 
-function AlbumArt({ imageKey }: AlbumArtProps) {
+function AlbumArt({ imageKey, alt }: AlbumArtProps) {
   const { coreUrl, isAlbumArtModalOpen, setIsAlbumArtModalOpen } =
     useContext(AppContext);
 
@@ -18,7 +19,7 @@ function AlbumArt({ imageKey }: AlbumArtProps) {
     >
       <img
         src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
-        alt=""
+        alt={alt}
       />
     </Modal>
   );
