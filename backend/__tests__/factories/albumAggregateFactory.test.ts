@@ -36,7 +36,7 @@ describe('buildEmptyAlbumAggregate', () => {
 
 describe('buildAlbumAggregateWithRoonAlbum', () => {
   it('creates an aggregate with stage set to "withRoonAlbum"', () => {
-    const emptyAlbumAggregate = buildAlbumAggregate('empty', {}) as Extract<
+    const emptyAlbumAggregate = { stage: 'empty' } as Extract<
       AlbumAggregate,
       { stage: 'empty' }
     >;
@@ -55,12 +55,14 @@ describe('buildAlbumAggregateWithRoonAlbum', () => {
 
 describe('buildAlbumAggregateWithRoonTracks', () => {
   it('creates an aggregate with stage set to "withRoonTracks"', () => {
+    const roonAlbum = buildRoonAlbum();
     const albumAggregateWithRoonAlbum = buildAlbumAggregate(
       'withRoonAlbum',
-      {},
+      roonAlbum,
+      [],
     ) as Extract<AlbumAggregate, { stage: 'withRoonAlbum' }>;
-    const roonTracks = buildRoonTracks(4);
 
+    const roonTracks = buildRoonTracks(4);
     const result = buildAlbumAggregateWithRoonTracks(
       albumAggregateWithRoonAlbum,
       roonTracks,
@@ -73,9 +75,12 @@ describe('buildAlbumAggregateWithRoonTracks', () => {
 
 describe('buildAlbumAggregateWithMbMatch', () => {
   it('creates an aggregate with stage set to "withMbMatch"', () => {
+    const roonAlbum = buildRoonAlbum();
+    const roonTracks = buildRoonTracks(4);
     const albumAggregateWithRoonTracks = buildAlbumAggregate(
       'withRoonTracks',
-      {},
+      roonAlbum,
+      roonTracks,
     ) as Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
     const mbCandidates = buildMbCandidates(2);
     const mbAlbum = buildMbAlbum();
@@ -98,9 +103,12 @@ describe('buildAlbumAggregateWithMbMatch', () => {
 
 describe('buildAlbumAggregateWithoutMbMatch', () => {
   it('creates an aggregate with stage set to "withoutMbMatch"', () => {
+    const roonAlbum = buildRoonAlbum();
+    const roonTracks = buildRoonTracks(4);
     const albumAggregateWithRoonTracks = buildAlbumAggregate(
       'withRoonTracks',
-      {},
+      roonAlbum,
+      roonTracks,
     ) as Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
     const mbCandidates = buildMbCandidates(2);
 

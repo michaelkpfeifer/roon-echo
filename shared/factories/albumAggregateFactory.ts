@@ -12,10 +12,6 @@ const buildAlbumAggregate = (
   roonTracks: RoonTrack[],
 ): AlbumAggregate => {
   switch (stage) {
-    case 'empty': {
-      return { stage };
-    }
-
     case 'withRoonAlbum':
       return {
         stage: 'withRoonAlbum',

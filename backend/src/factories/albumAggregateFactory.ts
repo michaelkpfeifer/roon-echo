@@ -5,7 +5,6 @@ import type { MbCandidate } from '../../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../../shared/internal/mbTrack.js';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum.js';
 import type { RoonTrack } from '../../../shared/internal/roonTrack.js';
-import type { SortCriteria } from '../../../shared/internal/sortCriteria.js';
 
 const buildEmptyAlbumAggregate = (): Extract<
   AlbumAggregate,
