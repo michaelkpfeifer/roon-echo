@@ -2,44 +2,40 @@ import { buildRoonAlbum } from './roonAlbumFactory.js';
 import { buildRoonTracks } from './roonTrackFactory.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate.js';
+
+type AlbumAggregateStage = AlbumAggregate['stage'];
 
 const buildAlbumAggregate = (
-  stage: string,
-  overrides?: {
-    roonAlbum?: Partial<RoonAlbum>;
-    roonTracks?: Partial<RoonTrack>[];
-  },
-) => {
+  stage: AlbumAggregateStage,
+  roonAlbum: RoonAlbum,
+  roonTracks: RoonTrack[],
+): AlbumAggregate => {
   switch (stage) {
-    case 'empty': {
-      return { stage };
-    }
-
-    case 'withRoonAlbum': {
-      const roonAlbum = overrides?.roonAlbum
-        ? overrides.roonAlbum
-        : buildRoonAlbum();
-
+    case 'withRoonAlbum':
       return {
         stage: 'withRoonAlbum',
-        roonAlbum: roonAlbum,
+        id: '019e0446-fd2d-7188-a008-ce167e6835aa',
+        roonAlbum,
+        sortCriteria: {
+          artistNames: roonAlbum.roonAlbumArtistName,
+          mbReleaseDate: null,
+          roonAlbumName: roonAlbum.roonAlbumName,
+        },
       };
-    }
 
-    case 'withRoonTracks': {
-      const roonAlbum = overrides?.roonAlbum
-        ? overrides.roonAlbum
-        : buildRoonAlbum();
-      const roonTracks = overrides?.roonTracks
-        ? overrides.roonTracks
-        : buildRoonTracks(2);
-
+    case 'withRoonTracks':
       return {
-        stage: 'withRoonAlbum',
-        roonAlbum: roonAlbum,
-        roonTracks: roonTracks,
+        stage: 'withRoonTracks',
+        id: '019e0446-fd2d-7188-a008-ce167e6835aa',
+        roonAlbum,
+        roonTracks,
+        sortCriteria: {
+          artistNames: roonAlbum.roonAlbumArtistName,
+          mbReleaseDate: null,
+          roonAlbumName: roonAlbum.roonAlbumName,
+        },
       };
-    }
 
     default: {
       throw new Error(`Error: Unknown stage in test data setup.`);

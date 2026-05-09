@@ -1,10 +1,23 @@
 import { describe, expect, test } from 'vitest';
 
 import {
+  albumsCount,
+  artistsCount,
   formatMbTrackLength,
   formatRoonTrackLength,
   lookupZoneName,
+  tracksCount,
 } from '../src/utils';
+import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
+import { buildRoonAlbum } from '../../shared/factories/roonAlbumFactory';
+import { buildRoonTrack } from '../../shared/factories/roonTrackFactory';
+import { buildAlbumAggregate } from '../../shared/factories/albumAggregateFactory';
+import {
+  albumUuids1,
+  albumUuids2,
+  trackUuids1,
+  trackUuids2,
+} from '../../shared/factories/uuids';
 
 describe('lookupZoneName', () => {
   const mockZones = {
@@ -69,5 +82,101 @@ describe('formatRoonTrackLength', () => {
 
   test('handles long tracks (over 10 minutes)', () => {
     expect(formatRoonTrackLength(660)).toBe('11:00');
+  });
+});
+
+describe('counts', () => {
+  const album1 = buildRoonAlbum({
+    albumId: albumUuids1[1],
+    roonAlbumName: 'Default Album 1',
+    roonAlbumArtistName: 'Default Artist 1',
+    itemKey: '1234:1',
+    imageKey: 'imgKey-' + albumUuids1[1],
+  });
+
+  const album2 = buildRoonAlbum({
+    albumId: albumUuids2[2],
+    roonAlbumName: 'Default Album 2',
+    roonAlbumArtistName: 'Default Artist 2',
+    itemKey: '1234:2',
+    imageKey: 'imgKey-' + albumUuids2[2],
+  });
+
+  const track11 = buildRoonTrack({
+    trackId: trackUuids1[1],
+    albumId: albumUuids1[1],
+    roonTrackName: 'Default Track 1 1',
+    roonNumber: '1',
+    roonPosition: 1,
+  });
+
+  const track12 = buildRoonTrack({
+    trackId: trackUuids1[2],
+    albumId: albumUuids1[1],
+    roonTrackName: 'Default Track 1 2',
+    roonNumber: '2',
+    roonPosition: 2,
+  });
+
+  const track13 = buildRoonTrack({
+    trackId: trackUuids1[3],
+    albumId: albumUuids1[1],
+    roonTrackName: 'Default Track 1 3',
+    roonNumber: '3',
+    roonPosition: 3,
+  });
+
+  const track21 = buildRoonTrack({
+    trackId: trackUuids2[1],
+    albumId: albumUuids2[2],
+    roonTrackName: 'Default Track 2 1',
+    roonNumber: '1',
+    roonPosition: 1,
+  });
+
+  const track22 = buildRoonTrack({
+    trackId: trackUuids2[2],
+    albumId: albumUuids2[2],
+    roonTrackName: 'Default Track 2 2',
+    roonNumber: '2',
+    roonPosition: 2,
+  });
+
+  const track23 = buildRoonTrack({
+    trackId: trackUuids2[3],
+    albumId: albumUuids2[2],
+    roonTrackName: 'Default Track 2 3',
+    roonNumber: '3',
+    roonPosition: 3,
+  });
+
+  const aggregate1 = buildAlbumAggregate('withRoonTracks', album1, [
+    track11,
+    track12,
+    track13,
+  ]);
+
+  const aggregate2 = buildAlbumAggregate('withRoonTracks', album2, [
+    track21,
+    track22,
+    track23,
+  ]);
+
+  describe('albumsCount', () => {
+    test('returns the correct number of albums', () => {
+      expect(albumsCount([aggregate1, aggregate2])).toBe(2);
+    });
+  });
+
+  describe('artistsCount', () => {
+    test('returns the correct number of artists', () => {
+      expect(artistsCount([aggregate1, aggregate2])).toBe(2);
+    });
+  });
+
+  describe('tracksCount', () => {
+    test('returns the correct number of tracks', () => {
+      expect(tracksCount([aggregate1, aggregate2])).toBe(6);
+    });
   });
 });

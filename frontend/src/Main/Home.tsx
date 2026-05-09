@@ -2,32 +2,10 @@ import { Disc, Music4, User } from 'lucide-react';
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import { albumsCount, artistsCount, tracksCount } from '../utils';
 
 function Home() {
   const { albumAggregates } = useContext(AppContext);
-
-  const albumsCount = albumAggregates.length;
-
-  const artistsCount = [
-    ...new Set(
-      albumAggregates
-        .filter(
-          (albumAggregate) =>
-            albumAggregate.stage != 'empty' &&
-            albumAggregate.stage != 'withRoonAlbum',
-        )
-        .map((albumAggregate) => albumAggregate.roonAlbum.roonAlbumArtistName),
-    ),
-  ].length;
-
-  const tracksCount = albumAggregates
-    .filter(
-      (albumAggregate) =>
-        albumAggregate.stage != 'empty' &&
-        albumAggregate.stage != 'withRoonAlbum',
-    )
-    .map((albumAggregate) => albumAggregate.roonTracks.length)
-    .reduce((acc, n) => acc + n, 0);
 
   return (
     <div className="main-container">
@@ -37,7 +15,9 @@ function Home() {
             <User className="count-card__icon" />
           </div>
           <div className="count-card__data">
-            <div className="count-card__count">{artistsCount}</div>
+            <div className="count-card__count">
+              {artistsCount(albumAggregates)}
+            </div>
             <div className="count-card__item-name">Artists</div>
           </div>
         </div>
@@ -46,7 +26,9 @@ function Home() {
             <Disc className="count-card__icon" />
           </div>
           <div className="count-card__data">
-            <div className="count-card__count">{albumsCount}</div>
+            <div className="count-card__count">
+              {albumsCount(albumAggregates)}
+            </div>
             <div className="count-card__item-name">Albums</div>
           </div>
         </div>
@@ -55,7 +37,9 @@ function Home() {
             <Music4 className="count-card__icon" />
           </div>
           <div className="count-card__data">
-            <div className="count-card__count">{tracksCount}</div>
+            <div className="count-card__count">
+              {tracksCount(albumAggregates)}
+            </div>
             <div className="count-card__item-name">Tracks</div>
           </div>
         </div>
