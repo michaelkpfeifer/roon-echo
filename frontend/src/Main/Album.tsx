@@ -80,7 +80,7 @@ function Album() {
     socket.emit('scheduleAlbum', {
       roonAlbumName: roonAlbum.roonAlbumName,
       roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
-      how: 'addNext',
+      how: 'Add Next',
       zoneId: config.selectedZoneId,
     });
   };

@@ -464,13 +464,6 @@ const findAlbum = async (
     (item) => (item.title = 'Albums'),
   );
 
-  console.log(
-    '+++ browser.ts: findAlbum(): albumsCategoryItem:',
-    albumsCategoryItem,
-  );
-
-  // const albumsCategoryItem = { title: 'Albums', item_key: '1627:0' };
-
   if (!albumsCategoryItem) {
     throw new Error('Could not find "Albums" item');
   }
@@ -482,23 +475,6 @@ const findAlbum = async (
     }),
   );
 
-  console.log(
-    '+++ browser.ts: findAlbum(): albumsBrowseData:',
-    albumsBrowseData,
-  );
-
-  // const albumsBrowseData = {
-  //   action: 'list',
-  //   list: {
-  //     level: 1,
-  //     title: '10,000 gecs',
-  //     subtitle: '100 Gecs',
-  //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
-  //     count: 1,
-  //     display_offset: null,
-  //   },
-  // };
-
   const albumsLoadData = rawLoadLibraryResponseSchema.parse(
     await loadAsync(browseInstance, {
       hierarchy: 'search',
@@ -506,13 +482,6 @@ const findAlbum = async (
       count: albumsBrowseData.list.count,
     }),
   );
-
-  console.log('+++ browser.ts: findAlbum(): albumsLoadData:', albumsLoadData);
-
-  // const albumsLoadData = {
-  //   items: [{ title: '10,000 gecs', item_key: '1860:0' }],
-  //   list: { title: '10,000 gecs', count: 1 },
-  // };
 
   const albumCandidates = await Promise.all(
     albumsLoadData.items.map(async ({ item_key }) => {
@@ -523,23 +492,6 @@ const findAlbum = async (
         }),
       );
 
-      console.log(
-        '+++ browser.ts: findAlbum(): albumBrowseData:',
-        albumBrowseData,
-      );
-
-      // const albumBrowseData = {
-      //   action: 'list',
-      //   list: {
-      //     level: 2,
-      //     title: '10,000 gecs',
-      //     subtitle: '100 Gecs',
-      //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
-      //     count: 11,
-      //     display_offset: null,
-      //   },
-      // };
-
       const albumLoadData = rawLoadAlbumResponseSchema.parse(
         await loadAsync(browseInstance, {
           hierarchy: 'search',
@@ -547,30 +499,6 @@ const findAlbum = async (
           count: albumBrowseData.list.count,
         }),
       );
-
-      console.log('+++ browser.ts: findAlbum(): albumLoadData:', albumLoadData);
-
-      // const albumLoadData = {
-      //   items: [
-      //     {
-      //       title: '1. Dumbest Girl Alive',
-      //       subtitle: '100 gecs, Laura Les, Dylan Brady',
-      //       item_key: '2028:1',
-      //     },
-      //     {
-      //       title: '10. mememe',
-      //       subtitle: '100 gecs, Laura Les, Dylan Brady',
-      //       item_key: '2028:10',
-      //     },
-      //   ],
-      //   list: {
-      //     title: '10,000 gecs',
-      //     subtitle: '100 Gecs',
-      //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
-      //     count: 11,
-      //   },
-      //   play_album_item_key: '2028:0',
-      // };
 
       return albumLoadData;
     }),
@@ -656,7 +584,65 @@ const scheduleAlbum = async (
   console.log('+++ browser.ts: scheduleAlbum(): how:', how);
   console.log('+++ browser.ts: scheduleAlbum(): zoneId:', zoneId);
 
-  findAlbum(browseInstance, roonAlbumName, roonAlbumArtistName);
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  if (!album) {
+    throw new Error('Could not find album');
+  }
+
+  const playAlbumKey = album.play_album_item_key;
+
+  console.log('+++ browser.ts: scheduleAlbum(): playAlbumKey:', playAlbumKey);
+
+  const playAlbumOptionsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'search',
+      item_key: playAlbumKey,
+    }),
+  );
+
+  console.log(
+    '+++ browser.ts: scheduleAlbum(): playAlbumOptionsBrowseData:',
+    playAlbumOptionsBrowseData,
+  );
+
+  // const playAlbumOptionsBrowseData = {
+  //   action: 'list',
+  //   list: {
+  //     level: 3,
+  //     title: 'Play Album',
+  //     subtitle: null,
+  //     image_key: null,
+  //     count: 4,
+  //     display_offset: null,
+  //   },
+  // };
+
+  const playAlbumOptionsLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'search',
+      offset: 0,
+      count: playAlbumOptionsBrowseData.list.count,
+    }),
+  );
+
+  const playAlbumOption = playAlbumOptionsLoadData.items.find(
+    (option) => option.title === how,
+  );
+
+  if (!playAlbumOption) {
+    throw new Error('Could not find album action');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'search',
+    item_key: playAlbumOption.item_key,
+    zone_or_output_id: zoneId,
+  });
 };
 
 const scheduleTrack = () => {};
