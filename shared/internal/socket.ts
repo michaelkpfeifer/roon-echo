@@ -1,6 +1,7 @@
 import type { Zone } from './zone.js';
 import type { RoonQueueItem } from './roonQueueItem.js';
 import type { AlbumAggregate } from './albumAggregate.js';
+import type { AlbumSchedulingSpecification } from './albumSchedulingSpecification.js';
 import type { ZoneSeekPosition } from './zoneSeekPosition.js';
 
 type ServerToClientEvents = {
@@ -17,10 +18,9 @@ type ServerToClientEvents = {
 };
 
 type ClientToServerEvents = {
-  albumAddNext: (roonAlbumAndZone: {
-    albumKey: string;
-    zoneId: string;
-  }) => void;
+  scheduleAlbum: (
+    albumSchedulingSpecification: AlbumSchedulingSpecification,
+  ) => void;
   pause: (pause: { zoneId: string }) => void;
   play: (play: { zoneId: string }) => void;
   trackAddNext: (keyPositionZone: {

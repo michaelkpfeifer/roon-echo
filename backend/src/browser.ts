@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { camelCaseKeys } from './utils.js';
+import type { AlbumSchedulingSpecification } from '../../shared/internal/albumSchedulingSpecification.js';
 
 dotenv.config();
 
@@ -177,6 +178,7 @@ type RawLoadResponse =
 type BrowseOptions = {
   hierarchy: string;
   item_key?: string;
+  input?: string;
   pop_all?: boolean;
 };
 
@@ -437,6 +439,228 @@ const albumAddNext = async ({
   });
 };
 
+const findAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
+) => {
+  const topLevelBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'search',
+      input: roonAlbumName,
+      pop_all: true,
+    }),
+  );
+
+  const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'search',
+      offset: 0,
+      count: topLevelBrowseData.list.count,
+    }),
+  );
+
+  const albumsCategoryItem = topLevelLoadData.items.find(
+    (item) => (item.title = 'Albums'),
+  );
+
+  console.log(
+    '+++ browser.ts: findAlbum(): albumsCategoryItem:',
+    albumsCategoryItem,
+  );
+
+  // const albumsCategoryItem = { title: 'Albums', item_key: '1627:0' };
+
+  if (!albumsCategoryItem) {
+    throw new Error('Could not find "Albums" item');
+  }
+
+  const albumsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'search',
+      item_key: albumsCategoryItem.item_key,
+    }),
+  );
+
+  console.log(
+    '+++ browser.ts: findAlbum(): albumsBrowseData:',
+    albumsBrowseData,
+  );
+
+  // const albumsBrowseData = {
+  //   action: 'list',
+  //   list: {
+  //     level: 1,
+  //     title: '10,000 gecs',
+  //     subtitle: '100 Gecs',
+  //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
+  //     count: 1,
+  //     display_offset: null,
+  //   },
+  // };
+
+  const albumsLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'search',
+      offset: 0,
+      count: albumsBrowseData.list.count,
+    }),
+  );
+
+  console.log('+++ browser.ts: findAlbum(): albumsLoadData:', albumsLoadData);
+
+  // const albumsLoadData = {
+  //   items: [{ title: '10,000 gecs', item_key: '1860:0' }],
+  //   list: { title: '10,000 gecs', count: 1 },
+  // };
+
+  const albumCandidates = await Promise.all(
+    albumsLoadData.items.map(async ({ item_key }) => {
+      const albumBrowseData = rawBrowseResponseSchema.parse(
+        await browseAsync(browseInstance, {
+          hierarchy: 'search',
+          item_key,
+        }),
+      );
+
+      console.log(
+        '+++ browser.ts: findAlbum(): albumBrowseData:',
+        albumBrowseData,
+      );
+
+      // const albumBrowseData = {
+      //   action: 'list',
+      //   list: {
+      //     level: 2,
+      //     title: '10,000 gecs',
+      //     subtitle: '100 Gecs',
+      //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
+      //     count: 11,
+      //     display_offset: null,
+      //   },
+      // };
+
+      const albumLoadData = rawLoadAlbumResponseSchema.parse(
+        await loadAsync(browseInstance, {
+          hierarchy: 'search',
+          offset: 0,
+          count: albumBrowseData.list.count,
+        }),
+      );
+
+      console.log('+++ browser.ts: findAlbum(): albumLoadData:', albumLoadData);
+
+      // const albumLoadData = {
+      //   items: [
+      //     {
+      //       title: '1. Dumbest Girl Alive',
+      //       subtitle: '100 gecs, Laura Les, Dylan Brady',
+      //       item_key: '2028:1',
+      //     },
+      //     {
+      //       title: '10. mememe',
+      //       subtitle: '100 gecs, Laura Les, Dylan Brady',
+      //       item_key: '2028:10',
+      //     },
+      //   ],
+      //   list: {
+      //     title: '10,000 gecs',
+      //     subtitle: '100 Gecs',
+      //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
+      //     count: 11,
+      //   },
+      //   play_album_item_key: '2028:0',
+      // };
+
+      return albumLoadData;
+    }),
+  );
+
+  if (albumCandidates.length === 0) {
+    throw new Error('Could not find matching album.');
+  }
+
+  if (albumCandidates.length > 1) {
+    throw new Error('Found too many matching albums');
+  }
+
+  console.log(
+    '+++ browser.ts: findAlbum(): albumCandidates:',
+    JSON.stringify(albumCandidates, null, 4),
+  );
+
+  // const albumCandidates = [
+  //   {
+  //     items: [
+  //       {
+  //         title: '1. Dumbest Girl Alive',
+  //         subtitle: '100 gecs, Laura Les, Dylan Brady',
+  //         item_key: '2085:1',
+  //       },
+  //       {
+  //         title: '10. mememe',
+  //         subtitle: '100 gecs, Laura Les, Dylan Brady',
+  //         item_key: '2085:10',
+  //       },
+  //     ],
+  //     list: {
+  //       title: '10,000 gecs',
+  //       subtitle: '100 Gecs',
+  //       image_key: 'c6400d4cc982b2eb4136863c35b0c547',
+  //       count: 11,
+  //     },
+  //     play_album_item_key: '2085:0',
+  //   },
+  // ];
+
+  const match = albumCandidates.find(
+    (candidate) => candidate.list.subtitle === roonAlbumArtistName,
+  );
+
+  console.log('+++ browser.ts: findAlbum: match:', match);
+
+  // const match = {
+  //   items: [
+  //     {
+  //       title: '1. Dumbest Girl Alive',
+  //       subtitle: '100 gecs, Laura Les, Dylan Brady',
+  //       item_key: '2277:1',
+  //     },
+  //     {
+  //       title: '10. mememe',
+  //       subtitle: '100 gecs, Laura Les, Dylan Brady',
+  //       item_key: '2277:10',
+  //     },
+  //   ],
+  //   list: {
+  //     title: '10,000 gecs',
+  //     subtitle: '100 Gecs',
+  //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
+  //     count: 11,
+  //   },
+  //   play_album_item_key: '2277:0',
+  // };
+
+  return match;
+};
+
+const scheduleAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    how,
+    zoneId,
+  }: AlbumSchedulingSpecification,
+) => {
+  console.log('+++ browser.ts: scheduleAlbum(): how:', how);
+  console.log('+++ browser.ts: scheduleAlbum(): zoneId:', zoneId);
+
+  findAlbum(browseInstance, roonAlbumName, roonAlbumArtistName);
+};
+
+const scheduleTrack = () => {};
+
 export {
   albumAddNext,
   loadAlbum,
@@ -444,5 +668,7 @@ export {
   loadTrack,
   rawLoadAlbumResponseSchema,
   rawLoadAlbumsResponseSchema,
+  scheduleAlbum,
+  scheduleTrack,
   trackAddNext,
 };
