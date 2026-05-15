@@ -417,14 +417,12 @@ io.on('connection', async (socket) => {
     socket.emit('queueChanged', message);
   });
 
-  socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
+  socket.on('scheduleTrack', (trackSchedulingSpecification) => {
     roonApiRateLimiter.schedule(async () => {
-      await browser.trackAddNext({
-        browseInstance,
-        albumKey,
-        roonPosition,
-        zoneId,
-      });
+      console.log(
+        '>>> trackSchedulingSpecification',
+        trackSchedulingSpecification,
+      );
     });
   });
 

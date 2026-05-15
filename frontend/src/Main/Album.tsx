@@ -60,14 +60,16 @@ function Album() {
     return '-';
   };
 
-  const enqueueTrackNext = (albumKey: string, roonPosition: number) => {
+  const trackAddNext = (roonAlbum: RoonAlbum, roonPosition: number) => {
     if (config.selectedZoneId === null) {
       return null;
     }
 
-    socket.emit('trackAddNext', {
-      albumKey,
+    socket.emit('scheduleTrack', {
+      roonAlbumName: roonAlbum.roonAlbumName,
+      roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
       roonPosition,
+      how: 'Add Next',
       zoneId: config.selectedZoneId,
     });
   };
@@ -152,8 +154,8 @@ function Album() {
                   type="button"
                   disabled={config.selectedZoneId === null}
                   onClick={() => {
-                    enqueueTrackNext(
-                      albumAggregate.roonAlbum.itemKey,
+                    trackAddNext(
+                      albumAggregate.roonAlbum,
                       roonTrack.roonPosition,
                     );
                   }}
