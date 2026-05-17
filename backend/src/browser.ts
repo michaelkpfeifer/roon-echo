@@ -513,62 +513,9 @@ const findAlbum = async (
     throw new Error('Found too many matching albums');
   }
 
-  console.log(
-    '+++ browser.ts: findAlbum(): albumCandidates:',
-    JSON.stringify(albumCandidates, null, 4),
-  );
-
-  // const albumCandidates = [
-  //   {
-  //     items: [
-  //       {
-  //         title: '1. Dumbest Girl Alive',
-  //         subtitle: '100 gecs, Laura Les, Dylan Brady',
-  //         item_key: '2085:1',
-  //       },
-  //       {
-  //         title: '10. mememe',
-  //         subtitle: '100 gecs, Laura Les, Dylan Brady',
-  //         item_key: '2085:10',
-  //       },
-  //     ],
-  //     list: {
-  //       title: '10,000 gecs',
-  //       subtitle: '100 Gecs',
-  //       image_key: 'c6400d4cc982b2eb4136863c35b0c547',
-  //       count: 11,
-  //     },
-  //     play_album_item_key: '2085:0',
-  //   },
-  // ];
-
   const match = albumCandidates.find(
     (candidate) => candidate.list.subtitle === roonAlbumArtistName,
   );
-
-  console.log('+++ browser.ts: findAlbum(): match:', match);
-
-  // const match = {
-  //   items: [
-  //     {
-  //       title: '1. Dumbest Girl Alive',
-  //       subtitle: '100 gecs, Laura Les, Dylan Brady',
-  //       item_key: '2277:1',
-  //     },
-  //     {
-  //       title: '10. mememe',
-  //       subtitle: '100 gecs, Laura Les, Dylan Brady',
-  //       item_key: '2277:10',
-  //     },
-  //   ],
-  //   list: {
-  //     title: '10,000 gecs',
-  //     subtitle: '100 Gecs',
-  //     image_key: 'c6400d4cc982b2eb4136863c35b0c547',
-  //     count: 11,
-  //   },
-  //   play_album_item_key: '2277:0',
-  // };
 
   return match;
 };
@@ -582,9 +529,6 @@ const scheduleAlbum = async (
     zoneId,
   }: AlbumSchedulingSpecification,
 ) => {
-  console.log('+++ browser.ts: scheduleAlbum(): how:', how);
-  console.log('+++ browser.ts: scheduleAlbum(): zoneId:', zoneId);
-
   const album = await findAlbum(
     browseInstance,
     roonAlbumName,
@@ -597,31 +541,12 @@ const scheduleAlbum = async (
 
   const playAlbumKey = album.play_album_item_key;
 
-  console.log('+++ browser.ts: scheduleAlbum(): playAlbumKey:', playAlbumKey);
-
   const playAlbumOptionsBrowseData = rawBrowseResponseSchema.parse(
     await browseAsync(browseInstance, {
       hierarchy: 'search',
       item_key: playAlbumKey,
     }),
   );
-
-  console.log(
-    '+++ browser.ts: scheduleAlbum(): playAlbumOptionsBrowseData:',
-    playAlbumOptionsBrowseData,
-  );
-
-  // const playAlbumOptionsBrowseData = {
-  //   action: 'list',
-  //   list: {
-  //     level: 3,
-  //     title: 'Play Album',
-  //     subtitle: null,
-  //     image_key: null,
-  //     count: 4,
-  //     display_offset: null,
-  //   },
-  // };
 
   const playAlbumOptionsLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
     await loadAsync(browseInstance, {
