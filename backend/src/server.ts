@@ -419,10 +419,7 @@ io.on('connection', async (socket) => {
 
   socket.on('scheduleTrack', (trackSchedulingSpecification) => {
     roonApiRateLimiter.schedule(async () => {
-      console.log(
-        '>>> trackSchedulingSpecification',
-        trackSchedulingSpecification,
-      );
+      browser.scheduleTrack(browseInstance, trackSchedulingSpecification);
     });
   });
 

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { camelCaseKeys } from './utils.js';
 import type { AlbumSchedulingSpecification } from '../../shared/internal/albumSchedulingSpecification.js';
+import type { TrackSchedulingSpecification } from '../../shared/internal/trackSchedulingSpecification.js';
 
 dotenv.config();
 
@@ -545,7 +546,7 @@ const findAlbum = async (
     (candidate) => candidate.list.subtitle === roonAlbumArtistName,
   );
 
-  console.log('+++ browser.ts: findAlbum: match:', match);
+  console.log('+++ browser.ts: findAlbum(): match:', match);
 
   // const match = {
   //   items: [
@@ -645,7 +646,57 @@ const scheduleAlbum = async (
   });
 };
 
-const scheduleTrack = () => {};
+const scheduleTrack = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonPosition,
+    how,
+    zoneId,
+  }: TrackSchedulingSpecification,
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  if (!album) {
+    throw new Error('Could not find album');
+  }
+
+  const track = album.items[roonPosition - 1];
+
+  const playTrackOptionsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'search',
+      item_key: track.item_key,
+    }),
+  );
+
+  const playTrackOptionsLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'search',
+      offset: 0,
+      count: playTrackOptionsBrowseData.list.count,
+    }),
+  );
+
+  const playTrackOption = playTrackOptionsLoadData.items.find(
+    (option) => option.title === how,
+  );
+
+  if (!playTrackOption) {
+    throw new Error('Could not find track action');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'search',
+    item_key: playTrackOption.item_key,
+    zone_or_output_id: zoneId,
+  });
+};
 
 export {
   albumAddNext,
