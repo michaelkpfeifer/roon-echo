@@ -2,6 +2,7 @@ import { useContext } from 'react';
 
 import type { Zone } from '../../../shared/internal/zone';
 import AppContext from '../AppContext';
+import { formatAsHoursMinutesSeconds } from '../utils'
 
 type MainZoneProps = {
   zone: Zone;
@@ -35,7 +36,7 @@ function ZoneRow({ zone }: MainZoneProps) {
         <div className="zone-row__display-name">{zone.displayName}</div>
         <div className="zone-row__state">{zone.state}</div>
         <div className="zone-row__queue-time-remaining">
-          {zone.queueTimeRemaining}
+          {formatAsHoursMinutesSeconds(zone.queueTimeRemaining)}
         </div>
       </div>
     </label>
