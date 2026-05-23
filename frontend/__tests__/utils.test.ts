@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import {
   albumsCount,
   artistsCount,
+  formatAsHoursMinutesSeconds,
   formatMbTrackLength,
   formatRoonTrackLength,
   lookupZoneName,
@@ -82,6 +83,36 @@ describe('formatRoonTrackLength', () => {
 
   test('handles long tracks (over 10 minutes)', () => {
     expect(formatRoonTrackLength(660)).toBe('11:00');
+  });
+});
+
+describe('formatAsHoursMinutesSeconds', () => {
+  test('converts seconds to hh:mm:ss', () => {
+    expect(formatAsHoursMinutesSeconds(3700)).toBe('01:01:40');
+  });
+
+  test('uses three digits for hours if needed', () => {
+    expect(formatAsHoursMinutesSeconds(432000)).toBe('120:00:00');
+  });
+
+  test('pads single digit hours with a pending zero', () => {
+    expect(formatAsHoursMinutesSeconds(7200)).toBe('02:00:00');
+  });
+
+  test('pads single digit minutes with a pending zero', () => {
+    expect(formatAsHoursMinutesSeconds(120)).toBe('00:02:00');
+  });
+
+  test('pads single digit seconds with a pending zero', () => {
+    expect(formatAsHoursMinutesSeconds(5)).toBe('00:00:05');
+  });
+
+  test('handles zero correctly', () => {
+    expect(formatAsHoursMinutesSeconds(0)).toBe('00:00:00');
+  });
+
+  test('returns "-" for null values', () => {
+    expect(formatAsHoursMinutesSeconds(null)).toBe('-');
   });
 });
 
