@@ -440,11 +440,35 @@ const albumAddNext = async ({
   });
 };
 
-const findAlbum = () => {};
+const findAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
+  roonAlbumCount: number,
+) => {};
 
-const scheduleAlbum = () => {};
+const scheduleAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonAlbumCount,
+    how,
+    zoneId,
+  }: AlbumSchedulingSpecification,
+) => {};
 
-const scheduleTrack = () => {};
+const scheduleTrack = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonPosition,
+    roonAlbumCount,
+    how,
+    zoneId,
+  }: TrackSchedulingSpecification,
+) => {};
 
 const findTracks = () => {};
 
