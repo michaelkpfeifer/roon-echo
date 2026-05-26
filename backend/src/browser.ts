@@ -445,30 +445,52 @@ const findAlbum = async (
   roonAlbumName: string,
   roonAlbumArtistName: string,
   roonAlbumCount: number,
-) => {};
+) => {
+  console.log('>>>> findAlbum: roonAlbumName', roonAlbumName);
+  console.log('>>>> findAlbum: roonAlbumArtistName', roonAlbumArtistName);
+  console.log('>>>> findAlbum: roonAlbumCount', roonAlbumCount);
+};
 
 const scheduleAlbum = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumCount: number,
   {
     roonAlbumName,
     roonAlbumArtistName,
-    roonAlbumCount,
     how,
     zoneId,
   }: AlbumSchedulingSpecification,
-) => {};
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonAlbumCount,
+  );
+
+  console.log('>>>> scheduleAlbum: album:', album);
+};
 
 const scheduleTrack = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumCount: number,
   {
     roonAlbumName,
     roonAlbumArtistName,
     roonPosition,
-    roonAlbumCount,
     how,
     zoneId,
   }: TrackSchedulingSpecification,
-) => {};
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonAlbumCount,
+  );
+
+  console.log('>>>> scheduleTrack: album:', album);
+};
 
 const findTracks = () => {};
 

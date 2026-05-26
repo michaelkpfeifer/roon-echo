@@ -35,6 +35,12 @@ const dbInit = async (db: Knex<DatabaseSchema>) => {
   }
 };
 
+const roonAlbumCount = async (db: Knex<DatabaseSchema>): Promise<number> => {
+  const result = await db('albums').count<[{ count: number }]>('* as count');
+
+  return result[0].count;
+};
+
 const fetchRoonAlbum = async (
   db: Knex<DatabaseSchema>,
   roonAlbumName: string,
@@ -429,6 +435,7 @@ export {
   insertRoonAlbum,
   insertRoonTracks,
   normalizeCandidate,
+  roonAlbumCount,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   updateRoonLengthInTrack,
