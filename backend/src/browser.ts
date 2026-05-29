@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { camelCaseKeys } from './utils.js';
+import type { AlbumSchedulingSpecification } from '../../shared/internal/albumSchedulingSpecification.js';
+import type { TrackSchedulingSpecification } from '../../shared/internal/trackSchedulingSpecification.js';
 
 dotenv.config();
 
@@ -177,6 +179,7 @@ type RawLoadResponse =
 type BrowseOptions = {
   hierarchy: string;
   item_key?: string;
+  input?: string;
   pop_all?: boolean;
 };
 
@@ -437,12 +440,329 @@ const albumAddNext = async ({
   });
 };
 
+const findAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
+  roonAlbumCount: number,
+) => {
+  console.log('>>>> findAlbum: roonAlbumName', roonAlbumName);
+  console.log('>>>> findAlbum: roonAlbumArtistName', roonAlbumArtistName);
+  console.log('>>>> findAlbum: roonAlbumCount', roonAlbumCount);
+};
+
+const scheduleAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumCount: number,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    how,
+    zoneId,
+  }: AlbumSchedulingSpecification,
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonAlbumCount,
+  );
+
+  console.log('>>>> scheduleAlbum: album:', album);
+};
+
+const scheduleTrack = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumCount: number,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonPosition,
+    how,
+    zoneId,
+  }: TrackSchedulingSpecification,
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonAlbumCount,
+  );
+
+  console.log('>>>> scheduleTrack: album:', album);
+};
+
+const findTracks = () => {};
+
+// const findAlbum = async (
+//   browseInstance: InstanceType<typeof RoonApiBrowse>,
+//   roonAlbumName: string,
+//   roonAlbumArtistName: string,
+// ) => {
+//   console.log('>>>>> roonAlbumName:', roonAlbumName);
+//   console.log('>>>>> roonAlbumArtistName:', roonAlbumArtistName);
+
+//   const topLevelBrowseData = rawBrowseResponseSchema.parse(
+//     await browseAsync(browseInstance, {
+//       hierarchy: 'search',
+//       input: `${roonAlbumName} ${roonAlbumArtistName}`,
+//       pop_all: true,
+//     }),
+//   );
+
+//   console.log('>>>>> topLevelBrowseData:', topLevelBrowseData);
+
+//   const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+//     await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: topLevelBrowseData.list.count,
+//     }),
+//   );
+
+//   console.log('>>>>> topLevelLoadData:', topLevelLoadData);
+
+//   const albumsCategoryItem = topLevelLoadData.items.find(
+//     (item) => item.title === 'Albums',
+//   );
+
+//   console.log('>>>>> albumsCategoryItem:', albumsCategoryItem);
+
+//   if (!albumsCategoryItem) {
+//     throw new Error('Could not find "Albums" item');
+//   }
+
+//   const albumsBrowseData = rawBrowseResponseSchema.parse(
+//     await browseAsync(browseInstance, {
+//       hierarchy: 'search',
+//       item_key: albumsCategoryItem.item_key,
+//     }),
+//   );
+
+//   console.log('>>>>> albumsBrowseData:', albumsBrowseData);
+
+//   const albumsLoadData = rawLoadLibraryResponseSchema.parse(
+//     await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: albumsBrowseData.list.count,
+//     }),
+//   );
+
+//   console.log('>>>>> albumsLoadData:', albumsLoadData);
+
+//   const matches = [];
+
+//   for (const { item_key } of albumsLoadData.items) {
+//     const albumBrowseData = rawBrowseResponseSchema.parse(
+//       await browseAsync(browseInstance, {
+//         hierarchy: 'search',
+//         item_key,
+//       }),
+//     );
+
+//     console.log('>>>>> albumBrowseData:', albumBrowseData);
+
+//     const albumLoadData = await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: albumBrowseData.list.count,
+//     });
+
+//     console.log('>>>>> albumLoadData:', albumLoadData);
+
+//     const nextAlbumBrowseData = await browseAsync(browseInstance, {
+//       hierarchy: 'search',
+//       item_key: albumLoadData.items[0].item_key,
+//     });
+
+//     console.log('>>>>> nextAlbumBrowseData:', nextAlbumBrowseData);
+
+//     const nextAlbumLoadData = await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: nextAlbumBrowseData.list.count,
+//     });
+
+//     console.log('>>>>> nextAlbumLoadData:', nextAlbumLoadData);
+
+//     if (
+//       nextAlbumLoadData.list.title === roonAlbumName &&
+//       nextAlbumLoadData.list.subtitle === roonAlbumArtistName
+//     ) {
+//       matches.push(nextAlbumLoadData);
+//     }
+//   }
+
+//   console.log('>>>>> matches:', matches);
+//   console.log('>>>>> matches.length:', matches.length);
+
+//   if (matches.length === 0) {
+//     throw new Error('Could not find matching album.');
+//   }
+
+//   if (matches.length >= 2) {
+//     throw new Error('Found too many matching albums');
+//   }
+
+//   return matches[0];
+// };
+
+// const scheduleAlbum = async (
+//   browseInstance: InstanceType<typeof RoonApiBrowse>,
+//   {
+//     roonAlbumName,
+//     roonAlbumArtistName,
+//     how,
+//     zoneId,
+//   }: AlbumSchedulingSpecification,
+// ) => {
+//   const album = await findAlbum(
+//     browseInstance,
+//     roonAlbumName,
+//     roonAlbumArtistName,
+//   );
+
+//   if (!album) {
+//     throw new Error('Could not find album');
+//   }
+
+//   const playAlbumKey = album.items[0].item_key;
+
+//   console.log('>>>>> playAlbumKey:', playAlbumKey);
+
+//   const playAlbumOptionsBrowseData = rawBrowseResponseSchema.parse(
+//     await browseAsync(browseInstance, {
+//       hierarchy: 'search',
+//       item_key: playAlbumKey,
+//     }),
+//   );
+
+//   console.log('>>>>> playAlbumOptionsBrowseData:', playAlbumOptionsBrowseData);
+
+//   const playAlbumOptionsLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+//     await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: playAlbumOptionsBrowseData.list.count,
+//     }),
+//   );
+
+//   console.log('>>>>> playAlbumOptionsLoadData:', playAlbumOptionsLoadData);
+
+//   const playAlbumOption = playAlbumOptionsLoadData.items.find(
+//     (option) => option.title === how,
+//   );
+
+//   console.log('>>>>> playAlbumOption:', playAlbumOption);
+
+//   if (!playAlbumOption) {
+//     throw new Error('Could not find album action');
+//   }
+
+//   await browseInstance.browse({
+//     hierarchy: 'search',
+//     item_key: playAlbumOption.item_key,
+//     zone_or_output_id: zoneId,
+//   });
+// };
+
+// const scheduleTrack = async (
+//   browseInstance: InstanceType<typeof RoonApiBrowse>,
+//   {
+//     roonAlbumName,
+//     roonAlbumArtistName,
+//     roonPosition,
+//     how,
+//     zoneId,
+//   }: TrackSchedulingSpecification,
+// ) => {
+//   const album = await findAlbum(
+//     browseInstance,
+//     roonAlbumName,
+//     roonAlbumArtistName,
+//   );
+
+//   console.log('>>> scheduleTrack: album:', album);
+
+//   if (!album) {
+//     throw new Error('Could not find album');
+//   }
+
+//   const track = album.items[roonPosition];
+
+//   console.log('>>> scheduleTrack: track:', track);
+
+//   const playTrackOptionsBrowseData = rawBrowseResponseSchema.parse(
+//     await browseAsync(browseInstance, {
+//       hierarchy: 'search',
+//       item_key: track.item_key,
+//     }),
+//   );
+
+//   console.log(
+//     '>>> scheduleTrack: playTrackOptionsBrowseData:',
+//     playTrackOptionsBrowseData,
+//   );
+
+//   const playTrackOptionsLoadData = rawLoadLibraryResponseSchema.parse(
+//     await loadAsync(browseInstance, {
+//       hierarchy: 'search',
+//       offset: 0,
+//       count: playTrackOptionsBrowseData.list.count,
+//     }),
+//   );
+
+//   console.log(
+//     '>>> scheduleTrack: playTrackOptionsLoadData:',
+//     playTrackOptionsLoadData,
+//   );
+
+//   const playTrackOption = playTrackOptionsLoadData.items.find(
+//     (option) => option.title === how,
+//   );
+
+//   if (!playTrackOption) {
+//     throw new Error('Could not find track action');
+//   }
+
+//   console.log('>>> scheduleTrack: playTrackOption:', playTrackOption);
+
+//   await browseInstance.browse({
+//     hierarchy: 'search',
+//     item_key: playTrackOption.item_key,
+//     zone_or_output_id: zoneId,
+//   });
+// };
+
+// const findTracks = async (
+//   browseInstance: InstanceType<typeof RoonApiBrowse>,
+//   roonAlbumName: string,
+//   roonAlbumArtistName: string,
+// ) => {
+//   console.log('+++ roonAlbumName:', roonAlbumName);
+//   console.log('+++ roonAlbumArtistName:', roonAlbumArtistName);
+
+//   const album = await findAlbum(
+//     browseInstance,
+//     roonAlbumName,
+//     roonAlbumArtistName,
+//   );
+
+//   return album.items
+//     .slice(1)
+//     .map((track) => fp.omit(['image_key', 'hint'], track));
+// };
+
 export {
   albumAddNext,
+  findTracks,
   loadAlbum,
   loadAlbums,
   loadTrack,
   rawLoadAlbumResponseSchema,
   rawLoadAlbumsResponseSchema,
+  scheduleAlbum,
+  scheduleTrack,
   trackAddNext,
 };

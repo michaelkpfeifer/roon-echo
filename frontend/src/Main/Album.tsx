@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
+import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
 import { socket } from '../socket';
@@ -59,25 +60,29 @@ function Album() {
     return '-';
   };
 
-  const enqueueTrackNext = (albumKey: string, roonPosition: number) => {
+  const trackAddNext = (roonAlbum: RoonAlbum, roonPosition: number) => {
     if (config.selectedZoneId === null) {
       return null;
     }
 
-    socket.emit('trackAddNext', {
-      albumKey,
+    socket.emit('scheduleTrack', {
+      roonAlbumName: roonAlbum.roonAlbumName,
+      roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
       roonPosition,
+      how: 'Add Next',
       zoneId: config.selectedZoneId,
     });
   };
 
-  const enqueueAlbumNext = (albumKey: string) => {
+  const albumAddNext = (roonAlbum: RoonAlbum) => {
     if (config.selectedZoneId === null) {
       return null;
     }
 
-    socket.emit('albumAddNext', {
-      albumKey,
+    socket.emit('scheduleAlbum', {
+      roonAlbumName: roonAlbum.roonAlbumName,
+      roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
+      how: 'Add Next',
       zoneId: config.selectedZoneId,
     });
   };
@@ -125,9 +130,7 @@ function Album() {
                   type="button"
                   disabled={config.selectedZoneId === null}
                   className="album-actions__play-next"
-                  onClick={() =>
-                    enqueueAlbumNext(albumAggregate.roonAlbum.itemKey)
-                  }
+                  onClick={() => albumAddNext(albumAggregate.roonAlbum)}
                 >
                   Add Next
                 </button>
@@ -151,8 +154,8 @@ function Album() {
                   type="button"
                   disabled={config.selectedZoneId === null}
                   onClick={() => {
-                    enqueueTrackNext(
-                      albumAggregate.roonAlbum.itemKey,
+                    trackAddNext(
+                      albumAggregate.roonAlbum,
                       roonTrack.roonPosition,
                     );
                   }}
