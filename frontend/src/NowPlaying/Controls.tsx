@@ -2,10 +2,13 @@ import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import { socket } from '../socket';
-import { findSelectedZone } from '../utils';
+import {
+  findSelectedZone,
+  formatAsHoursMinutesSecondsWithOptionalHours,
+} from '../utils';
 
 function Controls() {
-  const { config, zones  } = useContext(AppContext);
+  const { config, zones } = useContext(AppContext);
 
   const selectedZone = findSelectedZone(zones, config.selectedZoneId);
 
@@ -27,7 +30,11 @@ function Controls() {
       key={selectedZone.zoneId}
     >
       <span style={{ flex: 3 }}>{selectedZone.displayName}</span>
-      <span style={{ flex: 1 }}>{selectedZone.nowPlaying.seekPosition}</span>
+      <span style={{ flex: 1 }}>
+        {formatAsHoursMinutesSecondsWithOptionalHours(
+          selectedZone.nowPlaying.seekPosition,
+        )}
+      </span>
       <span style={{ flex: 1 }}>
         <button
           type="button"

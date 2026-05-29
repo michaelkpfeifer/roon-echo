@@ -94,6 +94,30 @@ const formatAsHoursMinutesSeconds = (durationInSeconds: number | null) => {
   return `${hoursAsString}:${minutesAsString}:${secondsAsString}`;
 };
 
+const formatAsHoursMinutesSecondsWithOptionalHours = (
+  durationInSeconds: number | null,
+) => {
+  if (durationInSeconds === null) {
+    return '-';
+  }
+
+  const hours = Math.floor(durationInSeconds / 3600);
+  const remainingSeconds = durationInSeconds - hours * 3600;
+  const minutes = Math.floor(remainingSeconds / 60);
+  const seconds = remainingSeconds - minutes * 60;
+
+  const hoursAsString =
+    hours >= 100 ? hours.toString() : hours.toString().padStart(2, '0');
+  const minutesAsString = minutes.toString().padStart(2, '0');
+  const secondsAsString = seconds.toString().padStart(2, '0');
+
+  if (hours === 0) {
+    return `${minutesAsString}:${secondsAsString}`;
+  } else {
+    return `${hoursAsString}:${minutesAsString}:${secondsAsString}`;
+  }
+};
+
 const albumsCount = (albumAggregates: AlbumAggregate[]) =>
   albumAggregates.length;
 
@@ -125,6 +149,7 @@ export {
   artistsCount,
   findSelectedZone,
   formatAsHoursMinutesSeconds,
+  formatAsHoursMinutesSecondsWithOptionalHours,
   formatMbTrackLength,
   formatRoonTrackLength,
   lookupZoneName,

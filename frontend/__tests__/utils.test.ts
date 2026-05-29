@@ -4,6 +4,7 @@ import {
   albumsCount,
   artistsCount,
   formatAsHoursMinutesSeconds,
+  formatAsHoursMinutesSecondsWithOptionalHours,
   formatMbTrackLength,
   formatRoonTrackLength,
   lookupZoneName,
@@ -113,6 +114,42 @@ describe('formatAsHoursMinutesSeconds', () => {
 
   test('returns "-" for null values', () => {
     expect(formatAsHoursMinutesSeconds(null)).toBe('-');
+  });
+});
+
+describe('formatAsHoursMinutesSecondsWithOptionalHours', () => {
+  test('converts seconds to hh:mm:ss', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(3700)).toBe('01:01:40');
+  });
+
+  test('uses three digits for hours if needed', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(432000)).toBe(
+      '120:00:00',
+    );
+  });
+
+  test('pads single digit hours with a pending zero', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(7200)).toBe('02:00:00');
+  });
+
+  test('pads single digit minutes with a pending zero', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(7320)).toBe('02:02:00');
+  });
+
+  test('pads single digit seconds with a pending zero', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(3605)).toBe('01:00:05');
+  });
+
+  test('handles zero correctly', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(0)).toBe('00:00');
+  });
+
+  test('omits hours for durations less than an hour', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(90)).toBe('01:30');
+  });
+
+  test('returns "-" for null values', () => {
+    expect(formatAsHoursMinutesSecondsWithOptionalHours(null)).toBe('-');
   });
 });
 
