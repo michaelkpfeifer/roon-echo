@@ -37,7 +37,6 @@ import { extractQueueItems } from './queues.js';
 import {
   dbInit,
   findRoonTrackByNameAndAlbumName,
-  roonAlbumCount,
   updateRoonLengthInTrack,
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
@@ -420,31 +419,13 @@ io.on('connection', async (socket) => {
 
   socket.on('scheduleTrack', (trackSchedulingSpecification) => {
     roonApiRateLimiter.schedule(async () => {
-      console.log(
-        '>>> trackSchedulingSpecification:',
-        trackSchedulingSpecification,
-      );
-
-      browser.scheduleTrack(
-        browseInstance,
-        await roonAlbumCount(db),
-        trackSchedulingSpecification,
-      );
+      browser.scheduleTrack(browseInstance, trackSchedulingSpecification);
     });
   });
 
   socket.on('scheduleAlbum', (albumSchedulingSpecification) =>
     roonApiRateLimiter.schedule(async () => {
-      console.log(
-        '>>> albumSchedulingSpecification:',
-        albumSchedulingSpecification,
-      );
-
-      browser.scheduleAlbum(
-        browseInstance,
-        await roonAlbumCount(db),
-        albumSchedulingSpecification,
-      );
+      browser.scheduleAlbum(browseInstance, albumSchedulingSpecification);
     }),
   );
 
