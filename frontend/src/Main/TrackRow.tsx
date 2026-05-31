@@ -25,9 +25,11 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
       <button
         type="button"
         onClick={() => {
-          socket.emit('trackAddNext', {
-            albumKey: roonAlbum.itemKey,
+          socket.emit('scheduleTrack', {
+            roonAlbumName: roonAlbum.roonAlbumName,
+            roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
             roonPosition: roonTrack.roonPosition,
+            how: 'Add Next',
             zoneId,
           });
         }}

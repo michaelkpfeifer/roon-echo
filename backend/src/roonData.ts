@@ -24,6 +24,8 @@ import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
+import { transformToRoonAlbumId } from './transforms/rawRoonAlbum.js';
+import { setRoonAlbumIdCache } from './roonAlbumIdCache.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
@@ -86,6 +88,10 @@ const getRoonAlbums = async (
   if (distinctRawRoonAlbumsCount !== rawRoonAlbums.length) {
     throw new Error('Error: Duplicate albums detected. Aborting.');
   }
+
+  setRoonAlbumIdCache(
+    rawRoonAlbums.map((rawRoonAlbum) => transformToRoonAlbumId(rawRoonAlbum)),
+  );
 
   const roonAlbums: RoonAlbum[] = [];
 

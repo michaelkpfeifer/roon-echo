@@ -417,24 +417,15 @@ io.on('connection', async (socket) => {
     socket.emit('queueChanged', message);
   });
 
-  socket.on('trackAddNext', ({ albumKey, roonPosition, zoneId }) => {
+  socket.on('scheduleTrack', (trackSchedulingSpecification) => {
     roonApiRateLimiter.schedule(async () => {
-      await browser.trackAddNext({
-        browseInstance,
-        albumKey,
-        roonPosition,
-        zoneId,
-      });
+      browser.scheduleTrack(browseInstance, trackSchedulingSpecification);
     });
   });
 
-  socket.on('albumAddNext', ({ albumKey, zoneId }) =>
+  socket.on('scheduleAlbum', (albumSchedulingSpecification) =>
     roonApiRateLimiter.schedule(async () => {
-      await browser.albumAddNext({
-        browseInstance,
-        albumKey,
-        zoneId,
-      });
+      browser.scheduleAlbum(browseInstance, albumSchedulingSpecification);
     }),
   );
 

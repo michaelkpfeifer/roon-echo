@@ -4,6 +4,13 @@ import { z } from 'zod';
 
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
 import { camelCaseKeys } from './utils.js';
+import type { AlbumSchedulingSpecification } from '../../shared/internal/albumSchedulingSpecification.js';
+import type { TrackSchedulingSpecification } from '../../shared/internal/trackSchedulingSpecification.js';
+import {
+  findIndexInRoonAlbumIdCache,
+  setRoonAlbumIdCache,
+} from './roonAlbumIdCache.js';
+import { transformToRoonAlbumId } from './transforms/rawRoonAlbum.js';
 
 dotenv.config();
 
@@ -177,6 +184,7 @@ type RawLoadResponse =
 type BrowseOptions = {
   hierarchy: string;
   item_key?: string;
+  input?: string;
   pop_all?: boolean;
 };
 
@@ -437,6 +445,239 @@ const albumAddNext = async ({
   });
 };
 
+const findAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
+) => {
+  const offset = findIndexInRoonAlbumIdCache(
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  const topLevelBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      pop_all: true,
+    }),
+  );
+
+  const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: topLevelBrowseData.list.count,
+    }),
+  );
+
+  const libraryItem = topLevelLoadData.items.find(
+    (item) => item.title === 'Library',
+  );
+
+  if (!libraryItem) {
+    throw new Error('Library not found despite validation.');
+  }
+
+  const libraryBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: libraryItem.item_key,
+    }),
+  );
+
+  const libraryLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: libraryBrowseData.list.count,
+    }),
+  );
+
+  const albumsItem = libraryLoadData.items.find(
+    (item) => item.title === 'Albums',
+  );
+
+  if (!albumsItem) {
+    throw new Error('Albums not found despite validation.');
+  }
+
+  rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: albumsItem.item_key,
+    }),
+  );
+
+  const albumsLoadData = rawLoadAlbumsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset,
+      count: 1,
+    }),
+  );
+
+  const retrievedRoonAlbumName = albumsLoadData.items[0].title;
+  const retrievedRoonAlbumAritstName = albumsLoadData.items[0].subtitle;
+
+  if (
+    retrievedRoonAlbumName === roonAlbumName &&
+    retrievedRoonAlbumAritstName === roonAlbumArtistName
+  ) {
+    return albumsLoadData.items[0];
+  } else {
+    setRoonAlbumIdCache(
+      (await loadAlbums(browseInstance)).map((rawRoonAlbum) =>
+        transformToRoonAlbumId(rawRoonAlbum),
+      ),
+    );
+
+    return findAlbum(browseInstance, roonAlbumName, roonAlbumArtistName);
+  }
+};
+
+const scheduleAlbum = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    how,
+    zoneId,
+  }: AlbumSchedulingSpecification,
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  if (!album) {
+    throw new Error('Could not find album');
+  }
+
+  const playAlbumKey = album.item_key;
+
+  const playAlbumBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: playAlbumKey,
+    }),
+  );
+
+  const playAlbumLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: playAlbumBrowseData.list.count,
+    }),
+  );
+
+  const playAlbumOption = playAlbumLoadData.items.find(
+    (option) => option.title === 'Play Album',
+  );
+
+  if (!playAlbumOption) {
+    throw new Error('Could not find album play action');
+  }
+
+  const playAlbumOptionBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: playAlbumOption.item_key,
+    }),
+  );
+
+  const playAlbumOptionLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: playAlbumOptionBrowseData.list.count,
+    }),
+  );
+
+  const scheduleAlbumOption = playAlbumOptionLoadData.items.find(
+    (option) => option.title === how,
+  );
+
+  if (!scheduleAlbumOption) {
+    throw new Error('Could not find album scheduling option.');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'browse',
+    item_key: scheduleAlbumOption.item_key,
+    zone_or_output_id: zoneId,
+  });
+};
+
+const scheduleTrack = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  {
+    roonAlbumName,
+    roonAlbumArtistName,
+    roonPosition,
+    how,
+    zoneId,
+  }: TrackSchedulingSpecification,
+) => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  if (!album) {
+    throw new Error('Could not find album');
+  }
+
+  const playAlbumKey = album.item_key;
+
+  const playAlbumBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: playAlbumKey,
+    }),
+  );
+
+  const playAlbumLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: playAlbumBrowseData.list.count,
+    }),
+  );
+
+  const track = playAlbumLoadData.items[roonPosition];
+
+  const playTrackOptionBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: track.item_key,
+    }),
+  );
+
+  const playTrackOptionLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: playTrackOptionBrowseData.list.count,
+    }),
+  );
+
+  const scheduleTrackOption = playTrackOptionLoadData.items.find(
+    (option) => option.title === how,
+  );
+
+  if (!scheduleTrackOption) {
+    throw new Error('Could not find track scheduling option.');
+  }
+
+  await browseInstance.browse({
+    hierarchy: 'browse',
+    item_key: scheduleTrackOption.item_key,
+    zone_or_output_id: zoneId,
+  });
+};
+
 export {
   albumAddNext,
   loadAlbum,
@@ -444,5 +685,7 @@ export {
   loadTrack,
   rawLoadAlbumResponseSchema,
   rawLoadAlbumsResponseSchema,
+  scheduleAlbum,
+  scheduleTrack,
   trackAddNext,
 };
