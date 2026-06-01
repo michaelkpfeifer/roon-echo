@@ -370,81 +370,6 @@ const loadTrack = async (
   }
 };
 
-const trackAddNext = async ({
-  browseInstance,
-  albumKey,
-  roonPosition,
-  zoneId,
-}: {
-  browseInstance: InstanceType<typeof RoonApiBrowse>;
-  albumKey: string;
-  roonPosition: number;
-  zoneId: string;
-}) => {
-  const loadAlbumData = await loadAlbum(browseInstance, albumKey);
-  const trackKey = loadAlbumData.items[roonPosition].item_key;
-  const loadTrackData = await loadTrack(browseInstance, trackKey);
-  const trackAddNextItem = loadTrackData.items.find(
-    (item) => item.title === 'Add Next',
-  );
-
-  if (!trackAddNextItem) {
-    throw new Error('Error: Could not find track "Add Next" item.');
-  }
-
-  await browseInstance.browse({
-    hierarchy: 'browse',
-    item_key: trackAddNextItem.item_key,
-    zone_or_output_id: zoneId,
-  });
-};
-
-const albumAddNext = async ({
-  browseInstance,
-  albumKey,
-  zoneId,
-}: {
-  browseInstance: InstanceType<typeof RoonApiBrowse>;
-  albumKey: string;
-  zoneId: string;
-}) => {
-  const loadAlbumData = await loadAlbum(browseInstance, albumKey);
-  const playAlbumKey = loadAlbumData.play_album_item_key;
-
-  const playAlbumOptionsBrowseData = rawBrowseResponseSchema.parse(
-    await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: playAlbumKey,
-    }),
-  );
-
-  const playAlbumOptionsLoadData = rawLoadPlayAlbumOptionsResponseSchema.parse(
-    await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: playAlbumOptionsBrowseData.list.count,
-    }),
-  );
-
-  if (!playAlbumOptionsLoadData) {
-    throw new Error('Error: Could not find album play options.');
-  }
-
-  const albumAddNextItem = playAlbumOptionsLoadData.items.find(
-    (item) => item.title === 'Add Next',
-  );
-
-  if (!albumAddNextItem) {
-    throw new Error('Error: Could not find album "Add Next" item.');
-  }
-
-  await browseInstance.browse({
-    hierarchy: 'browse',
-    item_key: albumAddNextItem.item_key,
-    zone_or_output_id: zoneId,
-  });
-};
-
 const findAlbum = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
   roonAlbumName: string,
@@ -679,7 +604,6 @@ const scheduleTrack = async (
 };
 
 export {
-  albumAddNext,
   loadAlbum,
   loadAlbums,
   loadTrack,
@@ -687,5 +611,4 @@ export {
   rawLoadAlbumsResponseSchema,
   scheduleAlbum,
   scheduleTrack,
-  trackAddNext,
 };
