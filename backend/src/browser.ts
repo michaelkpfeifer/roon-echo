@@ -77,7 +77,7 @@ const rawAlbumSchema = z.object({
   subtitle: z.string().refine((val) => val !== 'Unknown Artist', {
     message: 'Artist cannot be unknown',
   }),
-  image_key: z.string(),
+  image_key: z.string().nullable(),
   item_key: z.string(),
   hint: z.string(),
 });
@@ -137,7 +137,7 @@ const rawLoadAlbumResponseSchema = z
       list: z.object({
         title: z.string(),
         subtitle: z.string(),
-        image_key: z.string(),
+        image_key: z.string().nullable(),
         count: z.number(),
       }),
       play_album_item_key: z.string(),
