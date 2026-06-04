@@ -5,6 +5,7 @@ import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
 import { socket } from '../socket';
 import { formatRoonTrackLength } from '../utils';
+import noAlbumArt from '../images/no-album-art.svg';
 
 type MainTrackRowProps = {
   roonAlbum: RoonAlbum;
@@ -40,11 +41,24 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
 
   return (
     <div className="track-row">
-      <img
-        className="track-row__image"
-        src={`${coreUrl}/api/image/${roonAlbum.imageKey}?scale=fit&width=75&height=75`}
-        alt={roonAlbum.roonAlbumName}
-      />
+      {roonAlbum.imageKey ? (
+        <img
+          className="track-row__image"
+          src={`${coreUrl}/api/image/${roonAlbum.imageKey}?scale=fit&width=75&height=75`}
+          alt={roonAlbum.roonAlbumName}
+        />
+      ) : (
+        <img
+          src={noAlbumArt}
+          alt={roonAlbum.roonAlbumName}
+          style={{
+            display: 'block',
+            width: '75px',
+            height: '75px',
+            objectFit: 'cover',
+          }}
+        />
+      )}
       <div className="track-row__number">{roonTrack.roonNumber}</div>
       <div className="track-row__track">
         <div className="track-row__name">{roonTrack.roonTrackName}</div>

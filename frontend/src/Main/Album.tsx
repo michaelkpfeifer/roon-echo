@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
+import noAlbumArt from '../images/no-album-art.svg';
 import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 import AlbumArt from './AlbumArt';
@@ -102,6 +103,7 @@ function Album() {
     case 'withoutMbMatch': {
       const { roonAlbum } = albumAggregate;
       const { roonAlbumName, roonAlbumArtistName, imageKey } = roonAlbum;
+
       return (
         <>
           <AlbumArt
@@ -114,11 +116,19 @@ function Album() {
               className="album-heading__image-button"
               onClick={() => setIsAlbumArtModalOpen(true)}
             >
-              <img
-                src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
-                alt={roonAlbumName}
-                className="album-heading__image"
-              />
+              {imageKey ? (
+                <img
+                  src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+                  alt={roonAlbumName}
+                  className="album-heading__image"
+                />
+              ) : (
+                <img
+                  src={noAlbumArt}
+                  alt={roonAlbumName}
+                  className="album-heading__image"
+                />
+              )}
             </button>
             <div>
               <div className="album-heading__artists">

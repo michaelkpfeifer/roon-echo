@@ -2,6 +2,7 @@ import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import Modal from '../support/Modal';
+import noAlbumArt from '../images/no-album-art.svg';
 
 type AlbumArtProps = {
   imageKey: string;
@@ -17,10 +18,23 @@ function AlbumArt({ imageKey, alt }: AlbumArtProps) {
       isOpen={isAlbumArtModalOpen}
       onClose={() => setIsAlbumArtModalOpen(false)}
     >
-      <img
-        src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
-        alt={alt}
-      />
+      {imageKey ? (
+        <img
+          src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
+          alt={alt}
+        />
+      ) : (
+        <img
+          src={noAlbumArt}
+          alt={alt}
+          style={{
+            display: 'block',
+            width: '500px',
+            height: '500px',
+            objectFit: 'cover',
+          }}
+        />
+      )}
     </Modal>
   );
 }
