@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import AppContext from '../AppContext';
+import noAlbumArt from '../images/no-album-art.svg';
 
 const albumStageIcon = (stage: string) => {
   let Icon;
@@ -22,6 +23,28 @@ const albumStageIcon = (stage: string) => {
   }
 
   return Icon;
+};
+
+const albumArt = (
+  coreUrl: string | null,
+  albumAggregate: Extract<
+    AlbumAggregate,
+    { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+  >,
+) => {
+  return albumAggregate.roonAlbum.imageKey ? (
+    <img
+      src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
+      alt={albumAggregate.roonAlbum.roonAlbumName}
+      className="album-card__image"
+    />
+  ) : (
+    <img
+      src={noAlbumArt}
+      alt={albumAggregate.roonAlbum.roonAlbumName}
+      className="album-card__image"
+    />
+  );
 };
 
 type AlbumDataProps = {
@@ -61,11 +84,7 @@ function AlbumAggregateWithRoonTracks({
   return (
     <div className="album-card">
       <Link to={`/albums/${albumAggregate.id}`}>
-        <img
-          src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={albumAggregate.roonAlbum.roonAlbumName}
-          className="album-card__image"
-        />
+        {albumArt(coreUrl, albumAggregate)}
       </Link>
 
       <AlbumData
@@ -89,11 +108,7 @@ function AlbumAggregateWithMbMatch({
   return (
     <div className="album-card">
       <Link to={`/albums/${albumAggregate.id}`}>
-        <img
-          src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={albumAggregate.roonAlbum.roonAlbumName}
-          className="album-card__image"
-        />
+        {albumArt(coreUrl, albumAggregate)}
       </Link>
 
       <AlbumData
@@ -117,11 +132,7 @@ function AlbumAggregateWithoutMbMatch({
   return (
     <div className="album-card">
       <Link to={`/albums/${albumAggregate.id}`}>
-        <img
-          src={`${coreUrl}/api/image/${albumAggregate.roonAlbum.imageKey}?scale=fit&width=150&height=150`}
-          alt={albumAggregate.roonAlbum.roonAlbumName}
-          className="album-card__image"
-        />
+        {albumArt(coreUrl, albumAggregate)}
       </Link>
 
       <AlbumData
