@@ -9,7 +9,7 @@ import {
 const RawNowPlayingSchema = z.object({
   seekPosition: z.nullable(z.number()),
   length: z.number(),
-  imageKey: z.string(),
+  imageKey: z.string().optional(),
   oneLine: RawOneLineSchema,
   twoLine: RawTwoLineSchema,
   threeLine: RawThreeLineSchema,
