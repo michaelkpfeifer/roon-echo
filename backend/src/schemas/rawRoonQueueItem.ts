@@ -9,7 +9,11 @@ import {
 const RawRoonQueueItemSchema = z.object({
   queueItemId: z.number(),
   length: z.number(),
-  imageKey: z.string().optional(),
+  imageKey: z
+    .string()
+    .optional()
+    .nullable()
+    .transform((val) => val ?? null),
   oneLine: RawOneLineSchema,
   twoLine: RawTwoLineSchema,
   threeLine: RawThreeLineSchema,
