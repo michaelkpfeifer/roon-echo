@@ -118,7 +118,7 @@ function Album() {
             >
               {imageKey ? (
                 <img
-                  src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+                  src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=250&height=250`}
                   alt={roonAlbumName}
                   className="album-heading__image"
                 />

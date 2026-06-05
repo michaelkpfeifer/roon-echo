@@ -22,18 +22,10 @@ function AlbumArt({ imageKey, alt }: AlbumArtProps) {
         <img
           src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=500&height=500`}
           alt={alt}
+          className="album-art__image"
         />
       ) : (
-        <img
-          src={noAlbumArt}
-          alt={alt}
-          style={{
-            display: 'block',
-            width: '500px',
-            height: '500px',
-            objectFit: 'cover',
-          }}
-        />
+        <img src={noAlbumArt} alt={alt} className="album-art__image" />
       )}
     </Modal>
   );

@@ -43,20 +43,15 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
     <div className="track-row">
       {roonAlbum.imageKey ? (
         <img
-          className="track-row__image"
-          src={`${coreUrl}/api/image/${roonAlbum.imageKey}?scale=fit&width=75&height=75`}
+          src={`${coreUrl}/api/image/${roonAlbum.imageKey}?scale=fit&width=60&height=60`}
           alt={roonAlbum.roonAlbumName}
+          className="track-row__image"
         />
       ) : (
         <img
           src={noAlbumArt}
           alt={roonAlbum.roonAlbumName}
-          style={{
-            display: 'block',
-            width: '75px',
-            height: '75px',
-            objectFit: 'cover',
-          }}
+          className="track-row__image"
         />
       )}
       <div className="track-row__number">{roonTrack.roonNumber}</div>
