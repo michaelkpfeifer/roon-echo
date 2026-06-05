@@ -22,15 +22,15 @@ function Queues() {
                   <div className="queue-item" key={queueItemId}>
                     {imageKey ? (
                       <img
-                        className="queue-item__image"
-                        src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=150&height=150`}
+                        src={`${coreUrl}/api/image/${imageKey}?scale=fit&width=60&height=60`}
                         alt={threeLine.line1}
+                        className="queue-item__image"
                       />
                     ) : (
                       <img
-                        className="queue-item__image"
                         src={noAlbumArt}
                         alt={threeLine.line1}
+                        className="queue-item__image"
                       />
                     )}
                     <div className="queue-item__track">
