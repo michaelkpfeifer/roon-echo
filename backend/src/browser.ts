@@ -3,6 +3,7 @@ import type RoonApiBrowse from 'node-roon-api-browse';
 import { z } from 'zod';
 
 import type { RawRoonAlbum } from './external/rawRoonAlbum.js';
+import type { RawRoonTrack } from './external/rawRoonTrack.js';
 import { camelCaseKeys } from './utils.js';
 import type { AlbumSchedulingSpecification } from '../../shared/internal/albumSchedulingSpecification.js';
 import type { TrackSchedulingSpecification } from '../../shared/internal/trackSchedulingSpecification.js';
@@ -312,35 +313,6 @@ const loadAlbums = async (
   }
 };
 
-const loadAlbum = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-  itemKey: string,
-): Promise<RawLoadAlbumResponse> => {
-  try {
-    const albumBrowseData = rawBrowseResponseSchema.parse(
-      await browseAsync(browseInstance, {
-        hierarchy: 'browse',
-        item_key: itemKey,
-      }),
-    );
-
-    const albumLoadData = rawLoadAlbumResponseSchema.parse(
-      await loadAsync(browseInstance, {
-        hierarchy: 'browse',
-        offset: 0,
-        count: albumBrowseData.list.count,
-      }),
-    );
-
-    return albumLoadData;
-  } catch (err) {
-    throw new Error(
-      buildErrorMessage('Failed to load album by item key', err as BrowseError),
-      { cause: err },
-    );
-  }
-};
-
 const loadTrack = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
   itemKey: string,
@@ -458,6 +430,39 @@ const findAlbum = async (
 
     return findAlbum(browseInstance, roonAlbumName, roonAlbumArtistName);
   }
+};
+
+const findTracks = async (
+  browseInstance: InstanceType<typeof RoonApiBrowse>,
+  roonAlbumName: string,
+  roonAlbumArtistName: string,
+): Promise<RawRoonTrack[]> => {
+  const album = await findAlbum(
+    browseInstance,
+    roonAlbumName,
+    roonAlbumArtistName,
+  );
+
+  if (!album) {
+    throw new Error('Could not find album');
+  }
+
+  const tracksBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: album.item_key,
+    }),
+  );
+
+  const tracksLoadData = rawLoadAlbumResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: tracksBrowseData.list.count,
+    }),
+  );
+
+  return tracksLoadData.items;
 };
 
 const scheduleAlbum = async (
@@ -604,7 +609,7 @@ const scheduleTrack = async (
 };
 
 export {
-  loadAlbum,
+  findTracks,
   loadAlbums,
   loadTrack,
   rawLoadAlbumResponseSchema,

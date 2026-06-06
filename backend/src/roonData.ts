@@ -131,9 +131,11 @@ const getRoonTracks = async (
     return persistedRoonTracks;
   }
 
-  const response = await browser.loadAlbum(browseInstance, roonAlbum.itemKey);
-
-  const rawRoonTracks: RawRoonTrack[] = response.items;
+  const rawRoonTracks: RawRoonTrack[] = await browser.findTracks(
+    browseInstance,
+    roonAlbum.roonAlbumName,
+    roonAlbum.roonAlbumArtistName,
+  );
 
   const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
     const trackId = uuidv7();
