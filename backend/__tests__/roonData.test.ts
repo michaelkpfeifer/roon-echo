@@ -161,27 +161,18 @@ describe('createAlbumAggregateWithRoonAlbum', () => {
 });
 
 describe('getRoonTracks', () => {
-  const response = {
-    items: [
-      {
-        title: "1. I'm Holding You",
-        subtitle: 'Ween',
-        item_key: '128:1',
-      },
-      {
-        title: '2. Japanese Cowboy',
-        subtitle: 'Ween',
-        item_key: '128:2',
-      },
-    ],
-    list: {
-      title: '12 Golden Country Greats',
+  const response = [
+    {
+      title: "1. I'm Holding You",
       subtitle: 'Ween',
-      image_key: '0290033b354e02d0090b8d4ab7b5aa53',
-      count: 3,
+      item_key: '128:1',
     },
-    play_album_item_key: '128:0',
-  };
+    {
+      title: '2. Japanese Cowboy',
+      subtitle: 'Ween',
+      item_key: '128:2',
+    },
+  ];
 
   let testDb: Knex<DatabaseSchema>;
   let mockBrowseInstance: RoonApiBrowse;
@@ -216,7 +207,7 @@ describe('getRoonTracks', () => {
       roonAlbumArtistName: 'Ween',
     });
 
-    vi.spyOn(browser, 'loadAlbum').mockResolvedValue(response);
+    vi.spyOn(browser, 'findTracks').mockResolvedValue(response);
 
     const result = await getRoonTracks(
       testDb,
@@ -320,28 +311,18 @@ describe('initializeRoonData', () => {
     },
   ];
 
-  const loadAlbumResponse = {
-    items: [
-      {
-        title: "1. I'm Holding You",
-        subtitle: 'Ween',
-        item_key: '128:1',
-      },
-      {
-        title: '2. Japanese Cowboy',
-        subtitle: 'Ween',
-        item_key: '128:2',
-      },
-    ],
-    offset: 0,
-    list: {
-      title: '12 Golden Country Greats',
+  const loadAlbumResponse = [
+    {
+      title: "1. I'm Holding You",
       subtitle: 'Ween',
-      image_key: '0290033b354e02d0090b8d4ab7b5aa53',
-      count: 3,
+      item_key: '128:1',
     },
-    play_album_item_key: '128:0',
-  };
+    {
+      title: '2. Japanese Cowboy',
+      subtitle: 'Ween',
+      item_key: '128:2',
+    },
+  ];
 
   let testDb: Knex<DatabaseSchema>;
   let mockBrowseInstance: RoonApiBrowse;
@@ -363,7 +344,7 @@ describe('initializeRoonData', () => {
 
   it('returns a list of album aggregates in stage "withRoonTracks"', async () => {
     vi.spyOn(browser, 'loadAlbums').mockResolvedValue(loadAlbumsResponse);
-    vi.spyOn(browser, 'loadAlbum').mockResolvedValue(loadAlbumResponse);
+    vi.spyOn(browser, 'findTracks').mockResolvedValue(loadAlbumResponse);
 
     const result = await initializeRoonData(testDb, mockBrowseInstance);
 
