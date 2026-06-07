@@ -74,10 +74,8 @@ const rawLoadLibraryResponseSchema = z.object({
 type RawLoadLibraryResponse = z.infer<typeof rawLoadLibraryResponseSchema>;
 
 const rawAlbumSchema = z.object({
-  title: z.string().min(1, 'Title cannot be empty.'),
-  subtitle: z.string().refine((val) => val !== 'Unknown Artist', {
-    message: 'Artist cannot be unknown',
-  }),
+  title: z.string(),
+  subtitle: z.string(),
   image_key: z.string().nullable(),
   item_key: z.string(),
   hint: z.string(),
@@ -86,28 +84,7 @@ const rawAlbumSchema = z.object({
 type RawAlbum = z.infer<typeof rawAlbumSchema>;
 
 const rawLoadAlbumsResponseSchema = z.object({
-  items: z.array(z.unknown()).transform((items) => {
-    return items.reduce((acc: RawAlbum[], item) => {
-      const result = rawAlbumSchema.safeParse(item);
-
-      if (result.success) {
-        acc.push(result.data);
-      } else {
-        /* eslint-disable no-console */
-        console.warn(
-          `[Validation Failed] schema: rawLoadAlbumsResponseSchema, data: ${JSON.stringify(item)}`,
-        );
-        /* eslint-enable no-console */
-        result.error.issues.forEach((issue) => {
-          /* eslint-disable no-console */
-          console.warn(`  - Path: ${issue.path.join('.')}`);
-          console.warn(`  - Reason: ${issue.message}`);
-          /* eslint-enable no-console */
-        });
-      }
-      return acc;
-    }, []);
-  }),
+  items: z.array(rawAlbumSchema),
   offset: z.number(),
   list: z.object({
     level: z.number(),
@@ -124,7 +101,6 @@ const rawLoadAlbumResponseSchema = z
   .transform((data) => ({
     ...data,
     items: data.items.slice(1),
-    play_album_item_key: data.items[0]?.item_key ?? null,
   }))
   .pipe(
     z.object({
@@ -141,7 +117,6 @@ const rawLoadAlbumResponseSchema = z
         image_key: z.string().nullable(),
         count: z.number(),
       }),
-      play_album_item_key: z.string(),
     }),
   );
 

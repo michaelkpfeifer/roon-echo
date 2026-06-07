@@ -96,6 +96,14 @@ const getRoonAlbums = async (
   const roonAlbums: RoonAlbum[] = [];
 
   for (const rawRoonAlbum of rawRoonAlbums) {
+    if (rawRoonAlbum.title === '') {
+      throw new Error('Error: Album with empty title detected. Aborting.');
+    }
+
+    if (rawRoonAlbum.subtitle === 'Unknown Artist') {
+      throw new Error('Error: Album with unknown artist detected. Aborting.');
+    }
+
     const persistedRoonAlbumResult = await fetchRoonAlbum(
       db,
       rawRoonAlbum.title,
