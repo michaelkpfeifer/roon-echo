@@ -139,7 +139,7 @@ function Album() {
                 <button
                   type="button"
                   disabled={config.selectedZoneId === null}
-                  className="album-actions__play-next"
+                  className="album-actions__action"
                   onClick={() => albumAddNext(albumAggregate.roonAlbum)}
                 >
                   Add Next
@@ -159,7 +159,7 @@ function Album() {
               <div className="album-track-row__length">
                 {formattedTrackLength(roonTrack, index)}
               </div>
-              <div className="album-track-row__track-add-next">
+              <div className="album-track-row__track-action">
                 <button
                   type="button"
                   disabled={config.selectedZoneId === null}

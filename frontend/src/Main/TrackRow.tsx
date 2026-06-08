@@ -63,7 +63,7 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
       <div className="track-row__length">
         {formatRoonTrackLength(roonTrack.roonLength)}
       </div>
-      <div className="track-row__track-add-next">{addNextButton}</div>
+      <div className="track-row__track-action">{addNextButton}</div>
     </div>
   );
 }
