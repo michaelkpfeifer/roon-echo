@@ -75,7 +75,7 @@ function Album() {
     });
   };
 
-  const albumAddNext = (roonAlbum: RoonAlbum) => {
+  const scheduleAlbum = (roonAlbum: RoonAlbum, how: string) => {
     if (config.selectedZoneId === null) {
       return null;
     }
@@ -83,7 +83,7 @@ function Album() {
     socket.emit('scheduleAlbum', {
       roonAlbumName: roonAlbum.roonAlbumName,
       roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
-      how: 'Add Next',
+      how,
       zoneId: config.selectedZoneId,
     });
   };
@@ -140,7 +140,9 @@ function Album() {
                   type="button"
                   disabled={config.selectedZoneId === null}
                   className="album-actions__action"
-                  onClick={() => albumAddNext(albumAggregate.roonAlbum)}
+                  onClick={() =>
+                    scheduleAlbum(albumAggregate.roonAlbum, 'Add Next')
+                  }
                 >
                   Add Next
                 </button>
