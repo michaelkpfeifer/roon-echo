@@ -6,7 +6,7 @@
     "noUnusedLocals": false,
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": true
   },
-  "include": ["src", "__tests__", "../shared"]
+  "include": ["src", "__tests__", "__factories__", "../shared"]
 }

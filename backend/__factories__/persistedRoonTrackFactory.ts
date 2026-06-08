@@ -1,6 +1,7 @@
 import type { Knex } from 'knex';
 
 import type { PersistedRoonTrack } from '../../shared/internal/persistedRoonTrack.js';
+import type { TrackRowRow } from '../src/internal/trackRowRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
@@ -20,7 +21,10 @@ const createPersistedRoonTrack = async (
     ...overrides,
   };
 
-  await db('tracks').insert(snakeCaseKeys(persistedRoonTrack));
+  await db<DatabaseSchema['tracks']>('tracks').insert(
+    snakeCaseKeys(persistedRoonTrack) as TrackRowRow,
+  );
+
   return persistedRoonTrack;
 };
 
