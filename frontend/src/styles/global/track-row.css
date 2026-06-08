@@ -62,7 +62,7 @@
     line-height: 1.2;
 }
 
-.track-row__track-add-next {
+.track-row__track-action {
     justify-self: end;
     text-align: right;
 }
