@@ -146,6 +146,16 @@ function Album() {
                 >
                   Add Next
                 </button>
+                <button
+                  type="button"
+                  disabled={config.selectedZoneId === null}
+                  className="album-actions__action"
+                  onClick={() =>
+                    scheduleAlbum(albumAggregate.roonAlbum, 'Queue')
+                  }
+                >
+                  Queue
+                </button>
               </div>
             </div>
           </div>
