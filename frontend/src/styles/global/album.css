@@ -53,7 +53,7 @@
 
 .album-track-row {
   display: grid;
-  grid-template-columns: 40px 1fr 80px 80px;
+  grid-template-columns: 40px 1fr 80px 80px 80px;
   align-items: center;
   padding: 8px 16px;
   border-bottom: 1px solid #eee;

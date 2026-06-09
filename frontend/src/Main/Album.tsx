@@ -61,7 +61,11 @@ function Album() {
     return '-';
   };
 
-  const trackAddNext = (roonAlbum: RoonAlbum, roonPosition: number) => {
+  const scheduleTrack = (
+    roonAlbum: RoonAlbum,
+    roonPosition: number,
+    how: string,
+  ) => {
     if (config.selectedZoneId === null) {
       return null;
     }
@@ -70,7 +74,7 @@ function Album() {
       roonAlbumName: roonAlbum.roonAlbumName,
       roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
       roonPosition,
-      how: 'Add Next',
+      how,
       zoneId: config.selectedZoneId,
     });
   };
@@ -176,13 +180,29 @@ function Album() {
                   type="button"
                   disabled={config.selectedZoneId === null}
                   onClick={() => {
-                    trackAddNext(
+                    scheduleTrack(
                       albumAggregate.roonAlbum,
                       roonTrack.roonPosition,
+                      'Add Next',
                     );
                   }}
                 >
                   Add Next
+                </button>
+              </div>
+              <div className="album-track-row__track-action">
+                <button
+                  type="button"
+                  disabled={config.selectedZoneId === null}
+                  onClick={() => {
+                    scheduleTrack(
+                      albumAggregate.roonAlbum,
+                      roonTrack.roonPosition,
+                      'Queue',
+                    );
+                  }}
+                >
+                  Queue
                 </button>
               </div>
             </div>
