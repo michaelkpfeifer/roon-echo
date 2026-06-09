@@ -190,6 +190,21 @@ function Album() {
                   Add Next
                 </button>
               </div>
+              <div className="album-track-row__track-action">
+                <button
+                  type="button"
+                  disabled={config.selectedZoneId === null}
+                  onClick={() => {
+                    scheduleTrack(
+                      albumAggregate.roonAlbum,
+                      roonTrack.roonPosition,
+                      'Queue',
+                    );
+                  }}
+                >
+                  Queue
+                </button>
+              </div>
             </div>
           ))}
         </>
