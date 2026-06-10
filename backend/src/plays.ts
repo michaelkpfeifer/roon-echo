@@ -1,5 +1,3 @@
-import { exit } from 'node:process';
-
 import type { Knex } from 'knex';
 import fp from 'lodash/fp.js';
 import { v7 as uuidv7 } from 'uuid';
@@ -232,18 +230,12 @@ const updatePlays = async ({
       }
 
       if (trackLength === null) {
-        process.stderr.write(
-          'Error: Received unexpected null value for track length.',
-        );
-        exit(4);
+        throw new Error('Received unexpected null value for track length.');
       }
 
       if (queueItemId === previousQueueItemId) {
         if (previousPlayId === null) {
-          process.stderr.write(
-            'Error: Received unexpected null value for Play ID.',
-          );
-          exit(4);
+          throw new Error('Error: Received unexpected null value for Play ID.');
         }
 
         const newPlayedSegments = applySeekPositionToPlayedSegments(
