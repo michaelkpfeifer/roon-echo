@@ -39,6 +39,28 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
       </button>
     );
 
+  const queueButton =
+    socket === null || zoneId === null ? (
+      <button type="button" disabled>
+        Queue
+      </button>
+    ) : (
+      <button
+        type="button"
+        onClick={() => {
+          socket.emit('scheduleTrack', {
+            roonAlbumName: roonAlbum.roonAlbumName,
+            roonAlbumArtistName: roonAlbum.roonAlbumArtistName,
+            roonPosition: roonTrack.roonPosition,
+            how: 'Queue',
+            zoneId,
+          });
+        }}
+      >
+        Queue
+      </button>
+    );
+
   return (
     <div className="track-row">
       {roonAlbum.imageKey ? (
@@ -64,6 +86,7 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
         {formatRoonTrackLength(roonTrack.roonLength)}
       </div>
       <div className="track-row__track-action">{addNextButton}</div>
+      <div className="track-row__track-action">{queueButton}</div>
     </div>
   );
 }

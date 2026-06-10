@@ -1,6 +1,6 @@
 .track-row {
     display: grid;
-    grid-template-columns: 80px 10px 1fr 80px 80px;
+    grid-template-columns: 80px 10px 1fr 75px 75px 75px;
     align-items: center;
     gap: 16px;
     padding: 12px;
