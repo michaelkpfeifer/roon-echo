@@ -57,6 +57,17 @@ const mergeQueuesInAppState = (
   };
 };
 
+const mergeQueues = (
+  currentQueues: Record<string, RoonQueueItem[]>,
+  zoneId: string,
+  queueItems: RoonQueueItem[],
+): Record<string, RoonQueueItem[]> => {
+  return {
+    ...currentQueues,
+    [zoneId]: queueItems,
+  };
+};
+
 const formatMbTrackLength = (durationInMilliseconds: number) => {
   const totalSeconds = Math.floor(durationInMilliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -154,6 +165,7 @@ export {
   formatRoonTrackLength,
   lookupZoneName,
   mergeAlbumAggregate,
+  mergeQueues,
   mergeQueuesInAppState,
   tracksCount,
 };
