@@ -16,7 +16,7 @@ import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
-import { mergeAlbumAggregate, mergeQueues } from './utils';
+import { mergeAlbumAggregate, mergeQueuesInAppState } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
@@ -124,7 +124,11 @@ function App() {
       queueItems: RoonQueueItem[];
     }) => {
       setAppState((currentAppState) => {
-        const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
+        const mergedQueues = mergeQueuesInAppState(
+          currentAppState,
+          zoneId,
+          queueItems,
+        );
 
         return mergedQueues;
       });

@@ -46,7 +46,7 @@ const mergeAlbumAggregate = (
   });
 };
 
-const mergeQueues = (
+const mergeQueuesInAppState = (
   currentAppState: AppState,
   zoneId: string,
   queueItems: RoonQueueItem[],
@@ -154,6 +154,6 @@ export {
   formatRoonTrackLength,
   lookupZoneName,
   mergeAlbumAggregate,
-  mergeQueues,
+  mergeQueuesInAppState,
   tracksCount,
 };
