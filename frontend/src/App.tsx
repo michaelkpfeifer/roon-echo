@@ -16,7 +16,11 @@ import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
-import { mergeAlbumAggregate, mergeQueuesInAppState } from './utils';
+import {
+  mergeAlbumAggregate,
+  mergeQueues,
+  mergeQueuesInAppState,
+} from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
@@ -28,11 +32,12 @@ function App() {
     () => loadConfig() || { selectedZoneId: null },
   );
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
-  const [zones, setZones] = useState<Record<string, Zone>>({});
   const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
     null,
   );
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+  const [queues, setQueues] = useState({});
+  const [zones, setZones] = useState<Record<string, Zone>>({});
 
   const [appState, setAppState] = useState<AppState>({
     queues: {},
@@ -132,6 +137,12 @@ function App() {
 
         return mergedQueues;
       });
+
+      setQueues((currentQueues) => {
+        const mergedQueues = mergeQueues(currentQueues, zoneId, queueItems);
+
+        return mergedQueues;
+      });
     };
 
     socket.on('queueChanged', handleQueueChangedMessage);
@@ -167,10 +178,12 @@ function App() {
     coreUrl,
     domSelectedZoneId,
     isAlbumArtModalOpen,
+    queues,
     setAppState,
     setConfig,
     setDomSelectedZoneId,
     setIsAlbumArtModalOpen,
+    setQueues,
     zones,
   };
 
