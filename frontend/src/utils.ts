@@ -1,4 +1,3 @@
-import type { AppState } from './internal/appState';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
@@ -44,17 +43,6 @@ const mergeAlbumAggregate = (
       ? albumAggregate
       : currentAlbumAggregate;
   });
-};
-
-const mergeQueuesInAppState = (
-  currentAppState: AppState,
-  zoneId: string,
-  queueItems: RoonQueueItem[],
-): AppState => {
-  return {
-    ...currentAppState,
-    queues: { ...currentAppState.queues, [zoneId]: queueItems },
-  };
 };
 
 const mergeQueues = (
@@ -166,6 +154,5 @@ export {
   lookupZoneName,
   mergeAlbumAggregate,
   mergeQueues,
-  mergeQueuesInAppState,
   tracksCount,
 };

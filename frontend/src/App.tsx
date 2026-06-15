@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
-import type { AppState } from './internal/appState';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
@@ -16,11 +15,7 @@ import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
 import Sidebar from './Sidebar';
 import { socket } from './socket';
-import {
-  mergeAlbumAggregate,
-  mergeQueues,
-  mergeQueuesInAppState,
-} from './utils';
+import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
@@ -38,10 +33,6 @@ function App() {
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
   const [queues, setQueues] = useState({});
   const [zones, setZones] = useState<Record<string, Zone>>({});
-
-  const [appState, setAppState] = useState<AppState>({
-    queues: {},
-  });
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -128,16 +119,6 @@ function App() {
       zoneId: string;
       queueItems: RoonQueueItem[];
     }) => {
-      setAppState((currentAppState) => {
-        const mergedQueues = mergeQueuesInAppState(
-          currentAppState,
-          zoneId,
-          queueItems,
-        );
-
-        return mergedQueues;
-      });
-
       setQueues((currentQueues) => {
         const mergedQueues = mergeQueues(currentQueues, zoneId, queueItems);
 
@@ -160,26 +141,16 @@ function App() {
   }, []);
 
   /* eslint-disable no-console */
-  // console.log('App.jsx: App(): roonState:', roonState);
-  /* eslint-enable no-console */
-
-  /* eslint-disable no-console */
-  // console.log('App.jsx: App(): appState:', appState);
-  /* eslint-enable no-console */
-
-  /* eslint-disable no-console */
   // console.log('App.jsx: App(): config:', config);
   /* eslint-enable no-console */
 
   const appContextValue: AppContextType = {
     albumAggregates,
-    appState,
     config,
     coreUrl,
     domSelectedZoneId,
     isAlbumArtModalOpen,
     queues,
-    setAppState,
     setConfig,
     setDomSelectedZoneId,
     setIsAlbumArtModalOpen,

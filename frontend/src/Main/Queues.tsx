@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import { formatRoonTrackLength, lookupZoneName } from '../utils';
 import noAlbumArt from '../images/no-album-art.svg';
+import { formatRoonTrackLength, lookupZoneName } from '../utils';
 
 function Queues() {
   const { config, coreUrl, queues, zones } = useContext(AppContext);
