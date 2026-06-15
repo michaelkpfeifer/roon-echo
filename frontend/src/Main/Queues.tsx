@@ -5,19 +5,19 @@ import { formatRoonTrackLength, lookupZoneName } from '../utils';
 import noAlbumArt from '../images/no-album-art.svg';
 
 function Queues() {
-  const { appState, config, coreUrl, zones } = useContext(AppContext);
+  const { config, coreUrl, queues, zones } = useContext(AppContext);
 
   return (
     <>
       <h1 className="heading-display">Queues</h1>
       <div className="queue-container">
-        {config.selectedZoneId && appState.queues[config.selectedZoneId] && (
+        {config.selectedZoneId && queues[config.selectedZoneId] && (
           <div className="queue-heading">
             <div className="queue-heading__name">
               {lookupZoneName(zones, config.selectedZoneId)}
             </div>
             <div>
-              {appState.queues[config.selectedZoneId].map(
+              {queues[config.selectedZoneId].map(
                 ({ queueItemId, length, imageKey, threeLine }) => (
                   <div className="queue-item" key={queueItemId}>
                     {imageKey ? (
