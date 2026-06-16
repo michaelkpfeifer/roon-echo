@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppContext from './AppContext';
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
-import type { AppState } from './internal/appState';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
@@ -28,15 +27,12 @@ function App() {
     () => loadConfig() || { selectedZoneId: null },
   );
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
-  const [zones, setZones] = useState<Record<string, Zone>>({});
   const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
     null,
   );
-
-  const [appState, setAppState] = useState<AppState>({
-    queues: {},
-  });
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+  const [queues, setQueues] = useState({});
+  const [zones, setZones] = useState<Record<string, Zone>>({});
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -123,8 +119,8 @@ function App() {
       zoneId: string;
       queueItems: RoonQueueItem[];
     }) => {
-      setAppState((currentAppState) => {
-        const mergedQueues = mergeQueues(currentAppState, zoneId, queueItems);
+      setQueues((currentQueues) => {
+        const mergedQueues = mergeQueues(currentQueues, zoneId, queueItems);
 
         return mergedQueues;
       });
@@ -145,28 +141,20 @@ function App() {
   }, []);
 
   /* eslint-disable no-console */
-  // console.log('App.jsx: App(): roonState:', roonState);
-  /* eslint-enable no-console */
-
-  /* eslint-disable no-console */
-  // console.log('App.jsx: App(): appState:', appState);
-  /* eslint-enable no-console */
-
-  /* eslint-disable no-console */
   // console.log('App.jsx: App(): config:', config);
   /* eslint-enable no-console */
 
   const appContextValue: AppContextType = {
     albumAggregates,
-    appState,
     config,
     coreUrl,
     domSelectedZoneId,
     isAlbumArtModalOpen,
-    setAppState,
+    queues,
     setConfig,
     setDomSelectedZoneId,
     setIsAlbumArtModalOpen,
+    setQueues,
     zones,
   };
 
