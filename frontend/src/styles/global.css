@@ -22,6 +22,8 @@
   --track-list-track-secondary: #666666;
   --album-card-text-primary: #111111;
   --album-card-text-secondary: #666666;
+  --filter-input-border-unselected: #cccccc;
+  --filter-input-border-selected: #aaaaee;
 }
 
 body {
@@ -113,6 +115,25 @@ body {
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 1.5rem;
+}
+
+.filter {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.filter__input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 0.5px solid var(--filter-input-border-unselected);
+  border-radius: 8px;
+  outline: none;
+  width: 180px;
+}
+
+.filter__input:focus {
+  border-color: var(--filter-input-border-selected);
 }
 
 .modal-overlay {

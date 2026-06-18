@@ -39,13 +39,15 @@ function Artists() {
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="Filter by regular expression ..."
-        value={artistPattern}
-        onChange={(e) => setArtistPattern(e.target.value)}
-      />
       <h1 className="heading-display">Artists</h1>
+      <div className="filter">
+        <input
+          className="filter__input"
+          type="text"
+          value={artistPattern}
+          onChange={(e) => setArtistPattern(e.target.value)}
+        />
+      </div>
       <div className="artists-container">
         {filteredRoonAlbumArtistNames.map((roonAlbumArtistName) => (
           <div key={roonAlbumArtistName}>
