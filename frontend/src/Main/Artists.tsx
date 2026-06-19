@@ -1,9 +1,11 @@
-import { useContext } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
 import ArtistCard from './ArtistCard';
 
 function Artists() {
+  const [artistPattern, setArtistPattern] = useState('');
+
   const { albumAggregates } = useContext(AppContext);
 
   const roonAlbumArtistNames = [
@@ -18,11 +20,36 @@ function Artists() {
     ),
   ].sort();
 
+  const filteredRoonAlbumArtistNames = useMemo(() => {
+    if (!artistPattern) {
+      return roonAlbumArtistNames;
+    }
+
+    try {
+      const regex = new RegExp(artistPattern, 'i');
+      return roonAlbumArtistNames.filter((roonAlbumArtistName) =>
+        regex.test(roonAlbumArtistName),
+      );
+    } catch {
+      return roonAlbumArtistNames;
+    }
+
+    return roonAlbumArtistNames;
+  }, [artistPattern, roonAlbumArtistNames]);
+
   return (
     <>
       <h1 className="heading-display">Artists</h1>
+      <div className="filter">
+        <input
+          className="filter__input"
+          type="text"
+          value={artistPattern}
+          onChange={(e) => setArtistPattern(e.target.value)}
+        />
+      </div>
       <div className="artists-container">
-        {roonAlbumArtistNames.map((roonAlbumArtistName) => (
+        {filteredRoonAlbumArtistNames.map((roonAlbumArtistName) => (
           <div key={roonAlbumArtistName}>
             <ArtistCard roonAlbumArtistName={roonAlbumArtistName} />
           </div>
