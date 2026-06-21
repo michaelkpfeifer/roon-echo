@@ -24,11 +24,6 @@ const roonBrowserAlbumsCount = parseInt(
   10,
 );
 
-const rawErrorResponseSchema = z.string();
-
-type RawErrorResponse = z.infer<typeof rawErrorResponseSchema>;
-type BrowseError = RawErrorResponse | z.ZodError;
-
 const rawBrowseResponseSchema = z.object({
   action: z.literal('list'),
   list: z.object({
@@ -170,14 +165,6 @@ type LoadOptions = {
   count?: number;
 };
 
-function buildErrorMessage(description: string, err: BrowseError) {
-  if (err instanceof z.ZodError) {
-    return `Error: ${description}: Validation failed: ${JSON.stringify(z.flattenError(err), null, 4)}`;
-  } else {
-    return `Error: ${description}: Roon API error: ${rawErrorResponseSchema.parse(err)}`;
-  }
-}
-
 const browseAsync = (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
   browseOptions: BrowseOptions,
@@ -185,7 +172,7 @@ const browseAsync = (
   new Promise((resolve, reject) => {
     browseInstance.browse(
       browseOptions,
-      (browseError: RawErrorResponse, browsePayload: RawBrowseResponse) => {
+      (browseError: string, browsePayload: RawBrowseResponse) => {
         if (browseError) {
           reject(browseError);
         } else {
@@ -202,7 +189,7 @@ const loadAsync = (
   new Promise((resolve, reject) => {
     browseInstance.load(
       loadOptions,
-      (loadError: RawErrorResponse, loadPayload: RawLoadResponse) => {
+      (loadError: string, loadPayload: RawLoadResponse) => {
         if (loadError) {
           reject(loadError);
         } else {
@@ -215,106 +202,92 @@ const loadAsync = (
 const loadAlbums = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
 ): Promise<RawRoonAlbum[]> => {
-  try {
-    const topLevelBrowseData = rawBrowseResponseSchema.parse(
-      await browseAsync(browseInstance, {
-        hierarchy: 'browse',
-        pop_all: true,
-      }),
-    );
+  const topLevelBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      pop_all: true,
+    }),
+  );
 
-    const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
-      await loadAsync(browseInstance, {
-        hierarchy: 'browse',
-        offset: 0,
-        count: topLevelBrowseData.list.count,
-      }),
-    );
+  const topLevelLoadData = rawLoadTopLevelResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: topLevelBrowseData.list.count,
+    }),
+  );
 
-    const libraryItem = topLevelLoadData.items.find(
-      (item) => item.title === 'Library',
-    );
+  const libraryItem = topLevelLoadData.items.find(
+    (item) => item.title === 'Library',
+  );
 
-    if (!libraryItem) {
-      throw new Error('Library not found despite validation.');
-    }
-
-    const libraryBrowseData = rawBrowseResponseSchema.parse(
-      await browseAsync(browseInstance, {
-        hierarchy: 'browse',
-        item_key: libraryItem.item_key,
-      }),
-    );
-
-    const libraryLoadData = rawLoadLibraryResponseSchema.parse(
-      await loadAsync(browseInstance, {
-        hierarchy: 'browse',
-        offset: 0,
-        count: libraryBrowseData.list.count,
-      }),
-    );
-
-    const albumItem = libraryLoadData.items.find(
-      (item) => item.title === 'Albums',
-    );
-
-    if (!albumItem) {
-      throw new Error('Albums not found despite validation.');
-    }
-
-    const albumsBrowseData = rawBrowseResponseSchema.parse(
-      await browseAsync(browseInstance, {
-        hierarchy: 'browse',
-        item_key: albumItem.item_key,
-      }),
-    );
-
-    const albumsLoadData = rawLoadAlbumsResponseSchema.parse(
-      await loadAsync(browseInstance, {
-        hierarchy: 'browse',
-        offset: roonBrowserAlbumsOffset,
-        count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
-      }),
-    );
-
-    return albumsLoadData.items.map(
-      (item: RawAlbum) => camelCaseKeys(item) as RawRoonAlbum,
-    );
-  } catch (err) {
-    throw new Error(
-      buildErrorMessage('Failed to load albums', err as BrowseError),
-      { cause: err },
-    );
+  if (!libraryItem) {
+    throw new Error('Could not find Library item.');
   }
+
+  const libraryBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: libraryItem.item_key,
+    }),
+  );
+
+  const libraryLoadData = rawLoadLibraryResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: libraryBrowseData.list.count,
+    }),
+  );
+
+  const albumItem = libraryLoadData.items.find(
+    (item) => item.title === 'Albums',
+  );
+
+  if (!albumItem) {
+    throw new Error('Could not find Albums item.');
+  }
+
+  const albumsBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: albumItem.item_key,
+    }),
+  );
+
+  const albumsLoadData = rawLoadAlbumsResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: roonBrowserAlbumsOffset,
+      count: Math.min(roonBrowserAlbumsCount, albumsBrowseData.list.count),
+    }),
+  );
+
+  return albumsLoadData.items.map(
+    (item: RawAlbum) => camelCaseKeys(item) as RawRoonAlbum,
+  );
 };
 
 const loadTrack = async (
   browseInstance: InstanceType<typeof RoonApiBrowse>,
   itemKey: string,
 ) => {
-  try {
-    const trackBrowseData = rawBrowseResponseSchema.parse(
-      await browseAsync(browseInstance, {
-        hierarchy: 'browse',
-        item_key: itemKey,
-      }),
-    );
+  const trackBrowseData = rawBrowseResponseSchema.parse(
+    await browseAsync(browseInstance, {
+      hierarchy: 'browse',
+      item_key: itemKey,
+    }),
+  );
 
-    const trackLoadData = rawLoadTrackResponseSchema.parse(
-      await loadAsync(browseInstance, {
-        hierarchy: 'browse',
-        offset: 0,
-        count: trackBrowseData.list.count,
-      }),
-    );
+  const trackLoadData = rawLoadTrackResponseSchema.parse(
+    await loadAsync(browseInstance, {
+      hierarchy: 'browse',
+      offset: 0,
+      count: trackBrowseData.list.count,
+    }),
+  );
 
-    return trackLoadData;
-  } catch (err) {
-    throw new Error(
-      buildErrorMessage('Failed to load track by item key', err as BrowseError),
-      { cause: err },
-    );
-  }
+  return trackLoadData;
 };
 
 const findAlbum = async (
@@ -347,7 +320,7 @@ const findAlbum = async (
   );
 
   if (!libraryItem) {
-    throw new Error('Library not found despite validation.');
+    throw new Error('Could not find Library item.');
   }
 
   const libraryBrowseData = rawBrowseResponseSchema.parse(
@@ -370,7 +343,7 @@ const findAlbum = async (
   );
 
   if (!albumsItem) {
-    throw new Error('Albums not found despite validation.');
+    throw new Error('Could not find Albums item.');
   }
 
   rawBrowseResponseSchema.parse(
@@ -419,7 +392,7 @@ const findTracks = async (
   );
 
   if (!album) {
-    throw new Error('Could not find album');
+    throw new Error('Could not find album.');
   }
 
   const tracksBrowseData = rawBrowseResponseSchema.parse(
@@ -456,7 +429,7 @@ const scheduleAlbum = async (
   );
 
   if (!album) {
-    throw new Error('Could not find album');
+    throw new Error('Could not find album.');
   }
 
   const playAlbumKey = album.item_key;
@@ -481,7 +454,7 @@ const scheduleAlbum = async (
   );
 
   if (!playAlbumOption) {
-    throw new Error('Could not find album play action');
+    throw new Error('Could not find album play action.');
   }
 
   const playAlbumOptionBrowseData = rawBrowseResponseSchema.parse(
@@ -531,7 +504,7 @@ const scheduleTrack = async (
   );
 
   if (!album) {
-    throw new Error('Could not find album');
+    throw new Error('Could not find album.');
   }
 
   const playAlbumKey = album.item_key;
