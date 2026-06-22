@@ -117,21 +117,6 @@ const rawLoadAlbumResponseSchema = z
 
 type RawLoadAlbumResponse = z.infer<typeof rawLoadAlbumResponseSchema>;
 
-const rawLoadTrackResponseSchema = z.object({
-  items: z.array(
-    z.object({
-      title: z.string(),
-      item_key: z.string(),
-    }),
-  ),
-  list: z.object({
-    title: z.string(),
-    subtitle: z.string(),
-  }),
-});
-
-type RawLoadTrackResponse = z.infer<typeof rawLoadTrackResponseSchema>;
-
 const rawLoadPlayAlbumOptionsResponseSchema = z.object({
   items: z.array(
     z.object({
@@ -149,7 +134,6 @@ type RawLoadResponse =
   | RawLoadTopLevelResponse
   | RawLoadLibraryResponse
   | RawLoadAlbumResponse
-  | RawLoadTrackResponse
   | RawLoadPlayAlbumOptionsResponseSchema;
 
 type BrowseOptions = {
@@ -266,28 +250,6 @@ const loadAlbums = async (
   return albumsLoadData.items.map(
     (item: RawAlbum) => camelCaseKeys(item) as RawRoonAlbum,
   );
-};
-
-const loadTrack = async (
-  browseInstance: InstanceType<typeof RoonApiBrowse>,
-  itemKey: string,
-) => {
-  const trackBrowseData = rawBrowseResponseSchema.parse(
-    await browseAsync(browseInstance, {
-      hierarchy: 'browse',
-      item_key: itemKey,
-    }),
-  );
-
-  const trackLoadData = rawLoadTrackResponseSchema.parse(
-    await loadAsync(browseInstance, {
-      hierarchy: 'browse',
-      offset: 0,
-      count: trackBrowseData.list.count,
-    }),
-  );
-
-  return trackLoadData;
 };
 
 const findAlbum = async (
@@ -559,7 +521,6 @@ const scheduleTrack = async (
 export {
   findTracks,
   loadAlbums,
-  loadTrack,
   rawLoadAlbumResponseSchema,
   rawLoadAlbumsResponseSchema,
   scheduleAlbum,
