@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
@@ -12,7 +12,8 @@ type MainTrackRowProps = {
   roonTrack: RoonTrack;
 };
 
-function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
+
+const TrackRow = memo(function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
   const { config, coreUrl } = useContext(AppContext);
 
   const zoneId = config.selectedZoneId;
@@ -89,6 +90,6 @@ function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
       <div className="track-row__track-action">{queueButton}</div>
     </div>
   );
-}
+})
 
 export default TrackRow;
