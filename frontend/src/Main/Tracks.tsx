@@ -1,5 +1,5 @@
 import fp from 'lodash/fp';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
@@ -8,34 +8,38 @@ import TrackRow from './TrackRow';
 function Tracks() {
   const { albumAggregates } = useContext(AppContext);
 
-  const tracksWithAlbum = fp
-    .orderBy(
-      [
-        'sortCriteria.artistNames',
-        'sortCriteria.mbReleaseDate',
-        'sortCriteria.roonAlbumName',
-      ],
-      ['asc', 'asc', 'asc'],
-      albumAggregates,
-    )
-    .map((albumAggregate) => {
-      if (
-        albumAggregate.stage === 'empty' ||
-        albumAggregate.stage === 'withRoonAlbum'
-      ) {
-        throw new Error(
-          `Error: Unexpected albumAggregate stage: ${albumAggregate.stage}`,
-        );
-      }
+  const tracksWithAlbum = useMemo(
+    () =>
+      fp
+        .orderBy(
+          [
+            'sortCriteria.artistNames',
+            'sortCriteria.mbReleaseDate',
+            'sortCriteria.roonAlbumName',
+          ],
+          ['asc', 'asc', 'asc'],
+          albumAggregates,
+        )
+        .map((albumAggregate) => {
+          if (
+            albumAggregate.stage === 'empty' ||
+            albumAggregate.stage === 'withRoonAlbum'
+          ) {
+            throw new Error(
+              `Error: Unexpected albumAggregate stage: ${albumAggregate.stage}`,
+            );
+          }
 
-      return albumAggregate.roonTracks.map((roonTrack: RoonTrack) => {
-        return {
-          roonAlbum: albumAggregate.roonAlbum,
-          roonTrack,
-        };
-      });
-    })
-    .flat();
+          return albumAggregate.roonTracks.map((roonTrack: RoonTrack) => {
+            return {
+              roonAlbum: albumAggregate.roonAlbum,
+              roonTrack,
+            };
+          });
+        })
+        .flat(),
+    [albumAggregates],
+  );
 
   return (
     <>
