@@ -26,6 +26,7 @@ import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
 import { transformToRoonAlbumId } from './transforms/rawRoonAlbum.js';
 import { setRoonAlbumIdCache } from './roonAlbumIdCache.js';
+import { roonApiRateLimiter } from './server.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(
@@ -139,10 +140,13 @@ const getRoonTracks = async (
     return persistedRoonTracks;
   }
 
-  const rawRoonTracks: RawRoonTrack[] = await browser.findTracks(
-    browseInstance,
-    roonAlbum.roonAlbumName,
-    roonAlbum.roonAlbumArtistName,
+  const rawRoonTracks: RawRoonTrack[] = await roonApiRateLimiter.schedule(
+    async () =>
+      browser.findTracks(
+        browseInstance,
+        roonAlbum.roonAlbumName,
+        roonAlbum.roonAlbumArtistName,
+      ),
   );
 
   const roonTracks: RoonTrack[] = rawRoonTracks.map((rawRoonTrack, index) => {
