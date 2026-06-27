@@ -247,6 +247,11 @@ const loadAlbums = async (
     }),
   );
 
+  await browseAsync(browseInstance, {
+    hierarchy: 'browse',
+    pop_all: true,
+  });
+
   return albumsLoadData.items.map(
     (item: RawAlbum) => camelCaseKeys(item) as RawRoonAlbum,
   );
@@ -372,6 +377,11 @@ const findTracks = async (
     }),
   );
 
+  await browseAsync(browseInstance, {
+    hierarchy: 'browse',
+    pop_all: true,
+  });
+
   return tracksLoadData.items;
 };
 
@@ -447,6 +457,11 @@ const scheduleAlbum = async (
     item_key: scheduleAlbumOption.item_key,
     zone_or_output_id: zoneId,
   });
+
+  await browseAsync(browseInstance, {
+    hierarchy: 'browse',
+    pop_all: true,
+  });
 };
 
 const scheduleTrack = async (
@@ -515,6 +530,11 @@ const scheduleTrack = async (
     hierarchy: 'browse',
     item_key: scheduleTrackOption.item_key,
     zone_or_output_id: zoneId,
+  });
+
+  await browseAsync(browseInstance, {
+    hierarchy: 'browse',
+    pop_all: true,
   });
 };
 
