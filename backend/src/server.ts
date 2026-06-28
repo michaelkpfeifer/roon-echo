@@ -141,12 +141,19 @@ const subscribeToQueueChanges = (zoneIds: string[]) => {
       zoneId,
       100,
       (response: any, snakeCaseQueue: any) => {
+        /* eslint-disable no-console */
+        console.log('server.js: subscribeToQueueChanges: response:', response);
+        /* eslint-enable no-console */
+
+        if (response === 'NetworkError') {
+          return null;
+        }
+
         const queue = camelCaseKeys(snakeCaseQueue);
         const queueItems = extractQueueItems(queue);
         updateRoonTrackLengths(queueItems);
 
         /* eslint-disable no-console */
-        console.log('server.js: subscribeToQueueChanges: response:', response);
         console.log('server.js: subscribeToQueueChanges: queue:', queue);
         console.log(
           'server.js: subscribeToQueueChanges: queueItems:',
@@ -340,8 +347,6 @@ zonePlayingStates = staticZoneData.map((zone) => {
 console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
 
-subscribeToQueueChanges(staticZoneData.map((zone) => zone.zoneId));
-
 const roonApiRateLimiter = new Bottleneck({
   minTime: 100,
   maxConcurrent: 1,
@@ -374,6 +379,8 @@ enrichAlbumAggregatesWithMusicBrainzData(
   io,
   albumAggregatesWithPersistedData,
 );
+
+subscribeToQueueChanges(staticZoneData.map((zone) => zone.zoneId));
 
 io.on('connection', async (socket) => {
   /* eslint-disable no-console */
