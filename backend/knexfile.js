@@ -1,6 +1,6 @@
 const pool = {
   afterCreate: (conn, cb) => {
-    conn.pragma('busy_timeout = 250');
+    conn.pragma('busy_timeout = 5000');
     conn.pragma('journal_mode = WAL');
     cb();
   },
@@ -13,14 +13,14 @@ export default {
       filename: './db/mb.development.sqlite3',
     },
     useNullAsDefault: true,
-    pool,
+    pool: { ...pool, min: 1, max: 1 },
   },
 
   test: {
     client: 'better-sqlite3',
     connection: ':memory:',
     useNullAsDefault: true,
-    pool: { ...pool, min: 1, max: 1 }
+    pool: { ...pool, min: 1, max: 1 },
   },
 
   staging: {
@@ -29,7 +29,7 @@ export default {
       filename: './db/mb.staging.sqlite3',
     },
     useNullAsDefault: true,
-    pool,
+    pool: { ...pool, min: 1, max: 1 },
   },
 
   production: {
@@ -38,6 +38,6 @@ export default {
       filename: './db/mb.production.sqlite3',
     },
     useNullAsDefault: true,
-    pool,
+    pool: { ...pool, min: 1, max: 1 },
   },
 };
