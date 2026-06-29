@@ -18,8 +18,8 @@ export async function up(knex: Knex): Promise<void> {
       played_at TEXT NOT NULL,
       fraction_played FLOAT NOT NULL,
       is_played BOOLEAN NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(track_id) REFERENCES tracks(track_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,

@@ -3,11 +3,11 @@ import { Knex } from 'knex';
 export function up(knex: Knex): Promise<void> {
   return knex.raw(`
     CREATE TABLE roon_messages (
-      id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+      id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
       message TEXT,
       message_type TEXT NOT NULL,
       sub_type TEXT,
-      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     );
   `);
 }

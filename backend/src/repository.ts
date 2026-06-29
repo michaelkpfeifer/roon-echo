@@ -240,7 +240,7 @@ const insertRoonTracks = async (
   db: Knex<DatabaseSchema>,
   roonTracks: RoonTrack[],
 ) => {
-  db.transaction(async (trx) => {
+  await db.transaction(async (trx) => {
     for (const roonTrack of roonTracks) {
       await trx<DatabaseSchema['tracks']>('tracks').insert({
         track_id: roonTrack.trackId,
