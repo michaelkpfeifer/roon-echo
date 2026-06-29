@@ -18,8 +18,8 @@ export function up(knex: Knex): Promise<void> {
       mb_number TEXT ,
       mb_position INTEGER,
       mb_length INTEGER,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,

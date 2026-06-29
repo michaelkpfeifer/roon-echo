@@ -9,12 +9,12 @@ export function up(knex: Knex): Promise<void> {
         CHECK (length(album_id) = 36),
       score INTEGER,
       track_count INTEGER,
-      release_date DATETIME,
+      release_date TIMESTAMPTZ,
       mb_candidate_album_name TEXT NOT NULL,
       mb_candidate_artists TEXT NOT NULL,
       mb_candidate_tracks TEXT NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,

@@ -8,8 +8,8 @@ export function up(knex: Knex): Promise<void> {
       name TEXT NOT NULL,
       sort_name TEXT NOT NULL,
       disambiguation TEXT,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (mb_artist_id)
     );
   `);

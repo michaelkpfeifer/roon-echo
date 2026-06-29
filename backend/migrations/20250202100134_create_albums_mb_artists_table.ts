@@ -9,8 +9,8 @@ export async function up(knex: Knex): Promise<void> {
         CHECK (length(mb_artist_id) = 36),
       position INTEGER NOT NULL,
       joinphrase TEXT NOT NULL,
-      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(album_id) REFERENCES albums(album_id)
         ON DELETE CASCADE,
       FOREIGN KEY(mb_artist_id) REFERENCES mb_artists(mb_artist_id)
