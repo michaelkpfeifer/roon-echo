@@ -1,43 +1,24 @@
-const pool = {
-  afterCreate: (conn, cb) => {
-    conn.pragma('busy_timeout = 5000');
-    conn.pragma('journal_mode = WAL');
-    cb();
+const base = {
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'roon_echo',
+    port: 5432,
+    password: process.env.PGPASSWORD,
   },
 };
 
 export default {
   development: {
-    client: 'better-sqlite3',
-    connection: {
-      filename: './db/mb.development.sqlite3',
-    },
-    useNullAsDefault: true,
-    pool: { ...pool, min: 1, max: 1 },
+    ...base,
+    connection: { ...base.connection, database: 'roon_echo_development' },
   },
-
   test: {
-    client: 'better-sqlite3',
-    connection: ':memory:',
-    useNullAsDefault: true,
-    pool: { ...pool, min: 1, max: 1 },
+    ...base,
+    connection: { ...base.connection, database: 'roon_echo_test' },
   },
-
-  staging: {
-    client: 'better-sqlite3',
-    connection: {
-      filename: './db/mb.staging.sqlite3',
-    },
-    useNullAsDefault: true,
-    pool: { ...pool, min: 1, max: 1 },
-  },
-
   production: {
-    client: 'better-sqlite3',
-    connection: {
-      filename: './db/mb.production.sqlite3',
-    },
-    useNullAsDefault: true,
-    pool: { ...pool, min: 1, max: 1 },
+    ...base,
+    connection: { ...base.connection, database: 'roon_echo_production' },
   },
 };
