@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
@@ -13,7 +13,7 @@ function AlbumAggregateNotFound(id: string) {
   throw new Error(`Error: Cannot find album by ID ${id}.`);
 }
 
-function Album() {
+const Album = memo(function Album() {
   const { albumAggregates, config, coreUrl, setIsAlbumArtModalOpen } =
     useContext(AppContext);
   const { id } = useParams();
@@ -211,6 +211,6 @@ function Album() {
       );
     }
   }
-}
+})
 
 export default Album;
