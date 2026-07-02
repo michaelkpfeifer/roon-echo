@@ -348,7 +348,7 @@ console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
 
 const roonApiRateLimiter = new Bottleneck({
-  minTime: 100,
+  minTime: 50,
   maxConcurrent: 1,
 });
 
@@ -451,4 +451,4 @@ io.on('connection', async (socket) => {
   });
 });
 
-export { roon, server };
+export { roon, roonApiRateLimiter, server };
