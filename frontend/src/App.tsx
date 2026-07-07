@@ -10,6 +10,7 @@ import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import Home from './Main/Home';
 import Queues from './Main/Queues';
+import Tags from './Main/Tags';
 import Tracks from './Main/Tracks';
 import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
@@ -175,6 +176,7 @@ function App() {
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
                 <Route path="/queues" element={<Queues />} />
+                <Route path="/tags" element={<Tags />} />
                 <Route path="/zones" element={<Zones />} />
               </Routes>
             </div>
