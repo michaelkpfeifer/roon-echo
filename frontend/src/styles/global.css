@@ -6,6 +6,7 @@
 @import './global/main.css';
 @import './global/queue.css';
 @import './global/sidebar.css';
+@import './global/tags.css';
 @import './global/track-row.css';
 @import './global/tracks.css';
 @import './global/zone-row.css';

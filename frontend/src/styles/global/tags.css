@@ -1,0 +1,15 @@
+.tags-heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tags-heading__button {
+  padding: 6px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-right: 16px;
+}
+
+.tags-heading__filter {
+}
