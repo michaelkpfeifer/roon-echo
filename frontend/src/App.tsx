@@ -19,6 +19,7 @@ import { socket } from './socket';
 import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
+import type { Tag } from '../../shared/internal/tag';
 import type { Zone } from '../../shared/internal/zone';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
@@ -33,6 +34,7 @@ function App() {
   );
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
   const [queues, setQueues] = useState({});
+  const [tags, setTags] = useState<Tag[]>([]);
   const [zones, setZones] = useState<Record<string, Zone>>({});
 
   useEffect(() => saveConfig(config), [config]);
@@ -157,6 +159,8 @@ function App() {
     setIsAlbumArtModalOpen,
     setQueues,
     zones,
+    tags,
+    setTags,
   };
 
   return (
