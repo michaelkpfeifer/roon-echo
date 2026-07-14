@@ -35,9 +35,13 @@ import {
 import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
 import {
+  createTag,
   dbInit,
+  deleteTag,
   findRoonTrackByNameAndAlbumName,
+  listTags,
   updateRoonLengthInTrack,
+  updateTag,
 } from './repository.js';
 import { initializeRoonData } from './roonData.js';
 import type { DatabaseSchema } from '../databaseSchema.ts';
@@ -442,6 +446,42 @@ io.on('connection', async (socket) => {
 
   socket.on('play', ({ zoneId }) => {
     transport.control(zoneId, 'play');
+  });
+
+  socket.on('tags:list', async (callback) => {
+    const result = await listTags();
+
+    result.match(
+      (tags) => callback({ ok: true, value: tags }),
+      (error) => callback({ ok: false, error }),
+    );
+  });
+
+  socket.on('tags:create', async (payload, callback) => {
+    const result = await createTag(payload);
+
+    result.match(
+      (tag) => callback({ ok: true, value: tag }),
+      (error) => callback({ ok: false, error }),
+    );
+  });
+
+  socket.on('tags:update', async (tag, callback) => {
+    const result = await updateTag(tag);
+
+    result.match(
+      (tag) => callback({ ok: true, value: tag }),
+      (error) => callback({ ok: false, error }),
+    );
+  });
+
+  socket.on('tags:delete', async ({ tagId }, callback) => {
+    const result = await deleteTag(tagId);
+
+    result.match(
+      () => callback({ ok: true }),
+      (error) => callback({ ok: false, error }),
+    );
   });
 
   socket.on('disconnect', () => {

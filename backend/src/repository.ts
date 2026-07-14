@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
@@ -16,6 +17,7 @@ import type { PlayRow } from '../../shared/internal/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { Tag } from '../../shared/internal/tag.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
 import type { TrackRow } from './internal/trackRow.js';
@@ -422,8 +424,42 @@ const updateRoonLengthInTrack = async (
     .update({ roon_length: roonLength });
 };
 
+const listTags = async (): Promise<Result<Tag[], string>> => {
+  return ok([]);
+};
+
+const createTag = async ({
+  name,
+  description,
+  color,
+  backgroundColor,
+}: {
+  name: string;
+  description: string | null;
+  color: string;
+  backgroundColor: string;
+}): Promise<Result<Tag, string>> => {
+  return ok({
+    tagId: randomUUID(),
+    name,
+    description,
+    color,
+    backgroundColor,
+  });
+};
+
+const updateTag = async (tag: Tag): Promise<Result<Tag, string>> => {
+  return ok(tag);
+};
+
+const deleteTag = async (tagId: string): Promise<Result<void, string>> => {
+  return ok(undefined);
+};
+
 export {
+  createTag,
   dbInit,
+  deleteTag,
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
@@ -434,11 +470,13 @@ export {
   findRoonTrackByNameAndAlbumName,
   insertRoonAlbum,
   insertRoonTracks,
+  listTags,
   normalizeCandidate,
   roonAlbumCount,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   updateRoonLengthInTrack,
+  updateTag,
   upsertMbCandidate,
   upsertPlay,
 };
