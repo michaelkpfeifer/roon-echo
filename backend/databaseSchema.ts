@@ -98,6 +98,16 @@ type DatabaseSchema = {
     created_at: string;
     updated_at: string;
   };
+
+  tags: {
+    tag_id: string;
+    name: string;
+    description: string | null;
+    color: string;
+    background_color: string;
+    created_at: string;
+    updated_at: string;
+  };
 };
 
 export type { DatabaseSchema };
