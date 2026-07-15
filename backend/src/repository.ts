@@ -1,8 +1,8 @@
-import { randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
+import { v7 as uuidv7 } from 'uuid';
 
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
@@ -424,36 +424,121 @@ const updateRoonLengthInTrack = async (
     .update({ roon_length: roonLength });
 };
 
-const listTags = async (): Promise<Result<Tag[], string>> => {
-  return ok([]);
+const listTags = async (
+  db: Knex<DatabaseSchema>,
+): Promise<Result<Tag[], string>> => {
+  try {
+    const rows = await db<DatabaseSchema['tags']>('tags').select('*');
+
+    const tags: Tag[] = rows.map((row) => ({
+      tagId: row.tag_id,
+      name: row.name,
+      description: row.description,
+      color: row.color,
+      backgroundColor: row.background_color,
+    }));
+
+    return ok(tags);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: listTags failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to list tags');
+  }
 };
 
-const createTag = async ({
-  name,
-  description,
-  color,
-  backgroundColor,
-}: {
-  name: string;
-  description: string | null;
-  color: string;
-  backgroundColor: string;
-}): Promise<Result<Tag, string>> => {
-  return ok({
-    tagId: randomUUID(),
+const createTag = async (
+  db: Knex<DatabaseSchema>,
+  {
     name,
     description,
     color,
     backgroundColor,
-  });
+  }: {
+    name: string;
+    description: string | null;
+    color: string;
+    backgroundColor: string;
+  },
+): Promise<Result<Tag, string>> => {
+  const tagId = uuidv7();
+
+  try {
+    await db<DatabaseSchema['tags']>('tags').insert({
+      tag_id: tagId,
+      name,
+      description,
+      color,
+      background_color: backgroundColor,
+    });
+
+    return ok({ tagId, name, description, color, backgroundColor });
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: createTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to create tag');
+  }
 };
 
-const updateTag = async (tag: Tag): Promise<Result<Tag, string>> => {
-  return ok(tag);
+const updateTag = async (
+  db: Knex<DatabaseSchema>,
+  { tagId, name, description, color, backgroundColor }: Tag,
+): Promise<Result<Tag, string>> => {
+  try {
+    const updatedCount = await db<DatabaseSchema['tags']>('tags')
+      .where({ tag_id: tagId })
+      .update({
+        name,
+        description,
+        color,
+        background_color: backgroundColor,
+        updated_at: db.fn.now(),
+      });
+
+    if (updatedCount === 0) {
+      return err(`Tag ${tagId} not found`);
+    }
+
+    return ok({
+      tagId,
+      name,
+      description,
+      color,
+      backgroundColor,
+    });
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: createTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to update tag');
+  }
 };
 
-const deleteTag = async (tagId: string): Promise<Result<void, string>> => {
-  return ok(undefined);
+const deleteTag = async (
+  db: Knex<DatabaseSchema>,
+  tagId: string,
+): Promise<Result<void, string>> => {
+  try {
+    const deletedCount = await db<DatabaseSchema['tags']>('tags')
+      .where({ tag_id: tagId })
+      .del();
+
+    if (deletedCount === 0) {
+      return err(`Tag ${tagId} not found`);
+    }
+
+    return ok(undefined);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: deleteTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to delete tag');
+  }
 };
 
 export {

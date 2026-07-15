@@ -449,7 +449,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('tags:list', async (callback) => {
-    const result = await listTags();
+    const result = await listTags(db);
 
     result.match(
       (tags) => callback({ ok: true, value: tags }),
@@ -458,7 +458,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('tags:create', async (payload, callback) => {
-    const result = await createTag(payload);
+    const result = await createTag(db, payload);
 
     result.match(
       (tag) => callback({ ok: true, value: tag }),
@@ -467,7 +467,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('tags:update', async (tag, callback) => {
-    const result = await updateTag(tag);
+    const result = await updateTag(db, tag);
 
     result.match(
       (tag) => callback({ ok: true, value: tag }),
@@ -476,7 +476,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('tags:delete', async ({ tagId }, callback) => {
-    const result = await deleteTag(tagId);
+    const result = await deleteTag(db, tagId);
 
     result.match(
       () => callback({ ok: true }),
