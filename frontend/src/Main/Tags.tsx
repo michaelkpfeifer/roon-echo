@@ -6,14 +6,41 @@ import TagRow from './TagRow';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { Tag } from '../../../shared/internal/tag';
 
+const blankTag: Tag = {
+  tagId: 'new',
+  name: '',
+  description: null,
+  color: '#000000',
+  backgroundColor: '#ffffff',
+};
+
 function Tags() {
   const [tagsPattern, setTagsPattern] = useState('');
   const [editingTagId, setEditingTagId] = useState<string | 'new' | null>(null);
 
   const { setTags, tags } = useContext(AppContext);
 
-  const handleSave = (updatedTag: Tag) => {
-    socket.emit('tags:update', updatedTag, (response: SocketResult<Tag>) => {
+  const handleSave = (draft: Tag) => {
+    if (editingTagId === 'new') {
+      const { name, description, color, backgroundColor } = draft;
+      socket.emit(
+        'tags:create',
+        { name, description, color, backgroundColor },
+        (response: SocketResult<Tag>) => {
+          if (response.ok) {
+            setTags([...tags, response.value]);
+            setEditingTagId(null);
+          } else {
+            /* eslint-disable no-console */
+            console.error('Error: failed to create tag:', response.error);
+            /* eslint-enable no-console */
+          }
+        },
+      );
+      return;
+    }
+
+    socket.emit('tags:update', draft, (response: SocketResult<Tag>) => {
       if (response.ok) {
         setTags(
           tags.map((tag) =>
@@ -58,6 +85,16 @@ function Tags() {
         </div>
       </div>
       <div className="tags-list">
+        {editingTagId === 'new' && (
+          <TagRow
+            key="new"
+            tag={blankTag}
+            isEditing={true}
+            onStartEdit={() => {}}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+        )}
         {tags.map((tag) => (
           <TagRow
             key={tag.tagId}
