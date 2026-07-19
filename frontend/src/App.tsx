@@ -133,6 +133,8 @@ function App() {
     socket.on('queueChanged', handleQueueChangedMessage);
 
     socket.emit('tags:list', (response: SocketResult<Tag[]>) => {
+      console.log('>>>> App.tsx: App(): response:', response);
+
       if (response.ok) {
         setTags(response.value);
       } else {
