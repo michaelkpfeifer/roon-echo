@@ -3,6 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { Config } from './config';
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../../shared/internal/roonQueueItem';
+import type { Tag } from '../../../shared/internal/tag';
 import type { Zone } from '../../../shared/internal/zone';
 
 type AppContextType = {
@@ -16,6 +17,8 @@ type AppContextType = {
   setDomSelectedZoneId: Dispatch<SetStateAction<string | null>>;
   setIsAlbumArtModalOpen: Dispatch<SetStateAction<boolean>>;
   setQueues: Dispatch<SetStateAction<Record<string, RoonQueueItem[]>>>;
+  setTags: Dispatch<SetStateAction<Tag[]>>;
+  tags: Tag[];
   zones: Record<string, Zone>;
 };
 

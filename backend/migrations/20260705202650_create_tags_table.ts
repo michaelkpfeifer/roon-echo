@@ -5,6 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE tags (
       tag_id TEXT NOT NULL CHECK (length(tag_id) = 36),
       name TEXT NOT NULL,
+      description TEXT,
       color TEXT NOT NULL,
       background_color TEXT NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

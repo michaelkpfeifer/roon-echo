@@ -10,6 +10,7 @@ import Albums from './Main/Albums';
 import Artists from './Main/Artists';
 import Home from './Main/Home';
 import Queues from './Main/Queues';
+import Tags from './Main/Tags';
 import Tracks from './Main/Tracks';
 import Zones from './Main/Zones';
 import NowPlaying from './NowPlaying';
@@ -18,6 +19,8 @@ import { socket } from './socket';
 import { mergeAlbumAggregate, mergeQueues } from './utils';
 import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
+import type { SocketResult } from '../../shared/internal/socketResult';
+import type { Tag } from '../../shared/internal/tag';
 import type { Zone } from '../../shared/internal/zone';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
@@ -32,6 +35,7 @@ function App() {
   );
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
   const [queues, setQueues] = useState({});
+  const [tags, setTags] = useState<Tag[]>([]);
   const [zones, setZones] = useState<Record<string, Zone>>({});
 
   useEffect(() => saveConfig(config), [config]);
@@ -128,6 +132,18 @@ function App() {
 
     socket.on('queueChanged', handleQueueChangedMessage);
 
+    socket.emit('tags:list', (response: SocketResult<Tag[]>) => {
+      console.log('>>>> App.tsx: App(): response:', response);
+
+      if (response.ok) {
+        setTags(response.value);
+      } else {
+        /* eslint-disable no-console */
+        console.error('Failed to load tags:', response.error);
+        /* eslint-enable no-console */
+      }
+    });
+
     return () => {
       socket.off('queueChanged', handleQueueChangedMessage);
       socket.off('albumAggregateUpdate', handleAlbumAggregateUpdate);
@@ -156,6 +172,8 @@ function App() {
     setIsAlbumArtModalOpen,
     setQueues,
     zones,
+    tags,
+    setTags,
   };
 
   return (
@@ -175,6 +193,7 @@ function App() {
                 <Route path="/artists" element={<Artists />} />
                 <Route path="/tracks" element={<Tracks />} />
                 <Route path="/queues" element={<Queues />} />
+                <Route path="/tags" element={<Tags />} />
                 <Route path="/zones" element={<Zones />} />
               </Routes>
             </div>

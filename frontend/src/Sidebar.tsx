@@ -31,6 +31,12 @@ function Sidebar() {
 
         <div className="sidebar-link-group">
           <div className="sidebar-link">
+            <Link to="/tags">Tags</Link>
+          </div>
+        </div>
+
+        <div className="sidebar-link-group">
+          <div className="sidebar-link">
             <Link to="/zones">Zones</Link>
           </div>
         </div>

@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
+import { v7 as uuidv7 } from 'uuid';
 
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
@@ -16,6 +17,7 @@ import type { PlayRow } from '../../shared/internal/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
+import type { Tag } from '../../shared/internal/tag.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
 import type { TrackRow } from './internal/trackRow.js';
@@ -422,8 +424,127 @@ const updateRoonLengthInTrack = async (
     .update({ roon_length: roonLength });
 };
 
+const listTags = async (
+  db: Knex<DatabaseSchema>,
+): Promise<Result<Tag[], string>> => {
+  try {
+    const rows = await db<DatabaseSchema['tags']>('tags').select('*');
+
+    const tags: Tag[] = rows.map((row) => ({
+      tagId: row.tag_id,
+      name: row.name,
+      description: row.description,
+      color: row.color,
+      backgroundColor: row.background_color,
+    }));
+
+    return ok(tags);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: listTags failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to list tags');
+  }
+};
+
+const createTag = async (
+  db: Knex<DatabaseSchema>,
+  {
+    name,
+    description,
+    color,
+    backgroundColor,
+  }: {
+    name: string;
+    description: string | null;
+    color: string;
+    backgroundColor: string;
+  },
+): Promise<Result<Tag, string>> => {
+  const tagId = uuidv7();
+
+  try {
+    await db<DatabaseSchema['tags']>('tags').insert({
+      tag_id: tagId,
+      name,
+      description,
+      color,
+      background_color: backgroundColor,
+    });
+
+    return ok({ tagId, name, description, color, backgroundColor });
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: createTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to create tag');
+  }
+};
+
+const updateTag = async (
+  db: Knex<DatabaseSchema>,
+  { tagId, name, description, color, backgroundColor }: Tag,
+): Promise<Result<Tag, string>> => {
+  try {
+    const updatedCount = await db<DatabaseSchema['tags']>('tags')
+      .where({ tag_id: tagId })
+      .update({
+        name,
+        description,
+        color,
+        background_color: backgroundColor,
+        updated_at: db.fn.now(),
+      });
+
+    if (updatedCount === 0) {
+      return err(`Tag ${tagId} not found`);
+    }
+
+    return ok({
+      tagId,
+      name,
+      description,
+      color,
+      backgroundColor,
+    });
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: createTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to update tag');
+  }
+};
+
+const deleteTag = async (
+  db: Knex<DatabaseSchema>,
+  tagId: string,
+): Promise<Result<void, string>> => {
+  try {
+    const deletedCount = await db<DatabaseSchema['tags']>('tags')
+      .where({ tag_id: tagId })
+      .del();
+
+    if (deletedCount === 0) {
+      return err(`Tag ${tagId} not found`);
+    }
+
+    return ok(undefined);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: deleteTag failed:', error);
+    /* eslint-enable no-console */
+
+    return err('Failed to delete tag');
+  }
+};
+
 export {
+  createTag,
   dbInit,
+  deleteTag,
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
@@ -434,11 +555,13 @@ export {
   findRoonTrackByNameAndAlbumName,
   insertRoonAlbum,
   insertRoonTracks,
+  listTags,
   normalizeCandidate,
   roonAlbumCount,
   updateCandidatesFetchedAtTimestamp,
   updateCandidatesMatchedAtTimestamp,
   updateRoonLengthInTrack,
+  updateTag,
   upsertMbCandidate,
   upsertPlay,
 };
