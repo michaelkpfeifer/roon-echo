@@ -4,6 +4,7 @@ import AppContext from '../AppContext';
 import { socket } from '../socket';
 import TagRow from './TagRow';
 import type { SocketResult } from '../../../shared/internal/socketResult';
+import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
 
 const blankTag: Tag = {
@@ -60,6 +61,18 @@ function Tags() {
     setEditingTagId(null);
   };
 
+  const handleDelete = (tagId: string) => {
+    socket.emit('tags:delete', { tagId }, (response: SocketVoidResult) => {
+      if (response.ok) {
+        setTags(tags.filter((tag) => tag.tagId !== tagId));
+      } else {
+        /* eslint-disable no-console */
+        console.error('Error: failed to delete tag:', response.error);
+        /* eslint-enable no-console */
+      }
+    });
+  };
+
   return (
     <>
       <h1 className="heading-display">Tags</h1>
@@ -93,6 +106,7 @@ function Tags() {
             onStartEdit={() => {}}
             onSave={handleSave}
             onCancel={handleCancel}
+            onDelete={handleDelete}
           />
         )}
         {tags.map((tag) => (
@@ -103,6 +117,7 @@ function Tags() {
             onStartEdit={() => setEditingTagId(tag.tagId)}
             onSave={handleSave}
             onCancel={handleCancel}
+            onDelete={handleDelete}
           />
         ))}
       </div>

@@ -8,6 +8,7 @@ type TagRowProps = {
   onStartEdit: () => void;
   onSave: (updated: Tag) => void;
   onCancel: () => void;
+  onDelete: (tagId: string) => void;
 };
 
 function TagRow({
@@ -16,6 +17,7 @@ function TagRow({
   onStartEdit,
   onSave,
   onCancel,
+  onDelete,
 }: TagRowProps) {
   const [draft, setDraft] = useState(tag);
 
@@ -70,6 +72,9 @@ function TagRow({
       <span>{tag.description}</span>
       <button type="button" onClick={onStartEdit}>
         Edit
+      </button>
+      <button type="button" onClick={() => onDelete(tag.tagId)}>
+        Delete
       </button>
     </div>
   );
