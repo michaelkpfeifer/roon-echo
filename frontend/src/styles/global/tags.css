@@ -13,3 +13,19 @@
 
 .tags-heading__filter {
 }
+
+.tags-container {
+  margin-top: 16px;
+}
+
+.tags-list {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(0, 4fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  align-items: center;
+}
