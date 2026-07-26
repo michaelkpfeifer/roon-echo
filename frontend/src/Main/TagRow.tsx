@@ -23,13 +23,15 @@ function TagRow({
 
   if (isEditing) {
     return (
-      <div>
+      <div className="tag-row">
         <input
+          className="tag-row-item"
           type="text"
           value={draft.name}
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}
         />
         <input
+          className="tag-row-item"
           type="text"
           value={draft.description ?? ''}
           onChange={(e) =>
@@ -37,21 +39,28 @@ function TagRow({
           }
         />
         <input
+          className="tag-row-item"
           type="text"
           value={draft.color}
           onChange={(e) => setDraft({ ...draft, color: e.target.value })}
         />
         <input
+          className="tag-row-item"
           type="text"
           value={draft.backgroundColor}
           onChange={(e) =>
             setDraft({ ...draft, backgroundColor: e.target.value })
           }
         />
-        <button type="button" onClick={() => onSave(draft)}>
+        <button
+          className="tag-row-item"
+          type="button"
+          onClick={() => onSave(draft)}
+        >
           Save
         </button>
         <button
+          className="tag-row-item"
           type="button"
           onClick={() => {
             setDraft(tag);
@@ -65,15 +74,24 @@ function TagRow({
   }
 
   return (
-    <div>
-      <span style={{ color: tag.color, backgroundColor: tag.backgroundColor }}>
+    <div className="tag-row">
+      <div
+        className="tag-row-item"
+        style={{ color: tag.color, backgroundColor: tag.backgroundColor }}
+      >
         {tag.name}
-      </span>
-      <span>{tag.description}</span>
-      <button type="button" onClick={onStartEdit}>
+      </div>
+      <div className="tag-row-item">{tag.description}</div>
+      <div className="tag-row-item">&nbsp;</div>
+      <div className="tag-row-item">&nbsp;</div>
+      <button className="tag-row-item" type="button" onClick={onStartEdit}>
         Edit
       </button>
-      <button type="button" onClick={() => onDelete(tag.tagId)}>
+      <button
+        className="tag-row-item"
+        type="button"
+        onClick={() => onDelete(tag.tagId)}
+      >
         Delete
       </button>
     </div>

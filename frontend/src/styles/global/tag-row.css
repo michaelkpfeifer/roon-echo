@@ -1,0 +1,14 @@
+.tag-row {
+  display: contents;
+}
+
+.tag-row-item {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: var(--bg-primary);
+  transition: background-color 0.2s;
+}
+
+.tag-row:hover .tag-row-item {
+  background-color: var(--bg-secondary);
+}

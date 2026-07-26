@@ -97,29 +97,31 @@ function Tags() {
           </div>
         </div>
       </div>
-      <div className="tags-list">
-        {editingTagId === 'new' && (
-          <TagRow
-            key="new"
-            tag={blankTag}
-            isEditing={true}
-            onStartEdit={() => {}}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            onDelete={handleDelete}
-          />
-        )}
-        {tags.map((tag) => (
-          <TagRow
-            key={tag.tagId}
-            tag={tag}
-            isEditing={editingTagId === tag.tagId}
-            onStartEdit={() => setEditingTagId(tag.tagId)}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            onDelete={handleDelete}
-          />
-        ))}
+      <div className="tags-container">
+        <div className="tags-list">
+          {editingTagId === 'new' && (
+            <TagRow
+              key="new"
+              tag={blankTag}
+              isEditing={true}
+              onStartEdit={() => {}}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+            />
+          )}
+          {tags.map((tag) => (
+            <TagRow
+              key={tag.tagId}
+              tag={tag}
+              isEditing={editingTagId === tag.tagId}
+              onStartEdit={() => setEditingTagId(tag.tagId)}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
