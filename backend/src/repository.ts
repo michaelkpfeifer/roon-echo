@@ -153,7 +153,7 @@ const fetchRoonTracks = async (
     .where({
       album_id: albumId,
     })
-    .orderBy('roon_number', 'asc');
+    .orderBy('roon_position', 'asc');
 
   return roonTracks.map((track) => camelCaseKeys(track) as RoonTrack);
 };
