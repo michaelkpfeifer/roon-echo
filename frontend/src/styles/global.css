@@ -14,9 +14,6 @@
 @import './global/zones.css';
 
 :root {
-  --modal-confirm-button-bg: #4caf50;
-  --modal-confirm-button-hover-bg: #45a049;
-  --modal-confirm-button-text: white;
   --bg-primary: white;
   --bg-primary-hover: #f9f9f9;
   --bg-secondary: #f9f9f9;
@@ -169,18 +166,4 @@ body {
   border: none;
   font-size: 20px;
   cursor: pointer;
-}
-
-.modal-confirm {
-  margin-top: 15px;
-  padding: 10px 15px;
-  background-color: var(--modal-confirm-button-bg);
-  color: var(--modal-confirm-button-text);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.modal-confirm:hover {
-  background-color: var(--modal-confirm-button-hover-bg);
 }
