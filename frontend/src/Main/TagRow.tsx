@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import TagBadge from '../Components/TagBadge';
 import type { Tag } from '../../../shared/internal/tag';
 
 type TagRowProps = {
@@ -75,11 +76,12 @@ function TagRow({
 
   return (
     <div className="tag-row">
-      <div
-        className="tag-row-item"
-        style={{ color: tag.color, backgroundColor: tag.backgroundColor }}
-      >
-        {tag.name}
+      <div className="tag-row-item">
+        <TagBadge
+          name={tag.name}
+          color={tag.color}
+          backgroundColor={tag.backgroundColor}
+        />
       </div>
       <div className="tag-row-item">{tag.description}</div>
       <div className="tag-row-item">&nbsp;</div>
