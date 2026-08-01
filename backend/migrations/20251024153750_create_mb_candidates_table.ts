@@ -9,7 +9,7 @@ export function up(knex: Knex): Promise<void> {
         CHECK (length(album_id) = 36),
       score INTEGER,
       track_count INTEGER,
-      release_date TIMESTAMPTZ,
+      release_date DATE,
       mb_candidate_album_name TEXT NOT NULL,
       mb_candidate_artists TEXT NOT NULL,
       mb_candidate_tracks TEXT NOT NULL,
