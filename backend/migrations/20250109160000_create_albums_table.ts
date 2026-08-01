@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
       mb_album_name TEXT,
       mb_score INTEGER,
       mb_track_count INTEGER,
-      mb_release_date TEXT,
+      mb_release_date DATE,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (album_id)
