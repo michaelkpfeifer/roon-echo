@@ -12,8 +12,10 @@ type MainTrackRowProps = {
   roonTrack: RoonTrack;
 };
 
-
-const TrackRow = memo(function TrackRow({ roonAlbum, roonTrack }: MainTrackRowProps) {
+const TrackRow = memo(function TrackRow({
+  roonAlbum,
+  roonTrack,
+}: MainTrackRowProps) {
   const { config, coreUrl } = useContext(AppContext);
 
   const zoneId = config.selectedZoneId;
@@ -90,6 +92,6 @@ const TrackRow = memo(function TrackRow({ roonAlbum, roonTrack }: MainTrackRowPr
       <div className="track-row__track-action">{queueButton}</div>
     </div>
   );
-})
+});
 
 export default TrackRow;
