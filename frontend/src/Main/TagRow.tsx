@@ -53,23 +53,27 @@ function TagRow({
             setDraft({ ...draft, backgroundColor: e.target.value })
           }
         />
-        <button
-          className="tag-row-item"
-          type="button"
-          onClick={() => onSave(draft)}
-        >
-          Save
-        </button>
-        <button
-          className="tag-row-item"
-          type="button"
-          onClick={() => {
-            setDraft(tag);
-            onCancel();
-          }}
-        >
-          Cancel
-        </button>
+        <div className="tag-row-item">
+          <button
+            className="button-m"
+            type="button"
+            onClick={() => onSave(draft)}
+          >
+            Save
+          </button>
+        </div>
+        <div className="tag-row-item">
+          <button
+            className="button-m"
+            type="button"
+            onClick={() => {
+              setDraft(tag);
+              onCancel();
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     );
   }
@@ -86,16 +90,20 @@ function TagRow({
       <div className="tag-row-item">{tag.description}</div>
       <div className="tag-row-item">&nbsp;</div>
       <div className="tag-row-item">&nbsp;</div>
-      <button className="tag-row-item" type="button" onClick={onStartEdit}>
-        Edit
-      </button>
-      <button
-        className="tag-row-item"
-        type="button"
-        onClick={() => onDelete(tag.tagId)}
-      >
-        Delete
-      </button>
+      <div className="tag-row-item">
+        <button className="button-m" type="button" onClick={onStartEdit}>
+          Edit
+        </button>
+      </div>
+      <div className="tag-row-item">
+        <button
+          className="button-m"
+          type="button"
+          onClick={() => onDelete(tag.tagId)}
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
 }
