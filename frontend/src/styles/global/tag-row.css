@@ -2,15 +2,36 @@
   display: contents;
 }
 
+.tag-row:hover .tag-row-item {
+  background-color: var(--bg-secondary);
+}
+
 .tag-row-item {
   display: flex;
   align-items: center;
+  height: 32px;
   padding-top: 12px;
   padding-bottom: 12px;
   background-color: var(--bg-primary);
   transition: background-color 0.2s;
 }
 
-.tag-row:hover .tag-row-item {
-  background-color: var(--bg-secondary);
+.tag-row-item--description {
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  margin: 6px;
+}
+
+.tag-row-item--input {
+  padding: 8px 9px;
+  font-size: 0.75rem;
+  border: 0.5px solid var(--filter-input-border-unselected);
+  border-radius: 4px;
+  width: 100%;
+  margin-left: 20px;
+  margin: 6px;
+}
+
+.tag-row-item--input:focus {
+  border-color: var(--filter-input-border-selected);
 }

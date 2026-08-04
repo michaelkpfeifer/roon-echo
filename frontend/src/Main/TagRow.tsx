@@ -25,34 +25,42 @@ function TagRow({
   if (isEditing) {
     return (
       <div className="tag-row">
-        <input
-          className="tag-row-item"
-          type="text"
-          value={draft.name}
-          onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-        />
-        <input
-          className="tag-row-item"
-          type="text"
-          value={draft.description ?? ''}
-          onChange={(e) =>
-            setDraft({ ...draft, description: e.target.value || null })
-          }
-        />
-        <input
-          className="tag-row-item"
-          type="text"
-          value={draft.color}
-          onChange={(e) => setDraft({ ...draft, color: e.target.value })}
-        />
-        <input
-          className="tag-row-item"
-          type="text"
-          value={draft.backgroundColor}
-          onChange={(e) =>
-            setDraft({ ...draft, backgroundColor: e.target.value })
-          }
-        />
+        <div className="tag-row-item">
+          <input
+            className="tag-row-item--input"
+            type="text"
+            value={draft.name}
+            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+          />
+        </div>
+        <div className="tag-row-item">
+          <input
+            className="tag-row-item--input"
+            type="text"
+            value={draft.description ?? ''}
+            onChange={(e) =>
+              setDraft({ ...draft, description: e.target.value || null })
+            }
+          />
+        </div>
+        <div className="tag-row-item">
+          <input
+            className="tag-row-item--input"
+            type="text"
+            value={draft.color}
+            onChange={(e) => setDraft({ ...draft, color: e.target.value })}
+          />
+        </div>
+        <div className="tag-row-item">
+          <input
+            className="tag-row-item--input"
+            type="text"
+            value={draft.backgroundColor}
+            onChange={(e) =>
+              setDraft({ ...draft, backgroundColor: e.target.value })
+            }
+          />
+        </div>
         <div className="tag-row-item">
           <button
             className="button-m"
@@ -87,7 +95,9 @@ function TagRow({
           backgroundColor={tag.backgroundColor}
         />
       </div>
-      <div className="tag-row-item">{tag.description}</div>
+      <div className="tag-row-item">
+        <div className="tag-row-item--description">{tag.description}</div>
+      </div>
       <div className="tag-row-item">&nbsp;</div>
       <div className="tag-row-item">&nbsp;</div>
       <div className="tag-row-item">
