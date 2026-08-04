@@ -9,4 +9,5 @@
   max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 6px;
 }
