@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
       roon_number TEXT NOT NULL,
       roon_position INTEGER NOT NULL,
       roon_length INTEGER NOT NULL,
-      played_at TEXT NOT NULL,
+      played_at TIMESTAMPTZ NOT NULL,
       fraction_played FLOAT NOT NULL,
       is_played BOOLEAN NOT NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
