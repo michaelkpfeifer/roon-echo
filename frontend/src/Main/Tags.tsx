@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
 import { socket } from '../socket';
@@ -20,6 +20,19 @@ function Tags() {
   const [editingTagId, setEditingTagId] = useState<string | 'new' | null>(null);
 
   const { setTags, tags } = useContext(AppContext);
+
+  const filteredTags = useMemo(() => {
+    if (!tagsPattern) {
+      return tags;
+    }
+
+    try {
+      const regex = new RegExp(tagsPattern, 'i');
+      return tags.filter((tag) => regex.test(tag.name));
+    } catch {
+      return tags;
+    }
+  }, [tags, tagsPattern]);
 
   const handleSave = (draft: Tag) => {
     if (editingTagId === 'new') {
@@ -110,17 +123,19 @@ function Tags() {
               onDelete={handleDelete}
             />
           )}
-          {tags.map((tag) => (
-            <TagRow
-              key={tag.tagId}
-              tag={tag}
-              isEditing={editingTagId === tag.tagId}
-              onStartEdit={() => setEditingTagId(tag.tagId)}
-              onSave={handleSave}
-              onCancel={handleCancel}
-              onDelete={handleDelete}
-            />
-          ))}
+          {filteredTags
+            .sort((t1, t2) => t1.name.localeCompare(t2.name))
+            .map((tag) => (
+              <TagRow
+                key={tag.tagId}
+                tag={tag}
+                isEditing={editingTagId === tag.tagId}
+                onStartEdit={() => setEditingTagId(tag.tagId)}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                onDelete={handleDelete}
+              />
+            ))}
         </div>
       </div>
     </>
