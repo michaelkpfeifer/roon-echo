@@ -6,6 +6,7 @@ import TagRow from './TagRow';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
+import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 
 const blankTag: Tag = {
   tagId: 'new',
@@ -21,18 +22,10 @@ function Tags() {
 
   const { setTags, tags } = useContext(AppContext);
 
-  const filteredTags = useMemo(() => {
-    if (!tagsPattern) {
-      return tags;
-    }
-
-    try {
-      const regex = new RegExp(tagsPattern, 'i');
-      return tags.filter((tag) => regex.test(tag.name));
-    } catch {
-      return tags;
-    }
-  }, [tags, tagsPattern]);
+  const sortedFilteredTags = useMemo(
+    () => sortTagsByName(filterTagsByPattern(tags, tagsPattern)),
+    [tags, tagsPattern],
+  );
 
   const handleSave = (draft: Tag) => {
     if (editingTagId === 'new') {
@@ -123,19 +116,17 @@ function Tags() {
               onDelete={handleDelete}
             />
           )}
-          {filteredTags
-            .sort((t1, t2) => t1.name.localeCompare(t2.name))
-            .map((tag) => (
-              <TagRow
-                key={tag.tagId}
-                tag={tag}
-                isEditing={editingTagId === tag.tagId}
-                onStartEdit={() => setEditingTagId(tag.tagId)}
-                onSave={handleSave}
-                onCancel={handleCancel}
-                onDelete={handleDelete}
-              />
-            ))}
+          {sortedFilteredTags.map((tag) => (
+            <TagRow
+              key={tag.tagId}
+              tag={tag}
+              isEditing={editingTagId === tag.tagId}
+              onStartEdit={() => setEditingTagId(tag.tagId)}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       </div>
     </>
