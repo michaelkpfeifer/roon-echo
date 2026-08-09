@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "lint": "yarn eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint": "yarn eslint src __tests__ --ext .js,.jsx,.ts,.tsx",
     "type-check": "tsc --noEmit",
     "test": "rm -rf dist && vitest",
     "test:coverage": "rm -rf dist && vitest run --coverage"

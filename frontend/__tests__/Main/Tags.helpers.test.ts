@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { v7 as uuidv7 } from 'uuid';
+import { describe, it, expect } from 'vitest';
 
 import {
   filterTagsByPattern,

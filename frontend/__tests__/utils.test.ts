@@ -1,5 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
+import { buildAlbumAggregate } from '../../shared/factories/albumAggregateFactory';
+import { buildRoonAlbum } from '../../shared/factories/roonAlbumFactory';
+import { buildRoonTrack } from '../../shared/factories/roonTrackFactory';
+import {
+  albumUuids1,
+  albumUuids2,
+  trackUuids1,
+  trackUuids2,
+} from '../../shared/factories/uuids';
 import {
   albumsCount,
   artistsCount,
@@ -10,16 +19,6 @@ import {
   lookupZoneName,
   tracksCount,
 } from '../src/utils';
-import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
-import { buildRoonAlbum } from '../../shared/factories/roonAlbumFactory';
-import { buildRoonTrack } from '../../shared/factories/roonTrackFactory';
-import { buildAlbumAggregate } from '../../shared/factories/albumAggregateFactory';
-import {
-  albumUuids1,
-  albumUuids2,
-  trackUuids1,
-  trackUuids2,
-} from '../../shared/factories/uuids';
 
 describe('lookupZoneName', () => {
   const mockZones = {
