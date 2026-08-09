@@ -3,10 +3,10 @@ import { useContext, useMemo, useState } from 'react';
 import AppContext from '../AppContext';
 import { socket } from '../socket';
 import TagRow from './TagRow';
+import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
-import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 
 const blankTag: Tag = {
   tagId: 'new',
