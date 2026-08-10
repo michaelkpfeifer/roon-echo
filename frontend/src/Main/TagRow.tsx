@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import TagBadge from '../Components/TagBadge';
 import type { Tag } from '../../../shared/internal/tag';
+import TagBadge from '../Components/TagBadge';
 
 type TagRowProps = {
   tag: Tag;
@@ -118,4 +118,5 @@ function TagRow({
   );
 }
 
+export type { TagRowProps };
 export default TagRow;

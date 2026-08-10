@@ -1,8 +1,9 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
 import { socket } from '../socket';
 import TagRow from './TagRow';
+import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
@@ -20,6 +21,11 @@ function Tags() {
   const [editingTagId, setEditingTagId] = useState<string | 'new' | null>(null);
 
   const { setTags, tags } = useContext(AppContext);
+
+  const sortedFilteredTags = useMemo(
+    () => sortTagsByName(filterTagsByPattern(tags, tagsPattern)),
+    [tags, tagsPattern],
+  );
 
   const handleSave = (draft: Tag) => {
     if (editingTagId === 'new') {
@@ -110,7 +116,7 @@ function Tags() {
               onDelete={handleDelete}
             />
           )}
-          {tags.map((tag) => (
+          {sortedFilteredTags.map((tag) => (
             <TagRow
               key={tag.tagId}
               tag={tag}
