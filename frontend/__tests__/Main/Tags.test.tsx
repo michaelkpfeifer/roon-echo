@@ -2,8 +2,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
-import type { SocketResult } from '../../../shared/internal/socketResult';
-import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
+import type { ClientToServerEvents } from '../../../shared/internal/socket';
 import type { Tag } from '../../../shared/internal/tag';
 import AppContext from '../../src/AppContext';
 import type { TagRowProps } from '../../src/Main/TagRow';
@@ -46,6 +45,25 @@ vi.mock('../../src/Main/TagRow', () => ({
     </div>
   ),
 }));
+
+type EmitArgs<E extends keyof ClientToServerEvents> = Parameters<
+  ClientToServerEvents[E]
+>;
+
+function mockEmitOnce<E extends keyof ClientToServerEvents>(
+  event: E,
+  handler: (...args: EmitArgs<E>) => void,
+) {
+  vi.mocked(socket.emit).mockImplementation(((
+    e: unknown,
+    ...args: unknown[]
+  ) => {
+    if (e === event) {
+      handler(...(args as EmitArgs<E>));
+    }
+    return socket;
+  }) as typeof socket.emit);
+}
 
 const tagId1 = '019fe73c-9f72-7398-9c68-76c350046b9f';
 const tagId2 = '019fe73c-f003-77a4-b0eb-fd443750c8e1';
@@ -123,13 +141,10 @@ describe('Tags', () => {
     it('adds the new tag to context on successful create', async () => {
       const tagId = '019fe845-aabc-779e-a031-81e4644fb3e6';
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketResult<Tag>) => void) => {
-          if (event === 'tags:create') {
-            cb({ ok: true, value: { tagId, ...payload } });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:create', (payload, callback) => {
+        callback({ ok: true, value: { tagId, ...payload } });
+      });
 
       renderWithContext([], setTags);
       await userEvent.click(screen.getByText('New Tag'));
@@ -147,13 +162,10 @@ describe('Tags', () => {
 
     it('does not update tags on failed create', async () => {
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketResult<Tag>) => void) => {
-          if (event === 'tag:create') {
-            cb({ ok: false, error: 'boom' });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:create', (payload, callback) => {
+        callback({ ok: false, error: 'boom' });
+      });
 
       renderWithContext([], setTags);
       await userEvent.click(screen.getByText('New Tag'));
@@ -166,13 +178,10 @@ describe('Tags', () => {
   describe('update flow', () => {
     it('replaces the edited tag on successful update', async () => {
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketResult<Tag>) => void) => {
-          if (event === 'tags:update') {
-            cb({ ok: true, value: payload });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:update', (payload, callback) => {
+        callback({ ok: true, value: payload });
+      });
 
       renderWithContext([jazz, pixies], setTags);
 
@@ -195,13 +204,10 @@ describe('Tags', () => {
 
     it('does not update tags on failed update', async () => {
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketResult<Tag>) => void) => {
-          if (event === 'tags:update') {
-            cb({ ok: false, error: 'boom' });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:update', (payload, callback) => {
+        callback({ ok: false, error: 'boom' });
+      });
 
       renderWithContext([jazz], setTags);
 
@@ -215,13 +221,10 @@ describe('Tags', () => {
   describe('delete flow', () => {
     it('removes the tag from context on successful delete', async () => {
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketVoidResult) => void) => {
-          if (event === 'tags:delete') {
-            cb({ ok: true });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:delete', (payload, callback) => {
+        callback({ ok: true });
+      });
 
       renderWithContext([jazz, pixies], setTags);
 
@@ -239,13 +242,10 @@ describe('Tags', () => {
 
     it('does not remove the tag on failed delete', async () => {
       const setTags = vi.fn();
-      (socket.emit as any).mockImplementation(
-        (event: string, payload: any, cb: (r: SocketVoidResult) => void) => {
-          if (event === 'tags:delete') {
-            cb({ ok: false, error: 'boom' });
-          }
-        },
-      );
+
+      mockEmitOnce('tags:delete', (payload, callback) => {
+        callback({ ok: false, error: 'boom' });
+      });
 
       renderWithContext([jazz], setTags);
 
