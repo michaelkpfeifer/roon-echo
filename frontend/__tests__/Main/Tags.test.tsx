@@ -6,6 +6,7 @@ import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
 import AppContext from '../../src/AppContext';
+import type { TagRowProps } from '../../src/Main/TagRow';
 import Tags from '../../src/Main/Tags';
 import { socket } from '../../src/socket';
 import { createMockAppContext } from '../testUtils/mockAppContext';
@@ -22,7 +23,7 @@ vi.mock('../../src/Main/TagRow', () => ({
     onSave,
     onCancel,
     onDelete,
-  }: any) => (
+  }: TagRowProps) => (
     <div data-testid={`tag-row-${tag.tagId}`}>
       <span data-testid="tag-name">{tag.name}</span>
       {isEditing ? (

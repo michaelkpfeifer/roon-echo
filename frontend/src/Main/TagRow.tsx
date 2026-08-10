@@ -118,4 +118,5 @@ function TagRow({
   );
 }
 
+export type { TagRowProps };
 export default TagRow;
