@@ -137,6 +137,18 @@ describe('Tags', () => {
     expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
+  it('closes edit mode when "Cancel" is clicked', async () => {
+    renderWithContext([ramones, jazz, pixies]);
+
+    const jazzRow = screen.getByTestId(`tag-row-${jazz.tagId}`);
+
+    await userEvent.click(within(jazzRow).getByText('Edit'));
+    await userEvent.click(within(jazzRow).getByText('Cancel'));
+
+    expect(within(jazzRow).getByText('Edit')).toBeInTheDocument();
+    expect(within(jazzRow).getByText('Delete')).toBeInTheDocument();
+  });
+
   describe('create flow', () => {
     it('adds the new tag to context on successful create', async () => {
       const tagId = '019fe845-aabc-779e-a031-81e4644fb3e6';
