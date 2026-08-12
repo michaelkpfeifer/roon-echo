@@ -26,7 +26,7 @@ import { transformToRoonAlbum } from './transforms/roonAlbum.js';
 import { transformToRoonTrack } from './transforms/roonTrack.js';
 import { transformToRoonAlbumId } from './transforms/rawRoonAlbum.js';
 import { setRoonAlbumIdCache } from './roonAlbumIdCache.js';
-import { roonApiRateLimiter } from './server.js';
+import { roonApiRateLimiter } from './roonApiRateLimiter.js';
 
 const createAlbumAggregateWithRoonAlbum = (roonAlbum: RoonAlbum) => {
   const albumAggregateWithRoonAlbum = buildAlbumAggregateWithRoonAlbum(

@@ -1,6 +1,5 @@
 import http from 'http';
 
-import Bottleneck from 'bottleneck';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -43,6 +42,7 @@ import {
   updateRoonLengthInTrack,
   updateTag,
 } from './repository.js';
+import { roonApiRateLimiter } from './roonApiRateLimiter.js';
 import { initializeRoonData } from './roonData.js';
 import type { DatabaseSchema } from '../databaseSchema.ts';
 import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
@@ -350,11 +350,6 @@ zonePlayingStates = staticZoneData.map((zone) => {
 /* eslint-disable no-console */
 console.log('server.js: main(): zonePlayingStates:', zonePlayingStates);
 /* eslint-enable no-console */
-
-const roonApiRateLimiter = new Bottleneck({
-  minTime: 50,
-  maxConcurrent: 1,
-});
 
 const albumAggregatesWithRoonTracks = await initializeRoonData(
   db,
