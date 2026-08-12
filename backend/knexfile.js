@@ -1,3 +1,7 @@
+import * as pg from 'pg';
+
+pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue) => stringValue);
+
 const base = {
   client: 'pg',
   connection: {
