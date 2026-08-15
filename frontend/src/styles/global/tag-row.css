@@ -22,16 +22,25 @@
   margin: 6px;
 }
 
-.tag-row-item--input {
+.tag-row-item--text-input {
   padding: 8px 9px;
   font-size: 0.75rem;
   border: 0.5px solid var(--filter-input-border-unselected);
   border-radius: 4px;
   width: 100%;
-  margin-left: 20px;
   margin: 6px;
 }
 
-.tag-row-item--input:focus {
+.tag-row-item--text-input:focus {
   border-color: var(--filter-input-border-selected);
+}
+
+.tag-row-item--color-input {
+  padding: 2px 2px;
+  margin: 6px;
+  width: 100%;
+}
+
+.tag-row-item--button {
+  margin: 6px;
 }
