@@ -3,6 +3,7 @@ import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
 import AlbumCard from './AlbumCard';
+import { albumsCount } from '../utils';
 
 function Albums() {
   const [albumOrArtistPattern, setAlbumOrArtistPattern] = useState('');
@@ -29,6 +30,9 @@ function Albums() {
   return (
     <>
       <h1 className="heading-display">Albums</h1>
+      <p className="heading-item-count">
+        {albumsCount(albumAggregates)} albums
+      </p>
       <div className="filter">
         <input
           className="filter__input"

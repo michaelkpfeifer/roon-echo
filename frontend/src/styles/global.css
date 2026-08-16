@@ -25,6 +25,7 @@
   --album-card-text-secondary: #666666;
   --filter-input-border-unselected: #cccccc;
   --filter-input-border-selected: #aaaaee;
+  --heading-item-count-color: #666666;
 }
 
 body {
@@ -116,6 +117,11 @@ body {
   font-weight: 400;
   line-height: 1.2;
   margin-bottom: 1.5rem;
+}
+
+.heading-item-count {
+  margin-bottom: 1.5rem;
+  color: var(--heading-item-count-color);
 }
 
 .filter {
