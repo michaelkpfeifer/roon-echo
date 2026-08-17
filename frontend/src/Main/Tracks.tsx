@@ -4,6 +4,7 @@ import { useContext, useMemo } from 'react';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
 import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
+import { tracksCount } from '../utils';
 
 function Tracks() {
   const { albumAggregates } = useContext(AppContext);
@@ -44,6 +45,9 @@ function Tracks() {
   return (
     <>
       <h1 className="heading-display">Tracks</h1>
+      <p className="heading-item-count">
+        {tracksCount(albumAggregates)} tracks
+      </p>
       <div className="tracks-container">
         {tracksWithAlbum.map(({ roonAlbum, roonTrack }) => (
           <div key={roonTrack.trackId}>
