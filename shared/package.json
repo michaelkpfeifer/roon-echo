@@ -6,13 +6,15 @@
   "type": "module",
   "scripts": {
     "type-check": "tsc --noEmit",
-    "test": "rm -rf dist && yarn type-check && vitest"
+    "test": "rm -rf dist && yarn type-check && vitest",
+    "test:coverage": "rm -rf dist && yarn type-check && vitest run --coverage"
   },
   "dependencies": {
     "neverthrow": "^8.2.0"
   },
   "packageManager": "yarn@4.5.1",
   "devDependencies": {
+    "@vitest/coverage-v8": "4.1.10",
     "prettier": "^3.9.6",
     "typescript": "^5",
     "typescript-language-server": "^5",
