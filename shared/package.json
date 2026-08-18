@@ -1,3 +1,21 @@
 {
-  "type": "module"
+  "name": "roon-remote-shared",
+  "version": "0.0.0",
+  "description": "A roon remote running in the browser",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "rm -rf dist && yarn type-check && vitest"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0"
+  },
+  "packageManager": "yarn@4.5.1",
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "typescript": "^5",
+    "typescript-language-server": "^5",
+    "vitest": "^4.1.10"
+  }
 }
