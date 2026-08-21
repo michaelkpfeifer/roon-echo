@@ -9,6 +9,9 @@
 /frontend/dist/
 /frontend/node_modules/
 
+/shared/coverage/
+/shared/node_modules/
+
 yarn-error.log
 yarn-debug.log*
 .yarn/*

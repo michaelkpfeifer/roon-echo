@@ -1,9 +1,12 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "outDir": "dist",
+    "allowJs": true,
+    "noUnusedLocals": false,
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true
   },
-  "include": ["."]
+  "include": ["src", "__tests__"]
 }
