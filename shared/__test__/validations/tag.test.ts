@@ -1,11 +1,18 @@
 import { err, ok } from 'neverthrow';
 import { describe, expect, test } from 'vitest';
 
-import { validateTag } from '../../src/validations/tag.ts';
-import { Tag } from '../../internal/tag.ts';
+import {
+  validateTag,
+  tagValidationErrorsFor,
+} from '../../src/validations/tag.ts';
+import type {
+  TagField,
+  TagValidationError,
+} from '../../src/validations/tag.ts';
+import type { Tag } from '../../internal/tag.ts';
 
 describe('validateTag', () => {
-  test('returns input wrapped in ok when input valid', () => {
+  test('returns input wrapped in ok when input is valid', () => {
     const tag: Tag = {
       name: 'pixies',
       description: 'Pixies',
@@ -18,7 +25,7 @@ describe('validateTag', () => {
     expect(validationResult).toEqual(ok(tag));
   });
 
-  test('returns "Name is required" when passing in a tag with an empty name', () => {
+  test('returns a "Name is required" tag validation error when passing in a tag with an empty name', () => {
     const tag: Tag = {
       name: '',
       description: 'Pixies',
@@ -28,10 +35,12 @@ describe('validateTag', () => {
 
     const validationResult = validateTag(tag);
 
-    expect(validationResult).toEqual(err(['Name is required']));
+    expect(validationResult).toEqual(
+      err([{ field: 'name', message: 'Name is required' }]),
+    );
   });
 
-  test('returns "Name is required" when passing in a tag with a name consisting white space only', () => {
+  test('returns a "Name is required" validation error when passing in a tag with a name consisting white space only', () => {
     const tag: Tag = {
       name: '    \t\n',
       description: 'Pixies',
@@ -41,6 +50,23 @@ describe('validateTag', () => {
 
     const validationResult = validateTag(tag);
 
-    expect(validationResult).toEqual(err(['Name is required']));
+    expect(validationResult).toEqual(
+      err([{ field: 'name', message: 'Name is required' }]),
+    );
+  });
+});
+
+describe('tagValidationErrorsFor', () => {
+  test('returns an array of error messages for the given field', () => {
+    const tagValidationErrors: TagValidationError[] = [
+      { field: 'name', message: 'Name is required' },
+    ];
+
+    const validationErrors = tagValidationErrorsFor(
+      tagValidationErrors,
+      'name',
+    );
+
+    expect(validationErrors).toEqual(['Name is required']);
   });
 });
