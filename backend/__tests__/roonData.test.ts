@@ -10,8 +10,8 @@ import {
   createPersistedRoonAlbum,
 } from '../__factories__/persistedRoonAlbumFactory.js';
 import { buildRawRoonAlbum } from '../__factories__/rawRoonAlbumFactory.js';
-import { buildRoonAlbum } from '../../shared/factories/roonAlbumFactory.js';
-import { buildRoonTrack } from '../../shared/factories/roonTrackFactory.js';
+import { buildRoonAlbum } from '../../shared/__factories__/roonAlbumFactory.js';
+import { buildRoonTrack } from '../../shared/__factories__/roonTrackFactory.js';
 import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';

@@ -19,7 +19,7 @@ import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
 import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
-import { buildRoonTrack } from '../../shared/factories/roonTrackFactory.js';
+import { buildRoonTrack } from '../../shared/__factories__/roonTrackFactory.js';
 import { createTrackRow } from '../__factories__/trackRowFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
