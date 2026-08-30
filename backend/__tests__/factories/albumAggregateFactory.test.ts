@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate.js';
-import { buildAlbumAggregate } from '../../../shared/factories/albumAggregateFactory.js';
+import { buildAlbumAggregate } from '../../../shared/__factories__/albumAggregateFactory.js';
 import { buildMbAlbum } from '../../__factories__/mbAlbumFactory.js';
 import { buildMbArtists } from '../../__factories__/mbArtistFactory.js';
 import { buildMbCandidates } from '../../__factories__/mbCandidateFactory.js';
 import { buildMbTracks } from '../../__factories__/mbTrackFactory.js';
-import { buildRoonAlbum } from '../../../shared/factories/roonAlbumFactory.js';
-import { buildRoonTracks } from '../../../shared/factories/roonTrackFactory.js';
+import { buildRoonAlbum } from '../../../shared/__factories__/roonAlbumFactory.js';
+import { buildRoonTracks } from '../../../shared/__factories__/roonTrackFactory.js';
 import {
   buildAlbumAggregateWithMbMatch,
   buildAlbumAggregateWithRoonAlbum,
