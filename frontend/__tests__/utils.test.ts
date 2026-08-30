@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
-import { buildAlbumAggregate } from '../../shared/factories/albumAggregateFactory';
-import { buildRoonAlbum } from '../../shared/factories/roonAlbumFactory';
-import { buildRoonTrack } from '../../shared/factories/roonTrackFactory';
+import { buildAlbumAggregate } from '../../shared/__factories__/albumAggregateFactory';
+import { buildRoonAlbum } from '../../shared/__factories__/roonAlbumFactory';
+import { buildRoonTrack } from '../../shared/__factories__/roonTrackFactory';
 import {
   albumUuids1,
   albumUuids2,
   trackUuids1,
   trackUuids2,
-} from '../../shared/factories/uuids';
+} from '../../shared/__factories__/uuids';
 import {
   albumsCount,
   artistsCount,
