@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
 import type { Tag } from '../../../shared/internal/tag';
+import {
+  tagValidationErrorsFor,
+  validateTag,
+} from '../../../shared/src/validations/tag.js';
 import TagBadge from '../Components/TagBadge';
 
 type TagRowProps = {
@@ -23,18 +27,26 @@ function TagRow({
   const [draft, setDraft] = useState(tag);
 
   if (isEditing) {
+    const tagValidationResult = validateTag(draft);
+    const tagNameErrors = tagValidationResult.isErr()
+      ? tagValidationErrorsFor(tagValidationResult.error, 'name')
+      : [];
+
     return (
       <div className="tag-row">
         <div className="tag-row-item">
           <input
+            aria-label="Name"
             className="tag-row-item--text-input"
             type="text"
             value={draft.name}
+            placeholder={tagNameErrors.join(', ')}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
           />
         </div>
         <div className="tag-row-item">
           <input
+            aria-label="Description"
             className="tag-row-item--text-input"
             type="text"
             value={draft.description ?? ''}
@@ -45,6 +57,7 @@ function TagRow({
         </div>
         <div className="tag-row-item">
           <input
+            aria-label="Color"
             className="tag-row-item--color-input"
             type="color"
             value={draft.color}
@@ -53,6 +66,7 @@ function TagRow({
         </div>
         <div className="tag-row-item">
           <input
+            aria-label="Background color"
             className="tag-row-item--color-input"
             type="color"
             value={draft.backgroundColor}
@@ -67,6 +81,7 @@ function TagRow({
               className="button-m"
               type="button"
               onClick={() => onSave(draft)}
+              disabled={tagValidationResult.isErr()}
             >
               Save
             </button>
