@@ -670,6 +670,7 @@ describe('updateTag', () => {
     });
 
     const result = await updateTag(db as never, {
+      tagId: '019c9144-309f-72d5-96d1-5d910ba58830',
       name: '',
       description: 'Description: Pixies',
       color: '#ffffff',
