@@ -4,16 +4,16 @@ import { describe, expect, test } from 'vitest';
 import {
   validateTag,
   tagValidationErrorsFor,
-} from '../../src/validations/tag.ts';
+} from '../../src/validations/tag.js';
 import type {
   TagField,
   TagValidationError,
-} from '../../src/validations/tag.ts';
-import type { Tag } from '../../internal/tag.ts';
+} from '../../src/validations/tag.js';
+import type { Tag } from '../../internal/tag.js';
 
 describe('validateTag', () => {
   test('returns input wrapped in ok when input is valid', () => {
-    const tag: Tag = {
+    const tag = {
       name: 'pixies',
       description: 'Pixies',
       color: '#111111',
@@ -26,7 +26,7 @@ describe('validateTag', () => {
   });
 
   test('returns a "Name is required" tag validation error when passing in a tag with an empty name', () => {
-    const tag: Tag = {
+    const tag = {
       name: '',
       description: 'Pixies',
       color: '#111111',
@@ -41,7 +41,7 @@ describe('validateTag', () => {
   });
 
   test('returns a "Name is required" validation error when passing in a tag with a name consisting white space only', () => {
-    const tag: Tag = {
+    const tag = {
       name: '    \t\n',
       description: 'Pixies',
       color: '#111111',
