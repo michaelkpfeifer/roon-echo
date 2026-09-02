@@ -86,13 +86,10 @@ describe('fetchRoonAlbum', () => {
     > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isOk()).toBe(true);
-    if (fetchRoonAlbumResult.isOk()) {
-      expect(fetchRoonAlbumResult.value.roonAlbumName).toBe('Album Name');
-      expect(fetchRoonAlbumResult.value.roonAlbumArtistName).toBe(
-        'Artist Name',
-      );
-      expect(fetchRoonAlbumResult.value.albumId).toBe(roonAlbum.albumId);
-    }
+    const fetchRoonAlbumResultValue = fetchRoonAlbumResult._unsafeUnwrap();
+    expect(fetchRoonAlbumResultValue.roonAlbumName).toBe('Album Name');
+    expect(fetchRoonAlbumResultValue.roonAlbumArtistName).toBe('Artist Name');
+    expect(fetchRoonAlbumResultValue.albumId).toBe(roonAlbum.albumId);
   });
 });
 
@@ -145,11 +142,10 @@ describe('fetchMbAlbumByAlbumId', () => {
     > = await fetchMbAlbumByAlbumId(testDb, albumId);
 
     expect(fetchMbAlbumResult.isOk()).toBe(true);
-    if (fetchMbAlbumResult.isOk()) {
-      expect(fetchMbAlbumResult.value.albumId).toBe(albumId);
-      expect(fetchMbAlbumResult.value.mbAlbumId).toBe(mbAlbumId);
-      expect(fetchMbAlbumResult.value.mbAlbumName).toBe(albumRow.mbAlbumName);
-    }
+    const fetchMbAlbumResultValue = fetchMbAlbumResult._unsafeUnwrap();
+    expect(fetchMbAlbumResultValue.albumId).toBe(albumId);
+    expect(fetchMbAlbumResultValue.mbAlbumId).toBe(mbAlbumId);
+    expect(fetchMbAlbumResultValue.mbAlbumName).toBe(albumRow.mbAlbumName);
   });
 });
 
