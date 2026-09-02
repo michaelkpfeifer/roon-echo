@@ -64,13 +64,10 @@ describe('fetchRoonAlbum', () => {
     > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isErr()).toBe(true);
-    if (fetchRoonAlbumResult.isErr()) {
-      expect(fetchRoonAlbumResult.error.error).toMatch(/roonAlbumNotFound/);
-      expect(fetchRoonAlbumResult.error.roonAlbumName).toBe('Album Name');
-      expect(fetchRoonAlbumResult.error.roonAlbumArtistName).toBe(
-        'Artist Name',
-      );
-    }
+    const fetchRoonAlbumResultError = fetchRoonAlbumResult._unsafeUnwrapErr();
+    expect(fetchRoonAlbumResultError.error).toMatch(/roonAlbumNotFound/);
+    expect(fetchRoonAlbumResultError.roonAlbumName).toBe('Album Name');
+    expect(fetchRoonAlbumResultError.roonAlbumArtistName).toBe('Artist Name');
   });
 
   it('returns a success result if the album can be found', async () => {
@@ -126,10 +123,9 @@ describe('fetchMbAlbumByAlbumId', () => {
     > = await fetchMbAlbumByAlbumId(testDb, albumId);
 
     expect(fetchMbAlbumResult.isErr()).toBe(true);
-    if (fetchMbAlbumResult.isErr()) {
-      expect(fetchMbAlbumResult.error.error).toMatch(/mbAlbumNotFound/);
-      expect(fetchMbAlbumResult.error.albumId).toBe(albumId);
-    }
+    const fetchMbAlbumResultError = fetchMbAlbumResult._unsafeUnwrapErr();
+    expect(fetchMbAlbumResultError.error).toMatch(/mbAlbumNotFound/);
+    expect(fetchMbAlbumResultError.albumId).toBe(albumId);
   });
 
   it('returns a success result if the album can be found', async () => {
@@ -598,9 +594,7 @@ describe('normalizeCandidate', () => {
     });
 
     expect(mbAlbumResult.isErr()).toBe(true);
-    if (mbAlbumResult.isErr()) {
-      expect(mbAlbumResult.error.error).toMatch(/albumNotFound/);
-    }
+    expect(mbAlbumResult._unsafeUnwrapErr().error).toMatch(/albumNotFound/);
   });
 
   it('returns an error value if the number of Roon and MusicBrainz tracks are not equal', async () => {
@@ -610,9 +604,9 @@ describe('normalizeCandidate', () => {
     });
 
     expect(mbAlbumResult.isErr()).toBe(true);
-    if (mbAlbumResult.isErr()) {
-      expect(mbAlbumResult.error.error).toMatch(/trackCountsNotEqual/);
-    }
+    expect(mbAlbumResult._unsafeUnwrapErr().error).toMatch(
+      /trackCountsNotEqual/,
+    );
   });
 });
 
