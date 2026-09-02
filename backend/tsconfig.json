@@ -8,5 +8,5 @@
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "__tests__", "__factories__", "../shared"]
+  "include": ["src", "__tests__", "__factories__"]
 }
