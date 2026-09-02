@@ -1,7 +1,7 @@
 import knexInit from 'knex';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
@@ -24,6 +24,7 @@ import { createTrackRow } from '../__factories__/trackRowFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
+  createTag,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
   fetchMbTracksByAlbumId,
@@ -33,6 +34,7 @@ import {
   insertRoonTracks,
   normalizeCandidate,
   updateRoonLengthInTrack,
+  updateTag,
 } from '../src/repository.js';
 
 describe('fetchRoonAlbum', () => {
@@ -650,5 +652,41 @@ describe('updateRoonLengthInTrack', () => {
     )[0].roon_length;
 
     expect(length).toBe(123);
+  });
+});
+
+describe('createTag', () => {
+  it('returns an error and does not touch the database when name is missing', async () => {
+    const db = vi.fn(() => {
+      throw new Error('db should not be called.');
+    });
+
+    const result = await createTag(db as never, {
+      name: '',
+      description: 'Description: Pixies',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toBe('Name is required');
+  });
+});
+
+describe('updateTag', () => {
+  it('returns an error and does not touch the database when the name is missing', async () => {
+    const db = vi.fn(() => {
+      throw new Error('db should not be called');
+    });
+
+    const result = await updateTag(db as never, {
+      name: '',
+      description: 'Description: Pixies',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toBe('Name is required');
   });
 });
