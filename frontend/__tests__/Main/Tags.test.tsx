@@ -100,15 +100,15 @@ const renderWithContext = (tags: Tag[] = [], setTags = vi.fn()) => {
   );
 };
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
-afterEach(() => {
-  cleanup();
-});
-
 describe('Tags', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders all tags sorted alphabetically', () => {
     renderWithContext([ramones, jazz, pixies]);
 

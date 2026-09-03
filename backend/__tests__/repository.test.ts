@@ -1,7 +1,7 @@
 import knexInit from 'knex';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
@@ -24,6 +24,7 @@ import { createTrackRow } from '../__factories__/trackRowFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
+  createTag,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
   fetchMbTracksByAlbumId,
@@ -33,6 +34,7 @@ import {
   insertRoonTracks,
   normalizeCandidate,
   updateRoonLengthInTrack,
+  updateTag,
 } from '../src/repository.js';
 
 describe('fetchRoonAlbum', () => {
@@ -62,13 +64,10 @@ describe('fetchRoonAlbum', () => {
     > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isErr()).toBe(true);
-    if (fetchRoonAlbumResult.isErr()) {
-      expect(fetchRoonAlbumResult.error.error).toMatch(/roonAlbumNotFound/);
-      expect(fetchRoonAlbumResult.error.roonAlbumName).toBe('Album Name');
-      expect(fetchRoonAlbumResult.error.roonAlbumArtistName).toBe(
-        'Artist Name',
-      );
-    }
+    const fetchRoonAlbumResultError = fetchRoonAlbumResult._unsafeUnwrapErr();
+    expect(fetchRoonAlbumResultError.error).toMatch(/roonAlbumNotFound/);
+    expect(fetchRoonAlbumResultError.roonAlbumName).toBe('Album Name');
+    expect(fetchRoonAlbumResultError.roonAlbumArtistName).toBe('Artist Name');
   });
 
   it('returns a success result if the album can be found', async () => {
@@ -87,13 +86,10 @@ describe('fetchRoonAlbum', () => {
     > = await fetchRoonAlbum(testDb, 'Album Name', 'Artist Name');
 
     expect(fetchRoonAlbumResult.isOk()).toBe(true);
-    if (fetchRoonAlbumResult.isOk()) {
-      expect(fetchRoonAlbumResult.value.roonAlbumName).toBe('Album Name');
-      expect(fetchRoonAlbumResult.value.roonAlbumArtistName).toBe(
-        'Artist Name',
-      );
-      expect(fetchRoonAlbumResult.value.albumId).toBe(roonAlbum.albumId);
-    }
+    const fetchRoonAlbumResultValue = fetchRoonAlbumResult._unsafeUnwrap();
+    expect(fetchRoonAlbumResultValue.roonAlbumName).toBe('Album Name');
+    expect(fetchRoonAlbumResultValue.roonAlbumArtistName).toBe('Artist Name');
+    expect(fetchRoonAlbumResultValue.albumId).toBe(roonAlbum.albumId);
   });
 });
 
@@ -124,10 +120,9 @@ describe('fetchMbAlbumByAlbumId', () => {
     > = await fetchMbAlbumByAlbumId(testDb, albumId);
 
     expect(fetchMbAlbumResult.isErr()).toBe(true);
-    if (fetchMbAlbumResult.isErr()) {
-      expect(fetchMbAlbumResult.error.error).toMatch(/mbAlbumNotFound/);
-      expect(fetchMbAlbumResult.error.albumId).toBe(albumId);
-    }
+    const fetchMbAlbumResultError = fetchMbAlbumResult._unsafeUnwrapErr();
+    expect(fetchMbAlbumResultError.error).toMatch(/mbAlbumNotFound/);
+    expect(fetchMbAlbumResultError.albumId).toBe(albumId);
   });
 
   it('returns a success result if the album can be found', async () => {
@@ -147,11 +142,10 @@ describe('fetchMbAlbumByAlbumId', () => {
     > = await fetchMbAlbumByAlbumId(testDb, albumId);
 
     expect(fetchMbAlbumResult.isOk()).toBe(true);
-    if (fetchMbAlbumResult.isOk()) {
-      expect(fetchMbAlbumResult.value.albumId).toBe(albumId);
-      expect(fetchMbAlbumResult.value.mbAlbumId).toBe(mbAlbumId);
-      expect(fetchMbAlbumResult.value.mbAlbumName).toBe(albumRow.mbAlbumName);
-    }
+    const fetchMbAlbumResultValue = fetchMbAlbumResult._unsafeUnwrap();
+    expect(fetchMbAlbumResultValue.albumId).toBe(albumId);
+    expect(fetchMbAlbumResultValue.mbAlbumId).toBe(mbAlbumId);
+    expect(fetchMbAlbumResultValue.mbAlbumName).toBe(albumRow.mbAlbumName);
   });
 });
 
@@ -596,9 +590,7 @@ describe('normalizeCandidate', () => {
     });
 
     expect(mbAlbumResult.isErr()).toBe(true);
-    if (mbAlbumResult.isErr()) {
-      expect(mbAlbumResult.error.error).toMatch(/albumNotFound/);
-    }
+    expect(mbAlbumResult._unsafeUnwrapErr().error).toMatch(/albumNotFound/);
   });
 
   it('returns an error value if the number of Roon and MusicBrainz tracks are not equal', async () => {
@@ -608,9 +600,9 @@ describe('normalizeCandidate', () => {
     });
 
     expect(mbAlbumResult.isErr()).toBe(true);
-    if (mbAlbumResult.isErr()) {
-      expect(mbAlbumResult.error.error).toMatch(/trackCountsNotEqual/);
-    }
+    expect(mbAlbumResult._unsafeUnwrapErr().error).toMatch(
+      /trackCountsNotEqual/,
+    );
   });
 });
 
@@ -650,5 +642,42 @@ describe('updateRoonLengthInTrack', () => {
     )[0].roon_length;
 
     expect(length).toBe(123);
+  });
+});
+
+describe('createTag', () => {
+  it('returns an error and does not touch the database when name is missing', async () => {
+    const db = vi.fn(() => {
+      throw new Error('db should not be called.');
+    });
+
+    const result = await createTag(db as never, {
+      name: '',
+      description: 'Description: Pixies',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toBe('Name is required');
+  });
+});
+
+describe('updateTag', () => {
+  it('returns an error and does not touch the database when the name is missing', async () => {
+    const db = vi.fn(() => {
+      throw new Error('db should not be called');
+    });
+
+    const result = await updateTag(db as never, {
+      tagId: '019c9144-309f-72d5-96d1-5d910ba58830',
+      name: '',
+      description: 'Description: Pixies',
+      color: '#ffffff',
+      backgroundColor: '#000000',
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toBe('Name is required');
   });
 });

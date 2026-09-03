@@ -21,6 +21,7 @@ import type { Tag } from '../../shared/internal/tag.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
 import type { TrackRow } from './internal/trackRow.js';
+import { validateTag } from '../../shared/src/validations/tag.js';
 
 dotenv.config();
 
@@ -462,6 +463,16 @@ const createTag = async (
     backgroundColor: string;
   },
 ): Promise<Result<Tag, string>> => {
+  const validationResult = validateTag({
+    name,
+    description,
+    color,
+    backgroundColor,
+  });
+  if (validationResult.isErr()) {
+    return err(validationResult.error.map((e) => e.message).join(', '));
+  }
+
   const tagId = uuidv7();
 
   try {
@@ -487,6 +498,16 @@ const updateTag = async (
   db: Knex<DatabaseSchema>,
   { tagId, name, description, color, backgroundColor }: Tag,
 ): Promise<Result<Tag, string>> => {
+  const validationResult = validateTag({
+    name,
+    description,
+    color,
+    backgroundColor,
+  });
+  if (validationResult.isErr()) {
+    return err(validationResult.error.map((e) => e.message).join(', '));
+  }
+
   try {
     const updatedCount = await db<DatabaseSchema['tags']>('tags')
       .where({ tag_id: tagId })
@@ -511,7 +532,7 @@ const updateTag = async (
     });
   } catch (error) {
     /* eslint-disable no-console */
-    console.error('Error: createTag failed:', error);
+    console.error('Error: updateTag failed:', error);
     /* eslint-enable no-console */
 
     return err('Failed to update tag');
