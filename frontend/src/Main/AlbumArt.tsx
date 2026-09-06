@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
-import Modal from '../support/Modal';
+import Modal from '../Components/Modal';
 import noAlbumArt from '../images/no-album-art.svg';
 
 type AlbumArtProps = {
