@@ -20,6 +20,9 @@
 .album-card__album-name {
     font-size: 0.875rem;
     font-weight: 400;
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin-bottom: 8px;
     color: var(--album-card-text-primary);
 }
@@ -27,6 +30,9 @@
 .album-card__artist-name {
     font-size: 0.875rem;
     color: var(--album-card-text-secondary);
+    width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .album-card__stage-icon {
