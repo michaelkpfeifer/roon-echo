@@ -74,15 +74,23 @@ function AlbumData({
 
 type AlbumAggregateWithRoonTracksProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
 };
 
 function AlbumAggregateWithRoonTracks({
   albumAggregate,
+  handlePointerDown,
 }: AlbumAggregateWithRoonTracksProps) {
   const { coreUrl } = useContext(AppContext);
 
   return (
-    <div className="album-card">
+    <div
+      className="album-card"
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+    >
       <Link to={`/albums/${albumAggregate.id}`}>
         {albumArt(coreUrl, albumAggregate)}
       </Link>
@@ -98,15 +106,23 @@ function AlbumAggregateWithRoonTracks({
 
 type AlbumAggregateWithMbMatchProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withMbMatch' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
 };
 
 function AlbumAggregateWithMbMatch({
   albumAggregate,
+  handlePointerDown,
 }: AlbumAggregateWithMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
 
   return (
-    <div className="album-card">
+    <div
+      className="album-card"
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+    >
       <Link to={`/albums/${albumAggregate.id}`}>
         {albumArt(coreUrl, albumAggregate)}
       </Link>
@@ -122,15 +138,23 @@ function AlbumAggregateWithMbMatch({
 
 type AlbumAggregateWithoutMbMatchProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
 };
 
 function AlbumAggregateWithoutMbMatch({
   albumAggregate,
+  handlePointerDown,
 }: AlbumAggregateWithoutMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
 
   return (
-    <div className="album-card">
+    <div
+      className="album-card"
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+    >
       <Link to={`/albums/${albumAggregate.id}`}>
         {albumArt(coreUrl, albumAggregate)}
       </Link>
@@ -146,9 +170,13 @@ function AlbumAggregateWithoutMbMatch({
 
 type AlbumCardProps = {
   albumAggregate: AlbumAggregate;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumAggregate: AlbumAggregate,
+  ) => void;
 };
 
-function AlbumCard({ albumAggregate }: AlbumCardProps) {
+function AlbumCard({ albumAggregate, handlePointerDown }: AlbumCardProps) {
   switch (albumAggregate.stage) {
     case 'empty':
       throw new Error(
@@ -161,13 +189,28 @@ function AlbumCard({ albumAggregate }: AlbumCardProps) {
       );
 
     case 'withRoonTracks':
-      return <AlbumAggregateWithRoonTracks albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithRoonTracks
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+        />
+      );
 
     case 'withMbMatch':
-      return <AlbumAggregateWithMbMatch albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithMbMatch
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+        />
+      );
 
     case 'withoutMbMatch':
-      return <AlbumAggregateWithoutMbMatch albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithoutMbMatch
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+        />
+      );
   }
 }
 
