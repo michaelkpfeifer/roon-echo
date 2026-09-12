@@ -8,6 +8,12 @@
   transition: transform 0.2s;
 }
 
+.album-card--selected {
+  outline: 3px solid #e8a33d;
+  outline-offset: -3px;
+  border-radius: 8px;
+}
+
 .album-card__image {
   width: 150px;
   height: 150px;

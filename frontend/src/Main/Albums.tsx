@@ -8,7 +8,9 @@ import { albumsCount } from '../utils';
 
 function Albums() {
   const [albumOrArtistPattern, setAlbumOrArtistPattern] = useState('');
-  const [selectedAlbumIds, setSelectedAlbumIds] = useState(() => new Set());
+  const [selectedAlbumAggregateIds, setSelectedAlbumAggregateIds] = useState<
+    Set<string>
+  >(() => new Set());
   const [selectionMode, setSelectionMode] = useState(false);
 
   const longPressFiredRef = useRef<boolean>(false);
@@ -57,8 +59,35 @@ function Albums() {
     pressTimerRef.current = setTimeout(() => {
       longPressFiredRef.current = true;
       setSelectionMode(true);
-      setSelectedAlbumIds(new Set([albumAggregate.id]));
+      setSelectedAlbumAggregateIds(new Set([albumAggregate.id]));
     }, 450);
+  };
+
+  const handlePointerUp = (): void => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
+
+  const handleSelection = (
+    albumAggregate: Extract<
+      AlbumAggregate,
+      { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+    >,
+  ): void => {
+    setSelectedAlbumAggregateIds((prev) => {
+      const id = albumAggregate.id;
+
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+
+      return next;
+    });
   };
 
   return (
@@ -101,7 +130,11 @@ function Albums() {
                 <AlbumCard
                   albumAggregate={albumAggregate}
                   handlePointerDown={handlePointerDown}
+                  handlePointerUp={handlePointerUp}
+                  handleSelection={handleSelection}
+                  isSelected={selectedAlbumAggregateIds.has(albumAggregate.id)}
                   longPressFiredRef={longPressFiredRef}
+                  selectionMode={selectionMode}
                 />
               </div>
             );
