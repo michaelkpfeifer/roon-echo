@@ -101,6 +101,7 @@ function Albums() {
                 <AlbumCard
                   albumAggregate={albumAggregate}
                   handlePointerDown={handlePointerDown}
+                  longPressFiredRef={longPressFiredRef}
                 />
               </div>
             );

@@ -1,6 +1,6 @@
 import { Ban, Check, CopyCheck } from 'lucide-react';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import AppContext from '../AppContext';
@@ -78,23 +78,31 @@ type AlbumAggregateWithRoonTracksProps = {
     e: React.PointerEvent<HTMLDivElement>,
     albumaggregate: AlbumAggregate,
   ) => void;
+  longPressFiredRef: React.RefObject<boolean>;
 };
 
 function AlbumAggregateWithRoonTracks({
   albumAggregate,
   handlePointerDown,
+  longPressFiredRef,
 }: AlbumAggregateWithRoonTracksProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+  };
 
   return (
     <div
       className="album-card"
       onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onClick={handleClick}
     >
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -110,23 +118,31 @@ type AlbumAggregateWithMbMatchProps = {
     e: React.PointerEvent<HTMLDivElement>,
     albumaggregate: AlbumAggregate,
   ) => void;
+  longPressFiredRef: React.RefObject<boolean>;
 };
 
 function AlbumAggregateWithMbMatch({
   albumAggregate,
   handlePointerDown,
+  longPressFiredRef,
 }: AlbumAggregateWithMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+  };
 
   return (
     <div
       className="album-card"
       onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onClick={handleClick}
     >
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -142,23 +158,31 @@ type AlbumAggregateWithoutMbMatchProps = {
     e: React.PointerEvent<HTMLDivElement>,
     albumaggregate: AlbumAggregate,
   ) => void;
+  longPressFiredRef: React.RefObject<boolean>;
 };
 
 function AlbumAggregateWithoutMbMatch({
   albumAggregate,
   handlePointerDown,
+  longPressFiredRef,
 }: AlbumAggregateWithoutMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+  };
 
   return (
     <div
       className="album-card"
       onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onClick={handleClick}
     >
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -174,9 +198,14 @@ type AlbumCardProps = {
     e: React.PointerEvent<HTMLDivElement>,
     albumAggregate: AlbumAggregate,
   ) => void;
+  longPressFiredRef: React.RefObject<boolean>;
 };
 
-function AlbumCard({ albumAggregate, handlePointerDown }: AlbumCardProps) {
+function AlbumCard({
+  albumAggregate,
+  handlePointerDown,
+  longPressFiredRef,
+}: AlbumCardProps) {
   switch (albumAggregate.stage) {
     case 'empty':
       throw new Error(
@@ -193,6 +222,7 @@ function AlbumCard({ albumAggregate, handlePointerDown }: AlbumCardProps) {
         <AlbumAggregateWithRoonTracks
           albumAggregate={albumAggregate}
           handlePointerDown={handlePointerDown}
+          longPressFiredRef={longPressFiredRef}
         />
       );
 
@@ -201,6 +231,7 @@ function AlbumCard({ albumAggregate, handlePointerDown }: AlbumCardProps) {
         <AlbumAggregateWithMbMatch
           albumAggregate={albumAggregate}
           handlePointerDown={handlePointerDown}
+          longPressFiredRef={longPressFiredRef}
         />
       );
 
@@ -209,6 +240,7 @@ function AlbumCard({ albumAggregate, handlePointerDown }: AlbumCardProps) {
         <AlbumAggregateWithoutMbMatch
           albumAggregate={albumAggregate}
           handlePointerDown={handlePointerDown}
+          longPressFiredRef={longPressFiredRef}
         />
       );
   }
