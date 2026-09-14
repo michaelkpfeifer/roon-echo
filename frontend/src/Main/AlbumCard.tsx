@@ -113,6 +113,8 @@ function AlbumAggregateWithRoonTracks({
       handleSelection(albumAggregate);
       return;
     }
+
+    navigate(`/albums/${albumAggregate.id}`);
   };
 
   return (
@@ -172,6 +174,8 @@ function AlbumAggregateWithMbMatch({
       handleSelection(albumAggregate);
       return;
     }
+
+    navigate(`/albums/${albumAggregate.id}`);
   };
 
   return (
@@ -232,6 +236,8 @@ function AlbumAggregateWithoutMbMatch({
       handleSelection(albumAggregate);
       return;
     }
+
+    navigate(`/albums/${albumAggregate.id}`);
   };
 
   return (
