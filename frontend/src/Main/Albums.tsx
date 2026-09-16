@@ -4,6 +4,7 @@ import { useContext, useMemo, useRef, useState } from 'react';
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import AppContext from '../AppContext';
 import AlbumCard from './AlbumCard';
+import SelectionToolbar from './SelectionToolbar';
 import { albumsCount } from '../utils';
 
 function Albums() {
@@ -90,6 +91,11 @@ function Albums() {
     });
   };
 
+  const handleExitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedAlbumAggregateIds(new Set());
+  };
+
   return (
     <>
       <h1 className="heading-display">Albums</h1>
@@ -139,6 +145,12 @@ function Albums() {
               </div>
             );
           })}
+        {selectionMode && (
+          <SelectionToolbar
+            selectedCount={selectedAlbumAggregateIds.size}
+            onExitSelectionMode={handleExitSelectionMode}
+          />
+        )}
       </div>
     </>
   );

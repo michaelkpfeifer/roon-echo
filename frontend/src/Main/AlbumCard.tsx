@@ -103,7 +103,7 @@ function AlbumAggregateWithRoonTracks({
   const { coreUrl } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = () => {
     if (longPressFiredRef.current) {
       longPressFiredRef.current = false;
       return;
@@ -164,7 +164,7 @@ function AlbumAggregateWithMbMatch({
   const { coreUrl } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = () => {
     if (longPressFiredRef.current) {
       longPressFiredRef.current = false;
       return;
@@ -226,7 +226,7 @@ function AlbumAggregateWithoutMbMatch({
   const { coreUrl } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = () => {
     if (longPressFiredRef.current) {
       longPressFiredRef.current = false;
       return;
