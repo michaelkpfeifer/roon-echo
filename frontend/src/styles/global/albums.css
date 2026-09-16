@@ -1,6 +1,7 @@
 .albums-container {
     display: grid;
-    gap: 12px;
+    gap: 32px;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     margin-top: 16px;
+    justify-items: center;
 }

@@ -1,6 +1,7 @@
+import clsx from 'clsx';
 import { Ban, Check, CopyCheck } from 'lucide-react';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import AppContext from '../AppContext';
@@ -74,19 +75,57 @@ function AlbumData({
 
 type AlbumAggregateWithRoonTracksProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withRoonTracks' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
+  handlePointerUp: () => void;
+  handleSelection: (
+    albumAggregate: Extract<
+      AlbumAggregate,
+      { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+    >,
+  ) => void;
+  isSelected: boolean;
+  longPressFiredRef: React.RefObject<boolean>;
+  selectionMode: boolean;
 };
 
 function AlbumAggregateWithRoonTracks({
   albumAggregate,
+  handlePointerDown,
+  handlePointerUp,
+  handleSelection,
+  isSelected,
+  longPressFiredRef,
+  selectionMode,
 }: AlbumAggregateWithRoonTracksProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+
+    if (selectionMode) {
+      handleSelection(albumAggregate);
+      return;
+    }
+
+    navigate(`/albums/${albumAggregate.id}`);
+  };
 
   return (
-    <div className="album-card">
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      className={clsx('album-card', { 'album-card--selected': isSelected })}
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onPointerUp={() => handlePointerUp()}
+      onClick={handleClick}
+    >
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -98,19 +137,56 @@ function AlbumAggregateWithRoonTracks({
 
 type AlbumAggregateWithMbMatchProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withMbMatch' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
+  handlePointerUp: () => void;
+  handleSelection: (
+    albumAggregate: Extract<
+      AlbumAggregate,
+      { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+    >,
+  ) => void;
+  isSelected: boolean;
+  longPressFiredRef: React.RefObject<boolean>;
+  selectionMode: boolean;
 };
-
 function AlbumAggregateWithMbMatch({
   albumAggregate,
+  handlePointerDown,
+  handlePointerUp,
+  handleSelection,
+  isSelected,
+  longPressFiredRef,
+  selectionMode,
 }: AlbumAggregateWithMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+
+    if (selectionMode) {
+      handleSelection(albumAggregate);
+      return;
+    }
+
+    navigate(`/albums/${albumAggregate.id}`);
+  };
 
   return (
-    <div className="album-card">
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      className={clsx('album-card', { 'album-card--selected': isSelected })}
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onPointerUp={() => handlePointerUp()}
+      onClick={handleClick}
+    >
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -122,19 +198,57 @@ function AlbumAggregateWithMbMatch({
 
 type AlbumAggregateWithoutMbMatchProps = {
   albumAggregate: Extract<AlbumAggregate, { stage: 'withoutMbMatch' }>;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumaggregate: AlbumAggregate,
+  ) => void;
+  handlePointerUp: () => void;
+  handleSelection: (
+    albumAggregate: Extract<
+      AlbumAggregate,
+      { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+    >,
+  ) => void;
+  isSelected: boolean;
+  longPressFiredRef: React.RefObject<boolean>;
+  selectionMode: boolean;
 };
 
 function AlbumAggregateWithoutMbMatch({
   albumAggregate,
+  handlePointerDown,
+  handlePointerUp,
+  handleSelection,
+  isSelected,
+  longPressFiredRef,
+  selectionMode,
 }: AlbumAggregateWithoutMbMatchProps) {
   const { coreUrl } = useContext(AppContext);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
+
+    if (selectionMode) {
+      handleSelection(albumAggregate);
+      return;
+    }
+
+    navigate(`/albums/${albumAggregate.id}`);
+  };
 
   return (
-    <div className="album-card">
-      <Link to={`/albums/${albumAggregate.id}`}>
-        {albumArt(coreUrl, albumAggregate)}
-      </Link>
-
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      className={clsx('album-card', { 'album-card--selected': isSelected })}
+      onPointerDown={(e) => handlePointerDown(e, albumAggregate)}
+      onPointerUp={() => handlePointerUp()}
+      onClick={handleClick}
+    >
+      {albumArt(coreUrl, albumAggregate)}
       <AlbumData
         stage={albumAggregate.stage}
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
@@ -146,9 +260,31 @@ function AlbumAggregateWithoutMbMatch({
 
 type AlbumCardProps = {
   albumAggregate: AlbumAggregate;
+  handlePointerDown: (
+    e: React.PointerEvent<HTMLDivElement>,
+    albumAggregate: AlbumAggregate,
+  ) => void;
+  handlePointerUp: () => void;
+  handleSelection: (
+    albumAggregate: Extract<
+      AlbumAggregate,
+      { stage: 'withRoonTracks' | 'withMbMatch' | 'withoutMbMatch' }
+    >,
+  ) => void;
+  isSelected: boolean;
+  longPressFiredRef: React.RefObject<boolean>;
+  selectionMode: boolean;
 };
 
-function AlbumCard({ albumAggregate }: AlbumCardProps) {
+function AlbumCard({
+  albumAggregate,
+  handlePointerDown,
+  handlePointerUp,
+  handleSelection,
+  isSelected,
+  longPressFiredRef,
+  selectionMode,
+}: AlbumCardProps) {
   switch (albumAggregate.stage) {
     case 'empty':
       throw new Error(
@@ -161,13 +297,43 @@ function AlbumCard({ albumAggregate }: AlbumCardProps) {
       );
 
     case 'withRoonTracks':
-      return <AlbumAggregateWithRoonTracks albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithRoonTracks
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+          handlePointerUp={handlePointerUp}
+          handleSelection={handleSelection}
+          isSelected={isSelected}
+          longPressFiredRef={longPressFiredRef}
+          selectionMode={selectionMode}
+        />
+      );
 
     case 'withMbMatch':
-      return <AlbumAggregateWithMbMatch albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithMbMatch
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+          handlePointerUp={handlePointerUp}
+          handleSelection={handleSelection}
+          isSelected={isSelected}
+          longPressFiredRef={longPressFiredRef}
+          selectionMode={selectionMode}
+        />
+      );
 
     case 'withoutMbMatch':
-      return <AlbumAggregateWithoutMbMatch albumAggregate={albumAggregate} />;
+      return (
+        <AlbumAggregateWithoutMbMatch
+          albumAggregate={albumAggregate}
+          handlePointerDown={handlePointerDown}
+          handlePointerUp={handlePointerUp}
+          handleSelection={handleSelection}
+          isSelected={isSelected}
+          longPressFiredRef={longPressFiredRef}
+          selectionMode={selectionMode}
+        />
+      );
   }
 }
 

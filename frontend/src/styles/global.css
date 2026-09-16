@@ -1,6 +1,6 @@
 @import './components/buttons.css';
-@import './components/tag-badge.css';
 @import './components/modal.css';
+@import './components/tag-badge.css';
 @import './global/album-card.css';
 @import './global/album.css';
 @import './global/albums.css';
@@ -8,6 +8,7 @@
 @import './global/artists.css';
 @import './global/main.css';
 @import './global/queue.css';
+@import './global/selection-toolbar.css';
 @import './global/sidebar.css';
 @import './global/tag-row.css';
 @import './global/tags.css';
