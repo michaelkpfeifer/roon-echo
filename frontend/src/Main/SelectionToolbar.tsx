@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 type SelectionToolbarProps = {
   selectedCount: number;
   onExitSelectionMode: () => void;
@@ -7,6 +9,8 @@ function SelectionToolbar({
   selectedCount,
   onExitSelectionMode,
 }: SelectionToolbarProps) {
+  const [playMenuOpen, setPlayMenuOpen] = useState(false);
+
   const hasSelection = selectedCount > 0;
 
   return (
@@ -23,6 +27,25 @@ function SelectionToolbar({
           >
             Play Now
           </button>
+
+          <button
+            className="selection-toolbar--play-caret"
+            disabled={!hasSelection}
+            aria-label="More play options"
+            onClick={() => {
+              setPlayMenuOpen((open) => !open);
+            }}
+          >
+            ▾
+          </button>
+
+          {playMenuOpen && (
+            <div className="selection-toolbar--play-options">
+              <button onClick={() => setPlayMenuOpen(false)}>Play Now</button>
+              <button onClick={() => setPlayMenuOpen(false)}>Add Next</button>
+              <button onClick={() => setPlayMenuOpen(false)}>Queue</button>
+            </div>
+          )}
         </div>
 
         <button

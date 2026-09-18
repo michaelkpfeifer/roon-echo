@@ -29,6 +29,25 @@
   padding: 6px 12px;
 }
 
+.selection-toolbar--play-caret {
+  border-radius: 0 6px 6px 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 8px;
+}
+
+.selection-toolbar--play-options {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
 .selection-toolbar--done {
   margin-left: 4px;
   padding: 6px 14px;
