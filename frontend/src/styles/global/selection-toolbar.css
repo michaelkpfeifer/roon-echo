@@ -63,3 +63,9 @@
   padding: 6px 14px;
   border-radius: 6px;
 }
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}

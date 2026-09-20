@@ -14,8 +14,17 @@ function SelectionToolbar({
 
   const hasSelection = selectedCount > 0;
 
+  const anyMenuOpen = playMenuOpen || moreMenuOpen;
+
+  const closeMenus = () => {
+    setPlayMenuOpen(false);
+    setMoreMenuOpen(false);
+  };
+
   return (
     <>
+      {anyMenuOpen && <div className="menu-overlay" onClick={closeMenus} />}
+
       <div className="selection-toolbar">
         <span className="selection-toolbar__count">
           {selectedCount} album{selectedCount === 1 ? '' : 's'} selected
