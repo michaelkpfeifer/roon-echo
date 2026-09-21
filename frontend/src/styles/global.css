@@ -18,6 +18,8 @@
 @import './global/zones.css';
 
 :root {
+  /* Colors */
+
   --bg-primary: white;
   --bg-primary-hover: #f9f9f9;
   --bg-secondary: #f9f9f9;
@@ -28,6 +30,10 @@
   --filter-input-border-unselected: #cccccc;
   --filter-input-border-selected: #aaaaee;
   --heading-item-count-color: #666666;
+
+  /* Page Dimensions */
+
+  --narrow-page-width: 66%;
 }
 
 body {

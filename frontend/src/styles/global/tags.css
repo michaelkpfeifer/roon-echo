@@ -1,6 +1,9 @@
 .tags-heading {
   display: flex;
   justify-content: space-between;
+  max-width: var(--narrow-page-width);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tags-heading__button {
@@ -16,6 +19,9 @@
 
 .tags-container {
   margin-top: 16px;
+  max-width: var(--narrow-page-width);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tags-list {
@@ -23,8 +29,8 @@
   grid-template-columns:
     180px
     minmax(0, 8fr)
-    minmax(0, 1fr)
-    minmax(0, 1fr)
+    minmax(0, 2fr)
+    minmax(0, 2fr)
     90px
     90px;
   align-items: center;
