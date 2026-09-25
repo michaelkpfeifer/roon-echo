@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type SelectionToolbarProps = {
   selectedCount: number;
@@ -14,8 +14,38 @@ function SelectionToolbar({
 
   const hasSelection = selectedCount > 0;
 
+  const anyMenuOpen = playMenuOpen || moreMenuOpen;
+
+  const closeMenus = () => {
+    setPlayMenuOpen(false);
+    setMoreMenuOpen(false);
+  };
+
+  useEffect(() => {
+    if (!anyMenuOpen) {
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMenus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [anyMenuOpen]);
+
+  const overlay = anyMenuOpen && (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div className="menu-overlay" onClick={closeMenus} />
+  );
+
   return (
     <>
+      {overlay}
+
       <div className="selection-toolbar">
         <span className="selection-toolbar__count">
           {selectedCount} album{selectedCount === 1 ? '' : 's'} selected
