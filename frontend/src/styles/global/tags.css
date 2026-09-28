@@ -23,15 +23,3 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-.tags-list {
-  display: grid;
-  grid-template-columns:
-    180px
-    minmax(0, 8fr)
-    minmax(0, 2fr)
-    minmax(0, 2fr)
-    90px
-    90px;
-  align-items: center;
-}

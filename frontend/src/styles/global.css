@@ -31,6 +31,10 @@
   --filter-input-border-selected: #aaaaee;
   --heading-item-count-color: #666666;
 
+  /* Font Sizes */
+
+  --tag-badge-font-size: 0.75rem;
+
   /* Page Dimensions */
 
   --narrow-page-width: 66%;

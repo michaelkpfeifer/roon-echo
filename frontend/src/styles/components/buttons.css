@@ -4,4 +4,5 @@
   font-weight: 600;
   border-radius: 4px;
   width: 64px;
+  box-sizing: border-box;
 }

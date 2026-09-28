@@ -34,20 +34,18 @@ function TagRow({
 
     return (
       <div className="tag-row">
-        <div className="tag-row-item">
+        <div className="tag-row-item--text-input-name">
           <input
             aria-label="Name"
-            className="tag-row-item--text-input"
             type="text"
             value={draft.name}
             placeholder={tagNameErrors.join(', ')}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
           />
         </div>
-        <div className="tag-row-item">
+        <div className="tag-row-item--text-input-description">
           <input
             aria-label="Description"
-            className="tag-row-item--text-input"
             type="text"
             value={draft.description ?? ''}
             onChange={(e) =>
@@ -55,19 +53,17 @@ function TagRow({
             }
           />
         </div>
-        <div className="tag-row-item">
+        <div className="tag-row-item--color-input">
           <input
             aria-label="Color"
-            className="tag-row-item--color-input"
             type="color"
             value={draft.color}
             onChange={(e) => setDraft({ ...draft, color: e.target.value })}
           />
         </div>
-        <div className="tag-row-item">
+        <div className="tag-row-item--color-input">
           <input
             aria-label="Background color"
-            className="tag-row-item--color-input"
             type="color"
             value={draft.backgroundColor}
             onChange={(e) =>
@@ -75,31 +71,27 @@ function TagRow({
             }
           />
         </div>
-        <div className="tag-row-item">
-          <div className="tag-row-item--button">
-            <button
-              className="button-m"
-              type="button"
-              onClick={() => onSave(draft)}
-              disabled={tagValidationResult.isErr()}
-            >
-              Save
-            </button>
-          </div>
+        <div className="tag-row-item--button">
+          <button
+            className="button-m"
+            type="button"
+            onClick={() => onSave(draft)}
+            disabled={tagValidationResult.isErr()}
+          >
+            Save
+          </button>
         </div>
-        <div className="tag-row-item">
-          <div className="tag-row-item--button">
-            <button
-              className="button-m"
-              type="button"
-              onClick={() => {
-                setDraft(tag);
-                onCancel();
-              }}
-            >
-              Cancel
-            </button>
-          </div>
+        <div className="tag-row-item--button">
+          <button
+            className="button-m"
+            type="button"
+            onClick={() => {
+              setDraft(tag);
+              onCancel();
+            }}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     );
@@ -107,35 +99,39 @@ function TagRow({
 
   return (
     <div className="tag-row">
-      <div className="tag-row-item">
-        <TagBadge
-          name={tag.name}
-          color={tag.color}
-          backgroundColor={tag.backgroundColor}
-        />
-      </div>
-      <div className="tag-row-item">
-        <div className="tag-row-item--description">{tag.description}</div>
-      </div>
-      <div className="tag-row-item">&nbsp;</div>
-      <div className="tag-row-item">&nbsp;</div>
-      <div className="tag-row-item">
-        <div className="tag-row-item--button">
-          <button className="button-m" type="button" onClick={onStartEdit}>
-            Edit
-          </button>
+      <div className="tag-row-item--name">
+        <div className="tag-row-item--name-text">
+          <TagBadge
+            name={tag.name}
+            color={tag.color}
+            backgroundColor={tag.backgroundColor}
+          />
         </div>
       </div>
-      <div className="tag-row-item">
-        <div className="tag-row-item--button">
-          <button
-            className="button-m"
-            type="button"
-            onClick={() => onDelete(tag.tagId)}
-          >
-            Delete
-          </button>
+      <div className="tag-row-item--description">
+        <div className="tag-row-item--description-text">
+          {tag.description}
         </div>
+      </div>
+      <div className="tag-row-item--color-input">
+        <div>&nbsp;</div>
+      </div>
+      <div className="tag-row-item--color-input">
+        <div>&nbsp;</div>
+      </div>
+      <div className="tag-row-item--button">
+        <button className="button-m" type="button" onClick={onStartEdit}>
+          Edit
+        </button>
+      </div>
+      <div className="tag-row-item--button">
+        <button
+          className="button-m"
+          type="button"
+          onClick={() => onDelete(tag.tagId)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
