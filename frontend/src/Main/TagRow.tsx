@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import clsx from 'clsx';
+import { useMemo, useState } from 'react';
 
 import type { Tag } from '../../../shared/internal/tag';
 import {
@@ -14,6 +15,7 @@ type TagRowProps = {
   onSave: (updated: Tag) => void;
   onCancel: () => void;
   onDelete: (tagId: string) => void;
+  backendTagValidationResult: ReturnType<typeof validateTag>;
 };
 
 function TagRow({
@@ -23,77 +25,106 @@ function TagRow({
   onSave,
   onCancel,
   onDelete,
+  backendTagValidationResult,
 }: TagRowProps) {
   const [draft, setDraft] = useState(tag);
 
-  if (isEditing) {
-    const tagValidationResult = validateTag(draft);
-    const tagNameErrors = tagValidationResult.isErr()
-      ? tagValidationErrorsFor(tagValidationResult.error, 'name')
+  const frontendTagValidationResult = useMemo(() => {
+    return validateTag(draft);
+  }, [draft]);
+
+  const tagNameValidationErrors = useMemo(() => {
+    const frontendTagNameValdationErrors = frontendTagValidationResult.isErr()
+      ? tagValidationErrorsFor(frontendTagValidationResult.error, 'name')
+      : [];
+    const backendTagNameValdationErrors = backendTagValidationResult.isErr()
+      ? tagValidationErrorsFor(backendTagValidationResult.error, 'name')
       : [];
 
+    return [
+      ...new Set([
+        ...frontendTagNameValdationErrors,
+        ...backendTagNameValdationErrors,
+      ]),
+    ];
+  }, [backendTagValidationResult, frontendTagValidationResult]);
+
+  if (isEditing) {
     return (
-      <div className="tag-row">
-        <div className="tag-row-item--text-input-name">
-          <input
-            aria-label="Name"
-            type="text"
-            value={draft.name}
-            placeholder={tagNameErrors.join(', ')}
-            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-          />
-        </div>
-        <div className="tag-row-item--text-input-description">
-          <input
-            aria-label="Description"
-            type="text"
-            value={draft.description ?? ''}
-            onChange={(e) =>
-              setDraft({ ...draft, description: e.target.value || null })
-            }
-          />
-        </div>
-        <div className="tag-row-item--color-input">
-          <input
-            aria-label="Color"
-            type="color"
-            value={draft.color}
-            onChange={(e) => setDraft({ ...draft, color: e.target.value })}
-          />
-        </div>
-        <div className="tag-row-item--color-input">
-          <input
-            aria-label="Background color"
-            type="color"
-            value={draft.backgroundColor}
-            onChange={(e) =>
-              setDraft({ ...draft, backgroundColor: e.target.value })
-            }
-          />
-        </div>
-        <div className="tag-row-item--button">
-          <button
-            className="button-m"
-            type="button"
-            onClick={() => onSave(draft)}
-            disabled={tagValidationResult.isErr()}
+      <>
+        <div className="tag-row">
+          <div
+            className={clsx('tag-row-item--text-input-name', {
+              'text-input-field-validation-errors':
+                tagNameValidationErrors.length > 0,
+            })}
           >
-            Save
-          </button>
+            <input
+              aria-label="Name"
+              type="text"
+              value={draft.name ?? ''}
+              onChange={(e) => {
+                setDraft({ ...draft, name: e.target.value });
+              }}
+            />
+          </div>
+          <div className="tag-row-item--text-input-description">
+            <input
+              aria-label="Description"
+              type="text"
+              value={draft.description ?? ''}
+              onChange={(e) =>
+                setDraft({ ...draft, description: e.target.value || null })
+              }
+            />
+          </div>
+          <div className="tag-row-item--color-input">
+            <input
+              aria-label="Color"
+              type="color"
+              value={draft.color}
+              onChange={(e) => setDraft({ ...draft, color: e.target.value })}
+            />
+          </div>
+          <div className="tag-row-item--color-input">
+            <input
+              aria-label="Background color"
+              type="color"
+              value={draft.backgroundColor}
+              onChange={(e) =>
+                setDraft({ ...draft, backgroundColor: e.target.value })
+              }
+            />
+          </div>
+          <div className="tag-row-item--button">
+            <button
+              className="button-m"
+              type="button"
+              onClick={() => onSave(draft)}
+              disabled={tagNameValidationErrors.length > 0}
+            >
+              Save
+            </button>
+          </div>
+          <div className="tag-row-item--button">
+            <button
+              className="button-m"
+              type="button"
+              onClick={() => {
+                setDraft(tag);
+                onCancel();
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-        <div className="tag-row-item--button">
-          <button
-            className="button-m"
-            type="button"
-            onClick={() => {
-              setDraft(tag);
-              onCancel();
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+        {tagNameValidationErrors.length > 0 && (
+          <div className="validation-errors">
+            {tagNameValidationErrors.join(', ')}
+          </div>
+        )}
+      </>
     );
   }
 
@@ -109,9 +140,7 @@ function TagRow({
         </div>
       </div>
       <div className="tag-row-item--description">
-        <div className="tag-row-item--description-text">
-          {tag.description}
-        </div>
+        <div className="tag-row-item--description-text">{tag.description}</div>
       </div>
       <div className="tag-row-item--color-input">
         <div>&nbsp;</div>

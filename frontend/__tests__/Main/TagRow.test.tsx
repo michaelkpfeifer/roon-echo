@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react';
+import { ok } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { Tag } from '../../../shared/internal/tag';
@@ -31,6 +32,7 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 
@@ -47,6 +49,7 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 
@@ -75,6 +78,7 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 
@@ -95,6 +99,7 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 
@@ -102,7 +107,7 @@ describe('TagRow', () => {
       expect(screen.getByLabelText('Background color')).toHaveValue('#ffffff');
     });
 
-    it('shows a placeholder with the validation error when the name is missing', () => {
+    it('shows a validation error when the tag name is missing', () => {
       const emptyNameTag: Tag = { ...tag, name: '' };
 
       render(
@@ -113,13 +118,11 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 
-      expect(screen.getByRole('textbox', { name: 'Name' })).toHaveAttribute(
-        'placeholder',
-        'Name is required',
-      );
+      expect(screen.getByText('Name is required')).toBeInTheDocument();
     });
 
     it('disables Save when the name is missing', () => {
@@ -133,6 +136,7 @@ describe('TagRow', () => {
           onSave={() => {}}
           onCancel={() => {}}
           onDelete={() => {}}
+          backendTagValidationResult={ok(tag)}
         />,
       );
 

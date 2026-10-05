@@ -29,6 +29,7 @@
   --album-card-text-secondary: #666666;
   --filter-input-border-unselected: #cccccc;
   --filter-input-border-selected: #aaaaee;
+  --filter-input-border-invalid: #dd2244;
   --heading-item-count-color: #666666;
 
   /* Font Sizes */

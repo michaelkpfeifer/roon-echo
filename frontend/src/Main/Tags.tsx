@@ -1,3 +1,4 @@
+import { ok } from 'neverthrow';
 import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
@@ -7,6 +8,7 @@ import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
+import type { validateTag } from '../../../shared/src/validations/tag.js';
 
 const blankTag: Tag = {
   tagId: 'new',
@@ -19,6 +21,9 @@ const blankTag: Tag = {
 function Tags() {
   const [tagsPattern, setTagsPattern] = useState('');
   const [editingTagId, setEditingTagId] = useState<string | 'new' | null>(null);
+  const [backendTagValidationResult, setBackendTagValidationResult] = useState<
+    ReturnType<typeof validateTag>
+  >(ok(blankTag));
 
   const { setTags, tags } = useContext(AppContext);
 
@@ -37,6 +42,7 @@ function Tags() {
           if (response.ok) {
             setTags([...tags, response.value]);
             setEditingTagId(null);
+            setBackendTagValidationResult(ok(draft));
           } else {
             /* eslint-disable no-console */
             console.error('Error: failed to create tag:', response.error);
@@ -55,6 +61,7 @@ function Tags() {
           ),
         );
         setEditingTagId(null);
+        setBackendTagValidationResult(ok(draft));
       } else {
         /* eslint-disable no-console */
         console.error('Error: failed to update tag:', response.error);
@@ -114,6 +121,7 @@ function Tags() {
             onSave={handleSave}
             onCancel={handleCancel}
             onDelete={handleDelete}
+            backendTagValidationResult={backendTagValidationResult}
           />
         )}
         {sortedFilteredTags.map((tag) => (
@@ -125,6 +133,7 @@ function Tags() {
             onSave={handleSave}
             onCancel={handleCancel}
             onDelete={handleDelete}
+            backendTagValidationResult={backendTagValidationResult}
           />
         ))}
       </div>
