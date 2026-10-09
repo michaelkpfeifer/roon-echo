@@ -141,6 +141,7 @@ body {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 2rem;
+  position: relative;
 }
 
 .filter__input {
@@ -154,4 +155,15 @@ body {
 
 .filter__input:focus {
   border-color: var(--filter-input-border-selected);
+}
+
+.filter__clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 55%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.25rem;
 }
