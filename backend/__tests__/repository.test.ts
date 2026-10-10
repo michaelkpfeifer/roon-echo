@@ -659,7 +659,15 @@ describe('createTag', () => {
     });
 
     expect(result.isErr()).toBe(true);
-    expect(result._unsafeUnwrapErr()).toBe('Name is required');
+    expect(result._unsafeUnwrapErr()).toStrictEqual({
+      type: 'validation',
+      errors: [
+        {
+          field: 'name',
+          message: 'Name is required',
+        },
+      ],
+    });
   });
 });
 
@@ -678,6 +686,14 @@ describe('updateTag', () => {
     });
 
     expect(result.isErr()).toBe(true);
-    expect(result._unsafeUnwrapErr()).toBe('Name is required');
+    expect(result._unsafeUnwrapErr()).toStrictEqual({
+      type: 'validation',
+      errors: [
+        {
+          field: 'name',
+          message: 'Name is required',
+        },
+      ],
+    });
   });
 });
