@@ -5,6 +5,7 @@ import type { AlbumSchedulingSpecification } from './albumSchedulingSpecificatio
 import type { SocketResult } from './socketResult.js';
 import type { SocketVoidResult } from './socketVoidResult.js';
 import type { Tag } from './tag.js';
+import type { TagError } from './tagError.js';
 import type { TrackSchedulingSpecification } from './trackSchedulingSpecification.js';
 import type { ZoneSeekPosition } from './zoneSeekPosition.js';
 
@@ -30,7 +31,9 @@ type ClientToServerEvents = {
   scheduleTrack: (
     trackSchedulingSpecification: TrackSchedulingSpecification,
   ) => void;
-  'tags:list': (callback: (response: SocketResult<Tag[]>) => void) => void;
+  'tags:list': (
+    callback: (response: SocketResult<Tag[], TagError>) => void,
+  ) => void;
   'tags:create': (
     payload: {
       name: string;
@@ -38,11 +41,11 @@ type ClientToServerEvents = {
       color: string;
       backgroundColor: string;
     },
-    callback: (response: SocketResult<Tag>) => void,
+    callback: (response: SocketResult<Tag, TagError>) => void,
   ) => void;
   'tags:update': (
     payload: Tag,
-    callback: (responmse: SocketResult<Tag>) => void,
+    callback: (response: SocketResult<Tag, TagError>) => void,
   ) => void;
   'tags:delete': (
     payload: { tagId: string },

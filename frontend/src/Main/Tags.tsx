@@ -1,4 +1,4 @@
-import { ok } from 'neverthrow';
+import { err, ok } from 'neverthrow';
 import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
@@ -8,6 +8,7 @@ import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
 import type { SocketResult } from '../../../shared/internal/socketResult';
 import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult';
 import type { Tag } from '../../../shared/internal/tag';
+import type { TagError } from '../../../shared/internal/tagError';
 import type { validateTag } from '../../../shared/src/validations/tag.js';
 
 const blankTag: Tag = {
@@ -38,36 +39,60 @@ function Tags() {
       socket.emit(
         'tags:create',
         { name, description, color, backgroundColor },
-        (response: SocketResult<Tag>) => {
+        (response: SocketResult<Tag, TagError>) => {
           if (response.ok) {
             setTags([...tags, response.value]);
             setEditingTagId(null);
             setBackendTagValidationResult(ok(draft));
           } else {
-            /* eslint-disable no-console */
-            console.error('Error: failed to create tag:', response.error);
-            /* eslint-enable no-console */
+            switch (response.error.type) {
+              case 'validation': {
+                setBackendTagValidationResult(err(response.error.errors));
+                break;
+              }
+
+              case 'internal': {
+                /* eslint-disable no-console */
+                console.error('Error:', response.error);
+                /* eslint-enable no-console */
+                break;
+              }
+            }
           }
         },
       );
       return;
     }
 
-    socket.emit('tags:update', draft, (response: SocketResult<Tag>) => {
-      if (response.ok) {
-        setTags(
-          tags.map((tag) =>
-            tag.tagId === response.value.tagId ? response.value : tag,
-          ),
-        );
-        setEditingTagId(null);
-        setBackendTagValidationResult(ok(draft));
-      } else {
-        /* eslint-disable no-console */
-        console.error('Error: failed to update tag:', response.error);
-        /* eslint-enable no-console */
-      }
-    });
+    socket.emit(
+      'tags:update',
+      draft,
+      (response: SocketResult<Tag, TagError>) => {
+        if (response.ok) {
+          setTags(
+            tags.map((tag) =>
+              tag.tagId === response.value.tagId ? response.value : tag,
+            ),
+          );
+          setEditingTagId(null);
+          setBackendTagValidationResult(ok(draft));
+        } else {
+          switch (response.error.type) {
+            case 'validation': {
+              setBackendTagValidationResult(err(response.error.errors));
+              break;
+            }
+
+            case 'internal': {
+              /* eslint-disable no-console */
+              console.error('Error:', response.error);
+              /* eslint-enable no-console */
+              break;
+            }
+          }
+        }
+      },
+    );
   };
 
   const handleCancel = () => {
