@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import { useContext, useMemo, useState } from 'react';
 
 import AppContext from '../AppContext';
@@ -51,6 +52,16 @@ function Artists() {
           value={artistPattern}
           onChange={(e) => setArtistPattern(e.target.value)}
         />
+
+        {artistPattern && (
+          <button
+            type="button"
+            className="filter__clear"
+            onClick={() => setArtistPattern('')}
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
       <div className="artists-container">
         {filteredRoonAlbumArtistNames.map((roonAlbumArtistName) => (
