@@ -1,10 +1,12 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import { usePlayback } from '../PlaybackContext';
 import { findSelectedZone } from '../utils';
 
 function Volume() {
-  const { config, zones } = useContext(AppContext);
+  const { config } = useContext(AppContext);
+  const { zones } = usePlayback();
 
   const selectedZone = findSelectedZone(zones, config.selectedZoneId);
 

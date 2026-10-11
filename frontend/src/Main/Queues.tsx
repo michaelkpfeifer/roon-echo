@@ -2,10 +2,12 @@ import { useContext } from 'react';
 
 import AppContext from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
+import { usePlayback } from '../PlaybackContext';
 import { formatRoonTrackLength, lookupZoneName } from '../utils';
 
 function Queues() {
-  const { config, coreUrl, queues, zones } = useContext(AppContext);
+  const { config, coreUrl } = useContext(AppContext);
+  const { queues, zones } = usePlayback();
 
   return (
     <>

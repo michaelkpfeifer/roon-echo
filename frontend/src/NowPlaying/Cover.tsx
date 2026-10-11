@@ -1,10 +1,12 @@
 import { useContext } from 'react';
 
 import AppContext from '../AppContext';
+import { usePlayback } from '../PlaybackContext';
 import { findSelectedZone } from '../utils';
 
 function Cover() {
-  const { config, coreUrl, zones } = useContext(AppContext);
+  const { config, coreUrl } = useContext(AppContext);
+  const { zones } = usePlayback();
 
   const selectedZone = findSelectedZone(zones, config.selectedZoneId);
 
