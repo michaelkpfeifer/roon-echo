@@ -18,6 +18,7 @@ import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { Tag } from '../../shared/internal/tag.js';
+import type { TagError } from '../../shared/internal/tagError.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumRow } from './internal/albumRow.js';
 import type { TrackRow } from './internal/trackRow.js';
@@ -427,7 +428,7 @@ const updateRoonLengthInTrack = async (
 
 const listTags = async (
   db: Knex<DatabaseSchema>,
-): Promise<Result<Tag[], string>> => {
+): Promise<Result<Tag[], TagError>> => {
   try {
     const rows = await db<DatabaseSchema['tags']>('tags').select('*');
 
@@ -445,7 +446,7 @@ const listTags = async (
     console.error('Error: listTags failed:', error);
     /* eslint-enable no-console */
 
-    return err('Failed to list tags');
+    return err({ type: 'internal', message: 'Failed to list tags' });
   }
 };
 
@@ -462,7 +463,7 @@ const createTag = async (
     color: string;
     backgroundColor: string;
   },
-): Promise<Result<Tag, string>> => {
+): Promise<Result<Tag, TagError>> => {
   const validationResult = validateTag({
     name,
     description,
@@ -470,7 +471,7 @@ const createTag = async (
     backgroundColor,
   });
   if (validationResult.isErr()) {
-    return err(validationResult.error.map((e) => e.message).join(', '));
+    return err({ type: 'validation', errors: validationResult.error });
   }
 
   const tagId = uuidv7();
@@ -490,14 +491,14 @@ const createTag = async (
     console.error('Error: createTag failed:', error);
     /* eslint-enable no-console */
 
-    return err('Failed to create tag');
+    return err({ type: 'internal', message: 'Failed to create tag' });
   }
 };
 
 const updateTag = async (
   db: Knex<DatabaseSchema>,
   { tagId, name, description, color, backgroundColor }: Tag,
-): Promise<Result<Tag, string>> => {
+): Promise<Result<Tag, TagError>> => {
   const validationResult = validateTag({
     name,
     description,
@@ -505,7 +506,7 @@ const updateTag = async (
     backgroundColor,
   });
   if (validationResult.isErr()) {
-    return err(validationResult.error.map((e) => e.message).join(', '));
+    return err({ type: 'validation', errors: validationResult.error });
   }
 
   try {
@@ -520,7 +521,7 @@ const updateTag = async (
       });
 
     if (updatedCount === 0) {
-      return err(`Tag ${tagId} not found`);
+      return err({ type: 'internal', message: `Tag ${tagId} not found` });
     }
 
     return ok({
@@ -535,7 +536,7 @@ const updateTag = async (
     console.error('Error: updateTag failed:', error);
     /* eslint-enable no-console */
 
-    return err('Failed to update tag');
+    return err({ type: 'internal', message: `Failed to update tag` });
   }
 };
 

@@ -21,6 +21,7 @@ import type { AlbumAggregate } from '../../shared/internal/albumAggregate';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { SocketResult } from '../../shared/internal/socketResult';
 import type { Tag } from '../../shared/internal/tag';
+import type { TagError } from '../../shared/internal/tagError.js';
 import type { Zone } from '../../shared/internal/zone';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
 
@@ -132,7 +133,7 @@ function App() {
 
     socket.on('queueChanged', handleQueueChangedMessage);
 
-    socket.emit('tags:list', (response: SocketResult<Tag[]>) => {
+    socket.emit('tags:list', (response: SocketResult<Tag[], TagError>) => {
       if (response.ok) {
         setTags(response.value);
       } else {

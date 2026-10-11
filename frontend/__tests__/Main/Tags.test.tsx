@@ -176,7 +176,18 @@ describe('Tags', () => {
       const setTags = vi.fn();
 
       mockEmitOnce('tags:create', (payload, callback) => {
-        callback({ ok: false, error: 'boom' });
+        callback({
+          ok: false,
+          error: {
+            type: 'validation',
+            errors: [
+              {
+                field: 'name',
+                message: 'Name is required',
+              },
+            ],
+          },
+        });
       });
 
       renderWithContext([], setTags);
@@ -218,7 +229,18 @@ describe('Tags', () => {
       const setTags = vi.fn();
 
       mockEmitOnce('tags:update', (payload, callback) => {
-        callback({ ok: false, error: 'boom' });
+        callback({
+          ok: false,
+          error: {
+            type: 'validation',
+            errors: [
+              {
+                field: 'name',
+                message: 'Name is required',
+              },
+            ],
+          },
+        });
       });
 
       renderWithContext([jazz], setTags);

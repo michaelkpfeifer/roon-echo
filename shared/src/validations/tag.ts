@@ -1,11 +1,9 @@
 import { Result, ok, err } from 'neverthrow';
 
-type TagField = 'name';
-
-type TagValidationError = {
-  field: TagField;
-  message: string;
-};
+import type {
+  TagField,
+  TagValidationError,
+} from '../../internal/tagValidationError.js';
 
 type validatableTagFields = {
   name: string;
