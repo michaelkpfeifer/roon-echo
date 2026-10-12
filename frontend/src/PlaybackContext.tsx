@@ -2,16 +2,12 @@ import fp from 'lodash/fp';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
+import type { PlaybackContextType } from './internal/playbackContextType';
 import { socket } from './socket';
 import { mergeQueues } from './utils';
 import type { RoonQueueItem } from '../../shared/internal/roonQueueItem';
 import type { Zone } from '../../shared/internal/zone';
 import type { ZoneSeekPosition } from '../../shared/internal/zoneSeekPosition';
-
-type PlaybackContextType = {
-  zones: Record<string, Zone>;
-  queues: Record<string, RoonQueueItem[]>;
-};
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
 
