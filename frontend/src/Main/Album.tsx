@@ -1,9 +1,9 @@
-import { memo, useContext } from 'react';
+import { memo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
-import AppContext from '../AppContext';
+import { useApp } from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
 import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
@@ -15,8 +15,8 @@ function AlbumAggregateNotFound(id: string) {
 }
 
 const Album = memo(function Album() {
-  const {  config, coreUrl, setIsAlbumArtModalOpen } = useContext(AppContext);
-  const { albumAggregates } = useData()
+  const { config, coreUrl, setIsAlbumArtModalOpen } = useApp();
+  const { albumAggregates } = useData();
 
   const { id } = useParams();
 
@@ -213,6 +213,6 @@ const Album = memo(function Album() {
       );
     }
   }
-})
+});
 
 export default Album;

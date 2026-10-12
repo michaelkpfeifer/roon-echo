@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import AppContext from './AppContext';
-import { loadConfig, saveConfig } from './config';
+import { AppProvider } from './AppContext';
 import { DataProvider } from './DataContext';
-import type { AppContextType } from './internal/appContextType';
 import Album from './Main/Album';
 import Albums from './Main/Albums';
 import Artists from './Main/Artists';
@@ -19,48 +17,16 @@ import Sidebar from './Sidebar';
 import { socket } from './socket';
 
 function App() {
-  const [config, setConfig] = useState(
-    () => loadConfig() || { selectedZoneId: null },
-  );
-  const [coreUrl, setCoreUrl] = useState<string | null>(null);
-  const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
-    null,
-  );
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
-
-  useEffect(() => saveConfig(config), [config]);
-
   useEffect(() => {
     socket.connect();
 
-    const handleCoreUrlMessage = (roonCoreUrl: string) => {
-      setCoreUrl(roonCoreUrl);
-    };
-
-    socket.on('coreUrl', handleCoreUrlMessage);
-
     return () => {
-      socket.off('coreUrl', handleCoreUrlMessage);
       socket.disconnect();
     };
   }, []);
 
-  /* eslint-disable no-console */
-  // console.log('App.jsx: App(): config:', config);
-  /* eslint-enable no-console */
-
-  const appContextValue: AppContextType = {
-    config,
-    coreUrl,
-    domSelectedZoneId,
-    isAlbumArtModalOpen,
-    setConfig,
-    setDomSelectedZoneId,
-    setIsAlbumArtModalOpen,
-  };
-
   return (
-    <AppContext.Provider value={appContextValue}>
+    <AppProvider>
       <DataProvider>
         <PlaybackProvider>
           <Router>
@@ -90,7 +56,7 @@ function App() {
           </Router>
         </PlaybackProvider>
       </DataProvider>
-    </AppContext.Provider>
+    </AppProvider>
   );
 }
 

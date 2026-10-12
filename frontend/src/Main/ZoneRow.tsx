@@ -1,16 +1,13 @@
-import { useContext } from 'react';
-
 import type { Zone } from '../../../shared/internal/zone';
-import AppContext from '../AppContext';
-import { formatAsHoursMinutesSeconds } from '../utils'
+import { useApp } from '../AppContext';
+import { formatAsHoursMinutesSeconds } from '../utils';
 
 type MainZoneProps = {
   zone: Zone;
 };
 
 function ZoneRow({ zone }: MainZoneProps) {
-  const { domSelectedZoneId, setConfig, setDomSelectedZoneId } =
-    useContext(AppContext);
+  const { domSelectedZoneId, setConfig, setDomSelectedZoneId } = useApp();
 
   const handleZoneSelection = () => {
     setDomSelectedZoneId(zone.zoneId);

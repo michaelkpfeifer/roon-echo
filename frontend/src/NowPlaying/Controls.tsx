@@ -1,6 +1,4 @@
-import { useContext } from 'react';
-
-import AppContext from '../AppContext';
+import { useApp } from '../AppContext';
 import { usePlayback } from '../PlaybackContext';
 import { socket } from '../socket';
 import {
@@ -9,7 +7,7 @@ import {
 } from '../utils';
 
 function Controls() {
-  const { config } = useContext(AppContext);
+  const { config } = useApp();
   const { zones } = usePlayback();
 
   const selectedZone = findSelectedZone(zones, config.selectedZoneId);

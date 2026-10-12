@@ -1,6 +1,4 @@
-import { useContext } from 'react';
-
-import AppContext from '../AppContext';
+import { useApp } from '../AppContext';
 import Modal from '../Components/Modal';
 import noAlbumArt from '../images/no-album-art.svg';
 
@@ -10,8 +8,7 @@ type AlbumArtProps = {
 };
 
 function AlbumArt({ imageKey, alt }: AlbumArtProps) {
-  const { coreUrl, isAlbumArtModalOpen, setIsAlbumArtModalOpen } =
-    useContext(AppContext);
+  const { coreUrl, isAlbumArtModalOpen, setIsAlbumArtModalOpen } = useApp();
 
   return (
     <Modal

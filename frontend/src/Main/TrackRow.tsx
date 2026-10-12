@@ -1,8 +1,8 @@
-import { memo, useContext } from 'react';
+import { memo } from 'react';
 
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
 import type { RoonTrack } from '../../../shared/internal/roonTrack';
-import AppContext from '../AppContext';
+import { useApp } from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
 import { socket } from '../socket';
 import { formatRoonTrackLength } from '../utils';
@@ -16,7 +16,7 @@ const TrackRow = memo(function TrackRow({
   roonAlbum,
   roonTrack,
 }: MainTrackRowProps) {
-  const { config, coreUrl } = useContext(AppContext);
+  const { config, coreUrl } = useApp();
 
   const zoneId = config.selectedZoneId;
 
