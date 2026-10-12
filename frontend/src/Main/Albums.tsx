@@ -1,10 +1,10 @@
 import fp from 'lodash/fp';
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
-import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
-import AppContext from '../AppContext';
 import AlbumCard from './AlbumCard';
 import SelectionToolbar from './SelectionToolbar';
+import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
+import { useData } from '../DataContext';
 import { albumsCount } from '../utils';
 
 function Albums() {
@@ -18,7 +18,7 @@ function Albums() {
   const pressStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { albumAggregates } = useContext(AppContext);
+  const { albumAggregates } = useData();
 
   const filteredAlbumAggregates = useMemo(() => {
     if (!albumOrArtistPattern) {

@@ -8,14 +8,16 @@ import noAlbumArt from '../images/no-album-art.svg';
 import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 import AlbumArt from './AlbumArt';
+import { useData } from '../DataContext';
 
 function AlbumAggregateNotFound(id: string) {
   throw new Error(`Error: Cannot find album by ID ${id}.`);
 }
 
 const Album = memo(function Album() {
-  const { albumAggregates, config, coreUrl, setIsAlbumArtModalOpen } =
-    useContext(AppContext);
+  const {  config, coreUrl, setIsAlbumArtModalOpen } = useContext(AppContext);
+  const { albumAggregates } = useData()
+
   const { id } = useParams();
 
   const albumAggregate = albumAggregates.find((currentAlbumAggregate) => {

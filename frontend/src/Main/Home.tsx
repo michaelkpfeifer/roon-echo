@@ -1,11 +1,10 @@
 import { Disc, Music4, User } from 'lucide-react';
-import { useContext } from 'react';
 
-import AppContext from '../AppContext';
+import { useData } from '../DataContext';
 import { albumsCount, artistsCount, tracksCount } from '../utils';
 
 function Home() {
-  const { albumAggregates } = useContext(AppContext);
+  const { albumAggregates } = useData();
 
   return (
     <div className="main-container">
