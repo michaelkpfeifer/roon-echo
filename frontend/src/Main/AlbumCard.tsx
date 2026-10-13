@@ -1,10 +1,9 @@
 import clsx from 'clsx';
 import { Ban, Check, CopyCheck } from 'lucide-react';
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
-import AppContext from '../AppContext';
+import { useApp } from '../AppContext';
 import noAlbumArt from '../images/no-album-art.svg';
 
 const albumStageIcon = (stage: string) => {
@@ -100,7 +99,7 @@ function AlbumAggregateWithRoonTracks({
   longPressFiredRef,
   selectionMode,
 }: AlbumAggregateWithRoonTracksProps) {
-  const { coreUrl } = useContext(AppContext);
+  const { coreUrl } = useApp();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -161,7 +160,7 @@ function AlbumAggregateWithMbMatch({
   longPressFiredRef,
   selectionMode,
 }: AlbumAggregateWithMbMatchProps) {
-  const { coreUrl } = useContext(AppContext);
+  const { coreUrl } = useApp();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -223,7 +222,7 @@ function AlbumAggregateWithoutMbMatch({
   longPressFiredRef,
   selectionMode,
 }: AlbumAggregateWithoutMbMatchProps) {
-  const { coreUrl } = useContext(AppContext);
+  const { coreUrl } = useApp();
   const navigate = useNavigate();
 
   const handleClick = () => {

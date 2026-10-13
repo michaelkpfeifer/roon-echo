@@ -1,13 +1,13 @@
 import fp from 'lodash/fp';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 
-import type { RoonTrack } from '../../../shared/internal/roonTrack';
-import AppContext from '../AppContext';
 import TrackRow from './TrackRow';
+import type { RoonTrack } from '../../../shared/internal/roonTrack';
+import { useData } from '../DataContext';
 import { tracksCount } from '../utils';
 
 function Tracks() {
-  const { albumAggregates } = useContext(AppContext);
+  const { albumAggregates } = useData();
 
   const tracksWithAlbum = useMemo(
     () =>

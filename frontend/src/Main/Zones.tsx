@@ -1,10 +1,8 @@
-import { useContext } from 'react';
-
-import AppContext from '../AppContext';
+import { usePlayback } from '../PlaybackContext';
 import ZoneRow from './ZoneRow';
 
 function Zones() {
-  const { zones } = useContext(AppContext);
+  const { zones } = usePlayback();
 
   return (
     <>

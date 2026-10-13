@@ -1,7 +1,6 @@
 import { err, ok } from 'neverthrow';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import AppContext from '../AppContext';
 import { socket } from '../socket';
 import TagRow from './TagRow';
 import { sortTagsByName, filterTagsByPattern } from './Tags.helpers';
@@ -10,6 +9,7 @@ import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult
 import type { Tag } from '../../../shared/internal/tag';
 import type { TagError } from '../../../shared/internal/tagError';
 import type { validateTag } from '../../../shared/src/validations/tag.js';
+import { useData } from '../DataContext';
 
 const blankTag: Tag = {
   tagId: 'new',
@@ -26,7 +26,7 @@ function Tags() {
     ReturnType<typeof validateTag>
   >(ok(blankTag));
 
-  const { setTags, tags } = useContext(AppContext);
+  const { setTags, tags } = useData();
 
   const sortedFilteredTags = useMemo(
     () => sortTagsByName(filterTagsByPattern(tags, tagsPattern)),

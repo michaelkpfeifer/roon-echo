@@ -1,14 +1,14 @@
 import { X } from 'lucide-react';
-import { useContext, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import AppContext from '../AppContext';
 import ArtistCard from './ArtistCard';
+import { useData } from '../DataContext';
 import { artistsCount } from '../utils';
 
 function Artists() {
   const [artistPattern, setArtistPattern] = useState('');
 
-  const { albumAggregates } = useContext(AppContext);
+  const { albumAggregates } = useData();
 
   const roonAlbumArtistNames = [
     ...new Set(
