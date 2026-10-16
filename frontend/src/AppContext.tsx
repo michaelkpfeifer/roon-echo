@@ -10,7 +10,7 @@ import {
 
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
-import type { Config } from './internal/config';
+import type { Config } from './internal/configType';
 import { socket } from './socket';
 
 const AppContext = createContext<AppContextType | null>(null);
