@@ -1,8 +1,16 @@
 import type { ReactNode } from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
+import type { Config } from './internal/configType';
 import { socket } from './socket';
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -18,38 +26,37 @@ function AppProvider({ children }: { children: ReactNode }) {
     () => loadConfig() || { selectedZoneId: null },
   );
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
-  const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
-    null,
-  );
 
   useEffect(() => saveConfig(config), [config]);
 
   useEffect(() => {
-    const handleInitialState = () => {
-      setDomSelectedZoneId(loadConfig().selectedZoneId || null);
-    };
-    const handleCoreUrl = (url: string) => setCoreUrl(url);
+    const handleCoreUrlMessage = (url: string) => setCoreUrl(url);
 
-    socket.on('initialState', handleInitialState);
-    socket.on('coreUrl', handleCoreUrl);
+    socket.on('coreUrl', handleCoreUrlMessage);
     socket.connect();
 
     return () => {
-      socket.off('initialState', handleInitialState);
-      socket.off('coreUrl', handleCoreUrl);
+      socket.off('coreUrl', handleCoreUrlMessage);
       socket.disconnect();
     };
   }, []);
+
+  const setSelectedZoneId = useCallback(
+    (zoneId: string) =>
+      setConfig((currentConfig: Config) => ({
+        ...currentConfig,
+        selectedZoneId: zoneId,
+      })),
+    [],
+  );
 
   const value = useMemo(
     () => ({
       config,
       coreUrl,
-      domSelectedZoneId,
-      setConfig,
-      setDomSelectedZoneId,
+      setSelectedZoneId,
     }),
-    [config, coreUrl, domSelectedZoneId, ],
+    [config, coreUrl, setSelectedZoneId],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
