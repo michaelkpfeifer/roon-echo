@@ -7,17 +7,13 @@ type MainZoneProps = {
 };
 
 function ZoneRow({ zone }: MainZoneProps) {
-  const { domSelectedZoneId, setConfig, setDomSelectedZoneId } = useApp();
+  const { config, setSelectedZoneId } = useApp();
 
   const handleZoneSelection = () => {
-    setDomSelectedZoneId(zone.zoneId);
-    setConfig((currentConfig) => ({
-      ...currentConfig,
-      selectedZoneId: zone.zoneId,
-    }));
+    setSelectedZoneId(zone.zoneId);
   };
 
-  const isZoneSelected = domSelectedZoneId === zone.zoneId;
+  const isZoneSelected = config.selectedZoneId === zone.zoneId;
 
   return (
     /* eslint-disable jsx-a11y/label-has-associated-control */

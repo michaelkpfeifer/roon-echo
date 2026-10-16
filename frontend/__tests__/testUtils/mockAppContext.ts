@@ -7,9 +7,7 @@ const createMockAppContext = (
 ): AppContextType => ({
   config: { selectedZoneId: null },
   coreUrl: null,
-  domSelectedZoneId: null,
-  setConfig: vi.fn(),
-  setDomSelectedZoneId: vi.fn(),
+  setSelectedZoneId: vi.fn(),
   ...overrides,
 });
 
