@@ -1,4 +1,4 @@
-import type { Config } from './config';
+import type { Config } from './configType';
 
 type AppContextType = {
   config: Config;
