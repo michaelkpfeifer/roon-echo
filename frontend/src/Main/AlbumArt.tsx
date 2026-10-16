@@ -1,14 +1,23 @@
+import type { Dispatch, SetStateAction } from 'react';
+
 import { useApp } from '../AppContext';
 import Modal from '../Components/Modal';
 import noAlbumArt from '../images/no-album-art.svg';
 
 type AlbumArtProps = {
   imageKey: string;
+  isAlbumArtModalOpen: boolean;
+  setIsAlbumArtModalOpen: Dispatch<SetStateAction<boolean>>;
   alt: string;
 };
 
-function AlbumArt({ imageKey, alt }: AlbumArtProps) {
-  const { coreUrl, isAlbumArtModalOpen, setIsAlbumArtModalOpen } = useApp();
+function AlbumArt({
+  alt,
+  imageKey,
+  isAlbumArtModalOpen,
+  setIsAlbumArtModalOpen,
+}: AlbumArtProps) {
+  const { coreUrl } = useApp();
 
   return (
     <Modal

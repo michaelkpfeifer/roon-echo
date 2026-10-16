@@ -21,7 +21,6 @@ function AppProvider({ children }: { children: ReactNode }) {
   const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
     null,
   );
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -47,12 +46,10 @@ function AppProvider({ children }: { children: ReactNode }) {
       config,
       coreUrl,
       domSelectedZoneId,
-      isAlbumArtModalOpen,
       setConfig,
       setDomSelectedZoneId,
-      setIsAlbumArtModalOpen,
     }),
-    [config, coreUrl, domSelectedZoneId, isAlbumArtModalOpen],
+    [config, coreUrl, domSelectedZoneId, ],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
