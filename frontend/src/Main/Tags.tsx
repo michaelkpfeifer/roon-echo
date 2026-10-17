@@ -9,6 +9,7 @@ import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult
 import type { Tag } from '../../../shared/internal/tag';
 import type { TagError } from '../../../shared/internal/tagError';
 import type { validateTag } from '../../../shared/src/validations/tag.js';
+import Confirmation from '../Components/Confirmation';
 import { useData } from '../DataContext';
 
 const blankTag: Tag = {
@@ -25,6 +26,9 @@ function Tags() {
   const [backendTagValidationResult, setBackendTagValidationResult] = useState<
     ReturnType<typeof validateTag>
   >(ok(blankTag));
+  const [idOfTagToBeDeleted, setIdOfTagToBeDeleted] = useState<string | null>(
+    null,
+  );
 
   const { setTags, tags } = useData();
 
@@ -99,16 +103,23 @@ function Tags() {
     setEditingTagId(null);
   };
 
-  const handleDelete = (tagId: string) => {
-    socket.emit('tags:delete', { tagId }, (response: SocketVoidResult) => {
-      if (response.ok) {
-        setTags(tags.filter((tag) => tag.tagId !== tagId));
-      } else {
-        /* eslint-disable no-console */
-        console.error('Error: failed to delete tag:', response.error);
-        /* eslint-enable no-console */
-      }
-    });
+  const handleDelete = () => {
+    if (idOfTagToBeDeleted !== null) {
+      socket.emit(
+        'tags:delete',
+        { tagId: idOfTagToBeDeleted },
+        (response: SocketVoidResult) => {
+          if (response.ok) {
+            setIdOfTagToBeDeleted(null);
+            setTags(tags.filter((tag) => tag.tagId !== idOfTagToBeDeleted));
+          } else {
+            /* eslint-disable no-console */
+            console.error('Error: failed to delete tag:', response.error);
+            /* eslint-enable no-console */
+          }
+        },
+      );
+    }
   };
 
   return (
@@ -145,7 +156,7 @@ function Tags() {
             onStartEdit={() => {}}
             onSave={handleSave}
             onCancel={handleCancel}
-            onDelete={handleDelete}
+            onDelete={setIdOfTagToBeDeleted}
             backendTagValidationResult={backendTagValidationResult}
           />
         )}
@@ -157,11 +168,18 @@ function Tags() {
             onStartEdit={() => setEditingTagId(tag.tagId)}
             onSave={handleSave}
             onCancel={handleCancel}
-            onDelete={handleDelete}
+            onDelete={setIdOfTagToBeDeleted}
             backendTagValidationResult={backendTagValidationResult}
           />
         ))}
       </div>
+
+      <Confirmation
+        question="Permanently Delete Tag?"
+        isOpen={idOfTagToBeDeleted !== null}
+        onConfirm={() => handleDelete()}
+        onClose={() => setIdOfTagToBeDeleted(null)}
+      />
     </>
   );
 }
