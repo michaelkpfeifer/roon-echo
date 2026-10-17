@@ -265,6 +265,12 @@ describe('Tags', () => {
       const jazzRow = screen.getByTestId(`tag-row-${jazz.tagId}`);
       await userEvent.click(within(jazzRow).getByText('Delete'));
 
+      const modal = screen.getByRole('dialog');
+      const confirmButton = within(modal).getByRole('button', {
+        name: 'Confirm',
+      });
+      await userEvent.click(confirmButton);
+
       expect(socket.emit).toHaveBeenCalledWith(
         'tags:delete',
         { tagId: jazz.tagId },
