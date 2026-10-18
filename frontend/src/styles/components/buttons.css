@@ -6,3 +6,7 @@
   width: 64px;
   box-sizing: border-box;
 }
+
+.button--danger {
+  color: var(--danger);
+}

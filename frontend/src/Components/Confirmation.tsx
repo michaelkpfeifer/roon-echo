@@ -15,16 +15,22 @@ function Confirmation({
 }: ConfirmationProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div>
-        <p className="confirmation--header">{question}</p>
-      </div>
-      <div>
-        <button className="button-m" type="button" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="button-m" type="button" onClick={onConfirm}>
-          Confirm
-        </button>
+      <div className="confirmation">
+        <div>
+          <p className="confirmation--question">{question}</p>
+        </div>
+        <div className="confirmation--buttons">
+          <button className="button-m" type="button" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="button-m button--danger"
+            type="button"
+            onClick={onConfirm}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </Modal>
   );

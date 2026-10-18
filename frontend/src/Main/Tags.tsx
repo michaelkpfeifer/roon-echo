@@ -175,7 +175,7 @@ function Tags() {
       </div>
 
       <Confirmation
-        question="Permanently Delete Tag?"
+        question="Permanently delete tag?"
         isOpen={idOfTagToBeDeleted !== null}
         onConfirm={() => handleDelete()}
         onClose={() => setIdOfTagToBeDeleted(null)}
