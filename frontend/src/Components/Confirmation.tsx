@@ -2,6 +2,7 @@ import Modal from './Modal';
 
 type ConfirmationProps = {
   question: string;
+  confirmationButtonText: string;
   isOpen: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -9,6 +10,7 @@ type ConfirmationProps = {
 
 function Confirmation({
   question,
+  confirmationButtonText,
   isOpen,
   onConfirm,
   onClose,
@@ -28,7 +30,7 @@ function Confirmation({
             type="button"
             onClick={onConfirm}
           >
-            Delete
+            {confirmationButtonText}
           </button>
         </div>
       </div>
