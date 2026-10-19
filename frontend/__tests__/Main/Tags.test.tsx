@@ -267,7 +267,7 @@ describe('Tags', () => {
 
       const modal = screen.getByRole('dialog');
       const confirmButton = within(modal).getByRole('button', {
-        name: 'Confirm',
+        name: 'Delete Tag?',
       });
       await userEvent.click(confirmButton);
 
