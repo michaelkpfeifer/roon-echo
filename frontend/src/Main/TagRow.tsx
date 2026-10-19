@@ -62,7 +62,7 @@ function TagRow({
             <input
               aria-label="Name"
               type="text"
-              value={draft.name ?? ''}
+              value={draft.name}
               onChange={(e) => {
                 setDraft({ ...draft, name: e.target.value });
               }}
