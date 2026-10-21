@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
+import type { MessageType } from './internal/messageType';
 import { socket } from './socket';
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -22,6 +23,7 @@ function AppProvider({ children }: { children: ReactNode }) {
     null,
   );
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -48,11 +50,13 @@ function AppProvider({ children }: { children: ReactNode }) {
       coreUrl,
       domSelectedZoneId,
       isAlbumArtModalOpen,
+      messages,
       setConfig,
       setDomSelectedZoneId,
       setIsAlbumArtModalOpen,
+      setMessages,
     }),
-    [config, coreUrl, domSelectedZoneId, isAlbumArtModalOpen],
+    [config, coreUrl, domSelectedZoneId, isAlbumArtModalOpen, messages],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
