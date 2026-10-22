@@ -1,8 +1,16 @@
 import type { ReactNode } from 'react';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
+import type { Config } from './internal/configType';
 import type { MessageType } from './internal/messageType';
 import { socket } from './socket';
 
@@ -19,44 +27,41 @@ function AppProvider({ children }: { children: ReactNode }) {
     () => loadConfig() || { selectedZoneId: null },
   );
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
-  const [domSelectedZoneId, setDomSelectedZoneId] = useState<string | null>(
-    null,
-  );
-  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
 
   useEffect(() => saveConfig(config), [config]);
 
   useEffect(() => {
-    const handleInitialState = () => {
-      setDomSelectedZoneId(loadConfig().selectedZoneId || null);
-    };
-    const handleCoreUrl = (url: string) => setCoreUrl(url);
+    const handleCoreUrlMessage = (url: string) => setCoreUrl(url);
 
-    socket.on('initialState', handleInitialState);
-    socket.on('coreUrl', handleCoreUrl);
+    socket.on('coreUrl', handleCoreUrlMessage);
     socket.connect();
 
     return () => {
-      socket.off('initialState', handleInitialState);
-      socket.off('coreUrl', handleCoreUrl);
+      socket.off('coreUrl', handleCoreUrlMessage);
       socket.disconnect();
     };
   }, []);
+
+  const setSelectedZoneId = useCallback(
+    (zoneId: string) =>
+      setConfig((currentConfig: Config) => ({
+        ...currentConfig,
+        selectedZoneId: zoneId,
+      })),
+    [],
+  );
 
   const value = useMemo(
     () => ({
       config,
       coreUrl,
-      domSelectedZoneId,
-      isAlbumArtModalOpen,
       messages,
       setConfig,
-      setDomSelectedZoneId,
-      setIsAlbumArtModalOpen,
       setMessages,
+      setSelectedZoneId,
     }),
-    [config, coreUrl, domSelectedZoneId, isAlbumArtModalOpen, messages],
+    [config, coreUrl, messages, setSelectedZoneId],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

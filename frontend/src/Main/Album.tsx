@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import type { RoonAlbum } from '../../../shared/internal/roonAlbum';
@@ -15,7 +15,9 @@ function AlbumAggregateNotFound(id: string) {
 }
 
 const Album = memo(function Album() {
-  const { config, coreUrl, setIsAlbumArtModalOpen } = useApp();
+  const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
+
+  const { config, coreUrl } = useApp();
   const { albumAggregates } = useData();
 
   const { id } = useParams();
@@ -114,6 +116,8 @@ const Album = memo(function Album() {
         <>
           <AlbumArt
             imageKey={imageKey}
+            isAlbumArtModalOpen={isAlbumArtModalOpen}
+            setIsAlbumArtModalOpen={setIsAlbumArtModalOpen}
             alt={`${roonAlbumArtistName} - ${roonAlbumName}`}
           />
           <div className="album-heading">
