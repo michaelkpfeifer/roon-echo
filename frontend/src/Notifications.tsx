@@ -3,7 +3,7 @@ import Messages from './Notifications/Messages';
 function Notifications() {
   return (
     <div className="notifications">
-      <div className="messages">
+      <div className="notifications--messages">
         <Messages />
       </div>
     </div>

@@ -16,6 +16,7 @@
 @import './global/tracks.css';
 @import './global/zone-row.css';
 @import './global/zones.css';
+@import './notifications.css';
 
 :root {
   /* Colors */
@@ -86,6 +87,8 @@ body {
 }
 
 .footer {
+  display: flex;
+  flex-direction: column;
   height: 120px;
   box-sizing: border-box;
   background-color: var(--bg-secondary);
@@ -93,9 +96,13 @@ body {
 
 .now-playing {
   display: flex;
+  flex: 7;
   flex-direction: row;
   box-sizing: border-box;
   align-items: center;
+  min-height: 0;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .cover {

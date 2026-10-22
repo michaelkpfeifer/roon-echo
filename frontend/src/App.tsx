@@ -52,8 +52,6 @@ function App() {
               </div>
               <div className="footer">
                 <NowPlaying />
-              </div>
-              <div className="notifications">
                 <Notifications />
               </div>
             </div>

@@ -4,10 +4,10 @@ function Messages() {
   const { messages } = useApp();
 
   if (messages.length === 0) {
-    return <p></p>;
+    return <span>Some Message</span>;
   }
 
-  return <p>{messages[0].message}</p>;
+  return <span>{messages[0].message}</span>;
 }
 
 export default Messages;
