@@ -1,13 +1,9 @@
-import type { Dispatch, SetStateAction } from 'react';
-
-import type { Config } from './config';
+import type { Config } from './configType';
 
 type AppContextType = {
   config: Config;
   coreUrl: string | null;
-  domSelectedZoneId: string | null;
-  setConfig: Dispatch<SetStateAction<Config>>;
-  setDomSelectedZoneId: Dispatch<SetStateAction<string | null>>;
+  setSelectedZoneId: (zoneId: string) => void;
 };
 
 export type { AppContextType };
