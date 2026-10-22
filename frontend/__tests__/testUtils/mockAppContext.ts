@@ -8,10 +8,8 @@ const createMockAppContext = (
   config: { selectedZoneId: null },
   coreUrl: null,
   domSelectedZoneId: null,
-  isAlbumArtModalOpen: false,
   setConfig: vi.fn(),
   setDomSelectedZoneId: vi.fn(),
-  setIsAlbumArtModalOpen: vi.fn(),
   ...overrides,
 });
 
