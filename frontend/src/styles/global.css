@@ -1,4 +1,5 @@
 @import './components/buttons.css';
+@import './components/confirmation.css';
 @import './components/modal.css';
 @import './components/tag-badge.css';
 @import './global/album-card.css';
@@ -21,6 +22,9 @@
 :root {
   /* Colors */
 
+  --primary: #111111;
+  --secondary: #666666;
+  --danger: #dd2244;
   --bg-primary: white;
   --bg-primary-hover: #f9f9f9;
   --bg-secondary: #f9f9f9;

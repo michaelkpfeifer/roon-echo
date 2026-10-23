@@ -1,0 +1,14 @@
+.confirmation {
+}
+
+.confirmation--question {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.confirmation--buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5 rem;
+}
