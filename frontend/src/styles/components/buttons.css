@@ -3,6 +3,11 @@
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 4px;
-  width: 64px;
+  min-width: 64px;
+  width: max-content;
   box-sizing: border-box;
+}
+
+.button--danger {
+  color: var(--danger);
 }
