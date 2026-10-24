@@ -11,6 +11,7 @@ import {
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
 import type { Config } from './internal/configType';
+import type { MessageType } from './internal/messageType';
 import { socket } from './socket';
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -26,6 +27,7 @@ function AppProvider({ children }: { children: ReactNode }) {
     () => loadConfig() || { selectedZoneId: null },
   );
   const [coreUrl, setCoreUrl] = useState<string | null>(null);
+  const [messages, setMessages] = useState<MessageType[]>([]);
 
   useEffect(() => saveConfig(config), [config]);
 
@@ -54,9 +56,12 @@ function AppProvider({ children }: { children: ReactNode }) {
     () => ({
       config,
       coreUrl,
+      messages,
+      setConfig,
+      setMessages,
       setSelectedZoneId,
     }),
-    [config, coreUrl, setSelectedZoneId],
+    [config, coreUrl, messages, setSelectedZoneId],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
