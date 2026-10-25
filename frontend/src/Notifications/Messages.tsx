@@ -4,10 +4,14 @@ function Messages() {
   const { messages } = useApp();
 
   if (messages.length === 0) {
-    return <span>Some Message</span>;
+    return <span className="notifications--messages" aria-label="Messages" />;
   }
 
-  return <span>{messages[0].message}</span>;
+  return (
+    <span className="notifications-messages" aria-label="Messages">
+      {messages[0].message}
+    </span>
+  );
 }
 
 export default Messages;
