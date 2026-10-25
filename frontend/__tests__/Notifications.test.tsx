@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Notifications from '../src/Notifications';
 import { createMockAppContext } from './testUtils/mockAppContext';
@@ -15,6 +15,14 @@ const renderWithContext = () => {
 };
 
 describe('Notifications', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders the Messages component', () => {
     renderWithContext();
 
