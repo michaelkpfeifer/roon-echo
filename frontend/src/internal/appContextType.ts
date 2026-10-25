@@ -7,8 +7,8 @@ type AppContextType = {
   config: Config;
   coreUrl: string | null;
   messages: MessageType[];
+  pushMessage: (message: MessageType) => void;
   setConfig: Dispatch<SetStateAction<Config>>;
-  setMessages: Dispatch<SetStateAction<MessageType[]>>;
   setSelectedZoneId: (zoneId: string) => void;
 };
 

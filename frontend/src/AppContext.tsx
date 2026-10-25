@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 
+import { addMessage } from './AppContext.helpers';
 import { loadConfig, saveConfig } from './config';
 import type { AppContextType } from './internal/appContextType';
 import type { Config } from './internal/configType';
@@ -43,6 +44,12 @@ function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const pushMessage = (newMessage: MessageType) => {
+    setMessages((messages) => {
+      return addMessage(messages, newMessage);
+    });
+  };
+
   const setSelectedZoneId = useCallback(
     (zoneId: string) =>
       setConfig((currentConfig: Config) => ({
@@ -57,8 +64,8 @@ function AppProvider({ children }: { children: ReactNode }) {
       config,
       coreUrl,
       messages,
+      pushMessage,
       setConfig,
-      setMessages,
       setSelectedZoneId,
     }),
     [config, coreUrl, messages, setSelectedZoneId],
