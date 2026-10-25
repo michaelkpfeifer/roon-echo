@@ -291,6 +291,12 @@ describe('Tags', () => {
 
       await userEvent.click(screen.getByText('Delete'));
 
+      const modal = screen.getByRole('dialog');
+      const confirmButton = within(modal).getByRole('button', {
+        name: 'Delete Tag?',
+      });
+      await userEvent.click(confirmButton);
+
       expect(setTags).not.toHaveBeenCalled();
     });
 
