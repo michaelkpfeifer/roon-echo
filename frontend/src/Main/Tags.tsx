@@ -9,6 +9,7 @@ import type { SocketVoidResult } from '../../../shared/internal/socketVoidResult
 import type { Tag } from '../../../shared/internal/tag';
 import type { TagError } from '../../../shared/internal/tagError';
 import type { validateTag } from '../../../shared/src/validations/tag.js';
+import { useApp } from '../AppContext';
 import Confirmation from '../Components/Confirmation';
 import { useData } from '../DataContext';
 
@@ -30,6 +31,7 @@ function Tags() {
     null,
   );
 
+  const { pushMessage } = useApp();
   const { setTags, tags } = useData();
 
   const sortedFilteredTags = useMemo(
@@ -56,9 +58,11 @@ function Tags() {
               }
 
               case 'internal': {
-                /* eslint-disable no-console */
-                console.error('Error:', response.error);
-                /* eslint-enable no-console */
+                pushMessage({
+                  severity: 'error',
+                  message: 'Failed to create tag: ' + response.error.message,
+                  timestamp: new Date().toISOString(),
+                });
                 break;
               }
             }
@@ -88,9 +92,11 @@ function Tags() {
             }
 
             case 'internal': {
-              /* eslint-disable no-console */
-              console.error('Error:', response.error);
-              /* eslint-enable no-console */
+              pushMessage({
+                severity: 'error',
+                message: 'Failed to update tag: ' + response.error.message,
+                timestamp: new Date().toISOString(),
+              });
               break;
             }
           }
@@ -113,9 +119,11 @@ function Tags() {
             setIdOfTagToBeDeleted(null);
             setTags(tags.filter((tag) => tag.tagId !== idOfTagToBeDeleted));
           } else {
-            /* eslint-disable no-console */
-            console.error('Error: failed to delete tag:', response.error);
-            /* eslint-enable no-console */
+            pushMessage({
+              severity: 'error',
+              message: 'Failed to delete tag: ' + response.error,
+              timestamp: new Date().toISOString(),
+            });
           }
         },
       );
