@@ -32,12 +32,13 @@ describe('Messages', () => {
     expect(element).toBeEmptyDOMElement();
   });
 
-  it('renders an element with the text of first message', () => {
+  it('renders an element with text and timestamp of the first message', () => {
+    const timestamp = new Date().toISOString();
     const messages: MessageType[] = [
       {
         severity: 'error',
         message: 'backend error',
-        timestamp: new Date().toISOString(),
+        timestamp,
       },
     ];
     renderWithContext(messages);
@@ -45,5 +46,21 @@ describe('Messages', () => {
     const element = screen.getByLabelText('Messages');
 
     expect(element).toHaveTextContent('backend error');
+    expect(element).toHaveTextContent(timestamp);
+  });
+
+  it('assigns the correct CSS class', () => {
+    const messages: MessageType[] = [
+      {
+        severity: 'fatal',
+        message: 'backend error',
+        timestamp: new Date().toISOString(),
+      },
+    ];
+
+    renderWithContext(messages);
+    expect(screen.getByLabelText('Messages')).toHaveClass(
+      'notifications-messages--fatal',
+    );
   });
 });
