@@ -4,10 +4,12 @@ import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 
 import type { ClientToServerEvents } from '../../../shared/internal/socket';
 import type { Tag } from '../../../shared/internal/tag';
+import { AppContext } from '../../src/AppContext';
 import { DataContext } from '../../src/DataContext';
 import type { TagRowProps } from '../../src/Main/TagRow';
 import Tags from '../../src/Main/Tags';
 import { socket } from '../../src/socket';
+import { createMockAppContext } from '../testUtils/mockAppContext';
 import { createMockDataContext } from '../testUtils/mockDataContext';
 
 vi.mock('../../src/socket', () => ({
@@ -92,11 +94,14 @@ const ramones: Tag = {
 };
 
 const renderWithContext = (tags: Tag[] = [], setTags = vi.fn()) => {
-  const value = createMockDataContext({ tags, setTags });
+  const appContextValue = createMockAppContext({});
+  const dataContextValue = createMockDataContext({ tags, setTags });
   return render(
-    <DataContext.Provider value={value}>
-      <Tags />
-    </DataContext.Provider>,
+    <AppContext.Provider value={appContextValue}>
+      <DataContext.Provider value={dataContextValue}>
+        <Tags />
+      </DataContext.Provider>
+    </AppContext.Provider>,
   );
 };
 

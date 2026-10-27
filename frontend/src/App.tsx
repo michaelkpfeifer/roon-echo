@@ -11,6 +11,7 @@ import Queues from './Main/Queues';
 import Tags from './Main/Tags';
 import Tracks from './Main/Tracks';
 import Zones from './Main/Zones';
+import Notifications from './Notifications';
 import NowPlaying from './NowPlaying';
 import { PlaybackProvider } from './PlaybackContext';
 import Sidebar from './Sidebar';
@@ -51,6 +52,7 @@ function App() {
               </div>
               <div className="footer">
                 <NowPlaying />
+                <Notifications />
               </div>
             </div>
           </Router>

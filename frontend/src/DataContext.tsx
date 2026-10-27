@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
+import { useApp } from './AppContext';
 import type { DataContextType } from './internal/dataContextType';
 import { socket } from './socket';
 import { mergeAlbumAggregate } from './utils';
@@ -20,6 +21,8 @@ function useData() {
 function DataProvider({ children }: { children: ReactNode }) {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+
+  const { pushMessage } = useApp();
 
   useEffect(() => {
     const handleAlbumAggregatesMessage = (
@@ -43,9 +46,11 @@ function DataProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         setTags(response.value);
       } else {
-        /* eslint-disable no-console */
-        console.error('Failed to load tags:', response.error);
-        /* eslint-enable no-console */
+        pushMessage({
+          severity: 'error',
+          message: 'Failed to load tags: ' + response.error,
+          timestamp: new Date().toISOString(),
+        });
       }
     });
 
@@ -53,7 +58,7 @@ function DataProvider({ children }: { children: ReactNode }) {
       socket.off('albumAggregates', handleAlbumAggregatesMessage);
       socket.off('albumAggregateUpdate', handleAlbumAggregateUpdateMessage);
     };
-  }, []);
+  }, [pushMessage]);
 
   const value = useMemo(
     () => ({ albumAggregates, tags, setTags }),
