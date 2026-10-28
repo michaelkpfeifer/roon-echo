@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 type ModalProps = {
   isOpen: boolean;
@@ -7,6 +7,8 @@ type ModalProps = {
 };
 
 function Modal({ isOpen, onClose, children }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -20,16 +22,26 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    /* eslint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
-    <div className="modal-overlay" onClick={onClose}>
+    /* eslint-disable jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */
+    <div
+      className="modal-overlay"
+      data-testid="modal-overlay"
+      onClick={handleOverlayClick}
+    >
       <div
         className="modal-content"
         role="dialog"
         aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
+        ref={modalRef}
       >
         <button type="button" className="modal-close" onClick={onClose}>
           &times;
@@ -37,7 +49,6 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
         {children}
       </div>
     </div>
-    /* eslint-enable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
   );
 }
 
