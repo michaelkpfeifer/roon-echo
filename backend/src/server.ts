@@ -34,10 +34,10 @@ import {
 import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
 import {
-  createTag,
   dbInit,
   deleteTag,
   findRoonTrackByNameAndAlbumName,
+  insertTag,
   listTags,
   updateRoonLengthInTrack,
   updateTag,
@@ -453,7 +453,7 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('tags:create', async (payload, callback) => {
-    const result = await createTag(db, payload);
+    const result = await insertTag(db, payload);
 
     result.match(
       (tag) => callback({ ok: true, value: tag }),
