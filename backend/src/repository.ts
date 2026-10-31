@@ -450,7 +450,7 @@ const listTags = async (
   }
 };
 
-const createTag = async (
+const insertTag = async (
   db: Knex<DatabaseSchema>,
   {
     name,
@@ -488,7 +488,7 @@ const createTag = async (
     return ok({ tagId, name, description, color, backgroundColor });
   } catch (error) {
     /* eslint-disable no-console */
-    console.error('Error: createTag failed:', error);
+    console.error('Error: insertTag failed:', error);
     /* eslint-enable no-console */
 
     return err({ type: 'internal', message: 'Failed to create tag' });
@@ -564,7 +564,6 @@ const deleteTag = async (
 };
 
 export {
-  createTag,
   dbInit,
   deleteTag,
   fetchMbAlbum,
@@ -577,6 +576,7 @@ export {
   findRoonTrackByNameAndAlbumName,
   insertRoonAlbum,
   insertRoonTracks,
+  insertTag,
   listTags,
   normalizeCandidate,
   roonAlbumCount,

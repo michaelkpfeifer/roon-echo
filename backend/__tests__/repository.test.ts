@@ -24,7 +24,7 @@ import { createTrackRow } from '../__factories__/trackRowFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
-  createTag,
+  insertTag,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
   fetchMbTracksByAlbumId,
@@ -645,13 +645,13 @@ describe('updateRoonLengthInTrack', () => {
   });
 });
 
-describe('createTag', () => {
+describe('insertTag', () => {
   it('returns an error and does not touch the database when name is missing', async () => {
     const db = vi.fn(() => {
       throw new Error('db should not be called.');
     });
 
-    const result = await createTag(db as never, {
+    const result = await insertTag(db as never, {
       name: '',
       description: 'Description: Pixies',
       color: '#ffffff',
