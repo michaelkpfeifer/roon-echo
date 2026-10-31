@@ -6,14 +6,13 @@ import { v7 as uuidv7 } from 'uuid';
 
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
 import { toMbTrack } from './internal/trackRow.js';
-import { camelCaseKeys, snakeCaseKeys } from './utils.js';
+import { camelCaseKeys } from './utils.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
-import type { PlayRow } from '../__factories__/types/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
@@ -411,7 +410,20 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
 
 const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
   await db<DatabaseSchema['plays']>('plays')
-    .insert(snakeCaseKeys(play) as PlayRow)
+    .insert({
+      id: play.id,
+      track_id: play.trackId,
+      album_id: play.albumId,
+      roon_album_name: play.roonAlbumName,
+      roon_album_artist_name: play.roonAlbumArtistName,
+      roon_track_name: play.roonTrackName,
+      roon_number: play.roonNumber,
+      roon_position: play.roonPosition,
+      roon_length: play.roonLength,
+      played_at: play.playedAt,
+      fraction_played: play.fractionPlayed,
+      is_played: play.isPlayed,
+    })
     .onConflict(['id'])
     .merge();
 };
