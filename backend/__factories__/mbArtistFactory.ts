@@ -1,7 +1,7 @@
 import type { Knex } from 'knex';
 
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
-import type { MbArtistRow } from '../../shared/internal/mbArtistRow.js';
+import type { MbArtistRow } from './types/mbArtistRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
