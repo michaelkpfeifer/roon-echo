@@ -1,4 +1,4 @@
-type AlbumRowRow = {
+type AlbumDataRow = {
   album_id: string;
   roon_album_name: string;
   roon_album_artist_name: string;
@@ -13,4 +13,4 @@ type AlbumRowRow = {
   updated_at: string;
 };
 
-export type { AlbumRowRow };
+export type { AlbumDataRow };

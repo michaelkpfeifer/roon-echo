@@ -4,24 +4,23 @@ import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
-import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
-import { toMbTrack } from './internal/trackRow.js';
-import { camelCaseKeys, snakeCaseKeys } from './utils.js';
+import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumData.js';
+import { toMbTrack } from './internal/trackData.js';
+import { camelCaseKeys } from './utils.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
 import type { MbCandidate } from '../../shared/internal/mbCandidate.js';
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { Play } from '../../shared/internal/play.js';
-import type { PlayRow } from '../../shared/internal/playRow.js';
 import type { RoonAlbum } from '../../shared/internal/roonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { Tag } from '../../shared/internal/tag.js';
 import type { TagError } from '../../shared/internal/tagError.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import type { AlbumRow } from './internal/albumRow.js';
-import type { TrackRow } from './internal/trackRow.js';
+import type { AlbumData } from './internal/albumData.js';
+import type { TrackData } from './internal/trackData.js';
 import { validateTag } from '../../shared/src/validations/tag.js';
 
 dotenv.config();
@@ -72,7 +71,7 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumRow));
+  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumData));
 };
 
 const fetchMbAlbumByAlbumId = async (
@@ -90,7 +89,7 @@ const fetchMbAlbumByAlbumId = async (
     });
   }
 
-  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumRow));
+  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumData));
 };
 
 const fetchMbArtistsByAlbumId = async (
@@ -220,13 +219,11 @@ const fetchMbTracksByAlbumId = async (
   db: Knex<DatabaseSchema>,
   albumId: string,
 ): Promise<MbTrack[]> => {
-  const trackRows = await db<DatabaseSchema['tracks']>('tracks').where({
+  const trackData = await db<DatabaseSchema['tracks']>('tracks').where({
     album_id: albumId,
   });
 
-  return trackRows.map((trackRow) =>
-    toMbTrack(camelCaseKeys(trackRow) as TrackRow),
-  );
+  return trackData.map((track) => toMbTrack(camelCaseKeys(track) as TrackData));
 };
 
 const insertRoonAlbum = async (
@@ -380,25 +377,25 @@ const normalizeCandidate = async (
 };
 
 const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
-  const albumRow = await db<DatabaseSchema['albums']>('albums')
+  const albumData = await db<DatabaseSchema['albums']>('albums')
     .where({ album_id: albumId })
     .first();
 
-  if (!albumRow) {
+  if (!albumData) {
     return err({
       fetchMbAlbum: 'Error: albumNotFound',
       album_id: albumId,
     });
   }
 
-  if (albumRow.mb_album_id === null) {
+  if (albumData.mb_album_id === null) {
     return err({
       fetchMbAlbum: 'Error: mbAlbumNotFound',
       album_id: albumId,
     });
   }
 
-  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow) as AlbumRow);
+  const mbAlbum = toMbAlbum(camelCaseKeys(albumData) as AlbumData);
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 
@@ -411,7 +408,20 @@ const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
 
 const upsertPlay = async (db: Knex<DatabaseSchema>, play: Play) => {
   await db<DatabaseSchema['plays']>('plays')
-    .insert(snakeCaseKeys(play) as PlayRow)
+    .insert({
+      id: play.id,
+      track_id: play.trackId,
+      album_id: play.albumId,
+      roon_album_name: play.roonAlbumName,
+      roon_album_artist_name: play.roonAlbumArtistName,
+      roon_track_name: play.roonTrackName,
+      roon_number: play.roonNumber,
+      roon_position: play.roonPosition,
+      roon_length: play.roonLength,
+      played_at: play.playedAt,
+      fraction_played: play.fractionPlayed,
+      is_played: play.isPlayed,
+    })
     .onConflict(['id'])
     .merge();
 };

@@ -1,15 +1,15 @@
 import type { Knex } from 'knex';
 
 import type { DatabaseSchema } from '../databaseSchema.js';
-import type { AlbumRow } from '../src/internal/albumRow.js';
-import type { AlbumRowRow } from '../src/internal/albumRowRow.js';
+import type { AlbumData } from '../src/internal/albumData.js';
+import type { AlbumDataRow } from './types/albumDataRow.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
-const createAlbumRow = async (
+const createAlbumData = async (
   db: Knex<DatabaseSchema>,
-  overrides?: Partial<AlbumRow>,
-): Promise<AlbumRow> => {
-  const albumRow: AlbumRow = {
+  overrides?: Partial<AlbumData>,
+): Promise<AlbumData> => {
+  const albumData: AlbumData = {
     albumId: '019c9157-deb2-7dbd-b259-e70d2601ac58',
     roonAlbumName: 'Some Album',
     roonAlbumArtistName: 'Some Artist',
@@ -26,10 +26,10 @@ const createAlbumRow = async (
   };
 
   await db<DatabaseSchema['albums']>('albums').insert(
-    snakeCaseKeys(albumRow) as AlbumRowRow,
+    snakeCaseKeys(albumData) as AlbumDataRow,
   );
 
-  return albumRow;
+  return albumData;
 };
 
-export { createAlbumRow };
+export { createAlbumData };

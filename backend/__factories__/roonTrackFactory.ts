@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 import fp from 'lodash/fp.js';
 
 import type { RoonTrack } from '../../shared/internal/roonTrack.js';
-import type { RoonTrackRow } from '../../shared/internal/roonTrackRow.js';
+import type { RoonTrackRow } from './types/roonTrackRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
