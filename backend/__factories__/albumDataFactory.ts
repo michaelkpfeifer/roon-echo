@@ -2,7 +2,7 @@ import type { Knex } from 'knex';
 
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumData } from '../src/internal/albumData.js';
-import type { AlbumRowRow } from '../src/internal/albumRowRow.js';
+import type { AlbumDataRow } from './types/albumDataRow.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
 const createAlbumData = async (
@@ -26,7 +26,7 @@ const createAlbumData = async (
   };
 
   await db<DatabaseSchema['albums']>('albums').insert(
-    snakeCaseKeys(albumData) as AlbumRowRow,
+    snakeCaseKeys(albumData) as AlbumDataRow,
   );
 
   return albumData;
