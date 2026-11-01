@@ -1,15 +1,15 @@
 import type { Knex } from 'knex';
 
 import type { DatabaseSchema } from '../databaseSchema.js';
-import type { TrackRow } from '../src/internal/trackRow.js';
+import type { TrackData } from '../src/internal/trackData.js';
 import type { TrackRowRow } from '../src/internal/trackRowRow.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
-const createTrackRow = async (
+const createTrackData = async (
   db: Knex<DatabaseSchema>,
-  overrides?: Partial<TrackRow>,
-): Promise<TrackRow> => {
-  const trackRow: TrackRow = {
+  overrides?: Partial<TrackData>,
+): Promise<TrackData> => {
+  const trackData: TrackData = {
     albumId: '019c9c1a-fe8f-78c4-ae46-c30fddf2314f',
     trackId: '019c9c24-8c7b-71af-ae7b-027b2ea38f70',
     roonTrackName: 'Track 1',
@@ -28,10 +28,10 @@ const createTrackRow = async (
   };
 
   await db<DatabaseSchema['tracks']>('tracks').insert(
-    snakeCaseKeys(trackRow) as TrackRowRow,
+    snakeCaseKeys(trackData) as TrackRowRow,
   );
 
-  return trackRow;
+  return trackData;
 };
 
-export { createTrackRow };
+export { createTrackData };

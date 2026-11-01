@@ -1,6 +1,6 @@
 import type { MbTrack } from '../../../shared/internal/mbTrack.js';
 
-type TrackRow = {
+type TrackData = {
   trackId: string;
   albumId: string;
   roonTrackName: string;
@@ -17,7 +17,7 @@ type TrackRow = {
   updatedAt: string;
 };
 
-const toMbTrack = (row: TrackRow): MbTrack => {
+const toMbTrack = (row: TrackData): MbTrack => {
   if (
     row.mbTrackId === null ||
     row.mbTrackName === null ||
@@ -25,7 +25,7 @@ const toMbTrack = (row: TrackRow): MbTrack => {
     row.mbNumber === null ||
     row.mbPosition === null
   ) {
-    throw new Error('trackRow.ts: toMbTrack(): requiredPropertiesMissing');
+    throw new Error('trackData.ts: toMbTrack(): requiredPropertiesMissing');
   }
 
   return {
@@ -40,5 +40,5 @@ const toMbTrack = (row: TrackRow): MbTrack => {
   };
 };
 
-export type { TrackRow };
+export type { TrackData };
 export { toMbTrack };

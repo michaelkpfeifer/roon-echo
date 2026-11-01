@@ -20,7 +20,7 @@ import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
 import { buildRoonTrack } from '../../shared/__factories__/roonTrackFactory.js';
-import { createTrackRow } from '../__factories__/trackRowFactory.js';
+import { createTrackData } from '../__factories__/trackDataFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
@@ -241,12 +241,12 @@ describe('fetchMbTracksByAlbumId', () => {
     await createRoonAlbum(testDb, {
       albumId,
     });
-    await createTrackRow(testDb, {
+    await createTrackData(testDb, {
       albumId,
       trackId: trackId1,
       mbTrackId: mbTrackId1,
     });
-    await createTrackRow(testDb, {
+    await createTrackData(testDb, {
       albumId,
       trackId: trackId2,
       mbTrackId: mbTrackId2,
@@ -627,7 +627,7 @@ describe('updateRoonLengthInTrack', () => {
     const roonLength = 123;
 
     const albumData = await createAlbumData(testDb);
-    await createTrackRow(testDb, {
+    await createTrackData(testDb, {
       trackId,
       albumId: albumData.albumId,
       roonLength: null,

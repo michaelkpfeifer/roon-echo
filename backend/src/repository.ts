@@ -5,7 +5,7 @@ import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
 import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumData.js';
-import { toMbTrack } from './internal/trackRow.js';
+import { toMbTrack } from './internal/trackData.js';
 import { camelCaseKeys } from './utils.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
@@ -20,7 +20,7 @@ import type { Tag } from '../../shared/internal/tag.js';
 import type { TagError } from '../../shared/internal/tagError.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import type { AlbumData } from './internal/albumData.js';
-import type { TrackRow } from './internal/trackRow.js';
+import type { TrackData } from './internal/trackData.js';
 import { validateTag } from '../../shared/src/validations/tag.js';
 
 dotenv.config();
@@ -219,13 +219,11 @@ const fetchMbTracksByAlbumId = async (
   db: Knex<DatabaseSchema>,
   albumId: string,
 ): Promise<MbTrack[]> => {
-  const trackRows = await db<DatabaseSchema['tracks']>('tracks').where({
+  const trackData = await db<DatabaseSchema['tracks']>('tracks').where({
     album_id: albumId,
   });
 
-  return trackRows.map((trackRow) =>
-    toMbTrack(camelCaseKeys(trackRow) as TrackRow),
-  );
+  return trackData.map((track) => toMbTrack(camelCaseKeys(track) as TrackData));
 };
 
 const insertRoonAlbum = async (
