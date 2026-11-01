@@ -4,7 +4,7 @@ import type { Result } from 'neverthrow';
 import { err, ok } from 'neverthrow';
 import { v7 as uuidv7 } from 'uuid';
 
-import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumRow.js';
+import { toMbAlbum, toPersistedRoonAlbum } from './internal/albumData.js';
 import { toMbTrack } from './internal/trackRow.js';
 import { camelCaseKeys } from './utils.js';
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
@@ -19,7 +19,7 @@ import type { RoonTrack } from '../../shared/internal/roonTrack.js';
 import type { Tag } from '../../shared/internal/tag.js';
 import type { TagError } from '../../shared/internal/tagError.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
-import type { AlbumRow } from './internal/albumRow.js';
+import type { AlbumData } from './internal/albumData.js';
 import type { TrackRow } from './internal/trackRow.js';
 import { validateTag } from '../../shared/src/validations/tag.js';
 
@@ -71,7 +71,7 @@ const fetchRoonAlbum = async (
     });
   }
 
-  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumRow));
+  return ok(toPersistedRoonAlbum(camelCaseKeys(roonAlbums[0]) as AlbumData));
 };
 
 const fetchMbAlbumByAlbumId = async (
@@ -89,7 +89,7 @@ const fetchMbAlbumByAlbumId = async (
     });
   }
 
-  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumRow));
+  return ok(toMbAlbum(camelCaseKeys(mbAlbums[0]) as AlbumData));
 };
 
 const fetchMbArtistsByAlbumId = async (
@@ -379,25 +379,25 @@ const normalizeCandidate = async (
 };
 
 const fetchMbAlbum = async (db: Knex<DatabaseSchema>, albumId: string) => {
-  const albumRow = await db<DatabaseSchema['albums']>('albums')
+  const albumData = await db<DatabaseSchema['albums']>('albums')
     .where({ album_id: albumId })
     .first();
 
-  if (!albumRow) {
+  if (!albumData) {
     return err({
       fetchMbAlbum: 'Error: albumNotFound',
       album_id: albumId,
     });
   }
 
-  if (albumRow.mb_album_id === null) {
+  if (albumData.mb_album_id === null) {
     return err({
       fetchMbAlbum: 'Error: mbAlbumNotFound',
       album_id: albumId,
     });
   }
 
-  const mbAlbum = toMbAlbum(camelCaseKeys(albumRow) as AlbumRow);
+  const mbAlbum = toMbAlbum(camelCaseKeys(albumData) as AlbumData);
   const mbTracks = await fetchMbTracksByAlbumId(db, albumId);
   const mbArtists = await fetchMbArtistsByAlbumId(db, albumId);
 

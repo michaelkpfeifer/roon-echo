@@ -1,7 +1,7 @@
 import type { MbAlbum } from '../../../shared/internal/mbAlbum.js';
 import type { PersistedRoonAlbum } from '../../../shared/internal/persistedRoonAlbum.js';
 
-type AlbumRow = {
+type AlbumData = {
   albumId: string;
   roonAlbumName: string;
   roonAlbumArtistName: string;
@@ -16,14 +16,14 @@ type AlbumRow = {
   updatedAt: string;
 };
 
-const toMbAlbum = (row: AlbumRow): MbAlbum => {
+const toMbAlbum = (row: AlbumData): MbAlbum => {
   if (
     row.mbAlbumId === null ||
     row.mbAlbumName === null ||
     row.mbScore === null ||
     row.mbTrackCount === null
   ) {
-    throw new Error('albumRow.ts: toMbAlbum(): requiredPropertiesMissing');
+    throw new Error('albumData.ts: toMbAlbum(): requiredPropertiesMissing');
   }
 
   return {
@@ -36,7 +36,7 @@ const toMbAlbum = (row: AlbumRow): MbAlbum => {
   };
 };
 
-const toPersistedRoonAlbum = (row: AlbumRow): PersistedRoonAlbum => {
+const toPersistedRoonAlbum = (row: AlbumData): PersistedRoonAlbum => {
   return {
     albumId: row.albumId,
     roonAlbumName: row.roonAlbumName,
@@ -48,5 +48,5 @@ const toPersistedRoonAlbum = (row: AlbumRow): PersistedRoonAlbum => {
   };
 };
 
-export type { AlbumRow };
+export type { AlbumData };
 export { toMbAlbum, toPersistedRoonAlbum };

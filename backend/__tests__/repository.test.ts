@@ -11,7 +11,7 @@ import type { MbCandidateTrack } from '../../shared/internal/mbCandidateTrack.js
 import type { MbTrack } from '../../shared/internal/mbTrack.js';
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
-import { createAlbumRow } from '../__factories__/albumRowFactory.js';
+import { createAlbumData } from '../__factories__/albumDataFactory.js';
 import { linkAlbumAndMbArtist } from '../__factories__/albumsMbArtistsFactory.js';
 import { createMbArtist } from '../__factories__/mbArtistFactory.js';
 import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
@@ -128,7 +128,7 @@ describe('fetchMbAlbumByAlbumId', () => {
   it('returns a success result if the album can be found', async () => {
     const albumId = '019c9144-309f-72d5-96d1-5d910ba58830';
     const mbAlbumId = '019c9160-0fbd-7d8f-8b24-7b511bfeaaf8';
-    const albumRow = await createAlbumRow(testDb, {
+    const albumData = await createAlbumData(testDb, {
       albumId,
       mbAlbumId,
     });
@@ -145,7 +145,7 @@ describe('fetchMbAlbumByAlbumId', () => {
     const fetchMbAlbumResultValue = fetchMbAlbumResult._unsafeUnwrap();
     expect(fetchMbAlbumResultValue.albumId).toBe(albumId);
     expect(fetchMbAlbumResultValue.mbAlbumId).toBe(mbAlbumId);
-    expect(fetchMbAlbumResultValue.mbAlbumName).toBe(albumRow.mbAlbumName);
+    expect(fetchMbAlbumResultValue.mbAlbumName).toBe(albumData.mbAlbumName);
   });
 });
 
@@ -626,10 +626,10 @@ describe('updateRoonLengthInTrack', () => {
     const trackId = '019cccfe-f145-73a4-932a-3d64c8a72cf7';
     const roonLength = 123;
 
-    const albumRow = await createAlbumRow(testDb);
+    const albumData = await createAlbumData(testDb);
     await createTrackRow(testDb, {
       trackId,
-      albumId: albumRow.albumId,
+      albumId: albumData.albumId,
       roonLength: null,
     });
 
