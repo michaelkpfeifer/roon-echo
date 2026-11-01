@@ -1,4 +1,4 @@
-type TrackRowRow = {
+type TrackDataRow = {
   track_id: string;
   album_id: string;
   roon_track_name: string;
@@ -15,4 +15,4 @@ type TrackRowRow = {
   updated_at: string;
 };
 
-export type { TrackRowRow };
+export type { TrackDataRow };

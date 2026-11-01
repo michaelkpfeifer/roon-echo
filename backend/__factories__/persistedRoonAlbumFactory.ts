@@ -1,7 +1,7 @@
 import type { Knex } from 'knex';
 
 import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbum.js';
-import type { PersistedRoonAlbumRow } from '../../shared/internal/persistedRoonAlbumRow.js';
+import type { PersistedRoonAlbumRow } from './types/persistedRoonAlbumRow.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import { snakeCaseKeys } from '../src/utils.js';
 
