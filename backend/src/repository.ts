@@ -573,7 +573,45 @@ const deleteTag = async (
   }
 };
 
+const albumHasTag = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+  tagId: string,
+): Promise<Result<boolean, string>> => {
+  try {
+    const albumIds = await db<DatabaseSchema['albums']>('albums')
+      .select('album_id')
+      .where({ album_id: albumId });
+
+    if (albumIds.length === 0) {
+      return err('album-not-found');
+    }
+
+    const tagIds = await db<DatabaseSchema['tags']>('tags')
+      .select('tag_id')
+      .where({ tag_id: tagId });
+
+    if (tagIds.length === 0) {
+      return err('tag-not-found');
+    }
+
+    const rows = await db<DatabaseSchema['albums_tags']>('albums_tags')
+      .where({
+        album_id: albumId,
+        tag_id: tagId,
+      })
+      .first();
+
+    const hasTag = rows !== undefined;
+
+    return ok(hasTag);
+  } catch (e) {
+    return err(String(e));
+  }
+};
+
 export {
+  albumHasTag,
   dbInit,
   deleteTag,
   fetchMbAlbum,
