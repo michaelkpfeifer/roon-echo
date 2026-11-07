@@ -2,6 +2,7 @@ import knexInit from 'knex';
 import type { Knex } from 'knex';
 import type { Result } from 'neverthrow';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { v7 as uuidv7 } from 'uuid';
 
 import type { MbAlbum } from '../../shared/internal/mbAlbum.js';
 import type { MbArtist } from '../../shared/internal/mbArtist.js';
@@ -19,12 +20,15 @@ import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
 import { buildMbCandidateTrack } from '../__factories__/mbCandidateTrackFactory.js';
 import { createRoonAlbum } from '../__factories__/roonAlbumFactory.js';
 import { createRoonTrack } from '../__factories__/roonTrackFactory.js';
+import { createTag } from '../__factories__/tagFactory.js';
 import { buildRoonTrack } from '../../shared/__factories__/roonTrackFactory.js';
 import { createTrackData } from '../__factories__/trackDataFactory.js';
 import type { DatabaseSchema } from '../databaseSchema.js';
 import knexConfig from '../knexfile.js';
 import {
-  insertTag,
+  albumAddTag,
+  albumHasTag,
+  fetchAllAlbumTags,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
   fetchMbTracksByAlbumId,
@@ -32,6 +36,7 @@ import {
   fetchRoonTracks,
   findRoonTrackByNameAndAlbumName,
   insertRoonTracks,
+  insertTag,
   normalizeCandidate,
   updateRoonLengthInTrack,
   updateTag,
@@ -695,5 +700,227 @@ describe('updateTag', () => {
         },
       ],
     });
+  });
+});
+
+describe('albumHasTag', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns ok(true) if given album and tag are associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: albumData.albumId,
+      tag_id: tag.tagId,
+    });
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(hasTag.isOk()).toBe(true);
+    expect(hasTag._unsafeUnwrap()).toBe(true);
+  });
+
+  it('returns ok(false) if given album and tag are not associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(hasTag.isOk()).toBe(true);
+    expect(hasTag._unsafeUnwrap()).toBe(false);
+  });
+
+  it('returns err("album-not-found") if the album does not exist', async () => {
+    const randomAlbumId = uuidv7();
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    const hasTag = await albumHasTag(testDb, randomAlbumId, tag.tagId);
+
+    expect(hasTag.isErr()).toBe(true);
+    expect(hasTag._unsafeUnwrapErr()).toBe('album-not-found');
+  });
+
+  it('returns err("tag-not-found") if the tag does not exist', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const randomTagId = uuidv7();
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, randomTagId);
+
+    expect(hasTag.isErr()).toBe(true);
+    expect(hasTag._unsafeUnwrapErr()).toBe('tag-not-found');
+  });
+});
+
+describe('albumAddTag', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns ok(undefined) if album and tag are now associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    await albumAddTag(testDb, albumData.albumId, tag.tagId);
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(hasTag.isOk()).toBe(true);
+  });
+
+  it('returns ok(undefined) if album and tag were already associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: albumData.albumId,
+      tag_id: tag.tagId,
+    });
+
+    await albumAddTag(testDb, albumData.albumId, tag.tagId);
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(hasTag.isOk()).toBe(true);
+  });
+
+  it('returns err("album-not-found") if the album does not exist', async () => {
+    const randomAlbumId = uuidv7();
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    const hasTag = await albumHasTag(testDb, randomAlbumId, tag.tagId);
+
+    expect(hasTag.isErr()).toBe(true);
+    expect(hasTag._unsafeUnwrapErr()).toBe('album-not-found');
+  });
+
+  it('returns err("tag-not-found") if the tag does not exist', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const randomTagId = uuidv7();
+
+    const hasTag = await albumHasTag(testDb, albumData.albumId, randomTagId);
+
+    expect(hasTag.isErr()).toBe(true);
+    expect(hasTag._unsafeUnwrapErr()).toBe('tag-not-found');
+  });
+});
+
+describe('fetchAllAlbumTags', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns an empty object if no album has a tag', async () => {
+    const albumTags = await fetchAllAlbumTags(testDb);
+
+    expect(albumTags.isOk()).toBe(true);
+    expect(albumTags._unsafeUnwrap()).toStrictEqual({});
+  });
+
+  it('returns an object of all all album tag associations with albumId keys', async () => {
+    const album1 = await createAlbumData(testDb, {
+      albumId: uuidv7(),
+      roonAlbumName: 'Album 1',
+    });
+    const album2 = await createAlbumData(testDb, {
+      albumId: uuidv7(),
+      roonAlbumName: 'Album 2',
+    });
+    const tag11 = await createTag(testDb, { tagId: uuidv7(), name: 'tag11' });
+    const tag12 = await createTag(testDb, { tagId: uuidv7(), name: 'tag12' });
+    const tag21 = await createTag(testDb, { tagId: uuidv7(), name: 'tag21' });
+
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album1.albumId,
+      tag_id: tag11.tagId,
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album1.albumId,
+      tag_id: tag12.tagId,
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album2.albumId,
+      tag_id: tag21.tagId,
+    });
+
+    const tagIdsByAlbumId = await fetchAllAlbumTags(testDb);
+
+    expect(tagIdsByAlbumId.isOk()).toBe(true);
+    expect(
+      tagIdsByAlbumId._unsafeUnwrap()[album1.albumId].sort(),
+    ).toStrictEqual([tag11.tagId, tag12.tagId].sort());
+    expect(tagIdsByAlbumId._unsafeUnwrap()[album2.albumId]).toStrictEqual([
+      tag21.tagId,
+    ]);
   });
 });
