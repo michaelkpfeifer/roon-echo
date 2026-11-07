@@ -14,7 +14,6 @@ import type { PersistedRoonAlbum } from '../../shared/internal/persistedRoonAlbu
 import type { RoonExtendedTrack } from '../../shared/internal/roonExtendedTrack.js';
 import { createAlbumData } from '../__factories__/albumDataFactory.js';
 import { linkAlbumAndMbArtist } from '../__factories__/albumsMbArtistsFactory.js';
-import { associateAlbumDataAndTag } from '../__factories__/albumDataTagFactory.js';
 import { createMbArtist } from '../__factories__/mbArtistFactory.js';
 import { buildMbCandidateArtist } from '../__factories__/mbCandidateArtistFactory.js';
 import { buildMbCandidate } from '../__factories__/mbCandidateFactory.js';
@@ -825,11 +824,10 @@ describe('albumAddTag', () => {
       name: 'tag-name',
       description: 'Tag description',
     });
-    associateAlbumDataAndTag(
-      testDb,
-      { albumId: albumData.albumId },
-      { tagId: tag.tagId },
-    );
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: albumData.albumId,
+      tag_id: tag.tagId,
+    });
 
     await albumAddTag(testDb, albumData.albumId, tag.tagId);
 
