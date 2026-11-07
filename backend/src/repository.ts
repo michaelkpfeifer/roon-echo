@@ -652,11 +652,42 @@ const albumAddTag = async (
   }
 };
 
+const fetchAllAlbumTags = async (
+  db: Knex<DatabaseSchema>,
+): Promise<Result<Record<string, string[]>, string>> => {
+  try {
+    const rows = await db('albums_tags')
+      .select<
+        { album_id: string; tag_ids: string[] }[]
+      >('album_id', db.raw('array_agg(tag_id) as tag_ids'))
+      .groupBy('album_id');
+
+    const tagIdsByAlbumId = Object.fromEntries(
+      rows.map((r) => [r.album_id, r.tag_ids]),
+    );
+
+    return ok(tagIdsByAlbumId);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: fetchAlbumTags failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(error.message);
+  }
+};
+
 export {
-  albumHasTag,
   albumAddTag,
+  albumHasTag,
   dbInit,
   deleteTag,
+  fetchAllAlbumTags,
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,

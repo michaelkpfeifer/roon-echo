@@ -28,6 +28,7 @@ import knexConfig from '../knexfile.js';
 import {
   albumAddTag,
   albumHasTag,
+  fetchAllAlbumTags,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
   fetchMbTracksByAlbumId,
@@ -860,5 +861,66 @@ describe('albumAddTag', () => {
 
     expect(hasTag.isErr()).toBe(true);
     expect(hasTag._unsafeUnwrapErr()).toBe('tag-not-found');
+  });
+});
+
+describe('fetchAllAlbumTags', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns an empty object if no album has a tag', async () => {
+    const albumTags = await fetchAllAlbumTags(testDb);
+
+    expect(albumTags.isOk()).toBe(true);
+    expect(albumTags._unsafeUnwrap()).toStrictEqual({});
+  });
+
+  it('returns an object of all all album tag associations with albumId keys', async () => {
+    const album1 = await createAlbumData(testDb, {
+      albumId: uuidv7(),
+      roonAlbumName: 'Album 1',
+    });
+    const album2 = await createAlbumData(testDb, {
+      albumId: uuidv7(),
+      roonAlbumName: 'Album 2',
+    });
+    const tag11 = await createTag(testDb, { tagId: uuidv7(), name: 'tag11' });
+    const tag12 = await createTag(testDb, { tagId: uuidv7(), name: 'tag12' });
+    const tag21 = await createTag(testDb, { tagId: uuidv7(), name: 'tag21' });
+
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album1.albumId,
+      tag_id: tag11.tagId,
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album1.albumId,
+      tag_id: tag12.tagId,
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album2.albumId,
+      tag_id: tag21.tagId,
+    });
+
+    const tagIdsByAlbumId = await fetchAllAlbumTags(testDb);
+
+    expect(tagIdsByAlbumId.isOk()).toBe(true);
+    expect(
+      tagIdsByAlbumId._unsafeUnwrap()[album1.albumId].sort(),
+    ).toStrictEqual([tag11.tagId, tag12.tagId].sort());
+    expect(tagIdsByAlbumId._unsafeUnwrap()[album2.albumId]).toStrictEqual([
+      tag21.tagId,
+    ]);
   });
 });
