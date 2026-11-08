@@ -35,16 +35,13 @@ import { updatePlays } from './plays.js';
 import { extractQueueItems } from './queues.js';
 import {
   dbInit,
-  deleteTag,
   findRoonTrackByNameAndAlbumName,
-  insertTag,
-  listTags,
   updateRoonLengthInTrack,
-  updateTag,
 } from './repository.js';
 import { roonApiRateLimiter } from './roonApiRateLimiter.js';
 import { initializeRoonData } from './roonData.js';
 import type { DatabaseSchema } from '../databaseSchema.ts';
+import { registerDataHandlers } from './registerDataHandlers.js';
 import { RawTransportGetZonesResponseSchema } from './schemas/rawTransportGetZonesResponse.js';
 import { RawZonesAddedMessageSchema } from './schemas/rawZonesAddedMessage.js';
 import { RawZonesChangedMessageSchema } from './schemas/rawZonesChangedMessage.js';
@@ -443,47 +440,7 @@ io.on('connection', async (socket) => {
     transport.control(zoneId, 'play');
   });
 
-  socket.on('tags:list', async (callback) => {
-    const result = await listTags(db);
-
-    result.match(
-      (tags) => callback({ ok: true, value: tags }),
-      (error) => callback({ ok: false, error }),
-    );
-  });
-
-  socket.on('tags:create', async (payload, callback) => {
-    const result = await insertTag(db, payload);
-
-    result.match(
-      (tag) => callback({ ok: true, value: tag }),
-      (error) => callback({ ok: false, error }),
-    );
-  });
-
-  socket.on('tags:update', async (tag, callback) => {
-    const result = await updateTag(db, tag);
-
-    result.match(
-      (tag) => callback({ ok: true, value: tag }),
-      (error) => callback({ ok: false, error }),
-    );
-  });
-
-  socket.on('tags:delete', async ({ tagId }, callback) => {
-    const result = await deleteTag(db, tagId);
-
-    result.match(
-      () => callback({ ok: true }),
-      (error) => callback({ ok: false, error }),
-    );
-  });
-
-  socket.on('disconnect', () => {
-    /* eslint-disable no-console */
-    console.log('server.js: disconnected: socket.id', socket.id);
-    /* eslint-enable no-console */
-  });
+  registerDataHandlers(socket, db);
 });
 
 export { roon, roonApiRateLimiter, server };

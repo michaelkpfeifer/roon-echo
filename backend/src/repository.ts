@@ -573,9 +573,121 @@ const deleteTag = async (
   }
 };
 
+const albumHasTag = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+  tagId: string,
+): Promise<Result<boolean, string>> => {
+  try {
+    const albumIds = await db<DatabaseSchema['albums']>('albums')
+      .select('album_id')
+      .where({ album_id: albumId });
+
+    if (albumIds.length === 0) {
+      return err('album-not-found');
+    }
+
+    const tagIds = await db<DatabaseSchema['tags']>('tags')
+      .select('tag_id')
+      .where({ tag_id: tagId });
+
+    if (tagIds.length === 0) {
+      return err('tag-not-found');
+    }
+
+    const rows = await db<DatabaseSchema['albums_tags']>('albums_tags')
+      .where({
+        album_id: albumId,
+        tag_id: tagId,
+      })
+      .first();
+
+    const hasTag = rows !== undefined;
+
+    return ok(hasTag);
+  } catch (e) {
+    return err(String(e));
+  }
+};
+
+const albumAddTag = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+  tagId: string,
+): Promise<Result<void, string>> => {
+  try {
+    const albumIds = await db<DatabaseSchema['albums']>('albums')
+      .select('album_id')
+      .where({ album_id: albumId });
+
+    if (albumIds.length === 0) {
+      return err('album-not-found');
+    }
+
+    const tagIds = await db<DatabaseSchema['tags']>('tags')
+      .select('tag_id')
+      .where({ tag_id: tagId });
+
+    if (tagIds.length === 0) {
+      return err('tag-not-found');
+    }
+
+    const hasTagResult = await albumHasTag(db, albumId, tagId);
+    if (hasTagResult.isErr()) {
+      return err(hasTagResult.error);
+    }
+
+    if (hasTagResult.value) {
+      return ok(undefined);
+    }
+
+    await db<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: albumId,
+      tag_id: tagId,
+    });
+
+    return ok(undefined);
+  } catch (e) {
+    return err(String(e));
+  }
+};
+
+const fetchAllAlbumTags = async (
+  db: Knex<DatabaseSchema>,
+): Promise<Result<Record<string, string[]>, string>> => {
+  try {
+    const rows = await db('albums_tags')
+      .select<
+        { album_id: string; tag_ids: string[] }[]
+      >('album_id', db.raw('array_agg(tag_id) as tag_ids'))
+      .groupBy('album_id');
+
+    const tagIdsByAlbumId = Object.fromEntries(
+      rows.map((r) => [r.album_id, r.tag_ids]),
+    );
+
+    return ok(tagIdsByAlbumId);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: fetchAlbumTags failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(error.message);
+  }
+};
+
 export {
+  albumAddTag,
+  albumHasTag,
   dbInit,
   deleteTag,
+  fetchAllAlbumTags,
   fetchMbAlbum,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,

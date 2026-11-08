@@ -51,6 +51,11 @@ type ClientToServerEvents = {
     payload: { tagId: string },
     callback: (response: SocketVoidResult) => void,
   ) => void;
+  'albumsTags:list': (
+    callback: (
+      response: SocketResult<Record<string, string[]>, string>,
+    ) => void,
+  ) => void;
 };
 
 export type { ClientToServerEvents, ServerToClientEvents };

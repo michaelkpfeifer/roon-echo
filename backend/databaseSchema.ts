@@ -108,6 +108,12 @@ type DatabaseSchema = {
     created_at: string;
     updated_at: string;
   };
+
+  albums_tags: {
+    album_id: string;
+    tag_id: string;
+    created_at: string;
+  };
 };
 
 export type { DatabaseSchema };
