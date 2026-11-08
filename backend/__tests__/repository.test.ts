@@ -923,4 +923,18 @@ describe('fetchAllAlbumTags', () => {
       tag21.tagId,
     ]);
   });
+
+  it('responds with an error if something goes terribly wrong', () => {});
+});
+
+describe('fetchAllAlbumTags when something unexpected happens', async () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await fetchAllAlbumTags(failingDb);
+
+    expect(result.isErr()).toBe(true);
+  });
 });
