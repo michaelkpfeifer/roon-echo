@@ -133,6 +133,35 @@ describe('Tags', () => {
     expect(screen.queryByText('pixies')).not.toBeInTheDocument();
   });
 
+  describe('Filter clear button', () => {
+    it('is not present when tagsPattern is empty', () => {
+      renderWithContext([]);
+
+      expect(
+        screen.queryByRole('button', { name: 'Clear tags filter' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('is present once tagsPattern has a value, and clears it on click', async () => {
+      renderWithContext([jazz, pixies]);
+
+      const input = screen.getByRole('textbox');
+      await userEvent.type(input, 'jaz');
+
+      const clearButton = screen.getByRole('button', {
+        name: 'Clear tags filter',
+      });
+      expect(clearButton).toBeInTheDocument();
+
+      await userEvent.click(clearButton);
+
+      expect(input).toHaveValue('');
+      expect(
+        screen.queryByRole('button', { name: 'Clear tags filter' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('shows a new blank row in edit mode when "New Tag" is clicked', async () => {
     renderWithContext([]);
 

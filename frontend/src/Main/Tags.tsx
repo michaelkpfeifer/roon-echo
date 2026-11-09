@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import { err, ok } from 'neverthrow';
 import { useMemo, useState } from 'react';
 
@@ -151,6 +152,17 @@ function Tags() {
               value={tagsPattern}
               onChange={(e) => setTagsPattern(e.target.value)}
             />
+
+            {tagsPattern && (
+              <button
+                type="button"
+                className="filter__clear"
+                aria-label="Clear tags filter"
+                onClick={() => setTagsPattern('')}
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
