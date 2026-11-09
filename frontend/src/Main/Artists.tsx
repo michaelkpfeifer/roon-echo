@@ -57,6 +57,7 @@ function Artists() {
           <button
             type="button"
             className="filter__clear"
+            aria-label="Clear artists filter"
             onClick={() => setArtistPattern('')}
           >
             <X size={16} />
