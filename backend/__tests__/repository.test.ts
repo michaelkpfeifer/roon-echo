@@ -34,6 +34,7 @@ import {
   fetchMbTracksByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
+  fetchTagIdsByAlbum,
   findRoonTrackByNameAndAlbumName,
   insertRoonTracks,
   insertTag,
@@ -864,6 +865,56 @@ describe('albumAddTag', () => {
   });
 });
 
+describe('fetchTagIdsByAlbum', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns a list of all tag IDs corresponding to the album', async () => {
+    const album = await createAlbumData(testDb);
+    const tag1 = await createTag(testDb, { tagId: uuidv7(), name: 'tag1' });
+    const tag2 = await createTag(testDb, { tagId: uuidv7(), name: 'tag2' });
+
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album.albumId,
+      tag_id: tag1.tagId,
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: album.albumId,
+      tag_id: tag2.tagId,
+    });
+
+    const tagIdsByAlbum = await fetchTagIdsByAlbum(testDb, album.albumId);
+
+    expect(tagIdsByAlbum._unsafeUnwrap().sort()).toEqual(
+      [tag1.tagId, tag2.tagId].sort(),
+    );
+  });
+});
+
+describe('fetchTagIdsByAlbum when something unexpected happens', () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await fetchTagIdsByAlbum(failingDb, uuidv7());
+
+    expect(result.isErr()).toBe(true);
+  });
+});
+
 describe('fetchAllAlbumTags', () => {
   let testDb: Knex<DatabaseSchema>;
 
@@ -923,8 +974,6 @@ describe('fetchAllAlbumTags', () => {
       tag21.tagId,
     ]);
   });
-
-  it('responds with an error if something goes terribly wrong', () => {});
 });
 
 describe('fetchAllAlbumTags when something unexpected happens', async () => {
