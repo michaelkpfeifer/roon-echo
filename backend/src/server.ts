@@ -13,6 +13,7 @@ import RoonApiTransport from 'node-roon-api-transport';
 import { Server } from 'socket.io';
 
 import * as browser from './browser.js';
+import { createApp } from './app.js';
 import {
   logChanged,
   logChangedUnknown,
@@ -72,8 +73,9 @@ const db: Knex<DatabaseSchema> = untypedDb;
 
 dbInit(db);
 
-const app = express();
+const app = createApp(db);
 const server = http.createServer(app);
+
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin: true,
