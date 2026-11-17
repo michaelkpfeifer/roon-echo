@@ -652,6 +652,35 @@ const albumAddTag = async (
   }
 };
 
+const fetchTagIdsByAlbum = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+): Promise<Result<string[], string>> => {
+  try {
+    const rows = await db<DatabaseSchema['albums_tags']>('albums_tags')
+      .select(['tag_id'])
+      .where({
+        album_id: albumId,
+      });
+
+    const tagIdsByAlbumId = rows.map((row) => row.tag_id);
+
+    return ok(tagIdsByAlbumId);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: fetchTagIdsByAlbum failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(error.message);
+  }
+};
+
 const fetchAllAlbumTags = async (
   db: Knex<DatabaseSchema>,
 ): Promise<Result<Record<string, string[]>, string>> => {
@@ -669,7 +698,7 @@ const fetchAllAlbumTags = async (
     return ok(tagIdsByAlbumId);
   } catch (error) {
     /* eslint-disable no-console */
-    console.error('Error: fetchAlbumTags failed:', error);
+    console.error('Error: fetchAllAlbumTags failed:', error);
     /* eslint-enable no-console */
 
     if (!(error instanceof Error)) {
@@ -695,6 +724,7 @@ export {
   fetchMbTracksByAlbumId,
   fetchRoonAlbum,
   fetchRoonTracks,
+  fetchTagIdsByAlbum,
   findRoonTrackByNameAndAlbumName,
   insertRoonAlbum,
   insertRoonTracks,
