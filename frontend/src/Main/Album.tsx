@@ -18,7 +18,7 @@ const Album = memo(function Album() {
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
 
   const { config, coreUrl } = useApp();
-  const { albumAggregates } = useData();
+  const { albumAggregates, tags } = useData();
 
   const { id } = useParams();
 
@@ -96,6 +96,11 @@ const Album = memo(function Album() {
     });
   };
 
+  const addTag = async (albumId: string, tagId: string) => {
+    const url: string = `/api/albums/${albumId}/tags/${tagId}`;
+    const res = await fetch(url, { method: 'PUT' });
+  };
+
   switch (albumAggregate.stage) {
     case 'empty':
       throw new Error(
@@ -169,6 +174,23 @@ const Album = memo(function Album() {
               </div>
             </div>
           </div>
+
+          <ul>
+            {tags.map((tag) => (
+              <li key={tag.tagId}>
+                <label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addTag(albumAggregate.id, tag.tagId);
+                    }}
+                  >
+                    {tag.name}
+                  </button>
+                </label>
+              </li>
+            ))}
+          </ul>
 
           {albumAggregate.roonTracks.map((roonTrack, index) => (
             <div key={roonTrack.trackId} className="album-track-row">
