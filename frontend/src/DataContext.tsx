@@ -22,6 +22,7 @@ function DataProvider({ children }: { children: ReactNode }) {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [albumTags, setAlbumTags] = useState<Record<string, string[]>>({});
+  const [albumTagsLoaded, setAlbumTagsLoaded] = useState(false);
 
   const { pushMessage } = useApp();
 
@@ -79,6 +80,7 @@ function DataProvider({ children }: { children: ReactNode }) {
         const data: Record<string, string[]> = await response.json();
 
         setAlbumTags(data);
+        setAlbumTagsLoaded(true);
       } catch (error) {
         if (controller.signal.aborted) {
           return;
@@ -101,10 +103,11 @@ function DataProvider({ children }: { children: ReactNode }) {
     () => ({
       albumAggregates,
       albumTags,
+      albumTagsLoaded,
       setTags,
       tags,
     }),
-    [albumAggregates, albumTags, tags],
+    [albumAggregates, albumTags, albumTagsLoaded, tags],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
