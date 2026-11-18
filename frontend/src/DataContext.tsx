@@ -21,6 +21,7 @@ function useData() {
 function DataProvider({ children }: { children: ReactNode }) {
   const [albumAggregates, setAlbumAggregates] = useState<AlbumAggregate[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [albumTags, setAlbumTags] = useState<Record<string, string[]>>({});
 
   const { pushMessage } = useApp();
 
@@ -60,9 +61,50 @@ function DataProvider({ children }: { children: ReactNode }) {
     };
   }, [pushMessage]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const url: string = 'api/albums/tags';
+    const fetchAlbumTags = async () => {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data: Record<string, string[]> = await response.json();
+
+        setAlbumTags(data);
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        pushMessage({
+          severity: 'error',
+          message: 'Failed to load album tags: ' + String(error),
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      return () => controller.abort();
+    };
+
+    fetchAlbumTags();
+  }, [pushMessage]);
+
   const value = useMemo(
-    () => ({ albumAggregates, tags, setTags }),
-    [albumAggregates, tags],
+    () => ({
+      albumAggregates,
+      albumTags,
+      setTags,
+      tags,
+    }),
+    [albumAggregates, albumTags, tags],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

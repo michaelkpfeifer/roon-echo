@@ -6,6 +6,7 @@ const createMockDataContext = (
   overrides: Partial<DataContextType>,
 ): DataContextType => ({
   albumAggregates: [],
+  albumTags: {},
   setTags: vi.fn(),
   tags: [],
   ...overrides,
