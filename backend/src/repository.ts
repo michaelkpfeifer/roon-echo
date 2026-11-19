@@ -647,8 +647,18 @@ const albumAddTag = async (
     });
 
     return ok(undefined);
-  } catch (e) {
-    return err(String(e));
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: albumAddTag failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(String(error));
   }
 };
 
@@ -691,8 +701,18 @@ const albumRemoveTag = async (
       .delete();
 
     return ok(undefined);
-  } catch (e) {
-    return err(String(e));
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: albumRemoveTag failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(String(error));
   }
 };
 
@@ -721,7 +741,7 @@ const fetchTagIdsByAlbum = async (
       });
     }
 
-    return err(error.message);
+    return err(String(error));
   }
 };
 

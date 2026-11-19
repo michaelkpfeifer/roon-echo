@@ -864,6 +864,18 @@ describe('albumAddTag', () => {
   });
 });
 
+describe('albumAddTag when something unexpected happens', () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await albumAddTag(failingDb, uuidv7(), uuidv7());
+
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
+  });
+});
+
 describe('albumRemoveTag', () => {
   let testDb: Knex<DatabaseSchema>;
 
@@ -943,6 +955,18 @@ describe('albumRemoveTag', () => {
   });
 });
 
+describe('albumRemoveTag when something unexpected happens', () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await albumRemoveTag(failingDb, uuidv7(), uuidv7());
+
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
+  });
+});
+
 describe('fetchTagIdsByAlbum', () => {
   let testDb: Knex<DatabaseSchema>;
 
@@ -989,7 +1013,7 @@ describe('fetchTagIdsByAlbum when something unexpected happens', () => {
 
     const result = await fetchTagIdsByAlbum(failingDb, uuidv7());
 
-    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
   });
 });
 
@@ -1062,6 +1086,6 @@ describe('fetchAllAlbumTags when something unexpected happens', async () => {
 
     const result = await fetchAllAlbumTags(failingDb);
 
-    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
   });
 });
