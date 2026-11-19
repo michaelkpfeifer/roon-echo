@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import type { AlbumAggregate } from '../../../shared/internal/albumAggregate';
 import { useApp } from '../AppContext';
+import { useData } from '../DataContext';
 import noAlbumArt from '../images/no-album-art.svg';
 
 const albumStageIcon = (stage: string) => {
@@ -46,6 +47,32 @@ const albumArt = (
     />
   );
 };
+
+type AlbumTagsProps = {
+  albumId: string;
+};
+
+function AlbumTags({ albumId }: AlbumTagsProps) {
+  const { albumTags, tags } = useData();
+
+  const albumHasTag = (albumId: string, tagId: string) => {
+    if (!albumTags[albumId]) {
+      return false;
+    }
+
+    return albumTags[albumId].includes(tagId);
+  };
+
+  return (
+    <div>
+      {tags
+        .filter((tag) => albumHasTag(albumId, tag.tagId))
+        .map((tag) => (
+          <span key={tag.tagId}>{tag.name} </span>
+        ))}
+    </div>
+  );
+}
 
 type AlbumDataProps = {
   stage: string;
@@ -130,6 +157,7 @@ function AlbumAggregateWithRoonTracks({
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
         roonAlbumArtistName={albumAggregate.roonAlbum.roonAlbumArtistName}
       />
+      <AlbumTags albumId={albumAggregate.id} />
     </div>
   );
 }
@@ -151,6 +179,7 @@ type AlbumAggregateWithMbMatchProps = {
   longPressFiredRef: React.RefObject<boolean>;
   selectionMode: boolean;
 };
+
 function AlbumAggregateWithMbMatch({
   albumAggregate,
   handlePointerDown,
@@ -191,6 +220,7 @@ function AlbumAggregateWithMbMatch({
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
         roonAlbumArtistName={albumAggregate.roonAlbum.roonAlbumArtistName}
       />
+      <AlbumTags albumId={albumAggregate.id} />
     </div>
   );
 }
@@ -253,6 +283,7 @@ function AlbumAggregateWithoutMbMatch({
         roonAlbumName={albumAggregate.roonAlbum.roonAlbumName}
         roonAlbumArtistName={albumAggregate.roonAlbum.roonAlbumArtistName}
       />
+      <AlbumTags albumId={albumAggregate.id} />
     </div>
   );
 }

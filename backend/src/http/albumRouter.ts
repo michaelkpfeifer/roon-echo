@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import type { Knex } from 'knex';
 
-import { albumAddTag, fetchTagIdsByAlbum } from '../repository.js';
+import {
+  albumAddTag,
+  fetchAllAlbumTags,
+  fetchTagIdsByAlbum,
+} from '../repository.js';
 import type { DatabaseSchema } from '../../databaseSchema.ts';
 
 const createAlbumRouter = (db: Knex<DatabaseSchema>) => {
@@ -28,6 +32,18 @@ const createAlbumRouter = (db: Knex<DatabaseSchema>) => {
         } else {
           res.status(500).json({ error });
         }
+      },
+    );
+  });
+
+  router.get('/tags', async (_req, res) => {
+    const result = await fetchAllAlbumTags(db);
+    result.match(
+      (allAlbumTags) => {
+        res.status(200).json(allAlbumTags);
+      },
+      (error) => {
+        res.status(500).json({ error });
       },
     );
   });

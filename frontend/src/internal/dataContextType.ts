@@ -5,8 +5,10 @@ import type { Tag } from '../../../shared/internal/tag';
 
 type DataContextType = {
   albumAggregates: AlbumAggregate[];
-  tags: Tag[];
+  albumTags: Record<string, string[]>;
+  albumTagsLoaded: boolean;
   setTags: Dispatch<SetStateAction<Tag[]>>;
+  tags: Tag[];
 };
 
 export type { DataContextType };

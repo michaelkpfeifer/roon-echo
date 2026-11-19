@@ -707,7 +707,7 @@ const fetchAllAlbumTags = async (
       });
     }
 
-    return err(error.message);
+    return err(String(error));
   }
 };
 

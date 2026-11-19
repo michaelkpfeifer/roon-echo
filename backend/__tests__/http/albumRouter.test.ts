@@ -77,19 +77,69 @@ describe('album router', () => {
     });
   });
 
-  describe('add tag to album when something unexpected happens', async () => {
-    const failingDb = (() => {
-      throw new Error('boom');
-    }) as unknown as Knex<DatabaseSchema>;
+  describe('fetch all album tags', () => {
+    it('returns a list of all album tags', async () => {
+      const album1 = await createAlbumData(testDb, {
+        albumId: uuidv7(),
+        roonAlbumName: 'Album 1',
+      });
+      const album2 = await createAlbumData(testDb, {
+        albumId: uuidv7(),
+        roonAlbumName: 'Album 2',
+      });
+      const tag11 = await createTag(testDb, { tagId: uuidv7(), name: 'tag11' });
+      const tag12 = await createTag(testDb, { tagId: uuidv7(), name: 'tag12' });
+      const tag21 = await createTag(testDb, { tagId: uuidv7(), name: 'tag21' });
 
-    beforeEach(() => {
-      app = createApp(failingDb);
+      await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+        album_id: album1.albumId,
+        tag_id: tag11.tagId,
+      });
+      await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+        album_id: album1.albumId,
+        tag_id: tag12.tagId,
+      });
+      await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+        album_id: album2.albumId,
+        tag_id: tag21.tagId,
+      });
+
+      const res = await request(app).get('/api/albums/tags').send({});
+
+      expect(res.status).toBe(200);
+      expect(res.body[album1.albumId].sort()).toStrictEqual(
+        [tag11.tagId, tag12.tagId].sort(),
+      );
+      expect(res.body[album2.albumId]).toStrictEqual([tag21.tagId]);
     });
+  });
+});
 
+describe('album router when something unexpected happens', () => {
+  const failingDb = (() => {
+    throw new Error('boom');
+  }) as unknown as Knex<DatabaseSchema>;
+
+  let app: Express;
+
+  beforeEach(() => {
+    app = createApp(failingDb);
+  });
+
+  describe('add tag to album when something unexpected happens', async () => {
     it('returns 500 if an unexpected error occurs', async () => {
       const res = await request(app)
         .put(`/api/albums/${uuidv7()}/tags/${uuidv7()}`)
         .send({});
+
+      expect(res.status).toBe(500);
+      expect(res.body).toStrictEqual({ error: 'Error: boom' });
+    });
+  });
+
+  describe('fetch all album tags when something unexpected happens', () => {
+    it('returns 500 if an unexpected error occurs', async () => {
+      const res = await request(app).get('/api/albums/tags').send({});
 
       expect(res.status).toBe(500);
       expect(res.body).toStrictEqual({ error: 'Error: boom' });
