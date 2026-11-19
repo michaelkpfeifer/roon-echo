@@ -647,8 +647,72 @@ const albumAddTag = async (
     });
 
     return ok(undefined);
-  } catch (e) {
-    return err(String(e));
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: albumAddTag failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(String(error));
+  }
+};
+
+const albumRemoveTag = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+  tagId: string,
+): Promise<Result<void, string>> => {
+  try {
+    const albumIds = await db<DatabaseSchema['albums']>('albums')
+      .select('album_id')
+      .where({ album_id: albumId });
+
+    if (albumIds.length === 0) {
+      return err('album-not-found');
+    }
+
+    const tagIds = await db<DatabaseSchema['tags']>('tags')
+      .select('tag_id')
+      .where({ tag_id: tagId });
+
+    if (tagIds.length === 0) {
+      return err('tag-not-found');
+    }
+
+    const hasTagResult = await albumHasTag(db, albumId, tagId);
+    if (hasTagResult.isErr()) {
+      return err(hasTagResult.error);
+    }
+
+    if (!hasTagResult.value) {
+      return ok(undefined);
+    }
+
+    await db<DatabaseSchema['albums_tags']>('albums_tags')
+      .where({
+        album_id: albumId,
+        tag_id: tagId,
+      })
+      .delete();
+
+    return ok(undefined);
+  } catch (error) {
+    /* eslint-disable no-console */
+    console.error('Error: albumRemoveTag failed:', error);
+    /* eslint-enable no-console */
+
+    if (!(error instanceof Error)) {
+      throw new Error(`Unexpected non-error thrown: ${JSON.stringify(error)}`, {
+        cause: error,
+      });
+    }
+
+    return err(String(error));
   }
 };
 
@@ -677,7 +741,7 @@ const fetchTagIdsByAlbum = async (
       });
     }
 
-    return err(error.message);
+    return err(String(error));
   }
 };
 
@@ -714,6 +778,7 @@ const fetchAllAlbumTags = async (
 export {
   albumAddTag,
   albumHasTag,
+  albumRemoveTag,
   dbInit,
   deleteTag,
   fetchAllAlbumTags,

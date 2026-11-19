@@ -28,6 +28,7 @@ import knexConfig from '../knexfile.js';
 import {
   albumAddTag,
   albumHasTag,
+  albumRemoveTag,
   fetchAllAlbumTags,
   fetchMbAlbumByAlbumId,
   fetchMbArtistsByAlbumId,
@@ -810,11 +811,11 @@ describe('albumAddTag', () => {
       description: 'Tag description',
     });
 
-    await albumAddTag(testDb, albumData.albumId, tag.tagId);
-
+    const result = await albumAddTag(testDb, albumData.albumId, tag.tagId);
     const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
 
-    expect(hasTag.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toBe(undefined);
+    expect(hasTag._unsafeUnwrap()).toBe(true);
   });
 
   it('returns ok(undefined) if album and tag were already associated', async () => {
@@ -831,11 +832,11 @@ describe('albumAddTag', () => {
       tag_id: tag.tagId,
     });
 
-    await albumAddTag(testDb, albumData.albumId, tag.tagId);
-
+    const result = await albumAddTag(testDb, albumData.albumId, tag.tagId);
     const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
 
-    expect(hasTag.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toBe(undefined);
+    expect(hasTag._unsafeUnwrap()).toBe(true);
   });
 
   it('returns err("album-not-found") if the album does not exist', async () => {
@@ -845,10 +846,9 @@ describe('albumAddTag', () => {
       description: 'Tag description',
     });
 
-    const hasTag = await albumHasTag(testDb, randomAlbumId, tag.tagId);
+    const result = await albumAddTag(testDb, randomAlbumId, tag.tagId);
 
-    expect(hasTag.isErr()).toBe(true);
-    expect(hasTag._unsafeUnwrapErr()).toBe('album-not-found');
+    expect(result._unsafeUnwrapErr()).toBe('album-not-found');
   });
 
   it('returns err("tag-not-found") if the tag does not exist', async () => {
@@ -858,10 +858,112 @@ describe('albumAddTag', () => {
     });
     const randomTagId = uuidv7();
 
-    const hasTag = await albumHasTag(testDb, albumData.albumId, randomTagId);
+    const result = await albumAddTag(testDb, albumData.albumId, randomTagId);
 
-    expect(hasTag.isErr()).toBe(true);
-    expect(hasTag._unsafeUnwrapErr()).toBe('tag-not-found');
+    expect(result._unsafeUnwrapErr()).toBe('tag-not-found');
+  });
+});
+
+describe('albumAddTag when something unexpected happens', () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await albumAddTag(failingDb, uuidv7(), uuidv7());
+
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
+  });
+});
+
+describe('albumRemoveTag', () => {
+  let testDb: Knex<DatabaseSchema>;
+
+  beforeEach(async () => {
+    testDb = knexInit(knexConfig.test);
+
+    await testDb.migrate.latest({
+      directory: './migrations',
+    });
+  });
+
+  afterEach(async () => {
+    await testDb.migrate.rollback();
+    await testDb.destroy();
+  });
+
+  it('returns ok(undefined) if album and tag are no longer associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+    await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+      album_id: albumData.albumId,
+      tag_id: tag.tagId,
+    });
+
+    const result = await albumRemoveTag(testDb, albumData.albumId, tag.tagId);
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(result._unsafeUnwrap()).toBe(undefined);
+    expect(hasTag._unsafeUnwrap()).toBe(false);
+  });
+
+  it('returns ok(undefined) if album and tag were not associated', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    const result = await albumRemoveTag(testDb, albumData.albumId, tag.tagId);
+    const hasTag = await albumHasTag(testDb, albumData.albumId, tag.tagId);
+
+    expect(result._unsafeUnwrap()).toBe(undefined);
+    expect(hasTag._unsafeUnwrap()).toBe(false);
+  });
+
+  it('returns err("album-not-found") if the album does not exist', async () => {
+    const randomAlbumId = uuidv7();
+    const tag = await createTag(testDb, {
+      name: 'tag-name',
+      description: 'Tag description',
+    });
+
+    const result = await albumRemoveTag(testDb, randomAlbumId, tag.tagId);
+
+    expect(result._unsafeUnwrapErr()).toBe('album-not-found');
+  });
+
+  it('returns err("tag-not-found") if the tag does not exist', async () => {
+    const albumData = await createAlbumData(testDb, {
+      roonAlbumName: 'Album Name',
+      roonAlbumArtistName: 'Artist Name',
+    });
+    const randomTagId = uuidv7();
+
+    const result = await albumRemoveTag(testDb, albumData.albumId, randomTagId);
+
+    expect(result._unsafeUnwrapErr()).toBe('tag-not-found');
+  });
+});
+
+describe('albumRemoveTag when something unexpected happens', () => {
+  it('returns an error when the database is unavailable', async () => {
+    const failingDb = (() => {
+      throw new Error('boom');
+    }) as unknown as Knex<DatabaseSchema>;
+
+    const result = await albumRemoveTag(failingDb, uuidv7(), uuidv7());
+
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
   });
 });
 
@@ -911,7 +1013,7 @@ describe('fetchTagIdsByAlbum when something unexpected happens', () => {
 
     const result = await fetchTagIdsByAlbum(failingDb, uuidv7());
 
-    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
   });
 });
 
@@ -984,6 +1086,6 @@ describe('fetchAllAlbumTags when something unexpected happens', async () => {
 
     const result = await fetchAllAlbumTags(failingDb);
 
-    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toStrictEqual('Error: boom');
   });
 });
