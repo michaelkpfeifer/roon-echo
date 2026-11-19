@@ -652,6 +652,50 @@ const albumAddTag = async (
   }
 };
 
+const albumRemoveTag = async (
+  db: Knex<DatabaseSchema>,
+  albumId: string,
+  tagId: string,
+): Promise<Result<void, string>> => {
+  try {
+    const albumIds = await db<DatabaseSchema['albums']>('albums')
+      .select('album_id')
+      .where({ album_id: albumId });
+
+    if (albumIds.length === 0) {
+      return err('album-not-found');
+    }
+
+    const tagIds = await db<DatabaseSchema['tags']>('tags')
+      .select('tag_id')
+      .where({ tag_id: tagId });
+
+    if (tagIds.length === 0) {
+      return err('tag-not-found');
+    }
+
+    const hasTagResult = await albumHasTag(db, albumId, tagId);
+    if (hasTagResult.isErr()) {
+      return err(hasTagResult.error);
+    }
+
+    if (!hasTagResult.value) {
+      return ok(undefined);
+    }
+
+    await db<DatabaseSchema['albums_tags']>('albums_tags')
+      .where({
+        album_id: albumId,
+        tag_id: tagId,
+      })
+      .delete();
+
+    return ok(undefined);
+  } catch (e) {
+    return err(String(e));
+  }
+};
+
 const fetchTagIdsByAlbum = async (
   db: Knex<DatabaseSchema>,
   albumId: string,
@@ -714,6 +758,7 @@ const fetchAllAlbumTags = async (
 export {
   albumAddTag,
   albumHasTag,
+  albumRemoveTag,
   dbInit,
   deleteTag,
   fetchAllAlbumTags,
