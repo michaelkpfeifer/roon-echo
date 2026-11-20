@@ -3,6 +3,7 @@ import type { Knex } from 'knex';
 
 import {
   albumAddTag,
+  albumRemoveTag,
   fetchAllAlbumTags,
   fetchTagIdsByAlbum,
 } from '../repository.js';
@@ -13,6 +14,35 @@ const createAlbumRouter = (db: Knex<DatabaseSchema>) => {
 
   router.put('/:albumId/tags/:tagId', async (req, res) => {
     const result = await albumAddTag(db, req.params.albumId, req.params.tagId);
+    result.match(
+      async () => {
+        const tagIdsResult = await fetchTagIdsByAlbum(db, req.params.albumId);
+
+        tagIdsResult.match(
+          (tagIds) => {
+            res.status(201).json(tagIds);
+          },
+          (error) => {
+            res.status(500).json({ error });
+          },
+        );
+      },
+      (error) => {
+        if (error === 'album-not-found' || error === 'tag-not-found') {
+          res.status(404).json({ error });
+        } else {
+          res.status(500).json({ error });
+        }
+      },
+    );
+  });
+
+  router.delete('/:albumId/tags/:tagId', async (req, res) => {
+    const result = await albumRemoveTag(
+      db,
+      req.params.albumId,
+      req.params.tagId,
+    );
     result.match(
       async () => {
         const tagIdsResult = await fetchTagIdsByAlbum(db, req.params.albumId);

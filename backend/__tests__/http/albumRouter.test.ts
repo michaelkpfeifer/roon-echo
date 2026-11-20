@@ -77,6 +77,52 @@ describe('album router', () => {
     });
   });
 
+  describe('remove tag from album', () => {
+    it('removes a tag from an album', async () => {
+      const album = await createAlbumData(testDb, { albumId: uuidv7() });
+      const tag = await createTag(testDb, { tagId: uuidv7() });
+      await testDb<DatabaseSchema['albums_tags']>('albums_tags').insert({
+        album_id: album.albumId,
+        tag_id: tag.tagId,
+      });
+
+      const res = await request(app)
+        .delete(`/api/albums/${album.albumId}/tags/${tag.tagId}`)
+        .send({});
+      const associations = await testDb<DatabaseSchema['albums_tags']>(
+        'albums_tags',
+      ).where({
+        album_id: album.albumId,
+        tag_id: tag.tagId,
+      });
+
+      expect(res.status).toBe(201);
+      expect(associations.length).toBe(0);
+    });
+
+    it('returns 404 if the album cannot be found', async () => {
+      const tag = await createTag(testDb, { tagId: uuidv7() });
+
+      const res = await request(app)
+        .delete(`/api/albums/${uuidv7()}/tags/${tag.tagId}`)
+        .send({});
+
+      expect(res.status).toBe(404);
+      expect(res.body).toStrictEqual({ error: 'album-not-found' });
+    });
+
+    it('returns 404 if the tag cannot be found', async () => {
+      const album = await createAlbumData(testDb, { albumId: uuidv7() });
+
+      const res = await request(app)
+        .delete(`/api/albums/${album.albumId}/tags/${uuidv7()}`)
+        .send({});
+
+      expect(res.status).toBe(404);
+      expect(res.body).toStrictEqual({ error: 'tag-not-found' });
+    });
+  });
+
   describe('fetch all album tags', () => {
     it('returns a list of all album tags', async () => {
       const album1 = await createAlbumData(testDb, {
@@ -130,6 +176,17 @@ describe('album router when something unexpected happens', () => {
     it('returns 500 if an unexpected error occurs', async () => {
       const res = await request(app)
         .put(`/api/albums/${uuidv7()}/tags/${uuidv7()}`)
+        .send({});
+
+      expect(res.status).toBe(500);
+      expect(res.body).toStrictEqual({ error: 'Error: boom' });
+    });
+  });
+
+  describe('remove tag from album when something unexpected happens', async () => {
+    it('returns 500 if an unexpected error occurs', async () => {
+      const res = await request(app)
+        .delete(`/api/albums/${uuidv7()}/tags/${uuidv7()}`)
         .send({});
 
       expect(res.status).toBe(500);
