@@ -9,6 +9,7 @@ import { socket } from '../socket';
 import { formatMbTrackLength, formatRoonTrackLength } from '../utils';
 import AlbumArt from './AlbumArt';
 import { useData } from '../DataContext';
+import AlbumTags from './Album/Tags';
 
 function AlbumAggregateNotFound(id: string) {
   throw new Error(`Error: Cannot find album by ID ${id}.`);
@@ -18,7 +19,7 @@ const Album = memo(function Album() {
   const [isAlbumArtModalOpen, setIsAlbumArtModalOpen] = useState(false);
 
   const { config, coreUrl } = useApp();
-  const { albumAggregates, albumTags, tags } = useData();
+  const { albumAggregates } = useData();
 
   const { id } = useParams();
 
@@ -96,19 +97,6 @@ const Album = memo(function Album() {
     });
   };
 
-  const addTag = async (albumId: string, tagId: string) => {
-    const url: string = `/api/albums/${albumId}/tags/${tagId}`;
-    const res = await fetch(url, { method: 'PUT' });
-  };
-
-  const albumHasTag = (albumId: string, tagId: string) => {
-    if (!albumTags[albumId]) {
-      return false;
-    }
-
-    return albumTags[albumId].includes(tagId) ? 'yes' : 'no';
-  };
-
   switch (albumAggregate.stage) {
     case 'empty':
       throw new Error(
@@ -183,24 +171,7 @@ const Album = memo(function Album() {
             </div>
           </div>
 
-          <ul>
-            {tags.map((tag) => (
-              <li key={tag.tagId}>
-                <label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      addTag(albumAggregate.id, tag.tagId);
-                    }}
-                  >
-                    {tag.name}
-                  </button>
-                  <span> - </span>
-                  <span>{albumHasTag(albumAggregate.id, tag.tagId)}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
+          <AlbumTags albumAggregate={albumAggregate} />
 
           {albumAggregate.roonTracks.map((roonTrack, index) => (
             <div key={roonTrack.trackId} className="album-track-row">

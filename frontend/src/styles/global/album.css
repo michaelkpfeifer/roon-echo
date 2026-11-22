@@ -51,6 +51,15 @@
 .album-actions__action:focus-visible {
 }
 
+.album-tag-badges--added {
+  padding-right: 12px;
+}
+
+.album-tag-badges--not-added {
+  padding-left: 12px;
+  opacity: 0.66;
+}
+
 .album-track-row {
   display: grid;
   grid-template-columns: 40px 1fr 80px 80px 80px;
