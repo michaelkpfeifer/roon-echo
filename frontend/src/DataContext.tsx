@@ -104,6 +104,7 @@ function DataProvider({ children }: { children: ReactNode }) {
       albumAggregates,
       albumTags,
       albumTagsLoaded,
+      setAlbumTags,
       setTags,
       tags,
     }),
