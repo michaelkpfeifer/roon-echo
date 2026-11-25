@@ -7,6 +7,7 @@ type DataContextType = {
   albumAggregates: AlbumAggregate[];
   albumTags: Record<string, string[]>;
   albumTagsLoaded: boolean;
+  setAlbumTags: Dispatch<SetStateAction<Record<string, string[]>>>;
   setTags: Dispatch<SetStateAction<Tag[]>>;
   tags: Tag[];
 };

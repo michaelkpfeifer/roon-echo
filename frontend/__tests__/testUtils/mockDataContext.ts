@@ -8,6 +8,7 @@ const createMockDataContext = (
   albumAggregates: [],
   albumTags: {},
   albumTagsLoaded: false,
+  setAlbumTags: vi.fn(),
   setTags: vi.fn(),
   tags: [],
   ...overrides,
