@@ -21,7 +21,9 @@ const findTagsByTagIds = (tags: Tag[], tagIds: string[]) => {
 function AlbumTags({ albumAggregate }: AlbumTagsParams) {
   const { albumTags, tags } = useData();
 
-  const tagsAdded = findTagsByTagIds(tags, albumTags[albumAggregate.id]);
+  const tagsAdded = albumTags[albumAggregate.id]
+    ? findTagsByTagIds(tags, albumTags[albumAggregate.id])
+    : [];
   const tagsNotAdded = findTagsByTagIds(
     tags,
     fp.difference(
@@ -30,50 +32,28 @@ function AlbumTags({ albumAggregate }: AlbumTagsParams) {
     ),
   );
 
-  const addTag = async (albumId: string, tagId: string) => {
-    const url: string = `/api/albums/${albumId}/tags/${tagId}`;
-    const res = await fetch(url, { method: 'PUT' });
-  };
-
-  const albumHasTag = (albumId: string, tagId: string) => {
-    if (!albumTags[albumId]) {
-      return false;
-    }
-
-    return albumTags[albumId].includes(tagId) ? 'yes' : 'no';
-  };
-
   return (
     <>
       <span className="album-tag-badges--added">
         {tagsAdded.map((tag) => (
-          <TagToggle key={tag.tagId} tag={tag} operation="remove" />
+          <TagToggle
+            key={tag.tagId}
+            tag={tag}
+            albumAggregate={albumAggregate}
+            operation="remove"
+          />
         ))}
       </span>
       <span className="album-tag-badges--not-added">
         {tagsNotAdded.map((tag) => (
-          <TagToggle key={tag.tagId} tag={tag} operation="add" />
+          <TagToggle
+            key={tag.tagId}
+            tag={tag}
+            albumAggregate={albumAggregate}
+            operation="add"
+          />
         ))}
       </span>
-
-      <ul>
-        {tags.map((tag) => (
-          <li key={tag.tagId}>
-            <label>
-              <button
-                type="button"
-                onClick={() => {
-                  addTag(albumAggregate.id, tag.tagId);
-                }}
-              >
-                {tag.name}
-              </button>
-              <span> - </span>
-              <span>{albumHasTag(albumAggregate.id, tag.tagId)}</span>
-            </label>
-          </li>
-        ))}
-      </ul>
     </>
   );
 }
